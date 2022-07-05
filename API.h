@@ -1,7 +1,6 @@
 #ifndef _API__H_
 #define _API__H_
 
-#include "Agreement_Hanlde.h"
 #include "Check_CRC16.h"
 #include "DATA.h"
 
@@ -14,9 +13,8 @@
 struct API_Data_
 {
     U16 (*Get_CRC16)(U8 *ptr, U16 len);
-    struct Agreement_Handle_ Agreement;
-    struct DATA_Time_ DATA_Time;
     
+    struct DATA_Time_ DATA_Time;
     
 };
 
