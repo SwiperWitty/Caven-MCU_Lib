@@ -1,0 +1,3 @@
+[submodule "API_Magic"]
+	path = API_Magic
+	url = git@github.com:SwiperWitty/API_Magic.git
