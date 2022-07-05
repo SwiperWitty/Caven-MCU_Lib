@@ -24,3 +24,5 @@
 
 GitHub： [Magic](https://github.com/SwiperWitty/API_Magic) 
 
+一般作用在：[Caven-32](https://github.com/SwiperWitty/Core-Caven32)
+
