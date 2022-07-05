@@ -3,7 +3,7 @@
 
 void Control_Mode_Init (void)
 {
-	TIM8_PWM_Init(1000, 72);//T = (arr * por) / 72MHz
+	TIM8_PWM_Init(1000, 72,ENABLE);	//T = (arr * por) / 72MHz
 	
 	TIM_SetCompare3(TIM8, 0);
 	TIM_SetCompare4(TIM8, 0);
