@@ -11,3 +11,14 @@
 
 #include "Caven.h"
 
+struct Data_Handle_
+{
+    int (*Find_Data)(const U8 *source, char Target, int Length);
+    
+};
+
+int Find_Data(const U8 *source, char Target, int Length);
+
+
+#endif
+

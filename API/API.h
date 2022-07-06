@@ -2,7 +2,10 @@
 #define _API__H_
 
 #include "Check_CRC16.h"
-#include "DATA.h"
+#include "Time_Handle.h"
+#include "Agreement_Hanlde.h"
+#include "DATA_Handle.h"
+
 
 /*
     API会与底层隔离，c 环境即可运行
@@ -14,7 +17,9 @@ struct API_Data_
 {
     U16 (*Get_CRC16)(U8 *ptr, U16 len);
     
-    struct DATA_Time_ DATA_Time;
+    struct Time_Handle_ Time;
+    struct Data_Handle_ Data;
+    struct Agreement_Handle_ Agreement;
     
 };
 

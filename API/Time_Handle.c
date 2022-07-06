@@ -3,7 +3,7 @@
 int Hourly_to_Seconds(struct Caven_Watch Item)
 {
 	int temp;
-	temp = Item.second + Item.minutes * 60 + Item.hour * 3600;		//设置的超时时差（秒级）
+	temp = Item.second + (Item.minutes * 60) + (Item.hour * 3600);		//设置的超时时差（秒级）
     return temp;
 }
 
@@ -16,27 +16,31 @@ struct Caven_Watch Seconds_to_Hourly (int Seconds)
     return temp;
 }
 
-char Over_Time(struct _Over_time *Item)                             //非阻塞多次调用函数不可使用局部静态变量！
+char Over_Time(struct _Over_time *Item)
 {
-    if (Item->last_data != *Item->Now_data)     //数据在跳动
+    if (Item->last_data != *(int *)Item->Now_data)     //数据在跳动
     {
-        Item->last_data = *Item->Now_data;
+        Item->last_data = *(int *)Item->Now_data;
         Item->load = 0;
         Item->Flag = 0;
     }
-    else                                    //没有跳动
+    else                                            //没有跳动
     {
-        if (Item->load == 0)                        //开始载入超时
+        if (Item->load == 0)                        //开始载入超时,如果数据未跳动或者未超时，那么他只载入一次
         {
             Item->load = 1;
             Item->Flag = 0;
             Item->last_Time = *Item->Now_Time;
         }
-        else                                //超时判定
+        else                                        //超时判定
         {
             struct Caven_Watch Temp_Time;                   //用来装时差
             int temp_num[2];
-            Temp_Time.hour = Item->Now_Time->hour - Item->last_Time.hour;
+            if(Item->last_Time.date != Item->Now_Time->date)    //如果这已然是下一天
+            {
+                Temp_Time.hour = Item->Now_Time->hour + 24 - Item->last_Time.hour;      //为现在的时间补充 24H
+                //不需要重置 Item->last_Time.date 
+            }
             Temp_Time.minutes = Item->Now_Time->minutes - Item->last_Time.minutes;
             Temp_Time.second = Item->Now_Time->second - Item->last_Time.second;
             Temp_Time.time_num = Item->Now_Time->time_num - Item->last_Time.time_num;   //实际时差（微秒级）

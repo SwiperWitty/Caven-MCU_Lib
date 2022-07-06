@@ -32,6 +32,7 @@ struct Caven_Date
 
 struct Caven_Watch
 {
+    char date;              //此位只有0/1提醒系统已经是下一天了
 	char hour;
 	char minutes;
 	char second;
