@@ -8,15 +8,17 @@
 
 这是 [开放版本](https://github.com/SwiperWitty/API_Cloud) 。随便用，不要钱
 
+_____
+
 #### API
 
 #### Base
 
 #### Mode
 
-#### API-Magic
+#### API-Magic(隐藏副本)
 
-这是 [Pro版本](https://github.com/SwiperWitty/API_Magic) 拥有更新版本和更强功能！（在API-Cloud的隐藏副本）
+____
 
 
 
