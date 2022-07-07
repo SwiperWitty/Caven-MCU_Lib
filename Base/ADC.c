@@ -1,5 +1,5 @@
 #include "adc.h"
-#include "sys_time.h"
+#include "time.h"
 
 struct ADC_ ADC;
 

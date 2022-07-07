@@ -2,7 +2,7 @@
 #define _SPI__H_
 
 #include "stm32f10x.h"
-#include "sys_time.h"
+#include "time.h"
 
 /*
     以 Xxx_Software_Init 作为初始化的库都是软件模拟对应功能（IO可改）

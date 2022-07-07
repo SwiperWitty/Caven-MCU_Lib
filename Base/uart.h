@@ -2,29 +2,45 @@
 #define _UART_X__H_
 
 #include "stm32f10x.h"
-#include "Caven.h"
 
-#define END_Data    '}'             //这个作为串口接收结束词，如果是 'N' 那么就是没有    RXD_Num_MAX
-#define Length_MAX    Buff_Length   //Buff MAX 长度
+#define RXD_Falg    USART_FLAG_RXNE     //  接收标志
+#define TXD_Falg    USART_FLAG_TC       //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
-struct _Uart_Data
-{
-    struct Caven_Data DATA;
-    char Rxd_Received;
-};
+/* 【宏函数群】   */
+#define Exist_UART  "EN"        //存在 【串口功能】
+#define UART_Channel_MAX  5     //最高通道数
 
-struct Uart_
-{
-    void (*Send_String)(USART_TypeDef* Channel, const char *String);
-    char (*Send_Data)(USART_TypeDef* Channel, const U8 *Data, int Length);
-};
+#ifdef Exist_UART
+/*  中断   */
+    #define UART1_Interrupt() USART1_IRQHandler()
+    #define UART2_Interrupt() USART2_IRQHandler()
+    #define UART3_Interrupt() USART3_IRQHandler()
+    #define UART4_Interrupt() UART4_IRQHandler()
+    #define UART5_Interrupt() UART5_IRQHandler()
 
-extern struct _Uart_Data CV_UART[5];
+/*  Falg   */       //这个是为了给 mode 相关函数提供灵活度
+    #define UART_Interrupt_RXDFalg(Channel) UART_RXD_Flag(Channel)
+    #define UART_Interrupt_RXDFalgClear(Channel)    UART_RXD_Flag_Clear(Channel)
 
-void Uart_Init(char Channel, int Baud,FunctionalState SET);
+/*  数据    */
 
-void UART_Send_String(USART_TypeDef* Channel, const char *String);
-char UART_Send_Data(USART_TypeDef* Channel, const U8 *Data, int Length);
+    #define UART_RXD_DATA(Channel)    UART_RXD_Receive(Channel)
+    #define UART_TXD_DATA(Channel,DATA)    UART_TXD_Send(Channel,DATA)
 
+#endif
+
+/*  end */
+
+void Uart1_Init(int Baud,int SET);
+void Uart2_Init(int Baud,int SET);
+void Uart3_Init(int Baud,int SET);
+void Uart4_Init(int Baud,int SET);
+void Uart5_Init(int Baud,int SET);
+
+uint16_t UART_RXD_Receive(char Channel);
+void UART_TXD_Send(char Channel,uint16_t DATA);
+
+char UART_RXD_Flag(char Channel);
+void UART_RXD_Flag_Clear(char Channel);
 
 #endif

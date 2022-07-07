@@ -1,4 +1,5 @@
 #include "IIC.h"
+#include "time.h"
 
 struct IIC_	IIC;			//结构体本体
 

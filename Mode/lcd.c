@@ -1,11 +1,11 @@
 #include "lcd.h"
 #include "lcdfont.h"	//字库
-#include "sys_time.h"
+#include "time.h"
 
 u16 BACK_COLOR;   		//背景色
 struct _LCD LCD;
 
-void LCD_GPIO_Init(FunctionalState SET)
+void LCD_GPIO_Init(int SET)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB, ENABLE);	 //使能A端口时钟
@@ -508,7 +508,7 @@ void LCD_Show_Picture(u16 x,u16 y,u16 length,u16 width,const unsigned char pic[]
 	}
 }
 
-void LCD_Init(FunctionalState SET)
+void LCD_Init(int SET)
 {
 	LCD_GPIO_Init(SET);//初始化GPIO
 	LCD_CS_Clr();

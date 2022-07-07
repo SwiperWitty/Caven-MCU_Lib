@@ -22,7 +22,6 @@
 extern struct Base_Init_ Base_Init;
 extern struct Base_User_ Base_User;
 
-
 struct Base_Init_
 {
 	void (*IIC_Software_Init)(FunctionalState SET); // FunctionalState 是一个枚举，你可以看成bit,只有0/1.做使能位
@@ -40,21 +39,17 @@ struct Base_Init_
 	void (*Flash_Init)(FunctionalState SET);	//OK
 };
 
+
 struct Base_User_
 {
-	struct IIC_ IIC; //如果你企图看懂代码内容，请参考IIC.h
-	struct SPI_ SPI;
-    struct Uart_ UART;
 	// CAN没写，谁爱写谁写
 
 	struct ADC_ ADC;
 	struct DAC_ DACx;
 
-	struct Sys_Time_ Delay;
 	//
 	//
 	
-	struct Flash_ Flash;
 };
 
 void Base_Index(void); //初始化Base索引,真正功能的初始化请调用结构体中函数指针(Base_Init)

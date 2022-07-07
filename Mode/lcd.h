@@ -77,7 +77,7 @@ void LCD_Show_String(u16 x,u16 y,const char *p,u16 coloer,u16 b_coloer,char Size
 void LCD_Show_Chinese(u16 x,u16 y,char *s,u16 coloer,u16 b_coloer,char Size,char mode);//显示汉字串
 void LCD_Show_Picture(u16 x,u16 y,u16 length,u16 width,const unsigned char pic[]);//显示图片
 
-void LCD_Init(FunctionalState SET);//LCD初始化
+void LCD_Init(int SET);//LCD初始化
 
 #endif
 

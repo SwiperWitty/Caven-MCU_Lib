@@ -1,10 +1,10 @@
 #include "MP3.h"
 
-char Array_mp3[8];
+U8 Array_mp3[8];
 
 void Voice_Init(void)
 {
-	Uart_Init (2,Voice_Baud,ENABLE);
+	Uart_Init(2,Voice_Baud,ENABLE);
 }
 
 void Voice(char Model,char Num)
@@ -17,7 +17,7 @@ void Voice(char Model,char Num)
 		Array_mp3[3] = 0x00;
 		Array_mp3[4] = Num;
 		Array_mp3[5] = 0xB3+Num;
-		UART_Send_Data(USART2,Array_mp3,6);
+		UART_Send_Data(2,Array_mp3,6);
 	}
 	else if(Model == JQ6500)
 	{
@@ -27,7 +27,7 @@ void Voice(char Model,char Num)
 		Array_mp3[3] = 0x00;
 		Array_mp3[4] = Num;
 		Array_mp3[5] = 0xEF;
-		UART_Send_Data(USART2,Array_mp3,6);
+		UART_Send_Data(2,Array_mp3,6);
 	}
 	else
 		return;
