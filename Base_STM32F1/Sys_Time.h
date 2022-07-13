@@ -1,0 +1,46 @@
+#ifndef _SYS_TIME_H__
+#define _SYS_TIME_H__
+
+/*
+本文件属于MCU专属文件，每个MCU不同，这里的内容就会不同 ———— 需要系统提供时钟
+这个文件是给Time的，也就是说你得找一个能满足以下条件时钟来作为动力  （选一个幸运儿做苦力）。
+    滴答定时器（首选）
+                                            2022.02.28
+    或者任意16位及以上定时器
+                                            2022.07.04
+    有中断
+    
+为了方便上层统一调用，本文件需要提供一个 【宏函数群】上层使用
+也就是说，无论是什么MCU【宏函数群】的内容可以不一样，但是【宏】必须保持一致
+    底层需要提供
+    1、时钟中断函数宏 SYS_Time_Interrupt （10us进入一次）
+    2、中断标志位（可以没有）
+    3、中断标志位清除（可以没有）
+    
+    总结：提供 初始化 & 控制【函数群】
+*/
+
+#include "stm32f10x.h"
+
+#define Base_SysTick    1   //使用 滴答定时器 作为【系统时钟】
+
+
+/* 【宏函数群】   */
+#define Exist_SYS_Time  "EN"        //存在 【系统时钟】
+#define Exist_SYS_Time_Falg 0       //存在 中断标志位
+
+#ifdef Exist_SYS_Time
+    #define SYS_Time_Interrupt() SysTick_Handler()
+
+    #if (Exist_SYS_Time_Falg == 1)
+        #define SYS_Time_Interrupt_Flag() TIM_GetITStatus(TIM4, TIM_IT_Update)
+        #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
+    #endif
+#endif
+/*  end   */
+
+#define Frequency 100000 //目前是 10us
+
+void Sys_Time_Init (int Set);
+
+#endif
