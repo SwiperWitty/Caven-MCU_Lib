@@ -12,6 +12,13 @@
     结构体数据 (_xxx_xx)
     结构体函数 (xxx_xx_)
 */
+/*
+    SDK->Items->GPIO(Exist_GPIO)->BASE->
+                                         \\
+                                          -->[XXX]->MODE
+                                         //
+                    C(Lib)->Caven->API->
+*/
 
 struct API_Data_
 {

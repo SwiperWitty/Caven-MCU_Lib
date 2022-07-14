@@ -20,9 +20,9 @@
     总结：提供 初始化 & 控制【函数群】
 */
 
-#include "stm32f10x.h"
+#include "ch32v20x.h"
 
-#define Base_SysTick    1   //使用 滴答定时器 作为【系统时钟】
+//#define Base_SysTic        //使用 滴答定时器 作为【系统时钟】
 
 
 /* 【宏函数群】   */

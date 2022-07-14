@@ -177,48 +177,48 @@ void Uart4_Init(int Baud,int SET)
 
     USART_Cmd(UART4, temp); //使能串口
 }
-void Uart5_Init(int Baud,int SET)
-{
-	GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-    
-    FunctionalState temp;
-    if(SET)
-        temp = ENABLE;
-    else
-        temp = DISABLE;
-    
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);    // PC12 PD02
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, temp);
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;		// UART5 TX；
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推挽输出；
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;			  // UART5 RX；
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入
-    GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-    USART_InitStructure.USART_BaudRate = Baud;										// 波特率
-    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // 硬件流控制
-    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;					// 发送 接收 模式都使用
-    USART_InitStructure.USART_Parity = USART_Parity_No;								// 没有奇偶校验
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;							// 一位停止位
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b;						// 每次发送数据宽度为8位
-    USART_Init(UART5, &USART_InitStructure);										//配置串口参数
-
-    NVIC_InitStructure.NVIC_IRQChannel = UART5_IRQn;		  //中断号
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;		  //响应优先级
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-
-    USART_ITConfig(UART5, USART_IT_RXNE, ENABLE); //开启接收中断
-    USART_Cmd(UART5, temp);						  //使能串口
-}
+//void Uart5_Init(int Baud,int SET)
+//{
+//	GPIO_InitTypeDef GPIO_InitStructure;
+//	USART_InitTypeDef USART_InitStructure;
+//	NVIC_InitTypeDef NVIC_InitStructure;
+//
+//    FunctionalState temp;
+//    if(SET)
+//        temp = ENABLE;
+//    else
+//        temp = DISABLE;
+//
+//	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
+//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟
+//    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);    // PC12 PD02
+//    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART5, temp);
+//
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12;		// UART5 TX；
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推挽输出；
+//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//    GPIO_Init(GPIOC, &GPIO_InitStructure);
+//    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;			  // UART5 RX；
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入
+//    GPIO_Init(GPIOD, &GPIO_InitStructure);
+//
+//    USART_InitStructure.USART_BaudRate = Baud;										// 波特率
+//    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; // 硬件流控制
+//    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;					// 发送 接收 模式都使用
+//    USART_InitStructure.USART_Parity = USART_Parity_No;								// 没有奇偶校验
+//    USART_InitStructure.USART_StopBits = USART_StopBits_1;							// 一位停止位
+//    USART_InitStructure.USART_WordLength = USART_WordLength_8b;						// 每次发送数据宽度为8位
+//    USART_Init(UART5, &USART_InitStructure);										//配置串口参数
+//
+//    NVIC_InitStructure.NVIC_IRQChannel = UART5_IRQn;		  //中断号
+//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
+//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;		  //响应优先级
+//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//    NVIC_Init(&NVIC_InitStructure);
+//
+//    USART_ITConfig(UART5, USART_IT_RXNE, ENABLE); //开启接收中断
+//    USART_Cmd(UART5, temp);						  //使能串口
+//}
 
 char UART_RXD_Flag(char Channel)
 {
@@ -239,7 +239,7 @@ char UART_RXD_Flag(char Channel)
         Temp = UART4;
         break; 
     case 5:
-        Temp = UART5;
+//        Temp = UART5;
         break;       
     default:
         return 0;
@@ -266,7 +266,7 @@ void UART_RXD_Flag_Clear(char Channel)
         Temp = UART4;
         break; 
     case 5:
-        Temp = UART5;
+//        Temp = UART5;
         break;       
     default:
         return;
@@ -293,7 +293,7 @@ uint16_t UART_RXD_Receive(char Channel)
         Temp = UART4;
         break; 
     case 5:
-        Temp = UART5;
+//        Temp = UART5;
         break;       
     default:
         break;
@@ -320,7 +320,7 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
         Temp = UART4;
         break; 
     case 5:
-        Temp = UART5;
+//        Temp = UART5;
         break;       
     default:
         return;

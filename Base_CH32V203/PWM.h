@@ -9,7 +9,7 @@
 	Period = (ARR + 1)*(PSC + 1)/CLK
 	ARR   PSC 
 	
-							舵机 
+							舵机
 	20ms pwm	1.5ms(0)	0.5ms(-90)	2.5ms(+90)	
 	arr = 1999	psc = 719	CLK = 72MHz	Period = 0.02s
 	
@@ -24,14 +24,13 @@
 	底层
 */
 
-#include "stm32f10x.h"
-#include "Caven.h"
+#include "Items.h"
 
 #define PWM_4	4
 #define PWM_8	8
 
-void TIM4_PWM_Init (u16 arr,u16 psc,FunctionalState SET);
-void TIM8_PWM_Init (u16 arr,u16 psc,FunctionalState SET);
-void PWM_x_Init(char PWM_x, u16 arr, u16 psc, FunctionalState SET);
+//void TIM4_PWM_Init (u16 arr,u16 psc,FunctionalState SET);
+//void TIM8_PWM_Init (u16 arr,u16 psc,FunctionalState SET);
+//void PWM_x_Init(char PWM_x, u16 arr, u16 psc, FunctionalState SET);
 
 #endif

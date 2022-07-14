@@ -14,11 +14,10 @@ int Find_Data(const U8 *source, char Target, int Length)
 
 char Data_Chang_NUM (struct _Chang_Num *Item)
 {
+    char n,m = 0;
+    char i,flag = 1;                            //i是当前找的是 第几个 Sign
 	char Data_Array[12] = {0};                  //数字的str数
     char str[50];                               //装source数据到这个缓存区，这个缓存区是可变的
-	char Data;
-	char n,m = 0;
-    char i,flag = 1;                            //i是当前找的是 第几个 Sign
     char Find_Time = strlen(Item->Sign);        //要找多少个
     char Length = strlen(Item->Source);         //源的长度
     strcpy(str,Item->Source);
@@ -27,9 +26,10 @@ char Data_Chang_NUM (struct _Chang_Num *Item)
     for (i = 0; i < Find_Time; i++)
     {
         flag = 0;
+        char temp;
         for(n = 0;n < Length;n++)
         {
-            Data = str[n];
+            temp = str[n];
             if(str[n] == Item->Sign[i])             //找到标志
             {
                 str[n] = 0;

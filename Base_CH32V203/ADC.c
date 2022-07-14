@@ -5,6 +5,7 @@ struct ADC_ ADC;
 
 void ADC_x_Init(char ADC_x, FunctionalState SET)
 {
+#ifdef Exist_ADC
 	GPIO_InitTypeDef GPIO_InitStruct;
 	ADC_InitTypeDef ADC_InitStructure;
 	RCC_ADCCLKConfig(RCC_PCLK2_Div6); //设置ADC分频因子6 72M/6=12,ADC最大时间不能超过14M
@@ -54,11 +55,13 @@ void ADC_x_Init(char ADC_x, FunctionalState SET)
 
 		ADC_SoftwareStartConvCmd(ADC1, ENABLE); //使能指定的ADC1的软件转换启动功能
 	}
+#endif
 }
 
 float ADC_x_Read_Vol(char ADC_x)
 {
 	float vol = 0;
+#ifdef Exist_ADC
 	ADC_RegularChannelConfig(ADC1, ADC_x, 1, ADC_De_Time);
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE); //使能指定的ADC1的软件转换启动功能
 	Delay_ms(1);
@@ -67,17 +70,20 @@ float ADC_x_Read_Vol(char ADC_x)
 	ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
 	vol = ADC1->DR; //读取ADC1通道
 	vol = (vol / 4096) * 3.3;
+#endif
 	return vol;
 }
 
 float Read_MCU_Temp(void)
 {
-	float temperate;
+	float temperate = 0;
+#ifdef Exist_ADC
 	temperate = ADC_x_Read_Vol(MCU_Temp);		//读取通道16
 	temperate = (1.43 - temperate) / 0.43 + 25; //转换为温度值
 	if (temperate < 0)
 	{
 		temperate = -temperate;
 	}
+#endif
 	return temperate;
 }

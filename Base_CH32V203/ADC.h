@@ -8,16 +8,27 @@
 
 
 												--2021.12.04
-	底层
 */
 
-#include "stm32f10x.h"
+/*
+    SDK->Items->GPIO(Exist_GPIO)->BASE->
+                                         \\
+                                          -->[ADC]->MODE
+                                         //
+                    C(Lib)->Caven->API->
+*/
 
+#include "ch32v20x.h"
+#include "Items.h"
+
+#ifdef Exist_ADC
 #define ADC_1 ADC_Channel_4
 #define ADC_2 ADC_Channel_5
 #define MCU_Temp ADC_Channel_16
 
 #define ADC_De_Time ADC_SampleTime_239Cycles5
+#endif
+
 
 struct ADC_
 {

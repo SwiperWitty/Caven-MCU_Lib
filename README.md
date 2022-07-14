@@ -6,21 +6,33 @@
 
 ### Cloud_LIB
 
-这是 [开放版本](https://github.com/SwiperWitty/API_Cloud) 。随便用，不要钱
+这是 [开放版本](https://github.com/SwiperWitty/API_Cloud) ，随便用，不要钱。
+
+![image-20220714193058659](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220714193058659.png)
 
 _____
 
-#### API
+**文件目录**
 
-#### Base
+#### -API（应用层）
 
-#### Mode
+#### -Base（接口层+接口层）
 
-#### API-Magic(隐藏副本)
+#### -Mode（应用层）
+
+![image-20220714192130719](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220714192130719.png)
+
+Mode目录内的文件就是功能单元，它们都属于应用层。
+
+当然API也是应用层的文件（应用层调另一个应用层）。
+
+#### -API-Magic(隐藏副本)
+
+
+
+这个不对外开放(⊙o⊙)！
 
 ____
-
-
 
 ### 重要说明
 
@@ -77,7 +89,7 @@ ____
 
 1. 首先删除子模块文件
 
-   ***然后，找到根目录（就是工程名的那个目录）***
+   然后，找到根目录（就是工程名的那个目录）
 
 2.  `.gitmodules`【文件】中相关子模块信息，打开它（以vscode打开）
 

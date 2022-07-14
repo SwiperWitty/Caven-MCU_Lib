@@ -1,8 +1,8 @@
 #ifndef	__STEERING_ENGINE_H_
 #define	__STEERING_ENGINE_H_
 
-#include "PWM.h"
-#include "sys_time.h"
+#include "Base.h"
+#include "Caven.h"
 
 #define Steering_PWM 4
 #define	Arr_T4	1999
@@ -10,8 +10,8 @@
 
 //	T = (arr + 1 * por + 1) / 72MHz = 20MS
 
-void Init_Steering_Engine_T4(void);
-void Steering_Engine_Angle(char Channel,float Angle);
-void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time);
+//void Init_Steering_Engine_T4(void);
+//void Steering_Engine_Angle(char Channel,float Angle);
+//void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time);
 
 #endif

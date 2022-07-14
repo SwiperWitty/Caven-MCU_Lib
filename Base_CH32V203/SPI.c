@@ -1,12 +1,67 @@
 #include "SPI.h"
 
-struct SPI_	SPI;
+void SPI_GPIO_Init(int SET)
+{
+#ifdef Exist_SPI
+    GPIO_InitTypeDef  GPIO_InitStructure;
+    if (SET)
+    {
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB, ENABLE);   //使能A端口时钟
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+        GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;         //推挽输出
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
+        GPIO_Init(GPIOB, &GPIO_InitStructure);    //初始化GPIOB
+
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+        GPIO_Init(GPIOA, &GPIO_InitStructure);    //初始化GPIOA
+    }
+    else
+    {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);    //初始化GPIOB
+
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+        GPIO_Init(GPIOA, &GPIO_InitStructure);    //初始化GPIOA
+    }
+#endif
+}
+
+//void LCD_GPIO_Init(int SET)
+//{
+//  GPIO_InitTypeDef  GPIO_InitStructure;
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB, ENABLE);   //使能A端口时钟
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+//  GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
+//  if (SET)
+//  {
+//      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;
+//      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;         //推挽输出
+//      GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
+//      GPIO_Init(GPIOB, &GPIO_InitStructure);    //初始化GPIOB
+//
+//      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+//      GPIO_Init(GPIOA, &GPIO_InitStructure);    //初始化GPIOA
+//  }
+//  else
+//  {
+//      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;
+//      GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+//      GPIO_Init(GPIOB, &GPIO_InitStructure);    //初始化GPIOB
+//
+//      GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
+//      GPIO_Init(GPIOA, &GPIO_InitStructure);    //初始化GPIOA
+//  }
+//
+//}
 
 char SPIs_Write_And_Read_Byte(char Byte_8,int Speed)					//Master
 {
 	char read_Byte_8a = 0;
+#ifdef Exist_SPI
 	char n, m = 0x80;
-
 	SPI_MOSI_H();
 	SPI_SCLK_H();
 	SPI_CS_L();
@@ -31,14 +86,14 @@ char SPIs_Write_And_Read_Byte(char Byte_8,int Speed)					//Master
 	SPI_MOSI_H();
 	SPI_SCLK_H();
 	SPI_CS_H();
-
+#endif
 	return read_Byte_8a;
 }
 
-void SPI_Software_Init(FunctionalState SET)
+void SPI_Software_Init(int SET)
 {
+#ifdef Exist_SPI
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO,ENABLE);
-	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);			//禁用 jtag
 
 	if(SET)
 	{
@@ -51,5 +106,5 @@ void SPI_Software_Init(FunctionalState SET)
 	{
 		SPI_GPIO_Exit();
 	}
-	SPI.Soft_Write_And_Read_Byte = SPIs_Write_And_Read_Byte;
+#endif
 }

@@ -1,30 +1,22 @@
 #ifndef __LCD_H_
 #define __LCD_H_
-#include "stm32f10x.h"
-#include "stdlib.h"
+
+#include "Caven.h"
+#include "Base.h"
+
+/*
+    SDK->Items->GPIO(Exist_GPIO)->BASE->
+                                         \\
+                                          -->[LCD]->MODE
+                                         //
+                    C(Lib)->Caven->API->
+*/
 
 #define USE_HORIZONTAL 0	//设置横屏或者竖屏显示 0或1为竖屏 2或3为横屏
 #define LCD_W 240			//X MAX 240
 #define LCD_H 240			//Y MAX 240
 
-//-----------------LCD端口定义---------------- //
 
-#define LCD_SCLK_Clr() GPIOB->BRR = 0X2000	//SLCK
-#define LCD_SCLK_Set() GPIOB->BSRR = 0X2000	//PB15
-
-		
-#define LCD_MOSI_Clr() GPIOB->BRR = 0X8000	//SDA
-#define LCD_MOSI_Set() GPIOB->BSRR = 0X8000	//PB13
-		
-#define LCD_DC_Clr() GPIOA->BRR = 0X0400		//DC
-#define LCD_DC_Set() GPIOA->BSRR = 0X0400	//PA10
-
-#define LCD_CS_Clr()  GPIOB->BRR = 0X1000	//CS				//没有传输数据没有这个重启的时候会出大问题
-#define LCD_CS_Set()  GPIOB->BSRR = 0X1000	//PB12
-
-//#define LCD_RES_Clr()										//RES				//Caven 使用硬件复位
-//#define LCD_RES_Set()
-		
 #define LCD_CMD  0	//写命令
 #define LCD_DATA 1	//写数据
 
@@ -46,7 +38,7 @@ extern  u16 BACK_COLOR;   //背景色
 #define BRRED 			 0XFC07 //棕红色
 #define GRAY  			 0X8430 //灰色
 #define DARKBLUE      	 0X01CF	//深蓝色
-#define LIGHTBLUE      	 0X7D7C	//浅蓝色  
+#define LIGHTBLUE      	 0X7D7C	//浅蓝色
 #define GRAYBLUE       	 0X5458 //灰蓝色
 #define LIGHTGREEN     	 0X841F //浅绿色
 #define LGRAY 			 0XC618 //浅灰色(PANNEL),窗体背景色

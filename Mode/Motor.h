@@ -11,9 +11,8 @@
 						2022.04.02
 */
 
-#include "hc595.h"
-#include "PWM.h"
-#include "stdlib.h"
+#include "Base.h"
+#include "Caven.h"
 
 #define Motor_1 1
 #define Motor_2 2
@@ -33,7 +32,6 @@
 											2021.12.05
 */
 
-void Motorx_Init(FunctionalState Set);
-void Motorx_Control(char Motor_x, int Speed);
+
 
 #endif

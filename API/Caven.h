@@ -9,6 +9,14 @@
 #include "stdlib.h"
 #include "string.h"
 
+/*
+    SDK->Items->GPIO(Exist_GPIO)->BASE->
+                                         \\
+                                          -->[XXX]->MODE
+                                         //
+                    C(Lib)->Caven->API->
+*/
+
 #define U8 unsigned char
 #define S8 signed char
 #define U16 unsigned short

@@ -1,14 +1,15 @@
 #ifndef _UART_X__H_
 #define _UART_X__H_
 
-#include "stm32f10x.h"
+#include "Items.h"
 
 #define RXD_Falg    USART_FLAG_RXNE     //  接收标志
 #define TXD_Falg    USART_FLAG_TC       //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
 /* 【宏函数群】   */
-#define Exist_UART  "EN"        //存在 【串口功能】
+
 #define UART_Channel_MAX  5     //最高通道数
+
 
 #ifdef Exist_UART
 /*  中断   */
@@ -23,7 +24,6 @@
     #define UART_Interrupt_RXDFalgClear(Channel)    UART_RXD_Flag_Clear(Channel)
 
 /*  数据    */
-
     #define UART_RXD_DATA(Channel)    UART_RXD_Receive(Channel)
     #define UART_TXD_DATA(Channel,DATA)    UART_TXD_Send(Channel,DATA)
 

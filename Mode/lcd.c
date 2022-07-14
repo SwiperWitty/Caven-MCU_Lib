@@ -1,37 +1,10 @@
 #include "lcd.h"
+#include "SPI.h"
+#include "Exist_GPIO.h"
 #include "lcdfont.h"	//字库
+
 #include "time.h"
-
 u16 BACK_COLOR;   		//背景色
-struct _LCD LCD;
-
-void LCD_GPIO_Init(int SET)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOB, ENABLE);	 //使能A端口时钟
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-	GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-	if (SET)
-	{
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;	 
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
-		GPIO_Init(GPIOB, &GPIO_InitStructure);	  //初始化GPIOB
-
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-		GPIO_Init(GPIOA, &GPIO_InitStructure);	  //初始化GPIOA
-	}
-	else
-	{
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_15;	 
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-		GPIO_Init(GPIOB, &GPIO_InitStructure);	  //初始化GPIOB
-
-		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-		GPIO_Init(GPIOA, &GPIO_InitStructure);	  //初始化GPIOA
-	}
-	
-}
 
 /******************************************************************************
       函数说明：LCD串行数据写入函数
@@ -40,19 +13,21 @@ void LCD_GPIO_Init(int SET)
 ******************************************************************************/
 void LCD_Writ_Bus(u8 dat) 
 {	
+#ifdef Exist_LCD
 	u8 i;
 	LCD_CS_Clr();
-	for(i=0;i<8;i++)
-	{			  
-		LCD_SCLK_Clr();
-		if(dat&0x80)
-		   LCD_MOSI_Set();
-		else 
-		   LCD_MOSI_Clr();
-		LCD_SCLK_Set();
-		dat<<=1;   
-	}
+//	for(i=0;i<8;i++)
+//	{
+//		LCD_SCLK_Clr();
+//		if(dat&0x80)
+//		   LCD_MOSI_Set();
+//		else
+//		   LCD_MOSI_Clr();
+//		LCD_SCLK_Set();
+//		dat<<=1;
+//	}
 	LCD_CS_Set();
+#endif
 }
 
 
@@ -63,8 +38,10 @@ void LCD_Writ_Bus(u8 dat)
 ******************************************************************************/
 void LCD_WR_DATA8(u8 dat)
 {
+#ifdef Exist_LCD
 	LCD_DC_Set();//写数据
 	LCD_Writ_Bus(dat);
+#endif
 }
 
 
@@ -75,9 +52,11 @@ void LCD_WR_DATA8(u8 dat)
 ******************************************************************************/
 void LCD_WR_DATA(u16 dat)
 {
+#ifdef Exist_LCD
 	LCD_DC_Set();//写数据
 	LCD_Writ_Bus(dat>>8);
 	LCD_Writ_Bus(dat);
+#endif
 }
 
 
@@ -88,8 +67,10 @@ void LCD_WR_DATA(u16 dat)
 ******************************************************************************/
 void LCD_WR_REG(u8 dat)
 {
+#ifdef Exist_LCD
 	LCD_DC_Clr();//写命令
 	LCD_Writ_Bus(dat);
+#endif
 }
 
 
@@ -171,7 +152,7 @@ void LCD_Fill(u16 x_sta,u16 y_sta,u16 x_end,u16 y_end,u16 color)
 ******************************************************************************/
 void LCD_Draw_Point(u16 x,u16 y,u16 color)
 {
-	LCD_Address_Set(x,y,x,y);//设置光标位置 
+	LCD_Address_Set(x,y,x,y);//设置光标位置
 	LCD_WR_DATA(color);
 } 
 
@@ -188,17 +169,17 @@ void LCD_Draw_Line(u16 x1,u16 y1,u16 x2,u16 y2,u16 color)
 	u16 t; 
 	int xerr=0,yerr=0,delta_x,delta_y,distance;
 	int incx,incy,uRow,uCol;
-	delta_x=x2-x1; //计算坐标增量 
+	delta_x=x2-x1; //计算坐标增量
 	delta_y=y2-y1;
 	uRow=x1;//画线起点坐标
 	uCol=y1;
-	if(delta_x>0)incx=1; //设置单步方向 
-	else if (delta_x==0)incx=0;//垂直线 
+	if(delta_x>0)incx=1; //设置单步方向
+	else if (delta_x==0)incx=0;//垂直线
 	else {incx=-1;delta_x=-delta_x;}
 	if(delta_y>0)incy=1;
-	else if (delta_y==0)incy=0;//水平线 
+	else if (delta_y==0)incy=0;//水平线
 	else {incy=-1;delta_y=-delta_y;}
-	if(delta_x>delta_y)distance=delta_x; //选取基本增量坐标轴 
+	if(delta_x>delta_y)distance=delta_x; //选取基本增量坐标轴
 	else distance=delta_y;
 	for(t=0;t<distance+1;t++)
 	{
@@ -397,7 +378,7 @@ void LCD_Show_Char(u16 x,u16 y,char num,u16 fc,u16 bc,char sizey,char mode)
 	sizex=sizey/2;
 	TypefaceNum=(sizex/8+((sizex%8)?1:0))*sizey;
 	num=num-' ';    //得到偏移后的值
-	LCD_Address_Set(x,y,x+sizex-1,y+sizey-1);  //设置光标位置 
+	LCD_Address_Set(x,y,x+sizex-1,y+sizey-1);  //设置光标位置
 	for(i=0;i<TypefaceNum;i++)
 	{
 		if(sizey==16)		temp=ascii_1608[num][i];		 //调用8x16字体
@@ -489,7 +470,7 @@ void LCD_Show_String(u16 x,u16 y,const char *p,u16 fc,u16 bc,char sizey)
       入口数据：x,y起点坐标
                 length 图片长度
                 width  图片宽度
-                pic[]  图片数组    
+                pic[]  图片数组
       返回值：  无
 ******************************************************************************/
 void LCD_Show_Picture(u16 x,u16 y,u16 length,u16 width,const unsigned char pic[])
@@ -510,7 +491,10 @@ void LCD_Show_Picture(u16 x,u16 y,u16 length,u16 width,const unsigned char pic[]
 
 void LCD_Init(int SET)
 {
-	LCD_GPIO_Init(SET);//初始化GPIO
+
+#ifdef Exist_LCD
+    LCD_GPIO_Init(SET);
+    SPI_GPIO_Init(SET);
 	LCD_CS_Clr();
 	Delay_ms(20);
 //	LCD_RES_Clr();Delay_ms(200);				//Caven 使用硬件复位
@@ -599,12 +583,5 @@ void LCD_Init(int SET)
 	LCD_WR_REG(0x29);
 	Delay_ms(120);
 	LCD_Fill(0,0,LCD_W,LCD_H,BLACK);
-	
-	LCD.Draw_Circle = LCD_Draw_Circle;
-	LCD.Draw_Line = LCD_Draw_Line;
-	LCD.Draw_Point = LCD_Draw_Point;
-	LCD.Fill = LCD_Fill;
-	LCD.Show_Chinese = LCD_Show_Chinese;
-	LCD.Show_Picture = LCD_Show_Picture;
-	LCD.Show_String = LCD_Show_String;
+#endif
 }
