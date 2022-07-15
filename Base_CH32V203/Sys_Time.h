@@ -20,19 +20,25 @@
     总结：提供 初始化 & 控制【函数群】
 */
 
-#include "ch32v20x.h"
+#include "Items.h"
 
 //#define Base_SysTic        //使用 滴答定时器 作为【系统时钟】
 
 
 /* 【宏函数群】   */
-#define Exist_SYS_Time  "EN"        //存在 【系统时钟】
-#define Exist_SYS_Time_Falg 0       //存在 中断标志位
+#ifndef Base_SysTic                     //没有滴答定时器那就
+    #define Exist_SYS_Time_Falg         //存在 中断标志位
+#endif
 
-#ifdef Exist_SYS_Time
-    #define SYS_Time_Interrupt() SysTick_Handler()
+#ifdef Exist_SYS_TIME
+    #ifdef Base_SysTic
+        #define SYS_Time_Interrupt() SysTick_Handler()
+    #else
+        void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
+        #define SYS_Time_Interrupt() TIM4_IRQHandler()
+    #endif
 
-    #if (Exist_SYS_Time_Falg == 1)
+    #ifdef Exist_SYS_Time_Falg
         #define SYS_Time_Interrupt_Flag() TIM_GetITStatus(TIM4, TIM_IT_Update)
         #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
     #endif

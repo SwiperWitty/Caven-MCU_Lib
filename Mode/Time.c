@@ -12,7 +12,7 @@ struct _SYS_Time SYS_Time = {
 
 void Time_Init(int SET)
 {
-    #ifdef Exist_SYS_Time
+    #ifdef Exist_SYS_TIME
         Sys_Time_Init (SET);
 
     #endif
@@ -42,23 +42,23 @@ static void Hourly_Handle(struct Caven_Watch *Item)         //此函数仅供 �
     }
 }
 
-#ifdef Exist_SYS_Time
-    void SYS_Time_Handler()                         //这是中断（集成的）
-    {
-        #if (Exist_SYS_Time_Falg == 1)              //有中断标志位
-            if (SYS_Time_Interrupt_Flag() != RESET)
-            {
-                SYS_Time_Interrupt_FlagClear();
-                Hourly_Handle(&SYS_Time.Watch);
-                if (Daley_Falg) 
-                    Delay_Time++;
-            }
-        #else
+#ifdef Exist_SYS_TIME
+void SYS_Time_Interrupt()                   //这是中断（集成的）
+{
+    #ifdef Exist_SYS_Time_Falg                  //有中断标志位
+        if (SYS_Time_Interrupt_Flag() != 0)
+        {
+            SYS_Time_Interrupt_FlagClear();
             Hourly_Handle(&SYS_Time.Watch);
             if (Daley_Falg)
                 Delay_Time++;
-        #endif 
-    }
+        }
+    #else
+        Hourly_Handle(&SYS_Time.Watch);
+        if (Daley_Falg)
+            Delay_Time++;
+    #endif
+}
 #endif
 
 void Delay_10us(int num)

@@ -32,11 +32,11 @@ void LCD_GPIO_Init(int SET)
 void KEY_GPIO_Init(int SET)
 {
 #ifdef Exist_KEY
-    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
     if (SET) {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
     }
@@ -51,11 +51,12 @@ void KEY_GPIO_Init(int SET)
 void LED_GPIO_Init(int SET)
 {
 #ifdef Exist_LED
-    GPIO_InitTypeDef GPIO_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
     if (SET) {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
     }
     else {

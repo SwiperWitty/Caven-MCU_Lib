@@ -9,8 +9,6 @@
 #include "base.h"
 #include "Caven.h"
 
-extern struct _SYS_Time SYS_Time;
-
 struct _SYS_Time
 {
     struct Caven_Date Date;
@@ -24,6 +22,10 @@ struct Delay_
     void (*Delay_ms)(int num);
     void (*Delay_S)(char num);
 };
+
+#ifdef Exist_SYS_TIME
+    extern struct _SYS_Time SYS_Time;
+#endif
 
 void Time_Init(int SET);
 

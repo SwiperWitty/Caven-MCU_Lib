@@ -5,6 +5,7 @@
 #include "Base.h"
 
 /*
+        【Mode】      ————C语言环境即可运行
     SDK->Items->GPIO(Exist_GPIO)->BASE->
                                          \\
                                           -->[LCD]->MODE

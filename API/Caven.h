@@ -26,7 +26,7 @@
 
 #define Buff_Length 1200
     
-#define Destroy(X,N) memset((X),0,sizeof(N))
+#define Destroy(X,N) memset((X),0,N)        //销毁 的地址 (X)  长度 (N)
 #define MAX(a,b)	(a>b)?a:b				//比较函数
 #define MIN(a,b)	(a<b)?a:b				//比较函数
 
@@ -45,6 +45,13 @@ struct Caven_Watch
 	char minutes;
 	char second;
 	int time_num;			//这是中断溢出次数
+};
+
+struct Caven_Color
+{
+    char REG;
+    char GREEN;
+    char BULE;
 };
 
 //让 Run_num 去追 Length，如果 (Length - Run_num)为0，且过了很长的时间，那么这个数据就该结束了

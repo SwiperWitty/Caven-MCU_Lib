@@ -3,7 +3,12 @@
 
 #include "Base.h"
 
+/*
+        【API】      ————C语言环境即可运行
 
+
+
+*/
 struct LED_
 {
     void (*LED_REG)();

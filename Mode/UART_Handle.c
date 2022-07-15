@@ -1,6 +1,6 @@
 #include "uart_handle.h"
 
-struct _Uart_Data CV_UART[5];
+struct _Uart_Data CV_UART[5] = {0};
 
 void Uart_Init(char Channel, int Baud,int SET)
 {
@@ -16,12 +16,19 @@ void Uart_Init(char Channel, int Baud,int SET)
     case 3:
         Uart3_Init(Baud,SET);
         break;
+#ifdef UART_Channel_MAX
+    #if UART_Channel_MAX >= 4
     case 4:
         Uart4_Init(Baud,SET);
         break;
+    #endif
+    #if UART_Channel_MAX >= 5
     case 5:
         Uart5_Init(Baud,SET);
         break;
+    #endif
+#endif
+
     default:
         break;
     }
@@ -34,71 +41,83 @@ static char Get_RXD(struct _Uart_Data *Target, char res) //接收处理函数
     if (!Target->Rxd_Received)      // 0 允许接收，其他不允许接收
     {
         Target->DATA.Buff[Target->DATA.Length++] = res;
-        if (END_Data != NO_END)     //如果有 停止符
+        #if END_Data != NO_END      //如果有 停止符
+        if (res == END_Data)    //Get停止符
         {
-            if (res == END_Data)    //Get停止符
-            {
-                Target->Rxd_Received = 1;
-            }
+            Target->Rxd_Received = 1;
         }
+        #endif
+
+        #ifdef UART_Length_MAX
         if (Target->DATA.Length > UART_Length_MAX) //超长（异常需要清零）
         {
             Target->Rxd_Received = 2;
         }
+        #endif
     }
     return Target->Rxd_Received;
 }
 
 void UART1_Interrupt()                         //              Interrupt
 {
-    char temp,Channel = 1;
-    if (UART_Interrupt_RXDFalg(Channel) != 0)
+    uint8_t temp,Channel = 1;
+    if(UART_RXD_Flag(Channel) != 0)
     {
-        UART_Interrupt_RXDFalgClear(Channel);
-        temp = UART_RXD_DATA(Channel);
+        temp = UART_RXD_Receive(Channel);
         Get_RXD(&CV_UART[Channel], temp);
+        UART_RXD_Flag_Clear(Channel);
+//        UART_TXD_Send(Channel,temp);          //debug
     }
 }
 void UART2_Interrupt()
 {
-    char temp,Channel = 2;
-    if (UART_Interrupt_RXDFalg(Channel) != 0)
+    uint8_t temp,Channel = 2;
+    if(UART_RXD_Flag(Channel) != 0)
     {
-        UART_Interrupt_RXDFalgClear(Channel);
-        temp = UART_RXD_DATA(Channel);
+        temp = UART_RXD_Receive(Channel);
         Get_RXD(&CV_UART[Channel], temp);
+        UART_RXD_Flag_Clear(Channel);
+//        UART_TXD_Send(Channel,temp);          //debug
     }
 }
 void UART3_Interrupt()
 {
-    char temp,Channel = 3;
-    if (UART_Interrupt_RXDFalg(Channel) != 0)
+    uint8_t temp,Channel = 3;
+    if(UART_RXD_Flag(Channel) != 0)
     {
-        UART_Interrupt_RXDFalgClear(Channel);
-        temp = UART_RXD_DATA(Channel);
+        temp = UART_RXD_Receive(Channel);
         Get_RXD(&CV_UART[Channel], temp);
+        UART_RXD_Flag_Clear(Channel);
+//        UART_TXD_Send(Channel,temp);          //debug
     }
 }
-void UART4_Interrupt()
-{
-    char temp,Channel = 4;
-    if (UART_Interrupt_RXDFalg(Channel) != 0)
+#ifdef UART_Channel_MAX
+    #if UART_Channel_MAX >= 4
+    void UART4_Interrupt()
     {
-        UART_Interrupt_RXDFalgClear(Channel);
-        temp = UART_RXD_DATA(Channel);
-        Get_RXD(&CV_UART[Channel], temp);
+        uint8_t temp,Channel = 4;
+        if(UART_RXD_Flag(Channel) != 0)
+        {
+            temp = UART_RXD_Receive(Channel);
+            Get_RXD(&CV_UART[Channel], temp);
+            UART_RXD_Flag_Clear(Channel);
+        }
     }
-}
-void UART5_Interrupt()
-{
-    char temp,Channel = 5;
-    if (UART_Interrupt_RXDFalg(Channel) != 0)
+    #endif
+    #if UART_Channel_MAX >= 5
+    void UART5_Interrupt()
     {
-        UART_Interrupt_RXDFalgClear(Channel);
-        temp = UART_RXD_DATA(Channel);
-        Get_RXD(&CV_UART[Channel], temp);
+        uint8_t temp,Channel = 4;
+        if(UART_RXD_Flag(Channel) != 0)
+        {
+            temp = UART_RXD_Receive(Channel);
+            Get_RXD(&CV_UART[Channel], temp);
+            UART_RXD_Flag_Clear(Channel);
+        }
     }
-}
+    #endif
+#endif
+
 #endif
 
 char UART_Send_Data(char Channel, const U8 *Data, int Length)
@@ -109,11 +128,11 @@ char UART_Send_Data(char Channel, const U8 *Data, int Length)
 	if (Channel > UART_Channel_MAX)
 		return (char)-1;
 
-    int temp;
+    int temp = Length;
     int i = 0;
     while (temp--)
     {
-		UART_TXD_DATA(Channel,Data[i++]);
+        UART_TXD_Send(Channel,Data[i++]);
     }
 #endif
     return 1;
@@ -124,3 +143,4 @@ void UART_Send_String(char Channel, const char *String)
     int Length = strlen(String);
 	UART_Send_Data(Channel,(U8 *)String,Length);
 }
+
