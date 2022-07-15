@@ -16,9 +16,9 @@ _____
 
 #### -API（应用层）
 
-#### -Base（接口层+接口层）
+#### -Base（接口层+底层）
 
-#### -Mode（应用层）
+#### -Mode（应用层、驱动层）
 
 ![image-20220714192130719](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220714192130719.png)
 
