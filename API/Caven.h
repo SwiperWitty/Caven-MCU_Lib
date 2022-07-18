@@ -44,7 +44,7 @@ struct Caven_Watch
 	char hour;
 	char minutes;
 	char second;
-	int time_num;			//这是中断溢出次数
+	int time_num;			//这是中断溢出次数 10 0000为1S
 };
 
 struct Caven_Color

@@ -35,8 +35,8 @@ char Over_Time(struct _Over_time *Item)
         }
         else //超时判定
         {
-            struct Caven_Watch Temp_Time; //用来装时差
-            int temp_num[2];
+            struct Caven_Watch Temp_Time = {0}; //用来装时差
+            int temp_num[2] = {0};
             if (Item->last_Time.date != Item->Now_Time->date) //如果这已然是下一天
             {
                 Temp_Time.hour = Item->Now_Time->hour + 24 - Item->last_Time.hour; //为现在的时间补充 24H
@@ -44,8 +44,8 @@ char Over_Time(struct _Over_time *Item)
             }
             Temp_Time.minutes = Item->Now_Time->minutes - Item->last_Time.minutes;
             Temp_Time.second = Item->Now_Time->second - Item->last_Time.second;
-            Temp_Time.time_num = Item->Now_Time->time_num - Item->last_Time.time_num; //实际时差（微秒级）
-            temp_num[0] = abs(Hourly_to_Seconds(Temp_Time));                          //实际时差（秒级）可能为负,所以要取绝对值
+            Temp_Time.time_num = Item->Now_Time->time_num - Item->last_Time.time_num;   //实际时差（微秒级）
+            temp_num[0] = Hourly_to_Seconds(Temp_Time);                                 //实际时差（秒级）可能为负,所以要取绝对值
             temp_num[1] = Hourly_to_Seconds(Item->Set_Time);
             if ((temp_num[0] - temp_num[1]) >= 0) //可能超时
             {
@@ -68,6 +68,7 @@ char Over_Time(struct _Over_time *Item)
             }
             else if ((temp_num[0] - temp_num[1]) < 0)
             {
+                return Item->Flag;
             }
             else //暂时没有超时，这个很重要
             {

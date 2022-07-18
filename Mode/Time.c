@@ -43,7 +43,7 @@ static void Hourly_Handle(struct Caven_Watch *Item)         //此函数仅供 �
 }
 
 #ifdef Exist_SYS_TIME
-void SYS_Time_Interrupt()                   //这是中断（集成的）
+void SYS_Time_Interrupt()                       //这是中断（定时器/滴答）
 {
     #ifdef Exist_SYS_Time_Falg                  //有中断标志位
         if (SYS_Time_Interrupt_Flag() != 0)
