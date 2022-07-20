@@ -1,6 +1,9 @@
 #ifndef _MOTOR_H_
 #define _MOTOR_H_
 
+#include "Base.h"
+#include "Caven.h"
+
 //	可以跨芯片移植	需要大改底层
 /*
 	V1.0				n多年前
@@ -10,9 +13,6 @@
 	当然，如果你只是用DRV8833，调速就会失效。
 						2022.04.02
 */
-
-#include "Base.h"
-#include "Caven.h"
 
 #define Motor_1 1
 #define Motor_2 2

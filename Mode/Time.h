@@ -4,9 +4,11 @@
 /*
     这个文件不依赖MCU的MDK（指编译能过）
     但是需要使用Base文件才能正常运行
+    一般依赖于 SysTick & SysTick_Handler，缺一不可
+    如果没有，即可使用普通定时器（16位及以上）
 */
 
-#include "base.h"
+#include "Base.h"
 #include "Caven.h"
 
 struct _SYS_Time

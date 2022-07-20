@@ -1,8 +1,8 @@
 #ifndef __LCD_H_
 #define __LCD_H_
 
-#include "Caven.h"
 #include "Base.h"
+#include "Caven.h"
 
 /*
         【Mode】      ————C语言环境即可运行
@@ -12,6 +12,8 @@
                                          //
                     C(Lib)->Caven->API->
 */
+
+#define LCD_Speed   1       //写数据
 
 #define USE_HORIZONTAL 0	//设置横屏或者竖屏显示 0或1为竖屏 2或3为横屏
 #define LCD_W 240			//X MAX 240
@@ -46,7 +48,7 @@ extern  u16 BACK_COLOR;   //背景色
 #define LGRAYBLUE        0XA651 //浅灰蓝色(中间层颜色)
 #define LBBLUE           0X2B12 //浅棕蓝色(选择条目的反色)
 
-struct _LCD
+struct LCD_
 {
     void (*Fill)(u16 x_sta,u16 y_sta,u16 x_end,u16 y_end,u16 color);//指定区域填充颜色
 

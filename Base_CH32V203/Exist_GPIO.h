@@ -22,7 +22,7 @@
                                                                      ！！！！202207.14
  */
 
-#ifdef Exist_OLED
+#ifdef Exist_LCD
 
     #define LCD_DC_Clr() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
     #define LCD_DC_Set() GPIOA->BSHR = GPIO_Pin_10   //PA10
@@ -40,27 +40,32 @@
 //    #define LCD_RES_Set()
 #endif
 
-#ifdef Exist_KEY
-    #define KEY_Clr() GPIOA->BCR = GPIO_Pin_0    //KEY
-    #define KEY_Set() GPIOA->BSHR = GPIO_Pin_0   //PA00
-#endif
-
 #ifdef Exist_LED
     #define LED_Clr() GPIOA->BCR = GPIO_Pin_1    //LED
     #define LED_Set() GPIOA->BSHR = GPIO_Pin_1   //PA01
 #endif
-
 #ifdef Exist_BZZ
-
+    #define BZZ_Clr() GPIOA->BCR = GPIO_Pin_1    //BZZ
+    #define BZZ_Set() GPIOA->BSHR = GPIO_Pin_1   //PA01
 #endif
 
+#ifdef Exist_KEY
+    #define KEY_Read() GPIOA->INDR & GPIO_Pin_0     //KEY,響
+#endif
 #ifdef Exist_Ultrasonic
-
+    #define Trig_Clr() GPIOA->BCR = GPIO_Pin_4     //Ultrasonic
+    #define Trig_Set() GPIOA->BSHR = GPIO_Pin_4
+    #define Echo_Read() GPIOA->INDR & GPIO_Pin_5
 #endif
 
 /*  Init-Function    */
 
-void KEY_GPIO_Init(int SET);
+void LCD_GPIO_Init(int SET);
+
 void LED_GPIO_Init(int SET);
+void BZZ_GPIO_Init(int SET);
+
+void KEY_GPIO_Init(int SET);
+void Ultrasonic_GPIO_Init(int SET);
 
 #endif

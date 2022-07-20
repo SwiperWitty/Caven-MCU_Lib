@@ -2,14 +2,14 @@
 
 void LED_Init(int SET)
 {
-    #ifdef Exist_LED
+#ifdef Exist_LED
     LED_GPIO_Init(SET);
-    #endif
+#endif
 }
 
 void LED_SET(char Channel,int SET)
 {
-    #ifdef Exist_LED
+#ifdef Exist_LED
     if (Channel == 1)
     {
         if(SET)
@@ -17,7 +17,7 @@ void LED_SET(char Channel,int SET)
         else
             LED_Set();
     }
-    #endif
+#endif
 }
 
 

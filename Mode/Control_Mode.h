@@ -1,7 +1,14 @@
 #ifndef _Control_Mode_h__
 #define _Control_Mode_h__
 
-#include "PWM.h"
+#include "Base.h"
+
+/*
+        【MODE】      ————C语言环境即可运行
+
+
+
+*/
 
 #define OUT1 1
 #define OUT2 2

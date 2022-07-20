@@ -30,14 +30,28 @@ static void Mode_User_index(void)		//索引 功能函数 本体
     Mode_User.LED.LED_SET = LED_SET;
     Mode_User.LED.LED_REG = NULL;
 #endif
+#ifdef Exist_BZZ
+    Mode_User.BZZ.BZZ_SET = BZZ_SET;
+#endif
+
 #ifdef Exist_UART
     Mode_User.UART.Send_Data = UART_Send_Data;
     Mode_User.UART.Send_String = UART_Send_String;
 #endif
+
+#ifdef Exist_KEY
+    Mode_User.KEY.KEY_State = KEY_State;
+#endif
+#ifdef Exist_Ultrasonic
+    Mode_User.Ultrasonic.Distance = Distance;
+#endif
+
 }   //  Mode_User
 
 void Mode_Index(void)
 {
+    Mode_User_index();
+
 #ifdef Exist_LCD
     Mode_Init.LCD = LCD_Init;
 #endif
@@ -50,10 +64,21 @@ void Mode_Index(void)
 #ifdef Exist_LED
     Mode_Init.LED = LED_Init;
 #endif
-    Mode_User_index();
+#ifdef Exist_BZZ
+    Mode_Init.BZZ = BZZ_Init;
+#endif
+
+#ifdef Exist_KEY
+    Mode_Init.KEY = KEY_Init;
+#endif
+#ifdef Exist_Ultrasonic
+    Mode_Init.Ultrasonic = Ultrasonic_Init;
+#endif
 }   //  Mode_Index
 
-void Debug_Out(const char *String) //选一个通信接口为Debug
+//--------------------------------//
+
+void Debug_Out(const char *String)              //选一个通信接口为Debug
 {
 #ifdef Exist_UART
     UART_Send_String(1,String);

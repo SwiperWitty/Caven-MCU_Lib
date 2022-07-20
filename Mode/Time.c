@@ -1,4 +1,5 @@
 #include "time.h"
+#include "LED.h"
 
 static int Delay_Time;
 static char Daley_Falg = 0;
@@ -46,17 +47,17 @@ static void Hourly_Handle(struct Caven_Watch *Item)         //此函数仅供 �
 void SYS_Time_Interrupt()                       //这是中断（定时器/滴答）
 {
     #ifdef Exist_SYS_Time_Falg                  //有中断标志位
-        if (SYS_Time_Interrupt_Flag() != 0)
-        {
-            SYS_Time_Interrupt_FlagClear();
-            Hourly_Handle(&SYS_Time.Watch);
-            if (Daley_Falg)
-                Delay_Time++;
-        }
-    #else
+    if (SYS_Time_Interrupt_Flag() != 0)
+    {
+        SYS_Time_Interrupt_FlagClear();
         Hourly_Handle(&SYS_Time.Watch);
         if (Daley_Falg)
             Delay_Time++;
+    }
+    #else
+    Hourly_Handle(&SYS_Time.Watch);
+    if (Daley_Falg)
+        Delay_Time++;
     #endif
 }
 #endif

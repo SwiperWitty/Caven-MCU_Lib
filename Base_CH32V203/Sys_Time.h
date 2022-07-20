@@ -22,16 +22,15 @@
 
 #include "Items.h"
 
-//#define Base_SysTic        //使用 滴答定时器 作为【系统时钟】
-
+#define Base_SysTick        //使用 滴答定时器 作为【系统时钟】
 
 /* 【宏函数群】   */
-#ifndef Base_SysTic                     //没有滴答定时器那就
-    #define Exist_SYS_Time_Falg         //存在 中断标志位
-#endif
+
+#define Exist_SYS_Time_Falg         //存在 中断标志位
 
 #ifdef Exist_SYS_TIME
-    #ifdef Base_SysTic
+    #ifdef Base_SysTick
+        void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
         #define SYS_Time_Interrupt() SysTick_Handler()
     #else
         void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
@@ -39,8 +38,13 @@
     #endif
 
     #ifdef Exist_SYS_Time_Falg
-        #define SYS_Time_Interrupt_Flag() TIM_GetITStatus(TIM4, TIM_IT_Update)
-        #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
+        #ifdef Base_SysTick
+            #define SYS_Time_Interrupt_Flag() SysTick->SR
+            #define SYS_Time_Interrupt_FlagClear() SysTick->SR = 0
+        #else
+            #define SYS_Time_Interrupt_Flag() TIM_GetITStatus(TIM4, TIM_IT_Update)
+            #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
+        #endif
     #endif
 #endif
 /*  end   */

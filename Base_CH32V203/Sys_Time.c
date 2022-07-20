@@ -8,6 +8,24 @@
 
 
 //* 底层 *//
+
+#ifdef Base_SysTick
+static uint32_t SysTick_Config(uint32_t ticks)
+{
+    SysTick->CTLR = (u32)0x00;                  //关闭系统计数器STK，计数器停止计数
+
+    SysTick->SR = (u32)0;
+    SysTick->CNT = (u64)0;
+    SysTick->CMP = (u64)ticks;
+    NVIC_SetPriority(SysTicK_IRQn, 15);      //设置SysTick中断优先级
+    NVIC_EnableIRQ(SysTicK_IRQn);            //使能开启Systick中断
+    SysTick->CTLR = (u32)(0x2F);
+    SysTick->CTLR |= (u32)(0x00 << 31);
+    return (0);
+}
+#endif
+
+
 void Sys_Time_Init (int Set)
 {
 #ifdef Exist_SYS_TIME

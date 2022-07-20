@@ -14,21 +14,21 @@
 																					2022.04.06	优化
 */
 
-#define SPI_MISO        GPIO_Pin_14
-#define SPI_MOSI        GPIO_Pin_15
-#define SPI_SCLK		GPIO_Pin_13
-#define SPI_CS  		GPIO_Pin_12
+//#define SPI_MISO        GPIO_Pin_14
+//#define SPI_MOSI        GPIO_Pin_15
+//#define SPI_SCLK		GPIO_Pin_13
+//#define SPI_CS  		GPIO_Pin_12
 
 //移植修改
 
-#define SPI_SCLK_H() GPIOB->BSRR = SPI_SCLK		//置高电平
-#define SPI_SCLK_L() GPIOB->BRR = SPI_SCLK 		//置低电平
-#define SPI_MOSI_H() GPIOB->BSRR = SPI_MOSI
-#define SPI_MOSI_L() GPIOB->BRR = SPI_MOSI
-#define SPI_CS_H() GPIOB->BSRR = SPI_CS
-#define SPI_CS_L() GPIOB->BRR = SPI_CS
-
-#define SPI_MISO_IN() GPIOB->IDR &SPI_MISO 		//读取引脚电平
+//#define SPI_SCLK_H() GPIOB->BSRR = SPI_SCLK		//置高电平
+//#define SPI_SCLK_L() GPIOB->BRR = SPI_SCLK 		//置低电平
+//#define SPI_MOSI_H() GPIOB->BSRR = SPI_MOSI
+//#define SPI_MOSI_L() GPIOB->BRR = SPI_MOSI
+//#define SPI_CS_H() GPIOB->BSRR = SPI_CS
+//#define SPI_CS_L() GPIOB->BRR = SPI_CS
+//
+//#define SPI_MISO_IN() GPIOB->IDR &SPI_MISO 		//读取引脚电平
 
 struct SPI_
 {

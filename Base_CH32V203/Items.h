@@ -2,6 +2,7 @@
 #define _ITEMS__H_
 
 #include "ch32v20x.h"
+#include "ch32v20x_conf.h"
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->
@@ -18,7 +19,7 @@
 
 #define Exist_KEY
 #define Exist_LED
-//#define Exist_BZZ
+#define Exist_BZZ
 
 //#define Exist_ADC
 //#define Exist_DAC
@@ -41,8 +42,8 @@
 
 //#define Exist_Voice
 
-#define Exist_Motor
-#define Exist_Steering_Engine
+//#define Exist_Motor
+//#define Exist_Steering_Engine
 
 //#define Exist_MLX90614
 

@@ -1,5 +1,5 @@
-#ifndef __Ultrasonic_H
-#define __Ultrasonic_H
+#ifndef _Ultrasonic__H_
+#define _Ultrasonic__H_
 
 //	可以跨芯片移植	需要大改底层
 /* 
@@ -13,18 +13,18 @@
 */
 
 #include "Base.h"
+#include "Caven.h"
 
-//#define Trig	GPIO_Pin_4
-//#define Echo	GPIO_Pin_5
-//
-//#define CSB_T_GPIO	GPIOB
-//#define CSB_E_GPIO	GPIOB
-//
-//#define CSB_T_GPIO_TIM	RCC_APB2Periph_GPIOB
-//#define CSB_E_GPIO_TIM	RCC_APB2Periph_GPIOB
-//
-//void Ultrasonic_Init(void);//初始化
-//float Distance(void);//距离
+// Trig	PB04
+// Echo	PB05
 
+
+struct Ultrasonic_
+{
+    float (*Distance)(void);
+};
+
+void Ultrasonic_Init(int SET);//初始化
+float Distance(void);//距离
 
 #endif
