@@ -37,10 +37,11 @@ char Over_Time(struct _Over_time *Item)
         {
             struct Caven_Watch Temp_Time = {0}; //用来装时差
             int temp_num[2] = {0};
+
+            Temp_Time.hour = Item->Now_Time->hour - Item->last_Time.hour;
             if (Item->last_Time.date != Item->Now_Time->date) //如果这已然是下一天
             {
-                Temp_Time.hour = Item->Now_Time->hour + 24 - Item->last_Time.hour; //为现在的时间补充 24H
-                //不需要重置 Item->last_Time.date
+                Temp_Time.hour += 24; //为现在的时间补充 24H
             }
             Temp_Time.minutes = Item->Now_Time->minutes - Item->last_Time.minutes;
             Temp_Time.second = Item->Now_Time->second - Item->last_Time.second;
