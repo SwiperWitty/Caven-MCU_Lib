@@ -11,7 +11,16 @@
 
 #include "Caven.h"
 
-char ASCII_TO_Keyboard(char *Source,char *Target);
+struct USB_FUN_
+{
+    void (*Send)(char Temp,char * DATA);
+    void (*Delay)(int num);
 
+};
+
+extern uint8_t HIDKey[];
+
+char ASCII_TO_Keyboard(const char *Source,char *Target);
+void Keyboard_Send (char *Source,struct USB_FUN_ *FUN);
 
 #endif /* API_KEYBOARD_H_ */
