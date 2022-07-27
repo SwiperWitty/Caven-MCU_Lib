@@ -3,6 +3,7 @@
 
 #include "uart.h"
 #include "spi.h"
+#include "IIC.h"
 
 #include "adc.h"
 

@@ -6,25 +6,25 @@ struct IIC_	IIC;			//结构体本体
 void IIC_StartBit(void)
 {
     IIC_SDA_H();  // Set SDA line
-    Delay_10us(2); // Wait a few microseconds
+    IIC_Delay(2); // Wait a few microseconds
     IIC_SCK_H();  // Set SCL line
-    Delay_10us(2); // Generate bus free time between Stop
+    IIC_Delay(2); // Generate bus free time between Stop
     IIC_SDA_L();  // Clear SDA line
-    Delay_10us(2); // Hold time after (Repeated) Start
+    IIC_Delay(2); // Hold time after (Repeated) Start
     // Condition. After this period, the first clock is generated.
     //(Thd:sta=4.0us min)在SCK=1时，检测到SDA由1到0表示通信开始（下降沿）
     IIC_SCK_L();  // Clear SCL line
-    Delay_10us(2); // Wait a few microseconds
+    IIC_Delay(2); // Wait a few microseconds
 }
 
 void IIC_StopBit(void)
 {
     IIC_SCK_L();  // Clear SCL line
-    Delay_10us(2); // Wait a few microseconds
+    IIC_Delay(2); // Wait a few microseconds
     IIC_SDA_L();  // Clear SDA line
-    Delay_10us(2); // Wait a few microseconds
-    IIC_SCK_H();  // Set SCL line
-    Delay_10us(2); // Stop condition setup time(Tsu:sto=4.0us min)
+    IIC_Delay(2); // Wait a few microseconds
+    IIC_SCL_H();  // Set SCL line
+    IIC_Delay(2); // Stop condition setup time(Tsu:sto=4.0us min)
     IIC_SDA_H();  // Set SDA line在SCK=1时，检测到SDA由0到1表示通信结束（上升沿）
 }
 
@@ -38,11 +38,11 @@ void IIC_SendBit(char Bit_out, int speed)
     {
         IIC_SDA_H();
     }
-    Delay_10us(speed); // Tsu:dat = 250ns minimum
-    IIC_SCK_H();      // Set SCL line
-    Delay_10us(speed); // High Level of Clock Pulse
-    IIC_SCK_L();      // Clear SCL line
-    Delay_10us(speed); // Low Level of Clock Pulse
+    IIC_Delay(speed); // Tsu:dat = 250ns minimum
+    IIC_SCL_H();      // Set SCL line
+    IIC_Delay(speed); // High Level of Clock Pulse
+    IIC_SCL_L();      // Clear SCL line
+    IIC_Delay(speed); // Low Level of Clock Pulse
     //	IIC_SDA_H();				    // Master release SDA line
 }
 
@@ -51,9 +51,9 @@ char IIC_ReadBit(int Speed)
     char Ack_bit;
 
     IIC_SDA_H();      //引脚靠外部电阻上拉，当作输入
-    Delay_10us(Speed); // High Level of Clock Pulse
+    IIC_Delay(Speed); // High Level of Clock Pulse
     IIC_SCK_H();      // Set SCL line
-    Delay_10us(Speed); // High Level of Clock Pulse
+    IIC_Delay(Speed); // High Level of Clock Pulse
     if (IIC_SDA_IN())
     {
         Ack_bit = 1;
@@ -62,8 +62,8 @@ char IIC_ReadBit(int Speed)
     {
         Ack_bit = 0;
     }
-    IIC_SCK_L();      // Clear SCL line
-    Delay_10us(Speed); // Low Level of Clock Pulse
+    IIC_SCL_L();      // Clear SCL line
+    IIC_Delay(Speed); // Low Level of Clock Pulse
 
     return Ack_bit;
 }
