@@ -25,10 +25,10 @@
 #endif
 
 #ifdef Exist_HC595
-    #include "HC595.h"			//输出
+    #include "HC595.h"			//驱动输出
 #endif
 
-#ifdef Exist_Steering_Engine			//动力输出
+#ifdef Exist_Steering_Engine    //动力输出
     #include "Steering_engine.h"
 #endif
 #ifdef Exist_Motor
@@ -40,7 +40,7 @@
 #endif
 
 #ifdef Exist_FindLine
-    #include "Tracing.h"		//外部物理直接输入条件
+    #include "Tracing.h"		//外部需要模块才能输入的条件
 #endif
 
 #ifdef Exist_Ultrasonic
@@ -48,7 +48,7 @@
 #endif
 
 #ifdef Exist_MLX90614
-    #include "mlx90614.h"		//外部需要模块才能输入的条件
+    #include "mlx90614.h"
 #endif
 
 

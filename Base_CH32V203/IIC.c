@@ -39,12 +39,13 @@ void IIC_Init(int SET)
 }
 // **   //
 
-void IIC_Delay (int time)
+static void IIC_Delay (int time)
 {
-    for (int var = 0; var < time; ++var)
+    int temp;
+    for (int i = 0; i < time; ++i)
     {
-        int temp = IIC_Base_Speed;            //SET
-        while(temp--);
+        temp = IIC_Base_Speed;            //SET
+        while((--temp) > 0);
     }
 }
 
@@ -67,111 +68,159 @@ void IIC_StartBit(void)//  开始
 void IIC_StopBit(void)//  停止
 {
     IIC_SCL_L();  // Clear SCL line
+    IIC_SDA_Satar (IIC_Mode_OUT);
     IIC_Delay(1); // Wait a few microseconds
     IIC_SDA_L();  // Clear SDA line
     IIC_Delay(1); // Wait a few microseconds
-    IIC_SCL_H();  // Set SCL line
+    IIC_SCL_H();  // Set SCL line           /*  END    */
     IIC_Delay(1); // Stop condition setup time(Tsu:sto=4.0us min)
     IIC_SDA_H();  // Set SDA line在SCL=1时，检测到SDA由0到1表示通信结束（上升沿）
 }
 
-void IIC_ASK(void)
+void IIC_ASK(void)      //速度快，不在乎是否有从设备
 {
     IIC_SCL_L();
-    IIC_SDA_L();        //
+    IIC_SDA_L();
     IIC_Delay(2);
     IIC_SCL_H();
     IIC_Delay(2);
-    IIC_SCL_L();        //以SCL_L结束
 }
 
-void IIC_NASK(void)
+void IIC_NASK(void)     //基本不用
 {
     IIC_SCL_L();
     IIC_SDA_H();
     IIC_Delay(2);
     IIC_SCL_H();
     IIC_Delay(2);
-    IIC_SCL_L();        //以SCL_L结束
 }
 
-char IIC_WaitASK(void)
+char IIC_WaitASK(void)  //一定要有从设备响应
 {
     char temp = 0;
     int Time = 0;
     IIC_SCL_L();
     IIC_Delay(2);
-    IIC_SCL_H();
     IIC_SDA_Satar (IIC_Mode_IN);
+    IIC_SCL_H();
     do {
         IIC_Delay(1);
         Time++;
-        if (IIC_SDA_IN() == 0) {
+        if (IIC_SDA_IN() == 0)      //找到数据，即可跳出
+        {
             temp = 1;
+            break;
         }
     } while (Time < 20);
-    IIC_SDA_Satar (IIC_Mode_OUT);
-    IIC_SCL_L();        //以SCL_L结束
     return temp;
 }
 
-// **   //
-void IIC_Write_Addr(char WR,char Addr,int speed)
-{
-#ifdef Exist_IIC
-    char temp;
-    if (WR)
-        Addr |= 0x01;
-    else
-        Addr &= 0xFE;
-    IIC_StartBit();
-    for (int i = 0; i < 8; i++)
-    {
-        IIC_SCL_L();      //准备数据变更
-        IIC_Delay(speed);
-        temp = (Addr << i) & 0x80;
-        if (temp)
-            IIC_SDA_H();
-        else
-            IIC_SDA_L();
-        IIC_Delay(speed);
-        IIC_SCL_H();      //数据变更完成
-        IIC_Delay(speed);
-    }
-    IIC_ASK();
-//    IIC_StopBit();
-
-#endif
-}
-void IIC_Write_DATA(char DATA,int speed)
+void IIC_Write_DATA(char DATA,int Speed)
 {
 #ifdef Exist_IIC
     char temp;
     IIC_SDA_Satar (IIC_Mode_OUT);
     for (int i = 0; i < 8; i++) {
         IIC_SCL_L();      //准备数据变更
-        IIC_Delay(speed);
+        IIC_Delay(Speed);
         temp = (DATA << i) & 0x80;
         if (temp)
             IIC_SDA_H();
         else
             IIC_SDA_L();
-        IIC_Delay(speed);
+        IIC_Delay(Speed);
         IIC_SCL_H();      //数据变更完成
-        IIC_Delay(speed);
+        IIC_Delay(Speed);
     }
-//    IIC_NASK();
-    IIC_WaitASK();
-    IIC_StopBit();
-
 #endif
 }
 
-
-char IIC_Read_DATA(char Addr,char DATA)
+char IIC_Read_DATA(char DATA,int Speed)
 {
+    char temp = 0;
 #ifdef Exist_IIC
 
+    IIC_SDA_Satar (IIC_Mode_IN);
+    for (int i = 0; i < 8; i++) {
+        IIC_SCL_L();      //准备数据变更
+        IIC_Delay(Speed);
+        temp = ((char)IIC_SDA_IN() << i);
+        IIC_Delay(Speed);
+        IIC_SCL_H();      //数据变更完成
+        IIC_Delay(Speed);
+    }
 #endif
+    return temp;
+}
+
+char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed)
+{
+    char BK = 0;
+#ifdef Exist_IIC
+    IIC_StartBit();
+    IIC_Write_DATA((Addr << 1) & 0xFE,Speed);      //写模式
+    if(ACK && BK == 0)      //需要使用ACK
+    {
+        BK = IIC_WaitASK();
+        if (BK == 0)
+        {
+            IIC_StopBit();
+            return BK;
+        }
+    }
+    else if(ACK == 0)
+    {
+        IIC_ASK();
+        BK = 1;
+    }
+    //地址结束
+    for (int i = 0; i < Length; ++i)
+    {
+        IIC_Write_DATA(Data[i],Speed);
+        if(ACK && BK == 0)
+        {
+            BK = IIC_WaitASK();
+            if (BK == 0)    //有一次不成功
+            {
+                break;
+            }
+        }
+        else if(ACK == 0)
+            IIC_ASK();
+    }
+    //数据结束
+    IIC_StopBit();
+//IIC结束
+#endif
+    return BK;
+}
+
+char IIC_Receive_DATA(char Addr,const char *Data,char *Target,char ACK,int Length,int Speed)
+{
+    char BK = 0;
+#ifdef Exist_IIC
+    IIC_StartBit();
+    IIC_Write_DATA((Addr << 1) | 0x01,Speed);      //读模式
+    if(ACK && BK == 0)      //需要使用ACK
+    {
+        BK = IIC_WaitASK();
+        if (BK == 0)
+        {
+            IIC_StopBit();
+            return BK;
+        }
+    }
+    else if(ACK == 0)       //不需要使用ACK
+    {
+        IIC_ASK();
+        BK = 1;
+    }
+    //地址结束
+    Target[0] = IIC_Read_DATA(Data[0],Speed);
+
+    IIC_StopBit();
+//IIC结束
+#endif
+    return BK;
 }
 

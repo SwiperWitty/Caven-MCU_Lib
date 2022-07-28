@@ -3,14 +3,22 @@
 
 #include "Items.h"
 
-//
+/*
+ * 标准软件模拟IIC
+ * MAX  36kHZ(8bit+ACK)
+ * MAX  33kHZ(8bit+WaitASK-YES)
+ * MAX  19kHZ(8bit+WaitASK-NO)
+ * MAX-Pro  142kHZ(8bit+ACK)
+ */
+
+//配置
 
 #define IIC_Base_Speed  12
 #define IIC_Mode_IN     GPIO_Mode_IPU
 #define IIC_Mode_OUT    GPIO_Mode_Out_PP
 
 
-//SPI1
+//IIC_GPIO
 
 #define IIC_SCL        GPIO_Pin_10
 #define IIC_SDA        GPIO_Pin_11
@@ -26,7 +34,7 @@
 //
 
 void IIC_Init(int SET);
-void IIC_Write_Addr(char WR,char Addr,int speed);
-void IIC_Write_DATA(char DATA,int speed);
+char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed);
+char IIC_Receive_DATA(char Addr,const char *Data,char *Target,char ACK,int Length,int Speed);
 
 #endif

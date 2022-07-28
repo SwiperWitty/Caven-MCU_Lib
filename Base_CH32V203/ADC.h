@@ -18,26 +18,31 @@
                     C(Lib)->Caven->API->
 */
 
-#include "ch32v20x.h"
 #include "Items.h"
 
 #ifdef Exist_ADC
-#define ADC_1 ADC_Channel_4
-#define ADC_2 ADC_Channel_5
-#define MCU_Temp ADC_Channel_16
+#define ADC_0 ADC_Channel_0
+#define ADC_1 ADC_Channel_1
+#define ADC_2 ADC_Channel_2
+#define ADC_3 ADC_Channel_3
 
-#define ADC_De_Time ADC_SampleTime_239Cycles5
+#define ADC_8 ADC_Channel_8
+#define ADC_9 ADC_Channel_9
+
+#define MCU_Temp ADC_Channel_TempSensor
+
+#define ADC_De_Time ADC_SampleTime_28Cycles5
 #endif
 
 
 struct ADC_
 {
-	float (*ADC_x_Read_Vol)(char ADC_x);
-	float (*Read_MCU_Temp)(void);
+	float (*Get_Vol)(char ADC_x);
+	float (*Get_MCU_Temp)(void);
 };
 
-void ADC_x_Init(char ADC_x, FunctionalState SET);
-float ADC_x_Read_Vol(char ADC_x);
-float Read_MCU_Temp(void);
+void ADCx_Init(char ADC_x, int SET);
+float Get_ADCx_Vol(uint8_t ADC_x);
+float Get_MCU_Temp(void);
 
 #endif
