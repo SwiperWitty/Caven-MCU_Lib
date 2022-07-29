@@ -13,8 +13,6 @@
                     C(Lib)->Caven->API->
 */
 
-#define LCD_Speed   1       //写数据
-
 #define USE_HORIZONTAL 0	//设置横屏或者竖屏显示 0或1为竖屏 2或3为横屏
 #define LCD_W 240			//X MAX 240
 #define LCD_H 240			//Y MAX 240

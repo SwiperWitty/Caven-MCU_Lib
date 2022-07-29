@@ -20,7 +20,6 @@
 
 #include "Items.h"
 
-#ifdef Exist_ADC
 #define ADC_0 ADC_Channel_0
 #define ADC_1 ADC_Channel_1
 #define ADC_2 ADC_Channel_2
@@ -32,7 +31,6 @@
 #define MCU_Temp ADC_Channel_TempSensor
 
 #define ADC_De_Time ADC_SampleTime_28Cycles5
-#endif
 
 
 struct ADC_

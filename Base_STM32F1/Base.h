@@ -14,6 +14,8 @@
 
 #include "stmflash.h"
 
+#include "Exist_GPIO.h"
+
 /*
     底层（Base）中有不少东西让人迷惑，他们大致分布在 system_stm32xxx.c 以及 stm32xxxx_it.h 和 stm32xxxx.h
     如果查阅这里，问题都没有解决，那么这就是一个不该由你解决的问题。

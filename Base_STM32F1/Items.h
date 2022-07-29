@@ -1,8 +1,8 @@
 #ifndef _ITEMS__H_
 #define _ITEMS__H_
 
-#include "ch32v20x.h"
-#include "ch32v20x_conf.h"
+#include "stm32f10x.h"
+#include "stm32f10x_conf.h"
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->
@@ -31,7 +31,7 @@
 
 //#define Exist_FLASH
                                                         /*  只需要加上逻辑才能的功能    */
-//#define Exist_LCD
+#define Exist_LCD
 //#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
 
 //#define Exist_38

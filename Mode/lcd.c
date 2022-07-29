@@ -1,12 +1,12 @@
 #include "lcd.h"
-#include "lcdfont.h"	    //字库
+//#include "lcdfont.h"	    //字库
 
 u16 BACK_COLOR = BLACK;     //背景色
 
 void LCD_Writ_Bus(u8 dat) 
 {	
 #ifdef Exist_LCD
-//	SPI_Software_Send(dat,LCD_Speed);
+    SPI_Send_DATA(2,dat);
 #endif
 }
 
@@ -234,6 +234,7 @@ void LCD_Draw_Circle(u16 x0,u16 y0,char r,u16 color)
 ******************************************************************************/
 void LCD_Show_Chinese24x24(u16 x,u16 y,char *s,u16 fc,u16 bc,char sizey,char mode)
 {
+#ifdef Chinese_Lib24x24
 	char i,j,m=0;
 	u16 k;
 	u16 HZnum;//汉字数目
@@ -277,6 +278,7 @@ void LCD_Show_Chinese24x24(u16 x,u16 y,char *s,u16 fc,u16 bc,char sizey,char mod
 		}				  	
 		continue;  //查找到对应点阵字库立即退出，防止多个汉字重复取模带来影响
 	}
+#endif
 } 
 
 /******************************************************************************
@@ -291,6 +293,7 @@ void LCD_Show_Chinese24x24(u16 x,u16 y,char *s,u16 fc,u16 bc,char sizey,char mod
 ******************************************************************************/
 void LCD_Show_Chinese32x32(u16 x,u16 y,char *s,u16 fc,u16 bc,char sizey,char mode)
 {
+#ifdef Chinese_Lib32x32
 	char i,j,m=0;
 	u16 k;
 	u16 HZnum;//汉字数目
@@ -334,6 +337,7 @@ void LCD_Show_Chinese32x32(u16 x,u16 y,char *s,u16 fc,u16 bc,char sizey,char mod
 		}				  	
 		continue;  //查找到对应点阵字库立即退出，防止多个汉字重复取模带来影响
 	}
+#endif
 }
 
 
@@ -349,6 +353,7 @@ void LCD_Show_Chinese32x32(u16 x,u16 y,char *s,u16 fc,u16 bc,char sizey,char mod
 ******************************************************************************/
 void LCD_Show_Char(u16 x,u16 y,char num,u16 fc,u16 bc,char sizey,char mode)
 {
+#ifdef String_Lib
 	char temp,sizex,t,m=0;
 	u16 i,TypefaceNum;//一个字符所占字节大小
 	u16 x0=x;
@@ -387,7 +392,8 @@ void LCD_Show_Char(u16 x,u16 y,char num,u16 fc,u16 bc,char sizey,char mode)
 				}
 			}
 		}
-	}   	 	  
+	}
+#endif
 }
 
 
@@ -466,19 +472,31 @@ void LCD_Show_Picture(u16 x,u16 y,u16 length,u16 width,const unsigned char pic[]
 	}
 }
 
+#ifdef Exist_LCD
+static void LCD_Delay (int time)
+{
+    int temp;
+    for (int i = 0; i < time; ++i)
+    {
+        temp = 10000;            //SET
+        while((--temp) > 0);
+    }
+}
+#endif
+
 void LCD_Init(int SET)
 {
 #ifdef Exist_LCD
     LCD_GPIO_Init(SET);
-//    SPI_Init(SET);
-	Delay_ms(20);
-//	LCD_RES_Clr();Delay_ms(200);				//Caven 使用硬件复位
-//	LCD_RES_Set();Delay_ms(200);
-	
+    SPIx_Init(2,ENABLE);
+    LCD_Delay (50);              //等待电路复位完成
+//	LCD_RES_Clr();LCD_Delay (20);				//Caven3.14 使用硬件复位，不需要这个
+//	LCD_RES_Set();LCD_Delay (20);
 //	LCD_WR_REG(0x11); //Sleep out 
-//	Delay_ms(120);//Delay 120ms
-	
-	LCD_WR_REG(0x36);Delay_ms(120);
+//	Delay_ms(120);//LCD_Delay (20);
+    LCD_Delay (50);
+	LCD_WR_REG(0x36);
+	LCD_Delay (20);
 	if(USE_HORIZONTAL==0)LCD_WR_DATA8(0x00);
 	else if(USE_HORIZONTAL==1)LCD_WR_DATA8(0xC0);
 	else if(USE_HORIZONTAL==2)LCD_WR_DATA8(0x70);
@@ -556,7 +574,7 @@ void LCD_Init(int SET)
 	LCD_WR_REG(0x11);
 
 	LCD_WR_REG(0x29);
-	Delay_ms(120);
+	LCD_Delay (20);
 	LCD_Fill(0,0,LCD_W,LCD_H,BLACK);
 #endif
 }

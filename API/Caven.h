@@ -17,6 +17,9 @@
                     C(Lib)->Caven->API->
 */
 
+#define DISABLE  0
+#define ENABLE 1
+
 #define U8 unsigned char
 #define S8 signed char
 #define U16 unsigned short

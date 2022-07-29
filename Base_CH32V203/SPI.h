@@ -8,7 +8,8 @@
     软件SPI慢，但是它可以指定任意IO口。
     尽量使 SPI_GPIO 在同一组GPIO上（A/B/C/D），这样就无需更改 SPI_RCC_GPIO_TIM 等等
 																					2022.02.26
-    SPI的唯一要求————越快越好，目前软件模拟（584.11kHz），硬件SPI（）。
+    SPI的唯一要求————越快越好，目前软件模拟 461kHz(8bit)，硬件SPI参考-SPI_Speed-定义。
+
                                                                                     2022.07.26
     底层
 	对于	GPIO_Speed_50MHz 可不能写 0，不然会报 /enumerated type mixed with another type/
@@ -27,7 +28,7 @@
 #define SPI_MODE_OUT   GPIO_Mode_AF_PP
 #endif
 
-#define SPI_Speed   SPI_BaudRatePrescaler_32        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+#define SPI_Speed   SPI_BaudRatePrescaler_16        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
 //SPI1
 #define SPI1_NSS        GPIO_Pin_4      //(CS)
 #define SPI1_SCK        GPIO_Pin_5
@@ -65,6 +66,6 @@
 //void SPI1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 void SPIx_Init(char Channel,int SET);
-void SPI_Send_DATA(char Channel,char DATA);
+void SPI_Send_DATA(char Channel,const char DATA);
 
 #endif
