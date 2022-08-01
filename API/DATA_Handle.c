@@ -26,10 +26,8 @@ char Data_Chang_NUM (struct _Chang_Num *Item)
     for (i = 0; i < Find_Time; i++)
     {
         flag = 0;
-        char temp;
         for(n = 0;n < Length;n++)
         {
-            temp = str[n];
             if(str[n] == Item->Sign[i])             //找到标志
             {
                 str[n] = 0;

@@ -348,15 +348,3 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
     USART_SendData(Temp, DATA);
     USART_ClearFlag(Temp, TXD_Falg);
 }
-
-//void USART1_IRQHandler(void)                         //              Interrupt
-//{
-//    uint8_t temp,Channel = 1;
-//    if(UART_RXD_Flag(Channel) != 0)
-//    {
-//        temp = UART_RXD_Receive(Channel);
-//        USART_SendData(USART1, temp);
-//        UART_RXD_Flag_Clear(Channel);
-//    }
-//}
-

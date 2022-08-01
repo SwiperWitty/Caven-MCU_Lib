@@ -94,12 +94,12 @@ char ASCII_TO_Keyboard(const char *Source,char *Target)
     return Length;
 }
 
-void Keyboard_Send (char *Source,struct USB_FUN_ *FUN)
+void Keyboard_Send (char *Source,struct USB_FUN_ *FUN,char *Target)
 {
     int i;
     for (i = 0; i < strlen(Source); i++)
     {
-        FUN->Send(Source[i],HIDKey);
+        FUN->Send(Source[i],Target);
         FUN->Delay(3);
     }
 }

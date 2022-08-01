@@ -14,12 +14,6 @@ void SPI1_GPIO_Init(int SET)
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIO_SPI1, &GPIO_InitStructure);
 
-    #ifdef SPI_Software
-        GPIO_InitStructure.GPIO_Pin = SPI1_NSS;                 //NSS 不推荐复用
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIO_SPI1, &GPIO_InitStructure);
-    #endif
         GPIO_InitStructure.GPIO_Pin = SPI1_MISO;
         GPIO_InitStructure.GPIO_Mode = SPI_MODE_IN;
         GPIO_Init(GPIO_SPI1, &GPIO_InitStructure);
@@ -45,12 +39,6 @@ void SPI2_GPIO_Init(int SET)
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIO_SPI2, &GPIO_InitStructure);
 
-    #ifdef SPI_Software
-        GPIO_InitStructure.GPIO_Pin = SPI2_NSS;                 //NSS 不推荐复用
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIO_SPI2, &GPIO_InitStructure);
-    #endif
         GPIO_InitStructure.GPIO_Pin = SPI2_MISO;
         GPIO_InitStructure.GPIO_Mode = SPI_MODE_IN;
         GPIO_Init(GPIO_SPI2, &GPIO_InitStructure);
@@ -68,8 +56,10 @@ void SPIx_Init(char Channel,int SET)
 {
 #ifdef Exist_SPI
     SPI_State[Channel] = SET;
-    SPI_InitTypeDef SPI_InitStructure = {0};
-    NVIC_InitTypeDef NVIC_InitStructure = {0};
+    #ifndef SPI_Software
+        SPI_InitTypeDef SPI_InitStructure = {0};
+        NVIC_InitTypeDef NVIC_InitStructure = {0};
+    #endif
     switch (Channel)
     {
         case 1:
@@ -144,12 +134,13 @@ void SPI_Send_DATA(char Channel,const char DATA)
 {
 #ifdef Exist_SPI
     #if(SPI_MODE == HOST_MODE)
+    #ifdef SPI_Software
+    char temp;
+    #endif
     switch (Channel) {
         case 1:
         #ifdef SPI_Software
-            char temp;
             SPI1_NSS_L();               //SPI开始（片选）
-            SPI1_SCK_L();
             for (int i = 0; i < 8; i++)
             {
                 SPI1_SCK_L();           //预备上升沿
@@ -161,6 +152,7 @@ void SPI_Send_DATA(char Channel,const char DATA)
                 SPI1_SCK_H();           //完成上升沿
             }
             SPI1_NSS_H();               //SPI结束
+            SPI1_MOSI_H();
         #else
             while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_TXE) == RESET); //检查发送是否完成，完成以后再发送数据
             SPI_I2S_SendData(SPI1, DATA);
@@ -172,7 +164,6 @@ void SPI_Send_DATA(char Channel,const char DATA)
         case 2:
         #ifdef SPI_Software
             SPI2_NSS_L();               //SPI开始（片选）
-            SPI2_SCK_L();
             for (int i = 0; i < 8; i++)
             {
                 SPI2_SCK_L();           //预备上升沿
@@ -184,6 +175,7 @@ void SPI_Send_DATA(char Channel,const char DATA)
                 SPI2_SCK_H();           //完成上升沿
             }
             SPI2_NSS_H();               //SPI结束
+            SPI2_MOSI_H();
         #else
             while(SPI_I2S_GetFlagStatus(SPI2,SPI_I2S_FLAG_TXE) == RESET); //检查发送是否完成，完成以后再发送数据
             SPI_I2S_SendData(SPI2, DATA);

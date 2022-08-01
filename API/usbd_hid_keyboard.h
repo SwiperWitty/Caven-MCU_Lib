@@ -11,7 +11,6 @@
 #ifndef __USB_HID_CORE_H_
 #define __USB_HID_CORE_H_
 
-#include  "usbd_ioreq.h"
 
 /** @addtogroup AT32_USB_OTG_DEVICE_LIBRARY
   * @{
@@ -175,7 +174,7 @@
 #define  HID_KEYPAD_F         0XC1
 
 
-extern USBD_Class_cb_Type  USBD_HID_cb;
+
 /**
   * @}
   */ 
@@ -184,13 +183,13 @@ extern USBD_Class_cb_Type  USBD_HID_cb;
   * @{
   */ 
 
-uint32_t usb_device_hid_getpollinginterval (USB_OTG_CORE_HANDLE *pusbdev);
-
-uint16_t USB_Keyboard_Send_Char (uint8_t u8Senddata);
-
-void udi_hid_kbd_print_char(USB_OTG_CORE_HANDLE *pusbdev,uint8_t ASCII_Data,uint8_t flag);
-void udi_hid_kbd_print_null(USB_OTG_CORE_HANDLE *pusbdev);
-void udi_hid_kbd_down(USB_OTG_CORE_HANDLE *pusbdev,uint8_t key_id);
+//uint32_t usb_device_hid_getpollinginterval (USB_OTG_CORE_HANDLE *pusbdev);
+//
+//uint16_t USB_Keyboard_Send_Char (uint8_t u8Senddata);
+//
+//void udi_hid_kbd_print_char(USB_OTG_CORE_HANDLE *pusbdev,uint8_t ASCII_Data,uint8_t flag);
+//void udi_hid_kbd_print_null(USB_OTG_CORE_HANDLE *pusbdev);
+//void udi_hid_kbd_down(USB_OTG_CORE_HANDLE *pusbdev,uint8_t key_id);
 
 /**
   * @}

@@ -14,7 +14,7 @@
 
                                                         /*  基本外设就能实现的功能    */
 #define Exist_SYS_TIME
-//#define Exist_PWM
+#define Exist_PWM
 //#define Exist_ENCODE
 
 #define Exist_KEY
@@ -46,7 +46,6 @@
 //#define Exist_Steering_Engine
 
 //#define Exist_MLX90614
-
 
 
 /*  进一步的逻辑关系    */

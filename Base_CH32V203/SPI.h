@@ -18,7 +18,7 @@
 
 // 选择输出模式
 
-//#define SPI_Software
+#define SPI_Software
 
 #ifdef SPI_Software
 #define SPI_MODE_IN    GPIO_Mode_IPU

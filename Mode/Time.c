@@ -1,8 +1,7 @@
 #include "time.h"
-#include "LED.h"
 
-static int Delay_Time;
-static char Daley_Falg = 0;
+volatile static int Delay_Time;
+volatile static char Daley_Falg = 0;
 
 struct _SYS_Time SYS_Time = {
         .Date.day = 0,

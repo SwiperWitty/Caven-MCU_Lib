@@ -18,9 +18,7 @@ struct USB_FUN_
 
 };
 
-extern uint8_t HIDKey[];
-
 char ASCII_TO_Keyboard(const char *Source,char *Target);
-void Keyboard_Send (char *Source,struct USB_FUN_ *FUN);
+void Keyboard_Send (char *Source,struct USB_FUN_ *FUN,char *Target);
 
 #endif /* API_KEYBOARD_H_ */
