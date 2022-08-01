@@ -23,7 +23,7 @@ void KEY_Init (char Channel,int SET)
 
 char KEY_State (char Channel)
 {
-    char temp = 0;
+    char temp = 1;
     switch (Channel) {
         case 0:
             break;

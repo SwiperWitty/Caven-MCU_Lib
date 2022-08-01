@@ -1,7 +1,6 @@
 #ifndef _PWM_H_
 #define _PWM_H_
 
-//	无法跨芯片移植
 /*
 	TIM4
 	TIM8(高级)
@@ -12,6 +11,8 @@
 							舵机
 	20ms pwm	1.5ms(0)	0.5ms(-90)	2.5ms(+90)	
 	arr = 1999	psc = 719	CLK = 72MHz	Period = 0.02s
+	TIM4_PWM_Init(72, 100);
+    TIM_SetCompare1(TIM4,20);
 	
 							电机
 	1ms	arr = 1000	psc = 7	CLK = 72MHz	Period = 1ms
@@ -29,8 +30,8 @@
 #define PWM_4	4
 #define PWM_8	8
 
-//void TIM4_PWM_Init (u16 arr,u16 psc,FunctionalState SET);
-//void TIM8_PWM_Init (u16 arr,u16 psc,FunctionalState SET);
+void TIM4_PWM_Init(u16 arr, u16 psc);
+
 //void PWM_x_Init(char PWM_x, u16 arr, u16 psc, FunctionalState SET);
 
 #endif

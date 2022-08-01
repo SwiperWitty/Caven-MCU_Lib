@@ -2,10 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include"libcollections.h"
- 
 
-#define MAX(a,b)	(a>b)?a:b				//比较函数
-#define MIN(a,b)	(a<b)?a:b				//比较函数
 
 char show[8][31];
 

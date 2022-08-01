@@ -50,7 +50,7 @@
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_Read() GPIOA->INDR & GPIO_Pin_0     //KEY,¶Á
+    #define KEY_Read() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,¶Á
 #endif
 #ifdef Exist_Ultrasonic
     #define Trig_Clr() GPIOB->BCR = GPIO_Pin_4     //Ultrasonic

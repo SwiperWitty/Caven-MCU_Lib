@@ -29,15 +29,15 @@ void LED_GPIO_Init(int SET)
     if (SET) {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
         LED_Set();
 
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
         LEDR_Set();
     }
@@ -60,11 +60,12 @@ void BZZ_GPIO_Init(int SET)
     if (SET) {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
     }
     else {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
     }
@@ -76,16 +77,22 @@ void KEY_GPIO_Init(int SET)
 #ifdef Exist_KEY
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     if (SET) {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-//        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+        PWR_BackupAccessCmd(ENABLE);
+//        RCC_LSEConfig(RCC_LSE_OFF);
+        BKP_TamperPinCmd(DISABLE);
+
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
-        GPIO_Init(GPIOA, &GPIO_InitStructure);
+//        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOC, &GPIO_InitStructure);
     }
     else {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        GPIO_Init(GPIOA, &GPIO_InitStructure);
+        GPIO_Init(GPIOC, &GPIO_InitStructure);
     }
+    PWR_BackupAccessCmd(DISABLE);/* 禁止修改RTC和后备寄存器*/
 
 #endif
 }
