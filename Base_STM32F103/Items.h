@@ -12,14 +12,14 @@
                     C(Lib)->Caven->API->
 */
 
-                                                        /*  »ù±¾ÍâÉè¾ÍÄÜÊµÏÖµÄ¹¦ÄÜ    */
+                                                        /*  åŸºæœ¬å¤–è®¾å°±èƒ½å®ç°çš„åŠŸèƒ½    */
 #define Exist_SYS_TIME
-//#define Exist_PWM
+#define Exist_PWM
 //#define Exist_ENCODE
 
 #define Exist_KEY
 #define Exist_LED
-//#define Exist_BZZ
+#define Exist_BZZ
 
 #define Exist_ADC
 //#define Exist_DAC
@@ -30,9 +30,9 @@
 //#define Exist_CAN
 
 //#define Exist_FLASH
-                                                        /*  Ö»ĞèÒª¼ÓÉÏÂß¼­²ÅÄÜµÄ¹¦ÄÜ    */
+                                                        /*  åªéœ€è¦åŠ ä¸Šé€»è¾‘æ‰èƒ½çš„åŠŸèƒ½    */
 #define Exist_LCD
-//#define Exist_OLED    //Ò»°ãÕâÁ½¸öÊÇ¶şÑ¡Ò»£¨Õ¼ÓÃµÄ¶¼ÊÇSPI£©
+//#define Exist_OLED    //ä¸€èˆ¬è¿™ä¸¤ä¸ªæ˜¯äºŒé€‰ä¸€ï¼ˆå ç”¨çš„éƒ½æ˜¯SPIï¼‰
 
 //#define Exist_38
 //#define Exist_595
@@ -48,8 +48,7 @@
 //#define Exist_MLX90614
 
 
-
-/*  ½øÒ»²½µÄÂß¼­¹ØÏµ    */
+/*  è¿›ä¸€æ­¥çš„é€»è¾‘å…³ç³»    */
 #ifdef Exist_LCD
     #ifndef Exist_SPI
         #define Exist_SPI

@@ -12,7 +12,5 @@ void API_Index(void)
     API.Time.Over_Time = Over_Time;
     
     API.Data.Find_Data = Find_Data;
-    
-    API.Agreement.Pick = Pick_Agreement;
-    API.Agreement.Send = Send_Agreement;
+
 }

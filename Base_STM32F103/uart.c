@@ -2,30 +2,32 @@
 
 void Uart1_Init(int Baud,int SET)
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-        
-    FunctionalState temp;
-    if(SET)
-        temp = ENABLE;
-    else
-        temp = DISABLE;
-    
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE); // GPIOB 服用 PB06 PB07
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, temp);	  // USART1  (APB2)
-    GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);
-    USART_DeInit(USART1);
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+	USART_InitTypeDef USART_InitStructure = {0};
+	NVIC_InitTypeDef NVIC_InitStructure = {0};
+	USART_TypeDef * UART_Temp = USART1;
+    FunctionalState Able_temp;
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6; // TXD
+    if(SET)
+        Able_temp = ENABLE;
+    else
+        Able_temp = DISABLE;
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, Able_temp);	  // USART1  (APB2)
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟(暂不需要)
+//  GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);     //端口复用
+    USART_DeInit(UART_Temp);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;      // RXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;       // TXD
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;	  // RXD
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //
-    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    if (Able_temp)
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     USART_InitStructure.USART_BaudRate = Baud;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None; //
@@ -33,18 +35,16 @@ void Uart1_Init(int Baud,int SET)
     USART_InitStructure.USART_Parity = USART_Parity_No;								//
     USART_InitStructure.USART_StopBits = USART_StopBits_1;							//
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;						//
-    USART_Init(USART1, &USART_InitStructure);
-    
+    USART_Init(UART_Temp, &USART_InitStructure);
+    USART_ITConfig(UART_Temp, RXD_Falg, Able_temp);                                 //
+
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		  //响应优先级
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = Able_temp;
     NVIC_Init(&NVIC_InitStructure);
     
-    USART_ITConfig(USART1, USART_IT_RXNE, ENABLE); //
-    USART_Cmd(USART1, temp);						   //
-
-    
+    USART_Cmd(UART_Temp, Able_temp);
 }
 void Uart2_Init(int Baud,int SET)
 {
@@ -89,7 +89,6 @@ void Uart2_Init(int Baud,int SET)
     USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
     USART_Cmd(USART2, temp); //使能串口
 }
-
 void Uart3_Init(int Baud,int SET)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -134,6 +133,7 @@ void Uart3_Init(int Baud,int SET)
     USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
     USART_Cmd(USART3, temp);
 }
+#if UART_Channel_MAX >= 4
 void Uart4_Init(int Baud,int SET)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -177,18 +177,20 @@ void Uart4_Init(int Baud,int SET)
 
     USART_Cmd(UART4, temp); //使能串口
 }
+#endif
+#if UART_Channel_MAX >= 5
 void Uart5_Init(int Baud,int SET)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-    
+
     FunctionalState temp;
     if(SET)
         temp = ENABLE;
     else
         temp = DISABLE;
-    
+
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);    // PC12 PD02
@@ -219,6 +221,7 @@ void Uart5_Init(int Baud,int SET)
     USART_ITConfig(UART5, USART_IT_RXNE, ENABLE); //开启接收中断
     USART_Cmd(UART5, temp);						  //使能串口
 }
+#endif
 
 char UART_RXD_Flag(char Channel)
 {
@@ -235,12 +238,16 @@ char UART_RXD_Flag(char Channel)
     case 3:
         Temp = USART3;
         break;
+#if UART_Channel_MAX >= 4
     case 4:
         Temp = UART4;
         break; 
+#endif
+#if UART_Channel_MAX >= 5
     case 5:
         Temp = UART5;
-        break;       
+        break;
+#endif
     default:
         return 0;
     }
@@ -262,19 +269,23 @@ void UART_RXD_Flag_Clear(char Channel)
     case 3:
         Temp = USART3;
         break;
+#if UART_Channel_MAX >= 4
     case 4:
         Temp = UART4;
         break; 
+#endif
+#if UART_Channel_MAX >= 5
     case 5:
         Temp = UART5;
-        break;       
+        break;
+#endif
     default:
         return;
     }
     USART_ClearFlag(Temp, RXD_Falg);
 }
 
-uint16_t UART_RXD_Receive(char Channel)
+uint16_t UART_RXD_Receive(char Channel)     //RXD 读取值
 {
     uint16_t res;
     USART_TypeDef * Temp;
@@ -289,12 +300,16 @@ uint16_t UART_RXD_Receive(char Channel)
     case 3:
         Temp = USART3;
         break;
+#if UART_Channel_MAX >= 4
     case 4:
         Temp = UART4;
         break; 
+#endif
+#if UART_Channel_MAX >= 5
     case 5:
         Temp = UART5;
-        break;       
+        break;
+#endif
     default:
         break;
     }
@@ -316,12 +331,16 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
     case 3:
         Temp = USART3;
         break;
+#if UART_Channel_MAX >= 4
     case 4:
         Temp = UART4;
         break; 
+#endif
+#if UART_Channel_MAX >= 5
     case 5:
         Temp = UART5;
-        break;       
+        break;
+#endif
     default:
         return;
     }

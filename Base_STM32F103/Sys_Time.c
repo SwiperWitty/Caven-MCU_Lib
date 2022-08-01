@@ -8,8 +8,11 @@
 
 
 //* 底层 *//
+
+
 void Sys_Time_Init (int Set)
 {
+#ifdef Exist_SYS_TIME
     #ifdef Base_SysTick
     if(Set)
     {
@@ -41,10 +44,12 @@ void Sys_Time_Init (int Set)
 
         TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);          //使能中断
         TIM_Cmd(TIM4, ENABLE);
-
     }
     else
         NVIC_SystemReset();
 
     #endif
+#endif
 }
+
+

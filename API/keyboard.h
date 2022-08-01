@@ -1,9 +1,9 @@
 /*
  * keyboard.h
  *
- *  Created on: 2022Äê7ÔÂ22ÈÕ
+ *  Created on: 2022å¹´7æœˆ22æ—¥
  *      Author: gxwl
- *      ¼üÅÌ±í
+ *      é”®ç›˜è¡¨
  */
 
 #ifndef API_KEYBOARD_H_
@@ -18,7 +18,7 @@ struct USB_FUN_
 
 };
 
-char ASCII_TO_Keyboard(const char *Source,char *Target);
+int ASCII_TO_Keyboard(const char *Source,char *Target);
 void Keyboard_Send (char *Source,struct USB_FUN_ *FUN,char *Target);
 
 #endif /* API_KEYBOARD_H_ */

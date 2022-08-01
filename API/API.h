@@ -3,7 +3,7 @@
 
 #include "Check_CRC16.h"
 #include "Time_Handle.h"
-#include "Agreement_Hanlde.h"
+//#include "Agreement_Hanlde.h"
 #include "DATA_Handle.h"
 #include "keyboard.h"
 
@@ -27,7 +27,6 @@ struct API_Data_
     
     struct Time_Handle_ Time;
     struct Data_Handle_ Data;
-    struct Agreement_Handle_ Agreement;
     
 };
 

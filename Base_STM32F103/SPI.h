@@ -7,18 +7,18 @@
     分为硬件SPI/软件SPI
     软件SPI慢，但是它可以指定任意IO口。
     尽量使 SPI_GPIO 在同一组GPIO上（A/B/C/D），这样就无需更改 SPI_RCC_GPIO_TIM 等等
-                                                                                    2022.02.26
+																					2022.02.26
     SPI的唯一要求————越快越好，目前软件模拟 461kHz(8bit)，硬件SPI参考-SPI_Speed-定义。
 
                                                                                     2022.07.26
     底层
-    对于  GPIO_Speed_50MHz 可不能写 0，不然会报 /enumerated type mixed with another type/
-                                                                                    2022.04.06  优化
+	对于	GPIO_Speed_50MHz 可不能写 0，不然会报 /enumerated type mixed with another type/
+																					2022.04.06	优化
 */
 
 // 选择输出模式
 
-//#define SPI_Software
+#define SPI_Software
 
 #ifdef SPI_Software
 #define SPI_MODE_IN    GPIO_Mode_IPU
@@ -36,8 +36,8 @@
 #define SPI1_MOSI       GPIO_Pin_7
 #define GPIO_SPI1       GPIOA
 
-#define SPI1_SCK_H()  GPIO_SPI1->BSRR = SPI1_SCK        //置高电平
-#define SPI1_SCK_L()  GPIO_SPI1->BRR = SPI1_SCK         //置低电平
+#define SPI1_SCK_H()  GPIO_SPI1->BSRR = SPI1_SCK		//置高电平
+#define SPI1_SCK_L()  GPIO_SPI1->BRR = SPI1_SCK 		//置低电平
 #define SPI1_MOSI_H() GPIO_SPI1->BSRR = SPI1_MOSI
 #define SPI1_MOSI_L() GPIO_SPI1->BRR = SPI1_MOSI
 #define SPI1_NSS_H()  GPIO_SPI1->BSRR = SPI1_NSS
@@ -61,7 +61,9 @@
 
 #define SPI2_MISO_IN() GPIO_SPI2->IDR & SPI2_MISO      //读取引脚电平
 
-
+//
+//void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+//void SPI1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 void SPIx_Init(char Channel,int SET);
 void SPI_Send_DATA(char Channel,const char DATA);

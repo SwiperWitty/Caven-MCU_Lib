@@ -20,21 +20,30 @@
     总结：提供 初始化 & 控制【函数群】
 */
 
-#include "stm32f10x.h"
+#include "Items.h"
 
-#define Base_SysTick    1   //使用 滴答定时器 作为【系统时钟】
-
+#define Base_SysTick        //使用 滴答定时器 作为【系统时钟】
 
 /* 【宏函数群】   */
-#define Exist_SYS_Time  "EN"        //存在 【系统时钟】
-#define Exist_SYS_Time_Falg 0       //存在 中断标志位
 
-#ifdef Exist_SYS_Time
-    #define SYS_Time_Interrupt() SysTick_Handler()
+//#define Exist_SYS_Time_Falg         //存在 中断标志位
 
-    #if (Exist_SYS_Time_Falg == 1)
-        #define SYS_Time_Interrupt_Flag() TIM_GetITStatus(TIM4, TIM_IT_Update)
-        #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
+#ifdef Exist_SYS_TIME
+    #ifdef Base_SysTick
+        #define SYS_Time_Interrupt() SysTick_Handler()
+    #else
+        void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
+        #define SYS_Time_Interrupt() TIM4_IRQHandler()
+    #endif
+
+    #ifdef Exist_SYS_Time_Falg
+        #ifdef Base_SysTick
+            #define SYS_Time_Interrupt_Flag() SysTick->SR
+            #define SYS_Time_Interrupt_FlagClear() SysTick->SR = 0
+        #else
+            #define SYS_Time_Interrupt_Flag() TIM_GetITStatus(TIM4, TIM_IT_Update)
+            #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
+        #endif
     #endif
 #endif
 /*  end   */

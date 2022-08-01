@@ -1,23 +1,23 @@
 /*
  * Keyboard.c
  *
- *  Created on: 2022Äê7ÔÂ22ÈÕ
+ *  Created on: 2022å¹´7æœˆ22æ—¥
  *      Author: gxwl
  */
 #include "keyboard.h"
 
-char ASCII_TO_Keyboard(const char *Source,char *Target)
+int ASCII_TO_Keyboard(const char *Source,char *Target)
 {
     int Length = strlen(Source);
     printf("length : %d\n",Length);
     if (Length > 50)
         return (-1);
     char str[50];
-    memcpy(str,Source,Length);  //  ÌáÈ¡
+    memcpy(str,Source,Length);  //  æå–
     Target[Length] = '\0';
     for (int i = 0;i < Length; i++)
     {
-        if (str[i] >= 'A' && str[i] <= 'Z')       //È«²¿±ä³ÉĞ¡Ğ´
+        if (str[i] >= 'A' && str[i] <= 'Z')       //å…¨éƒ¨å˜æˆå°å†™
         {
             str[i] += 32;
 
