@@ -1,13 +1,21 @@
 #include "time.h"
 
-volatile static int Delay_Time;
+volatile static int Delay_Time = 0;
 volatile static char Daley_Falg = 0;
+//防止被编译器优化，并且只能在本文件使用
+/*
+ * while(a);
+ * 和
+ * while(get(a));
+ * 不一样
+ */
+
 
 struct _SYS_Time SYS_Time = {
-        .Date.day = 0,
-        .Watch.hour = 23,
-        .Watch.minutes = 59,
-        .Watch.second = 56,
+    .Date.day = 0,
+    .Watch.hour = 23,
+    .Watch.minutes = 59,
+    .Watch.second = 56,
 };
 
 void Time_Init(int SET)

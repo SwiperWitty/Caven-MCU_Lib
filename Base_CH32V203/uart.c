@@ -311,7 +311,7 @@ uint16_t UART_RXD_Receive(char Channel)     //RXD 读取值
         break;
 #endif
     default:
-        break;
+        return 0;
     }
     res = USART_ReceiveData(Temp);
     return res;

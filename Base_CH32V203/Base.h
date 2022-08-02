@@ -11,6 +11,7 @@
 #include "PWM.h"
 
 #include "Exist_GPIO.h"
+#include "Flash.h"
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->

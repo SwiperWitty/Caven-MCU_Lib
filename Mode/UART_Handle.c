@@ -2,6 +2,8 @@
 
 struct _Uart_Data CV_UART[5] = {0};
 
+volatile int ii;
+
 void Uart_Init(char Channel, int Baud,int SET)
 {
 #ifdef Exist_UART

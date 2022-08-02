@@ -12,12 +12,12 @@
 
 struct _Over_time
 {
-    void *Now_data;                                 //【填】指向单个数据，最好是 int 型
+    const void *Now_data;                           //【填】数据的地址，极限是int型
 //	int Data_num;
     int last_data;                                  //不用填 （用 int 做向下兼容）【系统行为】
     char load;                                      //装载标志位 0 允许装载， 1 装载完成(尽可能使用实体，不用使用公共的静态，不然多个使用会出错)，不用管【系统行为】
-    char Flag;                                      //瞬态标志位，用来读取【系统行为】
-	char Flip;                                      //翻转态标志位，用来读取【系统行为】
+    volatile char Flag;                             //状态标志位，用来【读取】
+    volatile char Flip;                             //翻转态标志位，用来【读取】
     struct Caven_Watch Set_Time;                    //【填】
     struct Caven_Watch last_Time;                   //不用填【系统行为】
 	const struct Caven_Watch * Now_Time;			//【填】系统时间，只读（需要手动绑定系统时钟）

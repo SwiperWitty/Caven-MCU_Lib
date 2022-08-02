@@ -15,7 +15,7 @@ struct _SYS_Time
 {
     struct Caven_Date Date;
     struct Caven_Watch Watch;
-    int sys_time;
+    volatile int sys_time;
 };
 
 struct Delay_
@@ -26,7 +26,7 @@ struct Delay_
 };
 
 #ifdef Exist_SYS_TIME
-    extern struct _SYS_Time SYS_Time;
+    struct _SYS_Time SYS_Time;
 #endif
 
 void Time_Init(int SET);

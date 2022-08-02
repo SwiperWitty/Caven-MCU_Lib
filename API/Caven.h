@@ -47,7 +47,7 @@ struct Caven_Watch
 	char hour;
 	char minutes;
 	char second;
-	int time_num;			//这是中断溢出次数 10 0000为1S
+	volatile int time_num;			//这是中断溢出次数 10 0000为1S
 };
 
 struct Caven_Color
@@ -62,7 +62,7 @@ struct Caven_Color
 struct Caven_Data           //这个数据是动态的
 {
     U16 Length;                     //目前接收到的数据长度
-    U16 Run_num;                    //目前运行/处理到的数据个数
+    volatile U16 Run_num;           //目前运行/处理到的数据个数
     U8 Buff[Buff_Length];
     char *Pointer_8;
     int *Pointer_32;
