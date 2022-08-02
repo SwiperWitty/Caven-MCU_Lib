@@ -43,8 +43,8 @@
     #define LED_Set() GPIOB->BSRR = GPIO_Pin_11   //PB011
 #endif
 #ifdef Exist_BZZ
-    #define BZZ_Clr() GPIOA->BRR = GPIO_Pin_12    //BZZ
-    #define BZZ_Set() GPIOA->BSRR = GPIO_Pin_12   //PB05
+	#define BZZ_Set() GPIOA->BSRR = GPIO_Pin_12            //置高电平
+	#define BZZ_Clr() GPIOA->BRR = GPIO_Pin_12             //置低电平
 #endif
 
 #ifdef Exist_KEY
@@ -64,6 +64,7 @@ void LED_GPIO_Init(int SET);
 void BZZ_GPIO_Init(int SET);
 
 void KEY_GPIO_Init(int SET);
+
 void Ultrasonic_GPIO_Init(int SET);
 
 #endif

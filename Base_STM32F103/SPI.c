@@ -59,6 +59,10 @@ void SPIx_Init(char Channel,int SET)
     #ifndef SPI_Software
         SPI_InitTypeDef SPI_InitStructure = {0};
         NVIC_InitTypeDef NVIC_InitStructure = {0};
+		int speed_baud = SPI_Speed;
+		if (speed_baud > 0) {
+			speed_baud -= 8;                            //可以超频就超频（与SPI1保持同速）
+		}
     #endif
     switch (Channel)
     {
@@ -95,10 +99,6 @@ void SPIx_Init(char Channel,int SET)
             SPI2_GPIO_Init(SET);
     #ifndef SPI_Software
             RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE );   //开始硬件SPI2,API1
-            int speed_baud = SPI_Speed;
-            if (speed_baud > 0) {
-                speed_baud -= 8;                            //可以超频就超频（与SPI1保持同速）
-            }
         #if (SPI_MODE == HOST_MODE)
             SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
         #elif (SPI_MODE == SLAVE_MODE)
