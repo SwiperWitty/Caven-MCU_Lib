@@ -8,7 +8,7 @@
 
 /* 【宏函数群】   */
 
-#define UART_Channel_MAX  3     //最高通道数
+#define UART_Channel_MAX  5     //最高通道数
 
 #ifdef Exist_UART
 /*  中断   */

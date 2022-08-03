@@ -39,16 +39,16 @@
 #endif
 
 #ifdef Exist_LED
-    #define LED_Clr() GPIOB->BRR = GPIO_Pin_11    //LED
-    #define LED_Set() GPIOB->BSRR = GPIO_Pin_11   //PB011
+    #define LED_Clr() GPIOB->BRR = GPIO_Pin_11		//LED
+    #define LED_Set() GPIOB->BSRR = GPIO_Pin_11		//PB011
 #endif
 #ifdef Exist_BZZ
-	#define BZZ_Set() GPIOA->BSRR = GPIO_Pin_12            //置高电平
 	#define BZZ_Clr() GPIOA->BRR = GPIO_Pin_12             //置低电平
+	#define BZZ_Set() GPIOA->BSRR = GPIO_Pin_12            //置高电平
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_Read() GPIOC->IDR & GPIO_Pin_13     //KEY,读
+    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)	//KEY,读
 #endif
 #ifdef Exist_Ultrasonic
     #define Trig_Clr() GPIOB->BRR = GPIO_Pin_4     //Ultrasonic

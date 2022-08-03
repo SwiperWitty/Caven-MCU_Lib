@@ -31,7 +31,8 @@ void LED_SET(char Channel,int SET)
 #endif
 }
 
-void LED_REG(void)
+void LED_REG(struct Caven_Color Color)
 {
+	
 }
 

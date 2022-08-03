@@ -2,6 +2,7 @@
 #define _LED__H_
 
 #include "Base.h"
+#include "Caven.h"
 
 /*
 
@@ -11,13 +12,13 @@
 */
 struct LED_
 {
-    void (*LED_REG)();
     void (*LED_SET)(char Channel,int SET);
+	void (*LED_REG)(struct Caven_Color Color);
 };
 
 void LED_Init(int SET);
 
-void LED_REG(void);
 void LED_SET(char Channel,int SET);
+void LED_REG(struct Caven_Color Color);
 
 #endif
