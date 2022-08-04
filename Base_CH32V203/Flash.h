@@ -25,6 +25,7 @@
 #endif
 
 typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
+#define Fast_Flash(x)   *(__IO uint16_t*)(x)
 
 struct _Flash_DATA
 {
@@ -39,6 +40,9 @@ struct _Flash_DATA
 extern const struct _Flash_DATA Flash_DATA;
 
 int Read_Flash(int Address);
-char Clear_Flash_Area(int Area);
+char Clear_Flash_Page(int Addr);
+char Clear_Flash_Area(int addr_start,int addr_end);
+
+char Save_Flash(int Addr,const uint16_t *Data,int Lenght);
 
 #endif
