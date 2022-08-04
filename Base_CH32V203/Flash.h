@@ -1,7 +1,7 @@
 /*
  * Flash.h
  *
- *  Created on: 2022Äê8ÔÂ1ÈÕ
+ *  Created on: 2022å¹´8æœˆ1æ—¥
  *      Author: gxwl
  */
 
@@ -11,17 +11,17 @@
 #include "Items.h"
 
 #ifdef Exist_FLASH
-    #define FLASH_PAGE_SIZE ((uint32_t)256)         //Ò»Ò³µÄ´óĞ¡
-    #define FLASH_AREA_SIZE (FLASH_PAGE_SIZE*16)    //Çø´óĞ¡
-    #define FLASH_SIZE  ((uint32_t)(64*1024))       //Flash´óĞ¡64K
+    #define FLASH_PAGE_SIZE ((uint32_t)256)         //ä¸€é¡µçš„å¤§å°
+    #define FLASH_AREA_SIZE (FLASH_PAGE_SIZE*16)    //åŒºå¤§å°
+    #define FLASH_SIZE  ((uint32_t)(64*1024))       //Flashå¤§å°64K
 
-    #define FLASH_DATA_END  ((uint32_t)0x08009000)              //µôµç±£´æ¡¾Êı¾İÇø¡¿½áÊøµØÖ·
-    #define FLASH_DATA      (FLASH_DATA_END - FLASH_PAGE_SIZE)  //µôµç±£´æ¡¾Êı¾İÇø¡¿Ö»ÓĞÒ»Ò³(ÇëÈ·±£Õâ¸öÎ»ÖÃ²»ÔÚ³ÌĞò¶Î)
+    #define FLASH_DATA_END  ((uint32_t)0x08009000)              //æ‰ç”µä¿å­˜ã€æ•°æ®åŒºã€‘ç»“æŸåœ°å€
+    #define FLASH_DATA      (FLASH_DATA_END - FLASH_PAGE_SIZE)  //æ‰ç”µä¿å­˜ã€æ•°æ®åŒºã€‘åªæœ‰ä¸€é¡µ(è¯·ç¡®ä¿è¿™ä¸ªä½ç½®ä¸åœ¨ç¨‹åºæ®µ)
 
-    #define FLASH_CODE      FLASH_DATA_END              //Flash´æ·Å¡¾APPµÄ´úÂëÇø¡¿
-    #define FLASH_CODE_END  (0x08000000 + FLASH_SIZE)   //Flash´æ·Å¡¾APPµÄ´úÂëÇø¡¿Ò»Ö±µ½×î´óFlash
+    #define FLASH_CODE      FLASH_DATA_END              //Flashå­˜æ”¾ã€APPçš„ä»£ç åŒºã€‘
+    #define FLASH_CODE_END  (0x08000000 + FLASH_SIZE)   //Flashå­˜æ”¾ã€APPçš„ä»£ç åŒºã€‘ä¸€ç›´åˆ°æœ€å¤§Flash
 
-    #define FLASH_END       FLASH_CODE_END              //Flash×îÖÕµØÖ·
+    #define FLASH_END       FLASH_CODE_END              //Flashæœ€ç»ˆåœ°å€
 #endif
 
 typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
@@ -29,15 +29,13 @@ typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
 
 struct _Flash_DATA
 {
-    int addr;
-    char information;
-    char version;
-    char baud;
-    char IP;
-    char GPIO;
+    uint16_t addr;
+    uint16_t information;
+    uint16_t version;
+    uint16_t baud;
+    uint16_t IP;
+    uint16_t GPIO;
 };
-
-extern const struct _Flash_DATA Flash_DATA;
 
 int Read_Flash(int Address);
 char Clear_Flash_Page(int Addr);

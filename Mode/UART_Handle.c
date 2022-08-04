@@ -1,8 +1,6 @@
 #include "uart_handle.h"
 
-struct _Uart_Data CV_UART[5] = {0};
-
-volatile int ii;
+struct _Uart_Data CV_UART[1] = {0};
 
 void Uart_Init(char Channel, int Baud,int SET)
 {

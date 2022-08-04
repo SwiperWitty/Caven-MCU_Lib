@@ -1,6 +1,5 @@
 #include "adc.h"
 
-struct ADC_ ADC;
 char ADC_State = 0;
 int Calibrattion_Val = 0;
 
@@ -101,10 +100,9 @@ float Get_ADCx_Vol(uint8_t ADC_x)
 
 float Get_MCU_Temp(void)
 {
-    int temp,Refer_Volt, Refer_Temper;;
 	float temperate = 0;
 #ifdef Exist_ADC
-
+	int temp,Refer_Volt, Refer_Temper;
     ADC_RegularChannelConfig(ADC1, MCU_Temp, 1, ADC_SampleTime_239Cycles5);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE); //使能指定的ADC1的软件转换启动功能
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));

@@ -80,7 +80,7 @@ void Mode_Index(void)
 
 void Debug_Out(const char *String)              //选一个通信接口为Debug
 {
-#ifdef Exist_UART
-    UART_Send_String(3,String);
+#ifdef DEBUG_OUT
+    UART_Send_String(DEBUG_OUT,String);
 #endif
 }

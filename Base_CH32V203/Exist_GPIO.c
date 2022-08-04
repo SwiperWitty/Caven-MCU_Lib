@@ -6,12 +6,12 @@ void LCD_GPIO_Init(int SET)
     GPIO_InitTypeDef  GPIO_InitStructure;
     if (SET)
     {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);   //使能A端口时钟
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);   //浣胯兘A绔彛鏃堕挓
 
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;      //LCD_DC
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;         //推挽输出
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
-        GPIO_Init(GPIOA, &GPIO_InitStructure);    //初始化GPIOA
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;         //鎺ㄦ尳杈撳嚭
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//閫熷害50MHz
+        GPIO_Init(GPIOA, &GPIO_InitStructure);    //鍒濆鍖朑PIOA
     }
     else
     {
@@ -92,7 +92,7 @@ void KEY_GPIO_Init(int SET)
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_Init(GPIOC, &GPIO_InitStructure);
     }
-    PWR_BackupAccessCmd(DISABLE);/* 禁止修改RTC和后备寄存器*/
+    PWR_BackupAccessCmd(DISABLE);/* 绂佹淇敼RTC鍜屽悗澶囧瘎瀛樺櫒*/
 
 #endif
 }
@@ -106,13 +106,13 @@ void Ultrasonic_GPIO_Init(int SET)
     {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
         GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);    //使能PB端口时钟
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);    //浣胯兘PB绔彛鏃堕挓
 
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //推挽输出
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //鎺ㄦ尳杈撳嚭
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;                       //下拉输入
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;                       //涓嬫媺杈撳叆
         GPIO_Init(GPIOB, &GPIO_InitStructure);
     }
     else {

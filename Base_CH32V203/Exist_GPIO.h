@@ -6,26 +6,26 @@
 /*
                 GPIO_Init(Exist_GPIO)->
     SDK->Items->                       BASE->
-                Peripheral(UART¡¢ADC)->      \\
+                Peripheral(UARTã€ADC)->      \\
                                               -->[XXX]->MODE
                                              //
                         C(Lib)->Caven->API->
 */
 
 /*
-        ±¾ÎÄ¼þÔÚÉÏÊö¹ØÏµÍ¼ÖÐÊôÓÚ ¡¾GPIO_Init¡¿
-         ÕâÀï´æ·ÅµÄÊÇ¡¾Ö»Ê¹ÓÃGPIOÍâÉè¡¿¹¦ÄÜµÄ³õÊ¼»¯£¨KEY¡¢LED¡¢BZZ¡¢³¬Éù²¨µÈ£©¡£
-         ÆäËû¹¦ÄÜµÄ³õÊ¼»¯£¨ÀýÈçUART¡¢IIC£©£¬³ýÁËÏÈ³õÊ¼»¯¡¾GPIOÍâÉè¡¿»¹Òª¡¾¹¦ÄÜÍâÉè¡¿£¬ÕâÖÖ¹¦ÄÜµÄ³õÊ¼»¯GPIO²¢²»ÔÚ±¾ÎÄ¼þ·¶Î§ÄÚ¡£
-         IICÓÐÈí¼þ°æ±¾ºÍÓ²¼þ°æ±¾£¬ËùÒÔËüµÄGPIO¸ú±¾ÎÄ¼þÎÞ¹Ø¡£
-         µ«ÊÇLCDµÄÇý¶¯ÓÉSPIÐ­ÒéºÍDC£¨IO£©½Ó¿Ú×é³É£¬ÄÇÃ´Õâ¸öIO½Ó¿ÚÓÉ±¾ÎÄ¼þÌá¹©¡£
+        æœ¬æ–‡ä»¶åœ¨ä¸Šè¿°å…³ç³»å›¾ä¸­å±žäºŽ ã€GPIO_Initã€‘
+         è¿™é‡Œå­˜æ”¾çš„æ˜¯ã€åªä½¿ç”¨GPIOå¤–è®¾ã€‘åŠŸèƒ½çš„åˆå§‹åŒ–ï¼ˆKEYã€LEDã€BZZã€è¶…å£°æ³¢ç­‰ï¼‰ã€‚
+         å…¶ä»–åŠŸèƒ½çš„åˆå§‹åŒ–ï¼ˆä¾‹å¦‚UARTã€IICï¼‰ï¼Œé™¤äº†å…ˆåˆå§‹åŒ–ã€GPIOå¤–è®¾ã€‘è¿˜è¦ã€åŠŸèƒ½å¤–è®¾ã€‘ï¼Œè¿™ç§åŠŸèƒ½çš„åˆå§‹åŒ–GPIOå¹¶ä¸åœ¨æœ¬æ–‡ä»¶èŒƒå›´å†…ã€‚
+         IICæœ‰è½¯ä»¶ç‰ˆæœ¬å’Œç¡¬ä»¶ç‰ˆæœ¬ï¼Œæ‰€ä»¥å®ƒçš„GPIOè·Ÿæœ¬æ–‡ä»¶æ— å…³ã€‚
+         ä½†æ˜¯LCDçš„é©±åŠ¨ç”±SPIåè®®å’ŒDCï¼ˆIOï¼‰æŽ¥å£ç»„æˆï¼Œé‚£ä¹ˆè¿™ä¸ªIOæŽ¥å£ç”±æœ¬æ–‡ä»¶æä¾›ã€‚
 
-                                                                     ¡ª¡ª¡ª¡ª202207.14
+                                                                     â€”â€”â€”â€”202207.14
  */
 
 #ifdef Exist_LCD
     #define LCD_DC_Clr() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
     #define LCD_DC_Set() GPIOA->BSHR = GPIO_Pin_10   //PA10
-//    #define LCD_RES_Clr()                                     //RES               //Caven Ê¹ÓÃÓ²¼þ¸´Î»
+//    #define LCD_RES_Clr()                                     //RES               //Caven ä½¿ç”¨ç¡¬ä»¶å¤ä½
 //    #define LCD_RES_Set()
 #endif
 
@@ -34,7 +34,7 @@
     #define OLED_DC_Clr() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
     #define OLED_DC_Set() GPIOA->BSHR = GPIO_Pin_10   //PA10
 
-//    #define LCD_RES_Clr()                                     //RES               //Caven Ê¹ÓÃÓ²¼þ¸´Î»
+//    #define LCD_RES_Clr()                                     //RES               //Caven ä½¿ç”¨ç¡¬ä»¶å¤ä½
 //    #define LCD_RES_Set()
 #endif
 
@@ -50,7 +50,7 @@
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_Read() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,¶Á
+    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,è¯»
 #endif
 #ifdef Exist_Ultrasonic
     #define Trig_Clr() GPIOB->BCR = GPIO_Pin_4     //Ultrasonic
