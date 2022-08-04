@@ -12,6 +12,7 @@
                     C(Lib)->Caven->API->
 */
 
+#define DEBUG_OUT   3           //Debug 通道(目前是串口3)
                                                         /*  基本外设就能实现的功能    */
 #define Exist_SYS_TIME
 #define Exist_PWM

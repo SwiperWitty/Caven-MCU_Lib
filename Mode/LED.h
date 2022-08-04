@@ -19,6 +19,6 @@ struct LED_
 void LED_Init(int SET);
 
 void LED_SET(char Channel,int SET);
-void LED_REG(struct Caven_Color Color);
+void LED_REG(struct Caven_Color Color,int SET);
 
 #endif

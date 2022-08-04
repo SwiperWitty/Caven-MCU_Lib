@@ -39,8 +39,9 @@
 #endif
 
 #ifdef Exist_LED
-    #define LED_Clr() GPIOB->BRR = GPIO_Pin_11		//LED
-    #define LED_Set() GPIOB->BSRR = GPIO_Pin_11		//PB011
+    #define LED_Clr() GPIOA->BRR = GPIO_Pin_11		//LED
+    #define LED_Set() GPIOA->BSRR = GPIO_Pin_11		//PA011
+
 #endif
 #ifdef Exist_BZZ
 	#define BZZ_Clr() GPIOA->BRR = GPIO_Pin_12             //置低电平
