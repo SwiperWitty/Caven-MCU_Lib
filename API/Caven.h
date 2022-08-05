@@ -27,7 +27,7 @@
 #define U32 unsigned long
 #define S32 signed long
 
-#define Buff_Length 1200
+#define Buff_Length 0x200
     
 #define Destroy(X,N) memset((X),0,N)        //销毁 的地址 (X)  长度 (N)
 #define MAX(a,b)	(a>b)?a:b				//比较函数

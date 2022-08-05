@@ -19,10 +19,10 @@ void LED_SET(char Channel,int SET)
                 LED_Set();
             break;
         case 2:
-//            if(SET)
-//                LEDR_Clr();
-//            else
-//                LEDR_Set();
+            if(SET)
+                LEDR_Clr();
+            else
+                LEDR_Set();
             break;
         default:
             break;

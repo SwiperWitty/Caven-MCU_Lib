@@ -19,16 +19,16 @@
 //#define Exist_PWM
 //#define Exist_ENCODE
 
-//#define Exist_KEY
+#define Exist_KEY
 #define Exist_LED
-//#define Exist_BZZ
+#define Exist_BZZ
 
-//#define Exist_ADC
+#define Exist_ADC
 //#define Exist_DAC
 
 #define Exist_UART
 //#define Exist_IIC
-//#define Exist_SPI
+#define Exist_SPI
 //#define Exist_CAN
 
 #define Exist_FLASH
