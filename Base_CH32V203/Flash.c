@@ -1,5 +1,6 @@
 #include "Flash.h"
 #include "string.h"
+#include "Caven.h"
 
 volatile FLASH_Status EraseStatus,SaveStatus = 0;   //擦除状态、保存状态
 
@@ -142,7 +143,12 @@ char Clear_Flash_Area(int addr_start,int addr_end)
 
 /*
  * 清除256 byte只能使用快速的，快速的是不会有返回值的
- * 但是写数据有返回值
+ * 写数据也没有返回值
+ * 但是会有效验
+ * Save_Flash是严格按照页来储存的
+ * Addr :0X00A06    程序会从 0x00A00区域起，到0x00B00止（严格按页），未写的区域会备份，相当于需要的区域【 &0x00】 再 【|data】
+ * Data ：是数据的指针
+ * Lenght ：是指针偏移的极限位（偏移结果不应大于止地址，否则保存失败）
  */
 char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
 {
@@ -155,14 +161,15 @@ char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
 
     Address = 0x08000000 + (Page * FLASH_PAGE_SIZE);        //本页首地址(区倍数)
     Address_End = Address + FLASH_PAGE_SIZE;
-    if ((Lenght + Addr) > Address_End) {                    //地址溢出
-        return Status;
+    if ((Lenght + Addr) > Address_End) {                    //超长
+        Status = 0;         //仅覆盖一页，超的部分不管
     }
 //    printf("Address %x,now: %x \r\n",Address,Addr);     //debug
 
     uint16_t string[130];
     memcpy(string,(uint16_t *)Address,FLASH_PAGE_SIZE); //备份
-    memcpy(string + (Addr-Address)/2,Data,Lenght);      //载入
+    temp = MIN(Lenght,FLASH_PAGE_SIZE);
+    memcpy(string + (Addr-Address)/2,Data,temp);        //载入
 //    printf("string_start: [%d] %x \n",0,string[0]);
 //    printf("string [%d]: %x \n",(Addr-Address)/2,string[(Addr-Address)/2]);
 //    printf("string_end [%d]: %x \r\n",(FLASH_PAGE_SIZE-1)/2,string[(FLASH_PAGE_SIZE-1)/2]);
@@ -205,10 +212,11 @@ char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
 
     if(SaveStatus == FAILED)
     {
-        printf("FLASH Save Fail addr:%x flash:%x--str:%x \n",temp,Fast_Flash(0x0800a000),string[num]);
+        printf("FLASH Save Fail addr:%x flash:%x--str:%x \n",temp,Fast_Flash(temp),string[num]);
         Status = 0;
     }
     else {
+        printf("ok !\r\n");
         Status = 1;
     }
 

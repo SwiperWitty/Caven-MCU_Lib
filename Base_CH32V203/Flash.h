@@ -15,7 +15,7 @@
     #define FLASH_AREA_SIZE (FLASH_PAGE_SIZE*16)    //区大小
     #define FLASH_SIZE  ((uint32_t)(64*1024))       //Flash大小64K
 
-    #define FLASH_DATA_END  ((uint32_t)0x08009000)              //掉电保存【数据区】结束地址
+    #define FLASH_DATA_END  ((uint32_t)0x08005000)              //掉电保存【数据区】结束地址
     #define FLASH_DATA      (FLASH_DATA_END - FLASH_PAGE_SIZE)  //掉电保存【数据区】只有一页(请确保这个位置不在程序段)
 
     #define FLASH_CODE      FLASH_DATA_END              //Flash存放【APP的代码区】
