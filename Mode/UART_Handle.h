@@ -17,7 +17,7 @@
 struct _Uart_Data
 {
     struct Caven_Data DATA;
-    char Rxd_Received;
+    volatile char Rxd_Received;
 };
 
 struct Uart_
