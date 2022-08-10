@@ -212,11 +212,11 @@ char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
 
     if(SaveStatus == FAILED)
     {
-        printf("FLASH Save Fail addr:%x flash:%x--str:%x \n",temp,Fast_Flash(temp),string[num]);
+//        printf("FLASH Save Fail addr:%x flash:%x--str:%x \n",temp,Fast_Flash(temp),string[num]);
         Status = 0;
     }
     else {
-        printf("ok !\r\n");
+//        printf("ok !\r\n");
         Status = 1;
     }
 

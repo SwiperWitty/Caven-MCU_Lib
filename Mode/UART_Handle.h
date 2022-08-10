@@ -5,8 +5,9 @@
 #include "Caven.h"
 /*
         【API】      ————C语言环境即可运行
-
-
+    必读：
+    UART的数据是结构体数组，[0]是备用缓存区（可以作为任意串口之一的备份），所以串口1的数据区在CV_UART[1]，以此类推。
+    !注意!CV_UART.DATA.Buff的长度，这很重要!
 
 */
 #define END_Data    'N'             //这个作为串口接收【结束符】
@@ -27,7 +28,7 @@ struct Uart_
 };
 
 #ifdef Exist_UART
-    extern struct _Uart_Data CV_UART[1];
+    extern struct _Uart_Data CV_UART[2];
 #endif
 
 void Uart_Init(char Channel, int Baud, int SET);

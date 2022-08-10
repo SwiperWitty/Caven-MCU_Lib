@@ -1,6 +1,6 @@
 #include "uart_handle.h"
 
-struct _Uart_Data CV_UART[1] = {0};
+struct _Uart_Data CV_UART[2] = {0};
 
 void Uart_Init(char Channel, int Baud,int SET)
 {
@@ -48,12 +48,10 @@ static char Get_RXD(struct _Uart_Data *Target, char res) //接收处理函数
         }
         #endif
 
-        #ifdef UART_Length_MAX
         if (Target->DATA.Length > UART_Length_MAX) //超长（异常需要清零）
         {
             Target->Rxd_Received = 2;
         }
-        #endif
     }
     return Target->Rxd_Received;
 }
