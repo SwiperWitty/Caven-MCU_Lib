@@ -12,9 +12,9 @@
                     C(Lib)->Caven->API->
 */
 
-#define DEBUG_OUT   1           //Debug 通道(目前是串口1)
+#define DEBUG_OUT   1           //Debug 通道(目前是串口1)->MODE
 
-                                                        /*  基本外设就能实现的功能    */
+                                                    /*  基本外设就能实现的功能    */
 #define Exist_SYS_TIME
 //#define Exist_PWM
 //#define Exist_ENCODE
@@ -32,7 +32,7 @@
 //#define Exist_CAN
 
 #define Exist_FLASH
-                                                        /*  只需要加上逻辑才能的功能    */
+                                                    /*  只需要加上逻辑才能的功能    */
 //#define Exist_LCD
 //#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
 

@@ -4,17 +4,20 @@ void BZZ_Init(int SET)
 {
     #ifdef Exist_BZZ
     BZZ_GPIO_Init(SET);
-	BZZ_Set();
+    BZZ_Clr();
     #endif
 }
 
+/*
+ * 蜂鸣器必须用NPN管不然给爷死
+ */
 void BZZ_SET(int SET)
 {
     #ifdef Exist_BZZ
     if(SET)
-        BZZ_Clr();
-    else
         BZZ_Set();
+    else
+        BZZ_Clr();
     #endif
 }
 

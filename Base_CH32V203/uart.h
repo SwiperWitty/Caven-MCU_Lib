@@ -8,23 +8,24 @@
 
 /* 【宏函数群】   */
 
-#define UART_Channel_MAX  3     //最高通道数
+#define UART_Channel_MAX  2     //最高通道数
 
 #ifdef Exist_UART
 /*  中断   */
-void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
-//void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-//void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+
     #define UART1_Interrupt() USART1_IRQHandler()
     #define UART2_Interrupt() USART2_IRQHandler()
     #define UART3_Interrupt() USART3_IRQHandler()
-    #ifdef UART_Channel_MAX
+
+    void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
+    void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
+    void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
+
     #if UART_Channel_MAX >= 4
         #define UART4_Interrupt() UART4_IRQHandler()
     #endif
     #if UART_Channel_MAX >= 5
         #define UART5_Interrupt() UART5_IRQHandler()
-    #endif
     #endif
 
 #endif

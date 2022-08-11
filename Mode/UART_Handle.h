@@ -28,7 +28,7 @@ struct Uart_
 };
 
 #ifdef Exist_UART
-    extern struct _Uart_Data CV_UART[2];
+    extern struct _Uart_Data CV_UART[UART_Channel_MAX];
 #endif
 
 void Uart_Init(char Channel, int Baud, int SET);

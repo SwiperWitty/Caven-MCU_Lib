@@ -1,6 +1,6 @@
 #include "uart_handle.h"
 
-struct _Uart_Data CV_UART[2] = {0};
+struct _Uart_Data CV_UART[UART_Channel_MAX] = {0};
 
 void Uart_Init(char Channel, int Baud,int SET)
 {
