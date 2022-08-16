@@ -96,28 +96,22 @@ void KEY_GPIO_Init(int SET)
 
 #endif
 }
-void Ultrasonic_GPIO_Init(int SET)
+
+void GXIC_GPIO_Init(int SET)
 {
-#ifdef Exist_Ultrasonic
     GPIO_InitTypeDef GPIO_InitStructure = {0};
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;//Trig
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;//Echo
-    if (SET)
-    {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-        GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);    //使能PB端口时钟
+    if (SET) {
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;                    //推挽输出
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_14;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;                       //下拉输入
         GPIO_Init(GPIOB, &GPIO_InitStructure);
     }
     else {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_13;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
     }
-#endif
 }
+

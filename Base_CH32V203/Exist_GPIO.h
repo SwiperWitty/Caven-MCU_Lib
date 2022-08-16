@@ -52,11 +52,10 @@
 #ifdef Exist_KEY
     #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,读
 #endif
-#ifdef Exist_Ultrasonic
-    #define Trig_Clr() GPIOB->BCR = GPIO_Pin_4     //Ultrasonic
-    #define Trig_Set() GPIOB->BSHR = GPIO_Pin_4
-    #define Echo_Read() GPIOB->INDR & GPIO_Pin_5
-#endif
+
+    #define Reset_L() GPIOB->BCR = GPIO_Pin_14
+    #define Reset_H() GPIOB->BSHR = GPIO_Pin_14
+
 
 /*  Init-Function    */
 
@@ -66,6 +65,6 @@ void LED_GPIO_Init(int SET);
 void BZZ_GPIO_Init(int SET);
 
 void KEY_GPIO_Init(int SET);
-void Ultrasonic_GPIO_Init(int SET);
+void GXIC_GPIO_Init(int SET);
 
 #endif

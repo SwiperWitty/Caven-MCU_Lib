@@ -41,7 +41,7 @@ void IIC_Init(int SET)
 #ifdef Exist_IIC
 static void IIC_Delay (int time)
 {
-    int temp;
+    volatile int temp;
     for (int i = 0; i < time; ++i)
     {
         temp = IIC_Base_Speed;            //SET

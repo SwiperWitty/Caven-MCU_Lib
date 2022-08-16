@@ -1,5 +1,6 @@
 #include "LED.h"
 
+
 void LED_Init(int SET)
 {
 #ifdef Exist_LED
@@ -33,12 +34,11 @@ void LED_SET(char Channel,int SET)
 
 void WS2812_Delay(int time)
 {
-	int temp = 0;
-	do
-	{
-		temp = 11;
-		while(temp--);
-	}while(time--);
+    volatile int var;
+    for (var = time;var > 0;var--)
+    {
+
+    }
 }
 
 void WS2812_Reset (void)
@@ -53,22 +53,22 @@ void WS2812_write_byte(char data)
 	char temp = data;
 	for(char i = 0; i < 8; i++)
 	{
-		if((temp << i) & 0x80)
-		{
-			LED_Set();
-			WS2812_Delay(8);
-			LED_Clr();
-			WS2812_Delay(4);
-		}
-		else
-		{
-			LED_Set();
-			WS2812_Delay(4);
-			LED_Clr();
-			WS2812_Delay(8);
-		}
+	    if((temp << i) & 0x80)
+	    {
+	        LED_Set();
+	        WS2812_Delay(6);
+	        LED_Clr();
+	        WS2812_Delay(3);
+	    }
+	    else
+	    {
+            LED_Set();
+            WS2812_Delay(3);
+            LED_Clr();
+	        WS2812_Delay(6);
+        }
 	}
-	LED_Set();
+	LED_Clr();
 }
 
 void LED_REG(struct Caven_Color Color,int SET)
@@ -76,9 +76,9 @@ void LED_REG(struct Caven_Color Color,int SET)
 	WS2812_Reset ();
 	if(SET)
 	{
-		WS2812_write_byte(0xf0);
-		WS2812_write_byte(0xf0);
-		WS2812_write_byte(0xf0);
+		WS2812_write_byte(0x01);
+		WS2812_write_byte(0x01);
+		WS2812_write_byte(0x00);
 	}
 	else
 	{
