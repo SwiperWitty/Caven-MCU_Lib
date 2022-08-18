@@ -29,10 +29,7 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 #ifdef Exist_LED
     Mode_User.LED.LED_SET = LED_SET;
     Mode_User.LED.LED_REG = LED_REG;
-<<<<<<< HEAD
-=======
-	
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
+
 #endif
 #ifdef Exist_BZZ
     Mode_User.BZZ.BZZ_SET = BZZ_SET;
@@ -84,11 +81,7 @@ void Mode_Index(void)
 
 void Debug_Out(const char *String)              //选一个通信接口为Debug
 {
-<<<<<<< HEAD
 #ifdef Exist_UART
-=======
-#ifdef DEBUG_OUT
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
     UART_Send_String(DEBUG_OUT,String);
 #endif
 }

@@ -4,12 +4,9 @@
 
 U16 BACK_COLOR = BLACK; //背景色
 
-<<<<<<< HEAD
-void LCD_Writ_Bus(U8 dat)
-=======
+
 #ifdef Exist_LCD
-void LCD_Writ_Bus(u8 dat)
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
+void LCD_Writ_Bus(U8 dat)
 {
 	SPI_Send_DATA(2, dat);
 }
@@ -108,12 +105,8 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 ******************************************************************************/
 void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 {
-<<<<<<< HEAD
-	U16 i, j;
-=======
 #ifdef Exist_LCD
-	u16 i, j;
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
+	U16 i, j;
 	LCD_Address_Set(x_sta, y_sta, x_end - 1, y_end - 1); //设置显示范围
 	for (i = y_sta; i < y_end; i++)
 	{
@@ -148,12 +141,8 @@ void LCD_Draw_Point(U16 x, U16 y, U16 color)
 ******************************************************************************/
 void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 {
-<<<<<<< HEAD
-	U16 t;
-=======
 #ifdef Exist_LCD
-	u16 t;
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
+	U16 t;
 	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
 	int incx, incy, uRow, uCol;
 	delta_x = x2 - x1; //计算坐标增量
@@ -501,14 +490,9 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 ******************************************************************************/
 void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[])
 {
-<<<<<<< HEAD
+#ifdef Exist_LCD
 	U16 i, j;
 	U32 k = 0;
-=======
-#ifdef Exist_LCD
-	u16 i, j;
-	u32 k = 0;
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
 	LCD_Address_Set(x, y, x + length - 1, y + width - 1);
 	for (i = 0; i < length; i++)
 	{

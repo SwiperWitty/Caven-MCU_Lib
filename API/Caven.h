@@ -63,17 +63,11 @@ struct Caven_Data           //这个数据是动态的
 {
     U16 Length;                     //目前接收到的数据长度
     volatile U16 Run_num;           //目前运行/处理到的数据个数
-<<<<<<< HEAD
-    
-    char index;
-    U8 *Pointer_8;
-=======
 
     char index;                     //哪个指针会存放数据
-    U8 *Pointer_U8;
->>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
-    U16 *Pointer_16;
-    int *Pointer_32;
+    U8 *Poit_U8;
+    U16 *Poit_U16;
+    int *Poit_U32;
 };
 
 
