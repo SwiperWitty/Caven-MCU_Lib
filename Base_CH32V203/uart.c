@@ -6,15 +6,15 @@ void Uart1_Init(int Baud,int SET)
 	USART_InitTypeDef USART_InitStructure = {0};
 	NVIC_InitTypeDef NVIC_InitStructure = {0};
 	USART_TypeDef * UART_Temp = USART1;
-    FunctionalState Able_temp;
+	FunctionalState temp;
 
     if(SET)
-        Able_temp = ENABLE;
+        temp = ENABLE;
     else
-        Able_temp = DISABLE;
+        temp = DISABLE;
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, Able_temp);	  // USART1  (APB2)
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, temp);	  // USART1  (APB2)
 //  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟(暂不需要)
 //  GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);     //端口复用
     USART_DeInit(UART_Temp);
@@ -24,9 +24,14 @@ void Uart1_Init(int Baud,int SET)
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;       // TXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    if (Able_temp)
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    if (!temp)
+    {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9 | GPIO_Pin_10;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    }
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     USART_InitStructure.USART_BaudRate = Baud;
@@ -36,15 +41,15 @@ void Uart1_Init(int Baud,int SET)
     USART_InitStructure.USART_StopBits = USART_StopBits_1;							//
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;						//
     USART_Init(UART_Temp, &USART_InitStructure);
-    USART_ITConfig(UART_Temp, RXD_Falg, Able_temp);                                 //
+    USART_ITConfig(UART_Temp, RXD_Falg, temp);                                 //
 
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		  //响应优先级
-    NVIC_InitStructure.NVIC_IRQChannelCmd = Able_temp;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = temp;
     NVIC_Init(&NVIC_InitStructure);
     
-    USART_Cmd(UART_Temp, Able_temp);
+    USART_Cmd(UART_Temp, temp);
 }
 void Uart2_Init(int Baud,int SET)
 {
@@ -70,6 +75,13 @@ void Uart2_Init(int Baud,int SET)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;			  // USART2 RX；
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入；
     GPIO_Init(GPIOA, &GPIO_InitStructure);				  //端口A；
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+    if (!temp)
+    {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_3;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    }
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
 
     USART_InitStructure.USART_BaudRate = Baud;					//波特率；
     USART_InitStructure.USART_WordLength = USART_WordLength_8b; //数据位8位；

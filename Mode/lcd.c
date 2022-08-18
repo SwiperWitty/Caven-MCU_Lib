@@ -1,13 +1,17 @@
 #include "lcd.h"
+#include "pic.h"
 #include "lcdfont.h" //字库
 
 U16 BACK_COLOR = BLACK; //背景色
 
+<<<<<<< HEAD
 void LCD_Writ_Bus(U8 dat)
-{
+=======
 #ifdef Exist_LCD
+void LCD_Writ_Bus(u8 dat)
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
+{
 	SPI_Send_DATA(2, dat);
-#endif
 }
 
 /******************************************************************************
@@ -17,10 +21,8 @@ void LCD_Writ_Bus(U8 dat)
 ******************************************************************************/
 void LCD_WR_DATA8(U8 dat)
 {
-#ifdef Exist_LCD
 	LCD_DC_Set(); //写数据
 	LCD_Writ_Bus(dat);
-#endif
 }
 
 /******************************************************************************
@@ -30,11 +32,9 @@ void LCD_WR_DATA8(U8 dat)
 ******************************************************************************/
 void LCD_WR_DATA(U16 dat)
 {
-#ifdef Exist_LCD
 	LCD_DC_Set(); //写数据
 	LCD_Writ_Bus(dat >> 8);
 	LCD_Writ_Bus(dat);
-#endif
 }
 
 /******************************************************************************
@@ -44,10 +44,8 @@ void LCD_WR_DATA(U16 dat)
 ******************************************************************************/
 void LCD_WR_REG(U8 dat)
 {
-#ifdef Exist_LCD
 	LCD_DC_Clr(); //写命令
 	LCD_Writ_Bus(dat);
-#endif
 }
 
 /******************************************************************************
@@ -99,6 +97,7 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 		LCD_WR_REG(0x2c); //储存器写
 	}
 }
+#endif
 
 /******************************************************************************
 	  函数说明：在指定区域填充颜色
@@ -109,7 +108,12 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 ******************************************************************************/
 void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 {
+<<<<<<< HEAD
 	U16 i, j;
+=======
+#ifdef Exist_LCD
+	u16 i, j;
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
 	LCD_Address_Set(x_sta, y_sta, x_end - 1, y_end - 1); //设置显示范围
 	for (i = y_sta; i < y_end; i++)
 	{
@@ -118,6 +122,7 @@ void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 			LCD_WR_DATA(color);
 		}
 	}
+#endif
 }
 
 /******************************************************************************
@@ -128,8 +133,10 @@ void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 ******************************************************************************/
 void LCD_Draw_Point(U16 x, U16 y, U16 color)
 {
+#ifdef Exist_LCD
 	LCD_Address_Set(x, y, x, y); //设置光标位置
 	LCD_WR_DATA(color);
+#endif
 }
 
 /******************************************************************************
@@ -141,7 +148,12 @@ void LCD_Draw_Point(U16 x, U16 y, U16 color)
 ******************************************************************************/
 void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 {
+<<<<<<< HEAD
 	U16 t;
+=======
+#ifdef Exist_LCD
+	u16 t;
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
 	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
 	int incx, incy, uRow, uCol;
 	delta_x = x2 - x1; //计算坐标增量
@@ -186,6 +198,7 @@ void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 			uCol += incy;
 		}
 	}
+#endif
 }
 
 /******************************************************************************
@@ -197,6 +210,7 @@ void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 ******************************************************************************/
 void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 {
+
 	LCD_Draw_Line(x1, y1, x2, y1, color);
 	LCD_Draw_Line(x1, y1, x1, y2, color);
 	LCD_Draw_Line(x1, y2, x2, y2, color);
@@ -487,8 +501,14 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 ******************************************************************************/
 void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[])
 {
+<<<<<<< HEAD
 	U16 i, j;
 	U32 k = 0;
+=======
+#ifdef Exist_LCD
+	u16 i, j;
+	u32 k = 0;
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
 	LCD_Address_Set(x, y, x + length - 1, y + width - 1);
 	for (i = 0; i < length; i++)
 	{
@@ -499,6 +519,7 @@ void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char p
 			k++;
 		}
 	}
+#endif
 }
 
 #ifdef Exist_LCD

@@ -1,6 +1,5 @@
 #include "key.h"
 
-
 void KEY_Init (char Channel,int SET)
 {
     switch (Channel) {
@@ -21,19 +20,19 @@ void KEY_Init (char Channel,int SET)
     }
 }
 
-char KEY_State (char Channel)
+U8 KEY_State (char Channel)
 {
-    char temp = 1;
+    U8 temp = 1;
+	#ifdef Exist_KEY
     switch (Channel) {
         case 0:
             break;
         case 1:
-        #ifdef Exist_KEY
-            temp = KEY_Read();
-        #endif
+            temp = KEY_IN();
             break;
         default:
             break;
     }
+	#endif
     return temp;
 }

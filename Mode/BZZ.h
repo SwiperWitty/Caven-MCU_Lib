@@ -2,6 +2,7 @@
 #define _BZZ__H_
 
 #include "Base.h"
+#include "Caven.h"
 
 /*
         【MODE】      ————C语言环境即可运行

@@ -36,7 +36,8 @@ void Sys_Time_Init (int Set)
             while(1);
     }
     else
-        NVIC_SystemReset();
+//        NVIC_SystemReset();
+        SysTick->CTLR = (u32)0x00;
     
     #else
     if(Set)

@@ -1,6 +1,5 @@
 #include "adc.h"
 
-struct ADC_ ADC;
 char ADC_State = 0;
 int Calibrattion_Val = 0;
 
@@ -10,8 +9,8 @@ void ADCx_Init(char ADC_x, int SET)
 	GPIO_InitTypeDef GPIO_InitStructure = {0};
 	ADC_InitTypeDef ADC_InitStructure = {0};
 
-    FunctionalState Able_temp = DISABLE;
-    if (SET) Able_temp = ENABLE;
+    FunctionalState temp = DISABLE;
+    if (SET) temp = ENABLE;
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);	  // ADC 时钟
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -45,7 +44,7 @@ void ADCx_Init(char ADC_x, int SET)
             break;
 
         case MCU_Temp:
-            ADC_TempSensorVrefintCmd(Able_temp);
+            ADC_TempSensorVrefintCmd(temp);
             break;
         default:
             return;
@@ -101,10 +100,9 @@ float Get_ADCx_Vol(uint8_t ADC_x)
 
 float Get_MCU_Temp(void)
 {
-    int temp,Refer_Volt, Refer_Temper;;
 	float temperate = 0;
 #ifdef Exist_ADC
-
+	int temp,Refer_Volt, Refer_Temper;
     ADC_RegularChannelConfig(ADC1, MCU_Temp, 1, ADC_SampleTime_239Cycles5);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE); //使能指定的ADC1的软件转换启动功能
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));

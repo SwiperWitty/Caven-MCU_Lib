@@ -134,9 +134,7 @@ void SPI_Send_DATA(char Channel,const char DATA)
 {
 #ifdef Exist_SPI
     #if(SPI_MODE == HOST_MODE)
-    #ifdef SPI_Software
-    char temp;
-    #endif
+
     switch (Channel) {
         case 1:
         #ifdef SPI_Software
@@ -144,8 +142,7 @@ void SPI_Send_DATA(char Channel,const char DATA)
             for (int i = 0; i < 8; i++)
             {
                 SPI1_SCK_L();           //预备上升沿
-                temp = (DATA << i) & 0x80;
-                if (temp)
+                if ((DATA << i) & 0x80)
                     SPI1_MOSI_H();      //数据1
                 else
                     SPI1_MOSI_L();      //数据0
@@ -167,8 +164,7 @@ void SPI_Send_DATA(char Channel,const char DATA)
             for (int i = 0; i < 8; i++)
             {
                 SPI2_SCK_L();           //预备上升沿
-                temp = (DATA << i) & 0x80;
-                if (temp)
+                if ((DATA << i) & 0x80)
                     SPI2_MOSI_H();      //数据1
                 else
                     SPI2_MOSI_L();      //数据0

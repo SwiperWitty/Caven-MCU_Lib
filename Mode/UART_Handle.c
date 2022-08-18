@@ -15,14 +15,22 @@ void Uart_Init(char Channel, int Baud,int SET)
     case 2:
         Uart2_Init(Baud,SET);
         break;
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
 #ifdef UART_Channel_MAX
     #if UART_Channel_MAX >= 3
     case 3:
         Uart3_Init(Baud,SET);
         break;
     #endif
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
     #if UART_Channel_MAX >= 4
     case 4:
         Uart4_Init(Baud,SET);
@@ -61,7 +69,11 @@ static char Get_RXD(struct _Uart_Data *Target, char res) //接收处理函数
             Target->Rxd_Received = 2;
         }
         #endif
+<<<<<<< HEAD
         Target->DATA.Pointer_8 = Target->UART_RxdBuff;
+=======
+        Target->DATA.Pointer_U8 = Target->UART_RxdBuff;
+>>>>>>> 0bde869a2086c5282b2884c117be6071a1c564dc
     }
     return Target->Rxd_Received;
 }
@@ -135,8 +147,8 @@ char UART_Send_Data(char Channel, const U8 *Data, int Length)
 #ifdef Exist_UART
     if (Length > UART_Length_MAX)
         return 0;
-	if (Channel > UART_Channel_MAX)
-		return (char)-1;
+    if (Channel > UART_Channel_MAX)
+        return (char)-1;
 
     int temp = Length;
     int i = 0;
@@ -151,6 +163,6 @@ char UART_Send_Data(char Channel, const U8 *Data, int Length)
 void UART_Send_String(char Channel, const char *String)
 {
     int Length = strlen(String);
-	UART_Send_Data(Channel,(U8 *)String,Length);
+    UART_Send_Data(Channel,(U8 *)String,Length);
 }
 

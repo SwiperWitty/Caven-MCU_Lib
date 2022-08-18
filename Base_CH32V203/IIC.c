@@ -38,10 +38,10 @@ void IIC_Init(int SET)
 #endif
 }
 // **   //
-
+#ifdef Exist_IIC
 static void IIC_Delay (int time)
 {
-    int temp;
+    volatile int temp;
     for (int i = 0; i < time; ++i)
     {
         temp = IIC_Base_Speed;            //SET
@@ -49,7 +49,7 @@ static void IIC_Delay (int time)
     }
 }
 
-void IIC_StartBit(void)//  ¿ªÊ¼
+void IIC_StartBit(void)//  å¼€å§‹
 {
     IIC_SCL_L();  // Set SCL line
     IIC_SDA_Satar (IIC_Mode_OUT);
@@ -60,12 +60,12 @@ void IIC_StartBit(void)//  ¿ªÊ¼
     IIC_SDA_L();  // Clear SDA line
     IIC_Delay(1); // Hold time after (Repeated) Start
     // Condition. After this period, the first clock is generated.
-    //(Thd:sta=4.0us min)ÔÚSCK=1Ê±£¬¼ì²âµ½SDAÓÉ1µ½0±íÊ¾Í¨ÐÅ¿ªÊ¼£¨ÏÂ½µÑØ£©
+    //(Thd:sta=4.0us min)åœ¨SCK=1æ—¶ï¼Œæ£€æµ‹åˆ°SDAç”±1åˆ°0è¡¨ç¤ºé€šä¿¡å¼€å§‹ï¼ˆä¸‹é™æ²¿ï¼‰
     IIC_SCL_L();  // Clear SCL line
     IIC_Delay(1); // Wait a few microseconds
 }
 
-void IIC_StopBit(void)//  Í£Ö¹
+void IIC_StopBit(void)//  åœæ­¢
 {
     IIC_SCL_L();  // Clear SCL line
     IIC_SDA_Satar (IIC_Mode_OUT);
@@ -74,10 +74,10 @@ void IIC_StopBit(void)//  Í£Ö¹
     IIC_Delay(1); // Wait a few microseconds
     IIC_SCL_H();  // Set SCL line           /*  END    */
     IIC_Delay(1); // Stop condition setup time(Tsu:sto=4.0us min)
-    IIC_SDA_H();  // Set SDA lineÔÚSCL=1Ê±£¬¼ì²âµ½SDAÓÉ0µ½1±íÊ¾Í¨ÐÅ½áÊø£¨ÉÏÉýÑØ£©
+    IIC_SDA_H();  // Set SDA lineåœ¨SCL=1æ—¶ï¼Œæ£€æµ‹åˆ°SDAç”±0åˆ°1è¡¨ç¤ºé€šä¿¡ç»“æŸï¼ˆä¸Šå‡æ²¿ï¼‰
 }
 
-void IIC_ASK(void)      //ËÙ¶È¿ì£¬²»ÔÚºõÊÇ·ñÓÐ´ÓÉè±¸
+void IIC_ASK(void)      //é€Ÿåº¦å¿«ï¼Œä¸åœ¨ä¹Žæ˜¯å¦æœ‰ä»Žè®¾å¤‡
 {
     IIC_SCL_L();
     IIC_SDA_L();
@@ -86,7 +86,7 @@ void IIC_ASK(void)      //ËÙ¶È¿ì£¬²»ÔÚºõÊÇ·ñÓÐ´ÓÉè±¸
     IIC_Delay(2);
 }
 
-void IIC_NASK(void)     //»ù±¾²»ÓÃ
+void IIC_NASK(void)     //åŸºæœ¬ä¸ç”¨
 {
     IIC_SCL_L();
     IIC_SDA_H();
@@ -95,7 +95,7 @@ void IIC_NASK(void)     //»ù±¾²»ÓÃ
     IIC_Delay(2);
 }
 
-char IIC_WaitASK(void)  //Ò»¶¨ÒªÓÐ´ÓÉè±¸ÏìÓ¦
+char IIC_WaitASK(void)  //ä¸€å®šè¦æœ‰ä»Žè®¾å¤‡å“åº”
 {
     char temp = 0;
     int Time = 0;
@@ -106,7 +106,7 @@ char IIC_WaitASK(void)  //Ò»¶¨ÒªÓÐ´ÓÉè±¸ÏìÓ¦
     do {
         IIC_Delay(1);
         Time++;
-        if (IIC_SDA_IN() == 0)      //ÕÒµ½Êý¾Ý£¬¼´¿ÉÌø³ö
+        if (IIC_SDA_IN() == 0)      //æ‰¾åˆ°æ•°æ®ï¼Œå³å¯è·³å‡º
         {
             temp = 1;
             break;
@@ -114,6 +114,7 @@ char IIC_WaitASK(void)  //Ò»¶¨ÒªÓÐ´ÓÉè±¸ÏìÓ¦
     } while (Time < 20);
     return temp;
 }
+#endif
 
 void IIC_Write_DATA(char DATA,int Speed)
 {
@@ -121,7 +122,7 @@ void IIC_Write_DATA(char DATA,int Speed)
     char temp;
     IIC_SDA_Satar (IIC_Mode_OUT);
     for (int i = 0; i < 8; i++) {
-        IIC_SCL_L();      //×¼±¸Êý¾Ý±ä¸ü
+        IIC_SCL_L();      //å‡†å¤‡æ•°æ®å˜æ›´
         IIC_Delay(Speed);
         temp = (DATA << i) & 0x80;
         if (temp)
@@ -129,7 +130,7 @@ void IIC_Write_DATA(char DATA,int Speed)
         else
             IIC_SDA_L();
         IIC_Delay(Speed);
-        IIC_SCL_H();      //Êý¾Ý±ä¸üÍê³É
+        IIC_SCL_H();      //æ•°æ®å˜æ›´å®Œæˆ
         IIC_Delay(Speed);
     }
 #endif
@@ -142,11 +143,11 @@ char IIC_Read_DATA(char DATA,int Speed)
 
     IIC_SDA_Satar (IIC_Mode_IN);
     for (int i = 0; i < 8; i++) {
-        IIC_SCL_L();      //×¼±¸Êý¾Ý±ä¸ü
+        IIC_SCL_L();      //å‡†å¤‡æ•°æ®å˜æ›´
         IIC_Delay(Speed);
         temp = ((char)IIC_SDA_IN() << i);
         IIC_Delay(Speed);
-        IIC_SCL_H();      //Êý¾Ý±ä¸üÍê³É
+        IIC_SCL_H();      //æ•°æ®å˜æ›´å®Œæˆ
         IIC_Delay(Speed);
     }
 #endif
@@ -158,8 +159,8 @@ char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed)
     char BK = 0;
 #ifdef Exist_IIC
     IIC_StartBit();
-    IIC_Write_DATA((Addr << 1) & 0xFE,Speed);      //Ð´Ä£Ê½
-    if(ACK && BK == 0)      //ÐèÒªÊ¹ÓÃACK
+    IIC_Write_DATA((Addr << 1) & 0xFE,Speed);      //å†™æ¨¡å¼
+    if(ACK && BK == 0)      //éœ€è¦ä½¿ç”¨ACK
     {
         BK = IIC_WaitASK();
         if (BK == 0)
@@ -173,14 +174,14 @@ char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed)
         IIC_ASK();
         BK = 1;
     }
-    //µØÖ·½áÊø
+    //åœ°å€ç»“æŸ
     for (int i = 0; i < Length; ++i)
     {
         IIC_Write_DATA(Data[i],Speed);
         if(ACK && BK == 0)
         {
             BK = IIC_WaitASK();
-            if (BK == 0)    //ÓÐÒ»´Î²»³É¹¦
+            if (BK == 0)    //æœ‰ä¸€æ¬¡ä¸æˆåŠŸ
             {
                 break;
             }
@@ -188,9 +189,9 @@ char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed)
         else if(ACK == 0)
             IIC_ASK();
     }
-    //Êý¾Ý½áÊø
+    //æ•°æ®ç»“æŸ
     IIC_StopBit();
-//IIC½áÊø
+//IICç»“æŸ
 #endif
     return BK;
 }
@@ -200,8 +201,8 @@ char IIC_Receive_DATA(char Addr,const char *Data,char *Target,char ACK,int Lengt
     char BK = 0;
 #ifdef Exist_IIC
     IIC_StartBit();
-    IIC_Write_DATA((Addr << 1) | 0x01,Speed);      //¶ÁÄ£Ê½
-    if(ACK && BK == 0)      //ÐèÒªÊ¹ÓÃACK
+    IIC_Write_DATA((Addr << 1) | 0x01,Speed);      //è¯»æ¨¡å¼
+    if(ACK && BK == 0)      //éœ€è¦ä½¿ç”¨ACK
     {
         BK = IIC_WaitASK();
         if (BK == 0)
@@ -210,16 +211,16 @@ char IIC_Receive_DATA(char Addr,const char *Data,char *Target,char ACK,int Lengt
             return BK;
         }
     }
-    else if(ACK == 0)       //²»ÐèÒªÊ¹ÓÃACK
+    else if(ACK == 0)       //ä¸éœ€è¦ä½¿ç”¨ACK
     {
         IIC_ASK();
         BK = 1;
     }
-    //µØÖ·½áÊø
+    //åœ°å€ç»“æŸ
     Target[0] = IIC_Read_DATA(Data[0],Speed);
 
     IIC_StopBit();
-//IIC½áÊø
+//IICç»“æŸ
 #endif
     return BK;
 }

@@ -2,14 +2,15 @@
 #define _KEY__H_
 
 #include "Base.h"
+#include "Caven.h"
 
 struct KEY_
 {
-    char (*KEY_State) (char Channel);
+    U8 (*KEY_State) (char Channel);
 };
 
 void KEY_Init (char Channel,int SET);
-char KEY_State (char Channel);
+U8 KEY_State (char Channel);
 
 
 #endif
