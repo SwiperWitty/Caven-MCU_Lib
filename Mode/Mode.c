@@ -28,6 +28,7 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 
 #ifdef Exist_LED
     Mode_User.LED.LED_SET = LED_SET;
+    Mode_User.LED.LED_REG = LED_REG;
 	
 #endif
 #ifdef Exist_BZZ

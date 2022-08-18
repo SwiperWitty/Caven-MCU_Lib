@@ -56,7 +56,7 @@ void WS2812_write_byte(char data)
 	    if((temp << i) & 0x80)
 	    {
 	        LED_Set();
-	        WS2812_Delay(6);
+	        WS2812_Delay(7);
 	        LED_Clr();
 	        WS2812_Delay(3);
 	    }
@@ -73,10 +73,10 @@ void WS2812_write_byte(char data)
 
 void LED_REG(struct Caven_Color Color,int SET)
 {
-	WS2812_Reset ();
+//    NVIC_SETPRIMASK();
 	if(SET)
 	{
-		WS2812_write_byte(0x01);
+		WS2812_write_byte(0xaa);
 		WS2812_write_byte(0x01);
 		WS2812_write_byte(0x00);
 	}
@@ -86,5 +86,6 @@ void LED_REG(struct Caven_Color Color,int SET)
 		WS2812_write_byte(0);
 		WS2812_write_byte(0);
 	}
+//	NVIC_RESETPRIMASK();
 }
 
