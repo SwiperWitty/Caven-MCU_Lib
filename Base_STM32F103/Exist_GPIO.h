@@ -41,6 +41,8 @@
 #ifdef Exist_LED
     #define LED_Clr() GPIOA->BRR = GPIO_Pin_11		//LED
     #define LED_Set() GPIOA->BSRR = GPIO_Pin_11		//PA011
+    #define LEDR_Clr() GPIOA->BRR = GPIO_Pin_11		//LED
+    #define LEDR_Set() GPIOA->BSRR = GPIO_Pin_11		//PA011
 
 #endif
 #ifdef Exist_BZZ

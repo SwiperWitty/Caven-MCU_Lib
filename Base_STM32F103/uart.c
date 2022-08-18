@@ -348,3 +348,10 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
     USART_SendData(Temp, DATA);
     USART_ClearFlag(Temp, TXD_Falg);
 }
+
+int fputc(int ch, FILE *f)      //printf
+{
+    USART_SendData(USART1,(uint8_t)ch);
+    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+    return (ch);
+}
