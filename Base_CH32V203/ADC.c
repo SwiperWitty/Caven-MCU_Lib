@@ -9,8 +9,8 @@ void ADCx_Init(char ADC_x, int SET)
 	GPIO_InitTypeDef GPIO_InitStructure = {0};
 	ADC_InitTypeDef ADC_InitStructure = {0};
 
-    FunctionalState Able_temp = DISABLE;
-    if (SET) Able_temp = ENABLE;
+    FunctionalState temp = DISABLE;
+    if (SET) temp = ENABLE;
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);	  // ADC 时钟
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -44,7 +44,7 @@ void ADCx_Init(char ADC_x, int SET)
             break;
 
         case MCU_Temp:
-            ADC_TempSensorVrefintCmd(Able_temp);
+            ADC_TempSensorVrefintCmd(temp);
             break;
         default:
             return;

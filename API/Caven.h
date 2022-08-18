@@ -9,6 +9,7 @@
 #include "stdlib.h"
 #include "string.h"
 
+
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->
                                          \\
@@ -17,9 +18,6 @@
                     C(Lib)->Caven->API->
 */
 
-#define DIS  0
-#define EN 1
-
 #define U8 unsigned char
 #define S8 signed char
 #define U16 unsigned short
@@ -27,11 +25,11 @@
 #define U32 unsigned long
 #define S32 signed long
 
-#define Buff_Length 0x200
+#define Buff_Length 500
     
 #define Destroy(X,N) memset((X),0,N)        //销毁 的地址 (X)  长度 (N)
-#define MAX(a,b)	(a>b)?a:b				//比较函数
-#define MIN(a,b)	(a<b)?a:b				//比较函数
+#define MAX(a,b)    (a>b)?a:b               //比较函数，防止过小
+#define MIN(a,b)    (a<b)?a:b               //比较函数，防止过大
 
 struct Caven_Date
 {
@@ -44,10 +42,10 @@ struct Caven_Date
 struct Caven_Watch
 {
     char date;              //此位只有0/1提醒系统已经是下一天了
-	char hour;
-	char minutes;
-	char second;
-	volatile int time_num;			//这是中断溢出次数 10 0000为1S
+    char hour;
+    char minutes;
+    char second;
+    volatile int time_num;          //这是中断溢出次数 10 0000为1S
 };
 
 struct Caven_Color
@@ -57,14 +55,18 @@ struct Caven_Color
     char BULE;
 };
 
+//DATA
 //让 Run_num 去追 Length，如果 (Length - Run_num)为0，且过了很长的时间，那么这个数据就该结束了
+//将不在这个DATA存放数据，因为MCU内存不一样，规划的空间也不同，所以空间占用大小应该由MCU文件决定，而不是Caven文件。
 
 struct Caven_Data           //这个数据是动态的
 {
     U16 Length;                     //目前接收到的数据长度
     volatile U16 Run_num;           //目前运行/处理到的数据个数
-    U8 Buff[Buff_Length];
-    char *Pointer_8;
+
+    char index;                     //哪个指针会存放数据
+    U8 *Pointer_U8;
+    U16 *Pointer_16;
     int *Pointer_32;
 };
 
