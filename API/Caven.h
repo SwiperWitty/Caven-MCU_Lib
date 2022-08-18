@@ -9,6 +9,7 @@
 #include "stdlib.h"
 #include "string.h"
 
+
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->
                                          \\
@@ -27,7 +28,7 @@
 #define U32 unsigned long
 #define S32 signed long
 
-#define Buff_Length 1200
+#define Buff_Length 500
     
 #define Destroy(X,N) memset((X),0,N)        //销毁 的地址 (X)  长度 (N)
 #define MAX(a,b)	(a>b)?a:b				//比较函数
@@ -57,14 +58,18 @@ struct Caven_Color
     char BULE;
 };
 
+//DATA
 //让 Run_num 去追 Length，如果 (Length - Run_num)为0，且过了很长的时间，那么这个数据就该结束了
+//将不在这个DATA存放数据，因为MCU内存不一样，规划的空间也不同，所以空间占用大小应该由MCU文件决定，而不是Caven文件。
 
 struct Caven_Data           //这个数据是动态的
 {
     U16 Length;                     //目前接收到的数据长度
     volatile U16 Run_num;           //目前运行/处理到的数据个数
-    U8 Buff[Buff_Length];
-    char *Pointer_8;
+    
+    char index;
+    U8 *Pointer_8;
+    U16 *Pointer_16;
     int *Pointer_32;
 };
 

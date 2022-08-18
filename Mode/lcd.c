@@ -1,9 +1,9 @@
 #include "lcd.h"
 #include "lcdfont.h" //字库
 
-u16 BACK_COLOR = BLACK; //背景色
+U16 BACK_COLOR = BLACK; //背景色
 
-void LCD_Writ_Bus(u8 dat)
+void LCD_Writ_Bus(U8 dat)
 {
 #ifdef Exist_LCD
 	SPI_Send_DATA(2, dat);
@@ -15,7 +15,7 @@ void LCD_Writ_Bus(u8 dat)
 	  入口数据：dat 写入的数据
 	  返回值：  无
 ******************************************************************************/
-void LCD_WR_DATA8(u8 dat)
+void LCD_WR_DATA8(U8 dat)
 {
 #ifdef Exist_LCD
 	LCD_DC_Set(); //写数据
@@ -28,7 +28,7 @@ void LCD_WR_DATA8(u8 dat)
 	  入口数据：dat 写入的数据
 	  返回值：  无
 ******************************************************************************/
-void LCD_WR_DATA(u16 dat)
+void LCD_WR_DATA(U16 dat)
 {
 #ifdef Exist_LCD
 	LCD_DC_Set(); //写数据
@@ -42,7 +42,7 @@ void LCD_WR_DATA(u16 dat)
 	  入口数据：dat 写入的命令
 	  返回值：  无
 ******************************************************************************/
-void LCD_WR_REG(u8 dat)
+void LCD_WR_REG(U8 dat)
 {
 #ifdef Exist_LCD
 	LCD_DC_Clr(); //写命令
@@ -56,7 +56,7 @@ void LCD_WR_REG(u8 dat)
 				y1,y2 设置行的起始和结束地址
 	  返回值：  无
 ******************************************************************************/
-void LCD_Address_Set(u16 x1, u16 y1, u16 x2, u16 y2)
+void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 {
 	if (USE_HORIZONTAL == 0)
 	{
@@ -107,9 +107,9 @@ void LCD_Address_Set(u16 x1, u16 y1, u16 x2, u16 y2)
 								color       要填充的颜色
 	  返回值：  无
 ******************************************************************************/
-void LCD_Fill(u16 x_sta, u16 y_sta, u16 x_end, u16 y_end, u16 color)
+void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 {
-	u16 i, j;
+	U16 i, j;
 	LCD_Address_Set(x_sta, y_sta, x_end - 1, y_end - 1); //设置显示范围
 	for (i = y_sta; i < y_end; i++)
 	{
@@ -126,7 +126,7 @@ void LCD_Fill(u16 x_sta, u16 y_sta, u16 x_end, u16 y_end, u16 color)
 				color 点的颜色
 	  返回值：  无
 ******************************************************************************/
-void LCD_Draw_Point(u16 x, u16 y, u16 color)
+void LCD_Draw_Point(U16 x, U16 y, U16 color)
 {
 	LCD_Address_Set(x, y, x, y); //设置光标位置
 	LCD_WR_DATA(color);
@@ -139,9 +139,9 @@ void LCD_Draw_Point(u16 x, u16 y, u16 color)
 				color   线的颜色
 	  返回值：  无
 ******************************************************************************/
-void LCD_Draw_Line(u16 x1, u16 y1, u16 x2, u16 y2, u16 color)
+void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 {
-	u16 t;
+	U16 t;
 	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
 	int incx, incy, uRow, uCol;
 	delta_x = x2 - x1; //计算坐标增量
@@ -195,7 +195,7 @@ void LCD_Draw_Line(u16 x1, u16 y1, u16 x2, u16 y2, u16 color)
 				color   矩形的颜色
 	  返回值：  无
 ******************************************************************************/
-void LCD_Draw_Rectangle(u16 x1, u16 y1, u16 x2, u16 y2, u16 color)
+void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 {
 	LCD_Draw_Line(x1, y1, x2, y1, color);
 	LCD_Draw_Line(x1, y1, x1, y2, color);
@@ -210,7 +210,7 @@ void LCD_Draw_Rectangle(u16 x1, u16 y1, u16 x2, u16 y2, u16 color)
 				color   圆的颜色
 	  返回值：  无
 ******************************************************************************/
-void LCD_Draw_Circle(u16 x0, u16 y0, char r, u16 color)
+void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color)
 {
 	int a, b;
 	a = 0;
@@ -243,14 +243,14 @@ void LCD_Draw_Circle(u16 x0, u16 y0, char r, u16 color)
 				mode:  0非叠加模式  1叠加模式
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Chinese24x24(u16 x, u16 y, char *s, u16 fc, u16 bc, char sizey, char mode)
+void LCD_Show_Chinese24x24(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
 {
 #ifdef String_Chinese
 	char i, j, m = 0;
-	u16 k;
-	u16 HZnum;		 //汉字数目
-	u16 TypefaceNum; //一个字符所占字节大小
-	u16 x0 = x;
+	U16 k;
+	U16 HZnum;		 //汉字数目
+	U16 TypefaceNum; //一个字符所占字节大小
+	U16 x0 = x;
 	TypefaceNum = (sizey / 8 + ((sizey % 8) ? 1 : 0)) * sizey;
 	HZnum = sizeof(tfont24) / sizeof(typFNT_GB24); //统计汉字数目
 	for (k = 0; k < HZnum; k++)
@@ -305,14 +305,14 @@ void LCD_Show_Chinese24x24(u16 x, u16 y, char *s, u16 fc, u16 bc, char sizey, ch
 				mode:  0非叠加模式  1叠加模式
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Chinese32x32(u16 x, u16 y, char *s, u16 fc, u16 bc, char sizey, char mode)
+void LCD_Show_Chinese32x32(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
 {
 #ifdef String_Chinese
 	char i, j, m = 0;
-	u16 k;
-	u16 HZnum;		 //汉字数目
-	u16 TypefaceNum; //一个字符所占字节大小
-	u16 x0 = x;
+	U16 k;
+	U16 HZnum;		 //汉字数目
+	U16 TypefaceNum; //一个字符所占字节大小
+	U16 x0 = x;
 	TypefaceNum = (sizey / 8 + ((sizey % 8) ? 1 : 0)) * sizey;
 	HZnum = sizeof(tfont32) / sizeof(typFNT_GB32); //统计汉字数目
 	for (k = 0; k < HZnum; k++)
@@ -367,12 +367,12 @@ void LCD_Show_Chinese32x32(u16 x, u16 y, char *s, u16 fc, u16 bc, char sizey, ch
 				mode:  0非叠加模式  1叠加模式
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Char(u16 x, u16 y, char num, u16 fc, u16 bc, char sizey, char mode)
+void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode)
 {
 #ifdef String_Lib
 	char temp, sizex, t, m = 0;
-	u16 i, TypefaceNum; //一个字符所占字节大小
-	u16 x0 = x;
+	U16 i, TypefaceNum; //一个字符所占字节大小
+	U16 x0 = x;
 	sizex = sizey / 2;
 	TypefaceNum = (sizex / 8 + ((sizex % 8) ? 1 : 0)) * sizey;
 	num = num - ' ';									 //得到偏移后的值
@@ -430,7 +430,7 @@ void LCD_Show_Char(u16 x, u16 y, char num, u16 fc, u16 bc, char sizey, char mode
 				mode:  0非叠加模式  1叠加模式
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Chinese(u16 x, u16 y, char *s, u16 fc, u16 bc, char sizey, char mode)
+void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
 {
 	while (*s != 0)
 	{
@@ -455,7 +455,7 @@ void LCD_Show_Chinese(u16 x, u16 y, char *s, u16 fc, u16 bc, char sizey, char mo
 				mode:  0非叠加模式  1叠加模式
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_String(u16 x, u16 y, const char *p, u16 fc, u16 bc, char sizey)
+void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 {
 	if (sizey == 16 || sizey == 24 || sizey == 32)
 	{
@@ -485,10 +485,10 @@ void LCD_Show_String(u16 x, u16 y, const char *p, u16 fc, u16 bc, char sizey)
 				pic[]  图片数组
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Picture(u16 x, u16 y, u16 length, u16 width, const unsigned char pic[])
+void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[])
 {
-	u16 i, j;
-	u32 k = 0;
+	U16 i, j;
+	U32 k = 0;
 	LCD_Address_Set(x, y, x + length - 1, y + width - 1);
 	for (i = 0; i < length; i++)
 	{

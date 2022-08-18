@@ -26,7 +26,7 @@ struct Delay_
 };
 
 #ifdef Exist_SYS_TIME
-    struct _SYS_Time SYS_Time;
+extern struct _SYS_Time SYS_Time;
 #endif
 
 void Time_Init(int SET);

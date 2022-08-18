@@ -16,7 +16,7 @@ struct _Over_time
 //	int Data_num;
     int last_data;                                  //不用填 （用 int 做向下兼容）【系统行为】
     char load;                                      //装载标志位 0 允许装载， 1 装载完成(尽可能使用实体，不用使用公共的静态，不然多个使用会出错)，不用管【系统行为】
-    volatile char Flag;                             //状态标志位，用来【读取】
+    volatile char Flag;                             //瞬间态标志位，用来【读取】
     volatile char Flip;                             //翻转态标志位，用来【读取】
     struct Caven_Watch Set_Time;                    //【填】
     struct Caven_Watch last_Time;                   //不用填【系统行为】

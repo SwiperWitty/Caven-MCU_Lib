@@ -9,15 +9,20 @@
 
 
 */
-#define END_Data    'N'             //这个作为串口接收【结束符】
+#define END_Data    '}'             //这个作为串口接收【结束符】
 #define NO_END      'N'             //如果【结束符】和它相同，那么就没有 结束符
 
-#define UART_Length_MAX    Buff_Length   //Buff MAX 长度(来自Caven)
+#ifdef MCU_Buff_Len
+    #define UART_Length_MAX    MCU_Buff_Len     //Buff MAX 长度(来自Items)
+#else
+    #define UART_Length_MAX    Buff_Length      //Buff MAX 长度(来自Caven)
+#endif
 
 struct _Uart_Data
 {
     struct Caven_Data DATA;
     char Rxd_Received;
+    U8 UART_RxdBuff[UART_Length_MAX];
 };
 
 struct Uart_
@@ -27,7 +32,7 @@ struct Uart_
 };
 
 #ifdef Exist_UART
-    extern struct _Uart_Data CV_UART[5];
+    extern struct _Uart_Data CV_UART[UART_Channel_MAX];
 #endif
 
 void Uart_Init(char Channel, int Baud, int SET);

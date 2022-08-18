@@ -67,6 +67,7 @@ extern struct _Mode_User Mode_User;
 
 struct _Mode_Init
 {
+    char empty;
 #ifdef Exist_LCD
 	void (*LCD)(int SET);
 #endif
