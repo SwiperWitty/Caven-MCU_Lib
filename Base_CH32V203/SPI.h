@@ -15,6 +15,9 @@
     SPI软件方模拟方式为上升沿读(0,0)
     SPI一般只会使用一个（SPI1），但是硬件可能被占用于是选择SPI2（推荐只使用一个SPI二选一）
                                                                                     2022.08.15
+    SPI的硬件NSS就是一直拉低。狗都不用。
+                                                                                    2022.08.19
+
     底层
 	对于	GPIO_Speed_50MHz 可不能写 0，不然会报 /enumerated type mixed with another type/
 																					2022.04.06	优化

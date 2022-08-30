@@ -2,7 +2,6 @@
 #define _ITEMS__H_
 
 #include "ch32v20x.h"
-#include "ch32v20x_conf.h"
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->

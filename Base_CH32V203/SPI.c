@@ -22,6 +22,8 @@ void SPI1_GPIO_Init(int SET)
         GPIO_InitStructure.GPIO_Pin = SPI1_MISO;
         GPIO_InitStructure.GPIO_Mode = SPI_MODE_IN;
         GPIO_Init(GPIO_SPI1, &GPIO_InitStructure);
+
+        GPIO_SPI1->BSHR = GPIO_Pin_4;     //  High
     }
     else
     {
@@ -188,7 +190,7 @@ void SPI1_Send_DATA(char Serial,const uint16_t DATA)
 {
 #if (SPI_X == 1)
     #if(SPI_MODE == HOST_MODE)
-//    SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
+//    SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）   // not
     #ifdef SPI_Software
     char temp;
     for (int i = 0; i < 8; i++)
@@ -218,7 +220,7 @@ void SPI2_Send_DATA(char Serial,const uint16_t DATA)
     #if(SPI_MODE == HOST_MODE)
 
     #ifdef SPI_Software
-    SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
+//    SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
     char temp;
     for (int i = 0; i < 8; i++)
     {
@@ -231,7 +233,7 @@ void SPI2_Send_DATA(char Serial,const uint16_t DATA)
         SPI2_SCK_H();           //完成上升沿
     }
     SPI2_MOSI_H();
-    SPI_CS_Set(Serial,DISABLE);               //SPI结束
+//    SPI_CS_Set(Serial,DISABLE);               //SPI结束
     #else
         while(SPI_I2S_GetFlagStatus(SPI2,SPI_I2S_FLAG_TXE) == RESET); //检查发送是否完成，完成以后再发送数据
         SPI_I2S_SendData(SPI2, DATA);
