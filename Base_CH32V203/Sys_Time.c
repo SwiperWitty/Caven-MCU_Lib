@@ -10,17 +10,17 @@
 //* 底层 *//
 
 #ifdef Base_SysTick
-static uint32_t SysTick_Config(uint32_t ticks)
+static uint32_t SysTick_Config(u64 ticks)
 {
     SysTick->CTLR = (u32)0x00;                  //关闭系统计数器STK，计数器停止计数
 
     SysTick->SR = (u32)0;
     SysTick->CNT = (u64)0;
-    SysTick->CMP = (u64)ticks;
-    NVIC_SetPriority(SysTicK_IRQn, 15);      //设置SysTick中断优先级
-    NVIC_EnableIRQ(SysTicK_IRQn);            //使能开启Systick中断
-    SysTick->CTLR = (u32)(0x2F);
-    SysTick->CTLR |= (u32)(0x00 << 31);
+    SysTick->CMP = ticks;
+//    NVIC_SetPriority(SysTicK_IRQn, 15);      //设置SysTick中断优先级
+//    NVIC_EnableIRQ(SysTicK_IRQn);            //使能开启Systick中断
+    SysTick->CTLR = (u32)(0X2D);            //0X2D 0x2F
+//    SysTick->CTLR |= (u32)(0x00 << 31);
     return (0);
 }
 #endif
@@ -32,7 +32,7 @@ void Sys_Time_Init (int Set)
     #ifdef Base_SysTick
     if(Set)
     {
-        if(SysTick_Config(SystemCoreClock/Frequency))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
+        if(SysTick_Config(~((u64)0x00)))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
             while(1);
     }
     else
@@ -69,4 +69,59 @@ void Sys_Time_Init (int Set)
 #endif
 }
 
+void SYS_Delay_us (int n)
+{
+    u64 start_ticks,end_ticks;
+    int set_time = n * (SystemCoreClock / 1000000);
+    start_ticks = GET_SysTick;
+
+    while(1)
+    {
+        end_ticks = GET_SysTick;
+        if (end_ticks > start_ticks)
+        {
+            if ((end_ticks - start_ticks) >= set_time)
+                break;
+        }
+        else
+        {
+            SysTick->SR = 0;    //溢出了
+            if ((end_ticks + ((~((u64)0x00)) - start_ticks)) >= set_time)
+                break;
+        }
+    }
+
+}
+
+void SYS_Delay_ms (int n)
+{
+    u64 start_ticks,end_ticks;
+    int set_time = n * (SystemCoreClock / 1000);
+    start_ticks = GET_SysTick;
+
+    while(1)
+    {
+        end_ticks = GET_SysTick;
+        if (end_ticks > start_ticks)
+        {
+            if ((end_ticks - start_ticks) >= set_time)
+                break;
+        }
+        else
+        {
+            SysTick->SR = 0;    //溢出了
+            if ((end_ticks + ((~((u64)0x00)) - start_ticks)) >= set_time)
+                break;
+        }
+    }
+}
+
+void SYS_Delay_S (int n)
+{
+    for (int var = 0; var <= n; ++var)
+    {
+        SYS_Delay_ms (1000);
+        printf("1S \r\n");
+    }
+}
 

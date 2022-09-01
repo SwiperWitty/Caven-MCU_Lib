@@ -37,7 +37,7 @@
 #else                                               //硬件SPI
 #define SPI_MODE_IN    GPIO_Mode_IN_FLOATING
 #define SPI_MODE_OUT   GPIO_Mode_AF_PP
-#define SPI_Speed   SPI_BaudRatePrescaler_32        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+#define SPI_Speed   SPI_BaudRatePrescaler_16        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
 #define SPI_Size    SPI_DataSize_16b                //8b   16b
 #endif
 

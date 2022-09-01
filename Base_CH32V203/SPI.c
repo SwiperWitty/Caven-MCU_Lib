@@ -188,6 +188,11 @@ void SPI_CS_Set(char Serial,char State)
 
 void SPI1_Send_DATA(char Serial,const uint16_t DATA)
 {
+    /*
+     * 写标志位
+     * 写数据
+     * 等忙位
+     */
 #if (SPI_X == 1)
     #if(SPI_MODE == HOST_MODE)
 //    SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）   // not
@@ -257,7 +262,7 @@ void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
 //    SPI_Delay (1);
     SPI1_Send_DATA(Serial,DATA);
     SPI_Delay (1);
-    SPI_CS_Set(Serial,DISABLE);               //SPI结束
+    SPI_CS_Set(Serial,DISABLE);                 //SPI结束
 #elif (SPI_X == 2)
     SPI2_Send_DATA(Serial,Addr);
     SPI2_Send_DATA(Serial,DATA);
@@ -267,6 +272,11 @@ void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
 
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
 {
+    /*
+     * 等能读
+     * 读
+     *
+     */
     uint16_t temp = 0;
     Addr &= 0xBFFF;
 #ifndef SPI_Software

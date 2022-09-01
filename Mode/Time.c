@@ -22,7 +22,7 @@ void Time_Init(int SET)
 {
     #ifdef Exist_SYS_TIME
         Sys_Time_Init (SET);
-
+        SET_SysTick =
     #endif
 }
 static void Hourly_Handle(struct Caven_Watch *Item)         //此函数仅供 中断 调用

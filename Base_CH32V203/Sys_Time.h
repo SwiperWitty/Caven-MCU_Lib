@@ -32,6 +32,8 @@
     #ifdef Base_SysTick
         void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
         #define SYS_Time_Interrupt() SysTick_Handler()
+        #define GET_SysTick SysTick->CNT
+        #define SET_SysTick SysTick->CNT
     #else
         void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
         #define SYS_Time_Interrupt() TIM4_IRQHandler()
@@ -46,11 +48,14 @@
             #define SYS_Time_Interrupt_FlagClear() TIM_ClearFlag(TIM4, TIM_IT_Update)
         #endif
     #endif
+
 #endif
 /*  end   */
 
-#define Frequency 100000 //目前是 10us
-
 void Sys_Time_Init (int Set);
+
+void SYS_Delay_us (int n);
+void SYS_Delay_ms (int n);
+void SYS_Delay_S (int n);
 
 #endif
