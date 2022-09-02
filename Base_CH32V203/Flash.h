@@ -28,15 +28,6 @@ typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
 #define Fast_Flash(x)   *(__IO uint16_t*)(x)
 #define Fast_8_Flash(x)   *(__IO uint8_t*)(x)
 
-struct _Flash_DATA
-{
-    uint16_t addr;
-    uint16_t information;
-    uint16_t version;
-    uint16_t baud;
-    uint16_t IP;
-    uint16_t GPIO;
-};
 
 int Read_Flash(int Address);
 char Clear_Flash_Page(int Addr);

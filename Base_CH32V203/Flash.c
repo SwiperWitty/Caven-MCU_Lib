@@ -1,17 +1,7 @@
 #include "Flash.h"
 #include "string.h"
-#include "Caven.h"
 
 volatile FLASH_Status EraseStatus,SaveStatus = 0;   //擦除状态、保存状态
-
-const struct _Flash_DATA Flash_DATA =
-{
-    .information = 0,
-    .version = 2,
-    .baud = 4,
-    .IP = 6,
-    .GPIO = 8,
-};
 
 int Read_Flash(int Address)
 {
@@ -168,7 +158,7 @@ char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
 
     uint16_t string[130];
     memcpy(string,(uint16_t *)Address,FLASH_PAGE_SIZE); //备份
-    temp = MIN(Lenght,FLASH_PAGE_SIZE);
+    temp = (Lenght < FLASH_PAGE_SIZE)? Lenght : FLASH_PAGE_SIZE;
     memcpy(string + (Addr-Address)/2,Data,temp);        //载入
 //    printf("string_start: [%d] %x \n",0,string[0]);
 //    printf("string [%d]: %x \n",(Addr-Address)/2,string[(Addr-Address)/2]);

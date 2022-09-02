@@ -36,7 +36,14 @@
 #endif
 /*  end   */
 
-#define Frequency 100000 //目前是 10us
+#define Frequency (SystemCoreClock/10) //目前是 0.1s,SystemCoreClock 是1s,但是24位滴答跑不到SystemCoreClock。
+
+//很长的时间戳
+struct _SYS_Ticktime
+{
+    u32 SYS_Tick_H;         //每Frequency进1
+    u32 SYS_Tick_L;         //24bit 的
+};
 
 void Sys_Time_Init (int Set);
 
