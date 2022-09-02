@@ -29,8 +29,8 @@
 #define Buff_Length 500
     
 #define Destroy(X,N) memset((X),0,N)        //销毁 的地址 (X)  长度 (N)
-#define MAX(a,b)    (a>b)?a:b               //比较函数，防止过小
-#define MIN(a,b)    (a<b)?a:b               //比较函数，防止过大
+#define MAX(a,b)    (a>b)?a:b               //比较函数返回最大值，防止过小
+#define MIN(a,b)    (a<b)?a:b               //比较函数返回最小值，防止过大
 
 struct Caven_Date
 {
@@ -42,7 +42,6 @@ struct Caven_Date
 
 struct Caven_Watch
 {
-    U8 date;              //此位只有0/1提醒系统已经是下一天了
     U8 hour;
     U8 minutes;
     U8 second;
