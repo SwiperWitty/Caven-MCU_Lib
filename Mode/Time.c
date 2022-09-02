@@ -28,7 +28,7 @@ void Time_Init(int SET)
 void Set_TIME (int second)
 {
 #ifdef Exist_SYS_TIME
-    SET_SysTick = ((u64)second*(SystemCoreClock));
+    SET_SysTick((U64)second*(SystemCoreClock));
 
 #endif
 }
@@ -37,7 +37,7 @@ int Get_TIME (void)
 {
 #ifdef Exist_SYS_TIME
     int Time = 0;
-    u64 temp = (SET_SysTick / SystemCoreClock);
+    U64 temp = (GET_SysTick() / SystemCoreClock);
     Time =  temp % 86400;
     if(temp / 86400)        //下一天
     {
@@ -47,21 +47,6 @@ int Get_TIME (void)
     return Time;
 #endif
 }
-
-#ifdef Exist_SYS_TIME
-void SYS_Time_Interrupt()                       //这是中断（定时器/滴答）
-{
-    #ifdef Exist_SYS_Time_Falg                  //有中断标志位
-    if (SYS_Time_Interrupt_Flag() != 0)
-    {
-        SYS_Time_Interrupt_FlagClear();
-
-    }
-    #else
-
-    #endif
-}
-#endif
 
 void Delay_10us(int num)
 {

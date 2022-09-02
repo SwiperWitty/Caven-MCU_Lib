@@ -63,7 +63,7 @@ char Over_Time(struct _Over_time *Item)
                     Item->Flip = !(Item->Flip);
                     Item->load = 0;
                 }
-                else
+                else                            //没有超时
                 {
                     Item->Flag = 0; //为 0 是常态，为 'p' 是瞬态
                 }

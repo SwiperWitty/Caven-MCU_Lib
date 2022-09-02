@@ -30,7 +30,8 @@
 #ifdef Exist_SYS_TIME
     #ifdef Base_SysTick
         #define SYS_Time_Interrupt() SysTick_Handler()
-
+        #define GET_SysTick() SysTick_Merge()
+        #define SET_SysTick(x) SysTick_Reload(x)
     #endif
 
 #endif
@@ -41,10 +42,17 @@
 //很长的时间戳
 struct _SYS_Ticktime
 {
-    u32 SYS_Tick_H;         //每Frequency进1
-    u32 SYS_Tick_L;         //24bit 的
+    uint32_t SYS_Tick_H;         //每Frequency进1 
+    uint32_t SYS_Tick_L;         //24bit 的
 };
 
+uint64_t SysTick_Merge (void);
+void SysTick_Reload (uint64_t time);
+
 void Sys_Time_Init (int Set);
+
+void SYS_Delay_us (int n);
+void SYS_Delay_ms (int n);
+void SYS_Delay_S (int n);
 
 #endif

@@ -34,24 +34,31 @@ void SysTick_Handler(void)
 
 }
 
-u64 SysTick_merge (void)
+uint64_t SysTick_Merge (void)
 {
-    u64 temp;
+    uint64_t temp;
     temp = SYS_Ticktime.SYS_Tick_H;
-    SYS_Ticktime.SYS_Tick_L = 0;
+    SYS_Ticktime.SYS_Tick_L = (Frequency - SysTick->VAL);     //滴答当前值
     temp = (temp * Frequency) + SYS_Ticktime.SYS_Tick_L;
     return (temp);
 }
 
+void SysTick_Reload (uint64_t time)
+{
+    SYS_Ticktime.SYS_Tick_H = time / Frequency;             //高位设置
+    SYS_Ticktime.SYS_Tick_L = (time % Frequency);           //低位设置(不设也行)
+    SysTick->VAL = Frequency - SYS_Ticktime.SYS_Tick_L;     //载入低位
+}
+
 void SYS_Delay_us (int n)
 {
-    u64 start_ticks,end_ticks;
+    uint64_t start_ticks,end_ticks;
     int set_time = n * (SystemCoreClock / 1000000);
-    start_ticks = GET_SysTick;
+    start_ticks = GET_SysTick();
 
     while(1)
     {
-        end_ticks = GET_SysTick;
+        end_ticks = GET_SysTick();
         if (end_ticks > start_ticks)
         {
             if ((end_ticks - start_ticks) >= set_time)
@@ -59,9 +66,7 @@ void SYS_Delay_us (int n)
         }
         else
         {
-            SysTick->SR = 0;    //溢出了
-            if ((end_ticks + ((~((u64)0x00)) - start_ticks)) >= set_time)
-                break;
+            break;
         }
     }
 
@@ -69,13 +74,13 @@ void SYS_Delay_us (int n)
 
 void SYS_Delay_ms (int n)
 {
-    u64 start_ticks,end_ticks;
+    uint64_t start_ticks,end_ticks;
     int set_time = n * (SystemCoreClock / 1000);
-    start_ticks = GET_SysTick;
+    start_ticks = GET_SysTick();
 
     while(1)
     {
-        end_ticks = GET_SysTick;
+        end_ticks = GET_SysTick();
         if (end_ticks > start_ticks)
         {
             if ((end_ticks - start_ticks) >= set_time)
@@ -83,9 +88,7 @@ void SYS_Delay_ms (int n)
         }
         else
         {
-            SysTick->SR = 0;    //溢出了
-            if ((end_ticks + ((~((u64)0x00)) - start_ticks)) >= set_time)
-                break;
+            break;
         }
     }
 }
@@ -95,6 +98,6 @@ void SYS_Delay_S (int n)
     for (int var = 0; var < n; ++var)
     {
         SYS_Delay_ms (1000);
-        printf("1S \r\n");
+        
     }
 }
