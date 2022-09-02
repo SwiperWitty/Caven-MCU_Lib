@@ -32,7 +32,7 @@ void Sys_Time_Init (int Set)
     #ifdef Base_SysTick
     if(Set)
     {
-        if(SysTick_Config(~((u64)0x00)))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
+        if(SysTick_Config(Frequency)         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
             while(1);
     }
     else
@@ -118,7 +118,7 @@ void SYS_Delay_ms (int n)
 
 void SYS_Delay_S (int n)
 {
-    for (int var = 0; var <= n; ++var)
+    for (int var = 0; var < n; ++var)
     {
         SYS_Delay_ms (1000);
         printf("1S \r\n");

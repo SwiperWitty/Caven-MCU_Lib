@@ -22,8 +22,9 @@
 #define S8 signed char
 #define U16 unsigned short
 #define S16 signed short
-#define U32 unsigned long
-#define S32 signed long
+#define U32 unsigned int
+#define S32 signed int
+#define U64 unsigned long long
 
 #define Buff_Length 500
     
@@ -34,25 +35,25 @@
 struct Caven_Date
 {
     int year;
-    char month;
-    char day;
-    char week;
+    U8 month;
+    U8 day;
+    U8 week;
 };
 
 struct Caven_Watch
 {
-    char date;              //此位只有0/1提醒系统已经是下一天了
-    char hour;
-    char minutes;
-    char second;
-    volatile int time_num;          //这是中断溢出次数 10 0000为1S
+    U8 date;              //此位只有0/1提醒系统已经是下一天了
+    U8 hour;
+    U8 minutes;
+    U8 second;
+    U32 time_us;          //这里 1000 000为1S （us）
 };
 
 struct Caven_Color
 {
-    char REG;
-    char GREEN;
-    char BULE;
+    U8 REG;
+    U8 GREEN;
+    U8 BULE;
 };
 
 //DATA

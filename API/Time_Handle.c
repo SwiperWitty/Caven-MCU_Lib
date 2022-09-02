@@ -39,15 +39,16 @@ char Over_Time(struct _Over_time *Item)
             int temp_num[2] = {0};
 
             Temp_Time.hour = Item->Now_Time->hour - Item->last_Time.hour;
-            if (Item->last_Time.date != Item->Now_Time->date) //如果这已然是下一天
+            if (Item->Now_Time->hour < Item->last_Time.hour)        //下一天了
             {
-                Temp_Time.hour += 24; //为现在的时间补充 24H
+                Temp_Time.hour += 24;   //为现在的时间补充 24H
             }
             Temp_Time.minutes = Item->Now_Time->minutes - Item->last_Time.minutes;
             Temp_Time.second = Item->Now_Time->second - Item->last_Time.second;
-            Temp_Time.time_num = Item->Now_Time->time_num - Item->last_Time.time_num;   //实际时差（微秒级）
-            temp_num[0] = Hourly_to_Seconds(Temp_Time);                                 //实际时差（秒级）可能为负,所以要取绝对值
-            temp_num[1] = Hourly_to_Seconds(Item->Set_Time);
+            Temp_Time.time_us = Item->Now_Time->time_us - Item->last_Time.time_us;  //实际时差（微秒级）
+
+            temp_num[0] = Hourly_to_Seconds(Temp_Time);                             //实际时差（秒级）可能为负,所以要取绝对值
+            temp_num[1] = Hourly_to_Seconds(Item->Set_Time);                        //设置超时的时间秒数
             if ((temp_num[0] - temp_num[1]) >= 0) //可能超时
             {
                 if ((temp_num[0] - temp_num[1]) > 0) //秒超时，直接溢出(其他就不用看了)
@@ -56,7 +57,7 @@ char Over_Time(struct _Over_time *Item)
                     Item->Flip = !(Item->Flip); //为了让程序捕捉这个瞬态，引入一个翻转态
                     Item->load = 0;             //允许重装载
                 }
-                else if ((Temp_Time.time_num - Item->Set_Time.time_num) >= 0) // us超时s
+                else if (Temp_Time.time_us >= Item->Set_Time.time_us) // us超时s
                 {
                     Item->Flag = 'p';
                     Item->Flip = !(Item->Flip);

@@ -25,7 +25,7 @@ struct _Over_time
 
 struct Time_Handle_
 {
-    int (*Hourly_to_Seconds)(struct  Caven_Watch Item);
+    int (*Hourly_to_Seconds)(struct Caven_Watch Item);
 	struct  Caven_Watch (*Seconds_to_Hourly) (int Seconds);
     char (*Over_Time)(struct _Over_time *Item);
 };

@@ -52,6 +52,8 @@
 #endif
 /*  end   */
 
+#define Frequency ~((u64)0x00)) //目前是 10us 全满FF
+
 void Sys_Time_Init (int Set);
 
 void SYS_Delay_us (int n);

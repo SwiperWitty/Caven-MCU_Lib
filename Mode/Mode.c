@@ -21,9 +21,9 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 #endif
 
 #ifdef Exist_SYS_TIME
-    Mode_User.Delay.Delay_10us = Delay_10us;
-    Mode_User.Delay.Delay_ms = Delay_ms;
-    Mode_User.Delay.Delay_S = Delay_S;
+    Mode_User.Delay.Delay_us = SYS_Delay_us;
+    Mode_User.Delay.Delay_ms = SYS_Delay_ms;
+    Mode_User.Delay.Delay_S = SYS_Delay_S;
 #endif
 
 #ifdef Exist_LED

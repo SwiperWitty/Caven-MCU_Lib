@@ -20,9 +20,9 @@ struct _SYS_Time
 
 struct Delay_
 {
-    void (*Delay_10us)(int num);
+    void (*Delay_us)(int num);
     void (*Delay_ms)(int num);
-    void (*Delay_S)(char num);
+    void (*Delay_S)(int num);
 };
 
 #ifdef Exist_SYS_TIME
@@ -34,6 +34,9 @@ void Time_Init(int SET);
 void Delay_10us(int num);
 void Delay_ms(int num);
 void Delay_S(char num);
+
+void Set_TIME (int second);
+int Get_TIME (void);
 
 
 #endif
