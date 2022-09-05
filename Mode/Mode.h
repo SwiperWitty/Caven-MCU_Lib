@@ -103,6 +103,7 @@ struct _Mode_User
 #endif
 #ifdef Exist_SYS_TIME
     struct Delay_ Delay;
+	struct TIME_ TIME;
 #endif
 #ifdef Exist_UART
     struct Uart_ UART;

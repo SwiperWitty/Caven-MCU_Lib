@@ -16,34 +16,8 @@ void Sys_Time_Init (int Set)
     #ifdef Base_SysTick
     if(Set)
     {
-        if(SysTick_Config(SystemCoreClock/Frequency))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
+        if(SysTick_Config(Frequency))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
             while(1);
-    }
-    else
-        NVIC_SystemReset();
-    
-    #else
-    if(Set)
-    {
-        TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {0};
-        NVIC_InitTypeDef NVIC_InitStructure = {0};
-        RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, ENABLE);
-
-        TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-        TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-        TIM_TimeBaseInitStructure.TIM_Period = 1;
-        TIM_TimeBaseInitStructure.TIM_Prescaler = 718;
-        TIM_TimeBaseInitStructure.TIM_RepetitionCounter = 0x00;
-        TIM_TimeBaseInit(TIM4, &TIM_TimeBaseInitStructure); //时钟配置
-
-        NVIC_InitStructure.NVIC_IRQChannel = TIM4_IRQn;
-        NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-        NVIC_Init(&NVIC_InitStructure);
-
-        TIM_ITConfig(TIM4, TIM_IT_Update, ENABLE);          //使能中断
-        TIM_Cmd(TIM4, ENABLE);
     }
     else
         NVIC_SystemReset();
@@ -52,4 +26,78 @@ void Sys_Time_Init (int Set)
 #endif
 }
 
+volatile struct _SYS_Ticktime SYS_Ticktime = {0};
 
+void SysTick_Handler(void)
+{
+    SYS_Ticktime.SYS_Tick_H++;
+
+}
+
+uint64_t SysTick_Merge (void)
+{
+    uint64_t temp;
+    temp = SYS_Ticktime.SYS_Tick_H;
+    SYS_Ticktime.SYS_Tick_L = (Frequency - SysTick->VAL);     //滴答当前值
+    temp = (temp * Frequency) + SYS_Ticktime.SYS_Tick_L;
+    return (temp);
+}
+
+void SysTick_Reload (uint64_t time)
+{
+    SYS_Ticktime.SYS_Tick_H = time / Frequency;             //高位设置
+    SYS_Ticktime.SYS_Tick_L = (time % Frequency);           //低位设置(不设也行)
+    SysTick->VAL = Frequency - SYS_Ticktime.SYS_Tick_L;     //载入低位
+}
+
+void SYS_Delay_us (int n)
+{
+    uint64_t start_ticks,end_ticks;
+    int set_time = n * (SystemCoreClock / 1000000);
+    start_ticks = GET_SysTick();
+
+    while(1)
+    {
+        end_ticks = GET_SysTick();
+        if (end_ticks > start_ticks)
+        {
+            if ((end_ticks - start_ticks) >= set_time)
+                break;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+}
+
+void SYS_Delay_ms (int n)
+{
+    uint64_t start_ticks,end_ticks;
+    int set_time = n * (SystemCoreClock / 1000);
+    start_ticks = GET_SysTick();
+
+    while(1)
+    {
+        end_ticks = GET_SysTick();
+        if (end_ticks > start_ticks)
+        {
+            if ((end_ticks - start_ticks) >= set_time)
+                break;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+void SYS_Delay_S (int n)
+{
+    for (int var = 0; var < n; ++var)
+    {
+        SYS_Delay_ms (1000);
+        
+    }
+}

@@ -134,12 +134,12 @@ void UART2_Interrupt()
 char UART_Send_Data(char Channel, const U8 *Data, int Length)
 {
 #ifdef Exist_UART
-    if (Length > UART_Length_MAX)
-        return 0;
+	int temp = Length;
+    if (temp > UART_Length_MAX)
+        temp = UART_Length_MAX;
     if (Channel > UART_Channel_MAX)
         return (char)-1;
 
-    int temp = Length;
     int i = 0;
     while (temp--)
     {

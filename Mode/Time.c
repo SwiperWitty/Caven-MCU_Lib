@@ -59,6 +59,19 @@ struct Caven_Watch Get_TIME (void)
 #endif
 }
 
+int Get_Lose_Tiem (struct Caven_Watch time)
+{
+	int temp = 0;
+	struct Caven_Watch Now = Get_TIME();
+	temp = Now.time_us - time.time_us;
+	if(temp < 0)
+	{
+		Now.second--;
+	}
+	temp += (Now.second - time.second) * 1000000;
+	return temp;
+}
+
 void Delay_10us(int num)
 {
 

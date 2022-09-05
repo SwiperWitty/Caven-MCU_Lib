@@ -351,7 +351,7 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
 
 int fputc(int ch, FILE *f)      //printf
 {
-    USART_SendData(USART1,(uint8_t)ch);
-    while (!USART_GetFlagStatus(USART1, USART_FLAG_TXE));
+    USART_SendData(USART3,(uint8_t)ch);
+    while (!USART_GetFlagStatus(USART3, USART_FLAG_TXE));
     return (ch);
 }
