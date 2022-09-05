@@ -1,7 +1,6 @@
 #include "time.h"
+#include "API.h"
 
-volatile static int Delay_Time = 0;
-volatile static char Daley_Falg = 0;
 //防止被编译器优化，并且只能在本文件使用
 /*
  * while(a);
@@ -25,26 +24,38 @@ void Time_Init(int SET)
 #endif
 }
 
-void Set_TIME (int second)
+/*
+ * Set_Time只精确到秒
+ */
+void Set_TIME (struct Caven_Watch time)
 {
 #ifdef Exist_SYS_TIME
-    SET_SysTick((U64)second*(SystemCoreClock));
+    int Seconds;
+    Seconds = Hourly_to_Seconds(time);
+    SET_SysTick((U64)Seconds*(SystemCoreClock));
 
 #endif
 }
 
-int Get_TIME (void)
+
+struct Caven_Watch Get_TIME (void)
 {
 #ifdef Exist_SYS_TIME
-    int Time = 0;
-    U64 temp = (GET_SysTick() / SystemCoreClock);
-    Time =  temp % 86400;
-    if(temp / 86400)        //下一天
+
+    struct Caven_Watch temp = {0};
+    int Seconds = (GET_SysTick() / SystemCoreClock);
+    int Freq = SystemCoreClock / 1000000;           //1us
+    temp = Seconds_to_Hourly(Seconds);
+
+    if(Seconds / 86400)        //下一天
     {
-        Set_TIME (Time);    //重设时间戳
+        Destroy(&temp,sizeof(temp));
+        Set_TIME (temp);    //重设时间戳
 
     }
-    return Time;
+    temp.time_us = (GET_SysTick() % SystemCoreClock) / Freq;
+
+    return temp;
 #endif
 }
 

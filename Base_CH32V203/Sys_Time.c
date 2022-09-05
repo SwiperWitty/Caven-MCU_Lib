@@ -69,15 +69,20 @@ void Sys_Time_Init (int Set)
 #endif
 }
 
+void SysTick_Reload (uint64_t time)
+{
+    SysTick->CNT = time;
+}
+
 void SYS_Delay_us (int n)
 {
     u64 start_ticks,end_ticks;
     int set_time = n * (SystemCoreClock / 1000000);
-    start_ticks = GET_SysTick;
+    start_ticks = GET_SysTick();
 
     while(1)
     {
-        end_ticks = GET_SysTick;
+        end_ticks = GET_SysTick();
         if (end_ticks > start_ticks)
         {
             if ((end_ticks - start_ticks) >= set_time)
@@ -97,11 +102,11 @@ void SYS_Delay_ms (int n)
 {
     u64 start_ticks,end_ticks;
     int set_time = n * (SystemCoreClock / 1000);
-    start_ticks = GET_SysTick;
+    start_ticks = GET_SysTick();
 
     while(1)
     {
-        end_ticks = GET_SysTick;
+        end_ticks = GET_SysTick();
         if (end_ticks > start_ticks)
         {
             if ((end_ticks - start_ticks) >= set_time)

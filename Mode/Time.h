@@ -35,8 +35,8 @@ void Delay_10us(int num);
 void Delay_ms(int num);
 void Delay_S(char num);
 
-void Set_TIME (int second);
-int Get_TIME (void);
+void Set_TIME (struct Caven_Watch);
+struct Caven_Watch Get_TIME (void);
 
 
 #endif

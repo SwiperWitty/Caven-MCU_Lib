@@ -4,6 +4,7 @@
 /*
     这是一个【纯C】的【.h】文件，是各个底层【.h】的 “共同语言”，上层管理函数的【.h】不需要包含
     仅用于32位系统
+    #include "Caven.h"
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,9 +29,9 @@
 
 #define Buff_Length 500
     
-#define Destroy(X,N) memset((X),0,N)        //销毁 的地址 (X)  长度 (N)
-#define MAX(a,b)    (a>b)?a:b               //比较函数返回最大值，防止过小
-#define MIN(a,b)    (a<b)?a:b               //比较函数返回最小值，防止过大
+#define Destroy(X,N) memset((X),0,(N))        //销毁 的地址 (X)  长度 (N)
+#define MAX(a,b)    ((a)>(b))?(a):(b)               //比较函数返回最大值，防止过小
+#define MIN(a,b)    ((a)<(b))?(a):(b)               //比较函数返回最小值，防止过大
 
 struct Caven_Date
 {

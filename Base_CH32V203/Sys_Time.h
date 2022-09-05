@@ -30,10 +30,8 @@
 
 #ifdef Exist_SYS_TIME
     #ifdef Base_SysTick
-        void SysTick_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-        #define SYS_Time_Interrupt() SysTick_Handler()
-        #define GET_SysTick SysTick->CNT
-        #define SET_SysTick SysTick->CNT
+        #define GET_SysTick() SysTick->CNT
+        #define SET_SysTick(x) SysTick_Reload(x)
     #else
         void TIM4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
         #define SYS_Time_Interrupt() TIM4_IRQHandler()
@@ -55,6 +53,8 @@
 #define Frequency ~((u64)0x00)) //目前是 10us 全满FF
 
 void Sys_Time_Init (int Set);
+
+void SysTick_Reload (uint64_t time);
 
 void SYS_Delay_us (int n);
 void SYS_Delay_ms (int n);
