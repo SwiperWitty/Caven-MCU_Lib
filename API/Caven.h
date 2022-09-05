@@ -29,10 +29,15 @@
 
 #define Buff_Length 500
     
+
 #define Destroy(X,N) memset((X),0,(N))        //销毁 的地址 (X)  长度 (N)
 #define MAX(a,b)    ((a)>(b))?(a):(b)               //比较函数返回最大值，防止过小
 #define MIN(a,b)    ((a)<(b))?(a):(b)               //比较函数返回最小值，防止过大
+/*
+*   temp = MIN(temp,100)        //temp永远取小于100的值
+*/
 
+//日期
 struct Caven_Date
 {
     int year;
@@ -41,6 +46,7 @@ struct Caven_Date
     U8 week;
 };
 
+//时间
 struct Caven_Watch
 {
     U8 hour;
@@ -49,6 +55,7 @@ struct Caven_Watch
     U32 time_us;          //这里 1000 000为1S （us）
 };
 
+//颜色
 struct Caven_Color
 {
     U8 REG;

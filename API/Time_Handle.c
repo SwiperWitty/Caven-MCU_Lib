@@ -5,7 +5,7 @@ int Hourly_to_Seconds(struct Caven_Watch Item)
 {
     int temp;
     temp = Item.second + (Item.minutes * 60) + (Item.hour * 3600); //设置的超时时差（秒级）
-    MIN(temp,86400);        // 60 * 60 * 24 = 86400
+    temp = MIN(temp,86400);        // 60 * 60 * 24 = 86400
     return temp;
 }
 
@@ -16,9 +16,10 @@ struct Caven_Watch Seconds_to_Hourly(int Seconds)
     temp.hour = Seconds / 3600;
     temp.minutes = (Seconds % 3600) / 60;
     temp.second = Seconds % 60;
-    MIN(temp.hour,24);
-    MIN(temp.minutes,60);
-    MIN(temp.second,60);
+    
+    temp.hour = MIN(temp.hour,24);
+    temp.minutes = MIN(temp.minutes,60);
+    temp.second = MIN(temp.second,60);
     return temp;
 }
 
