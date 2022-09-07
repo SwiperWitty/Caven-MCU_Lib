@@ -1,10 +1,10 @@
-# MCU_Cloud_LIB
+# MCU_LIB-Cloud-
 
 如果你看到这里，那么你大概率是开始看不懂代码了...
 
 ![image-20220705092503090](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220705092503090.png)
 
-### Cloud_LIB
+### LIB（Cloud）
 
 这是 [开放版本](https://github.com/SwiperWitty/API_Cloud) ，随便用，不要钱。
 
@@ -26,7 +26,7 @@ Mode目录内的文件就是功能单元，它们都属于应用层。
 
 当然API也是应用层的文件（应用层调另一个应用层）。
 
-#### -API-Magic(隐藏副本)
+#### Magic-API (隐藏副本)
 
 
 
