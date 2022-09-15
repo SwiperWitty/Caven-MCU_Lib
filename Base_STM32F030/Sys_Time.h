@@ -37,13 +37,15 @@
 #endif
 /*  end   */
 
-#define Frequency (SystemCoreClock/10) //目前是 0.1s,SystemCoreClock 是1s,但是24位滴答跑不到SystemCoreClock。
+#define Frequency   (MCU_SYS_Freq/10) //目前是 0.1s,SystemCoreClock 是1s,但是24位滴答跑不到SystemCoreClock。
+#define Freq_us     (MCU_SYS_Freq/1000000)   //微秒
+#define Freq_ms     (MCU_SYS_Freq/1000)      //毫秒
 
 //很长的时间戳
 struct _SYS_Ticktime
 {
-    uint32_t SYS_Tick_H;         //每Frequency进1 
-    uint32_t SYS_Tick_L;         //24bit 的
+    volatile uint32_t SYS_Tick_H;         //每Frequency进1 
+    volatile uint32_t SYS_Tick_L;         //24bit 的
 };
 
 uint64_t SysTick_Merge (void);

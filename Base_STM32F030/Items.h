@@ -4,15 +4,16 @@
 #include "stm32f0xx.h"
 
 /*
-    SDK->Items->GPIO(Exist_GPIO)->BASE->
+    SDK->Items->GPIO(Exist_GPIO)/BASE->
                                          \\
                                           -->[XXX]->MODE
                                          //
                     C(Lib)->Caven->API->
 */
 
-#define DEBUG_OUT   1           //Debug 通道(目前是串口1)->MODE
-#define MCU_Buff_Len   100
+#define DEBUG_OUT   1                           //Debug 通道(目前是串口1)->MODE
+#define MCU_Buff_Len    100
+#define MCU_SYS_Freq    SystemCoreClock         //48 000 000
 
                                                     /*  基本外设就能实现的功能    */
 #define Exist_SYS_TIME
@@ -23,12 +24,12 @@
 #define Exist_LED
 //#define Exist_BZZ
 
-//#define Exist_ADC
+#define Exist_ADC
 //#define Exist_DAC
 
 #define Exist_UART
 //#define Exist_IIC
-//#define Exist_SPI
+#define Exist_SPI
 //#define Exist_CAN
 
 //#define Exist_FLASH

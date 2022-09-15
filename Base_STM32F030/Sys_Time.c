@@ -26,20 +26,21 @@ void Sys_Time_Init (int Set)
 #endif
 }
 
-volatile struct _SYS_Ticktime SYS_Ticktime = {0};
-
+struct _SYS_Ticktime SYS_Ticktime = {0};
 void SysTick_Handler(void)
 {
     SYS_Ticktime.SYS_Tick_H++;
-
 }
 
+//这个返回的是，总系统滴答数
 uint64_t SysTick_Merge (void)
 {
-    uint64_t temp;
+    uint64_t temp = 0;
+    
+    SYS_Ticktime.SYS_Tick_L = (Frequency - SysTick->VAL);   //滴答当前值
     temp = SYS_Ticktime.SYS_Tick_H;
-    SYS_Ticktime.SYS_Tick_L = (Frequency - SysTick->VAL);     //滴答当前值
-    temp = (temp * Frequency) + SYS_Ticktime.SYS_Tick_L;
+    temp *= Frequency;                                      //乘法一定放后面，尤其是中断的东西
+    temp += SYS_Ticktime.SYS_Tick_L;
     return (temp);
 }
 
@@ -53,7 +54,7 @@ void SysTick_Reload (uint64_t time)
 void SYS_Delay_us (int n)
 {
     uint64_t start_ticks,end_ticks;
-    int set_time = n * (SystemCoreClock / 1000000);
+    int set_time = n * (MCU_SYS_Freq / 1000000);
     start_ticks = GET_SysTick();
 
     while(1)
@@ -75,18 +76,25 @@ void SYS_Delay_us (int n)
 void SYS_Delay_ms (int n)
 {
     uint64_t start_ticks,end_ticks;
-    int set_time = n * (SystemCoreClock / 1000);
+    uint64_t temp;
+    int set_time = n * (MCU_SYS_Freq / 1000);
     start_ticks = GET_SysTick();
-
+    
     while(1)
     {
         end_ticks = GET_SysTick();
+        
         if (end_ticks > start_ticks)
         {
-            if ((end_ticks - start_ticks) >= set_time)
-                break;
+            temp = end_ticks - start_ticks;
         }
         else
+        {
+            uint64_t temp = 86400 * MCU_SYS_Freq;
+            temp -= start_ticks;
+            temp += end_ticks;
+        }
+        if (temp >= set_time)
         {
             break;
         }

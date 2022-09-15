@@ -15,9 +15,7 @@ void LCD_GPIO_Init(int SET)
     }
     else
     {
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-        GPIO_Init(GPIOA, &GPIO_InitStructure);
+        GPIO_PinAFConfig(GPIOA,GPIO_PinSource5,GPIO_AF_0);
     }
 #endif
 }
@@ -37,10 +35,10 @@ void LED_GPIO_Init(int SET)
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;   //高速
         GPIO_Init(GPIOA, &GPIO_InitStructure);
     }
-    else 
+    else                                                    //标志取消GPIO
     {
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;        //输出
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;        //模拟输入
         GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;    //上下拉
         GPIO_Init(GPIOA, &GPIO_InitStructure);
     }

@@ -23,7 +23,7 @@ struct Caven_Watch Seconds_to_Hourly(int Seconds)
     return temp;
 }
 
-
+//Over_Time函数需要时分秒、微秒
 char Over_Time(struct _Over_time *Item)
 {
     if (Item->last_data != *(int *)Item->Now_data) //数据在跳动
@@ -42,31 +42,35 @@ char Over_Time(struct _Over_time *Item)
         }
         else //超时判定
         {
-            struct Caven_Watch Temp_Time = {0}; //用来装时差
             int temp_num[2] = {0};
             int temp_us = 0;
-            if (Item->Now_Time->hour < Item->last_Time.hour)        //下一天了
+            temp_num[0] = Hourly_to_Seconds(Item->last_Time);
+            temp_num[1] = Hourly_to_Seconds(*Item->Now_Time);//早算早舒服
+            
+            if(temp_num[0] > temp_num[1])
             {
-                Temp_Time.hour = Item->Now_Time->hour + 24;   //为现在的时间补充 24H
+                temp_num[1] += 24 * 3600;
+            }
+            
+            temp_num[0] = temp_num[1] - temp_num[0];        //计算秒的差值
+            temp_num[1] = Hourly_to_Seconds(Item->Set_Time);//计算设置的秒
+            
+            if(Item->Now_Time->time_us < Item->last_Time.time_us)
+            {
+                temp_num[0]--;
+                temp_us = (1000000 - Item->last_Time.time_us) + Item->Now_Time->time_us;    //计算微秒差值
             }
             else
             {
-                Temp_Time.hour = Item->Now_Time->hour - Item->last_Time.hour;
+                temp_us = Item->Now_Time->time_us - Item->last_Time.time_us;
             }
-            Temp_Time.minutes = Item->Now_Time->minutes - Item->last_Time.minutes;
-            Temp_Time.second = Item->Now_Time->second - Item->last_Time.second;
-            Temp_Time.time_us = Item->Now_Time->time_us - Item->last_Time.time_us;  //实际时差（微秒级）
-
-            temp_us = Item->Now_Time->time_us - Item->last_Time.time_us;            //实际时差（毫秒）
-            temp_num[0] = Hourly_to_Seconds(Temp_Time);                             //实际时差（秒级）可能为负,所以要取绝对值
-            temp_num[1] = Hourly_to_Seconds(Item->Set_Time);                        //设置超时的时间秒数
-
-            if (temp_us < Item->Set_Time.time_us)   //--
+            
+            if(temp_us < Item->Set_Time.time_us)
             {
                 temp_num[0]--;
             }
-
-            if ((temp_num[0] - temp_num[1]) >= 0) //秒超时
+            
+            if ((temp_num[0] - temp_num[1]) >= 0) //超时
             {
                 Item->Flag = 'p';                   //为 0 是常态，为 'p' 是瞬态
                 Item->Flip = !(Item->Flip);         //为了让程序捕捉这个瞬态，引入一个翻转态
@@ -76,6 +80,10 @@ char Over_Time(struct _Over_time *Item)
             {
                 Item->Flag = 0; //为 0 是常态，为 'p' 是瞬态
             }
+            
+//            printf("time dif :%d s, %d us\r\n",temp_num[0],temp_us);
+//            printf("time set :%d s, %d us\r\n",temp_num[1],Item->Set_Time.time_us);
+
         }
     }
     return Item->Flag;
