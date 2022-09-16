@@ -29,9 +29,7 @@ struct Uart_
     char (*Send_Data)(char Channel, const U8 *Data, int Length);
 };
 
-#ifdef Exist_UART
-    extern struct _Uart_Data CV_UART[UART_Channel_MAX];
-#endif
+extern struct _Uart_Data *CV_UART;
 
 void Uart_Init(char Channel, int Baud, int SET);
 

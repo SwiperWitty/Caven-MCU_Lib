@@ -1,12 +1,15 @@
 #include "uart_handle.h"
 
 #ifdef Exist_UART
-struct _Uart_Data CV_UART[UART_Channel_MAX] = {0};
+struct _Uart_Data Data[UART_Channel_MAX] = {0};
 #endif
+struct _Uart_Data *CV_UART;
+
 
 void Uart_Init(char Channel, int Baud,int SET)
 {
 #ifdef Exist_UART
+    CV_UART = Data;                 //数据绑定
     switch (Channel)
     {
     case 1:
@@ -37,6 +40,7 @@ void Uart_Init(char Channel, int Baud,int SET)
     default:
         break;
     }
+
 #endif
 }
 

@@ -40,9 +40,9 @@ void Set_TIME (struct Caven_Watch time)
 
 struct Caven_Watch Get_TIME (void)
 {
-#ifdef Exist_SYS_TIME
-
     struct Caven_Watch temp = {0};
+    
+#ifdef Exist_SYS_TIME
     int Seconds = (GET_SysTick() / MCU_SYS_Freq);
     int Freq = MCU_SYS_Freq / 1000000;           //1us
     temp = Seconds_to_Hourly(Seconds);
@@ -55,13 +55,14 @@ struct Caven_Watch Get_TIME (void)
     }
     temp.time_us = (GET_SysTick() % MCU_SYS_Freq) / Freq;
 
-    return temp;
 #endif
+    return temp;
 }
 
 int Get_Lose_Tiem (struct Caven_Watch time)
 {
 	int temp = 0;
+#ifdef Exist_SYS_TIME
 	struct Caven_Watch Now = Get_TIME();
 	temp = Now.time_us - time.time_us;
 	if(temp < 0)
@@ -69,6 +70,7 @@ int Get_Lose_Tiem (struct Caven_Watch time)
 		Now.second--;
 	}
 	temp += (Now.second - time.second) * 1000000;
+#endif
 	return temp;
 }
 

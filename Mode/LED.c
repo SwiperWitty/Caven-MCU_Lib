@@ -43,13 +43,16 @@ void WS2812_Delay(int time)
 
 void WS2812_Reset (void)
 {
+#ifdef Exist_LED
 	LED_Clr();
 	WS2812_Delay(60);
 	LED_Set();
+#endif
 }
 
 void WS2812_write_byte(char data)
 {
+#ifdef Exist_LED
 	char temp = data;
 	for(char i = 0; i < 8; i++)
 	{
@@ -69,6 +72,7 @@ void WS2812_write_byte(char data)
         }
 	}
 	LED_Clr();
+#endif
 }
 
 void LED_REG(struct Caven_Color Color,int SET)

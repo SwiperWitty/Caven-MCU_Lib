@@ -86,19 +86,21 @@ void SPIx_Init(char Channel,int SET)
 #endif
 }
 
+#ifdef Exist_SPI
 static void SPI_Delay (int time)
 {
-#if MCU_SYS_Freq >= 72000000 
+    #if MCU_SYS_Freq >= 72000000 
     volatile int temp;
     for (int i = 0; i < time; ++i)
     {
         temp = 10;            //SET
         while((temp--) > 0);
     }
-#else
+    #else
     while((time--) > 0);
-#endif
+    #endif
 }
+#endif
 
 void SPI_CS_Set(char Serial,char State)
 {
@@ -217,7 +219,6 @@ uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
     temp = SPI_I2S_ReceiveData(SPI2);
     #endif
 #endif
-
 
     return temp;
 }
