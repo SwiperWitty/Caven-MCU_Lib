@@ -28,11 +28,11 @@
 */
 
 // 选择输出模式
-//#define SPI_Software
+//#define SPI_Software	//屏蔽就是硬件模式
+//#define SPI_DMA			//屏蔽就是普通模式
+#define HOST_MODE
+#define SPI_X   1
 
-#ifdef Exist_SPI
-    #define SPI_X   1
-#endif
 
 #ifdef SPI_Software
 #define SPI_MODE_IN    GPIO_Mode_OUT
@@ -65,10 +65,12 @@
 #endif
 
 
-void SPIx_Init(char Channel,int SET);
-void SPI1_Send_DATA(char Serial,const uint16_t DATA);
-void SPI2_Send_DATA(char Serial,const uint16_t DATA);
+void SPI_Start_Init(int SET);
+void SPI1_Send_DATA(const uint16_t DATA);
+void SPI2_Send_DATA(const uint16_t DATA);
 uint16_t SPI1_Read_DATA(char Serial);
+
+//    调用层      //
 
 void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA);
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr);

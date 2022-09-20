@@ -16,7 +16,7 @@ void Sys_Time_Init (int Set)
     #ifdef Base_SysTick
     if(Set)
     {
-        if(SysTick_Config(Frequency))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
+        if(SysTick_Config(Tick_Set_CMP))         //系统使用滴答定时器，因为RTC定时器的最小细分不足以用于一些场景
             while(1);
     }
     else
@@ -33,28 +33,28 @@ void SysTick_Handler(void)
 }
 
 //这个返回的是，总系统滴答数
-uint64_t SysTick_Merge (void)
+uint64_t GET_SysTick (void)
 {
     uint64_t temp = 0;
     
-    SYS_Ticktime.SYS_Tick_L = (Frequency - SysTick->VAL);   //滴答当前值
+    SYS_Ticktime.SYS_Tick_L = (Tick_Set_CMP - SysTick->VAL);   //滴答当前值
     temp = SYS_Ticktime.SYS_Tick_H;
-    temp *= Frequency;                                      //乘法一定放后面，尤其是中断的东西
+    temp *= Tick_Set_CMP;                                      //乘法一定放后面，尤其是中断的东西
     temp += SYS_Ticktime.SYS_Tick_L;
     return (temp);
 }
 
-void SysTick_Reload (uint64_t time)
+void SET_SysTick (uint64_t time)
 {
-    SYS_Ticktime.SYS_Tick_H = time / Frequency;             //高位设置
-    SYS_Ticktime.SYS_Tick_L = (time % Frequency);           //低位设置(不设也行)
-    SysTick->VAL = Frequency - SYS_Ticktime.SYS_Tick_L;     //载入低位
+    SYS_Ticktime.SYS_Tick_H = time / Tick_Set_CMP;             //高位设置
+    SYS_Ticktime.SYS_Tick_L = (time % Tick_Set_CMP);           //低位设置(不设也行)
+    SysTick->VAL = Tick_Set_CMP - SYS_Ticktime.SYS_Tick_L;     //载入低位
 }
 
 void SYS_Delay_us (int n)
 {
     uint64_t start_ticks,end_ticks;
-    int set_time = n * (MCU_SYS_Freq / 1000000);
+    int set_time = n * Freq_us;
     start_ticks = GET_SysTick();
 
     while(1)
@@ -77,7 +77,7 @@ void SYS_Delay_ms (int n)
 {
     uint64_t start_ticks,end_ticks;
     uint64_t temp;
-    int set_time = n * (MCU_SYS_Freq / 1000);
+    int set_time = n * Freq_ms;
     start_ticks = GET_SysTick();
     
     while(1)
@@ -90,7 +90,7 @@ void SYS_Delay_ms (int n)
         }
         else
         {
-            uint64_t temp = 86400 * MCU_SYS_Freq;
+            uint64_t temp = 86400 * Tick_Frequency;		//一天时间 * 滴答频率
             temp -= start_ticks;
             temp += end_ticks;
         }

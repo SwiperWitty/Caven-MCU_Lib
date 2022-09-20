@@ -27,7 +27,7 @@
 #define MCU_Temp ADC_Channel_TempSensor
 
 #define ADC_Sample_Time ADC_SampleTime_7_5Cycles
-#define ADC_CNT 4
+#define ADC_DMA_CNT 4
 
 //#define Use_ADC_DMA
 #define VDDA 3.30

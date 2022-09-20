@@ -12,10 +12,10 @@ void Uart1_Init(int Baud,int SET)
         temp = ENABLE;
     else
         temp = DISABLE;
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,temp);
     
     if(temp)
     {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE);
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA,ENABLE);
         
         GPIO_PinAFConfig(GPIOA,GPIO_PinSource9,GPIO_AF_1);

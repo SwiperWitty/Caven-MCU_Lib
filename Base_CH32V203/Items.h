@@ -12,7 +12,7 @@
 */
 
 #define DEBUG_OUT   1           //Debug 通道(目前是串口1)->MODE
-
+#define MCU_SYS_Freq    SystemCoreClock
                                                     /*  基本外设就能实现的功能    */
 #define Exist_SYS_TIME
 //#define Exist_PWM

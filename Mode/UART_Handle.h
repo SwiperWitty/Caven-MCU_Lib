@@ -16,6 +16,10 @@
     #define UART_Length_MAX    Buff_Length      //Buff MAX 长度(来自Caven)
 #endif
 
+#define END_Data    '}'             //这个作为串口接收【结束符】
+#define NO_END      'N'             //如果【结束符】和它相同，那么就没有 结束符
+
+
 struct _Uart_Data
 {
     struct Caven_Data DATA;

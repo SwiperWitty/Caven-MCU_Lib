@@ -82,7 +82,7 @@ void ADCx_Init(int ADC_x, int SET)
         DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)ADC1->DR;               //外设地址
         DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)ADC_Somes_NUM;              //内存地址
         DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;//外设作为数据传输的来源
-        DMA_InitStructure.DMA_BufferSize = ADC_CNT;//指定DMA通道的DMA缓存的大小
+        DMA_InitStructure.DMA_BufferSize = ADC_DMA_CNT;//指定DMA通道的DMA缓存的大小
         DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//外设地址寄存器不变
         DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//内存地址寄存器不变
         DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;//数据宽度为16位

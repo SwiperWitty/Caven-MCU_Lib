@@ -27,19 +27,14 @@
 /* 【宏函数群】   */
 
 
-#ifdef Exist_SYS_TIME
-    #ifdef Base_SysTick
-        #define SYS_Time_Interrupt() SysTick_Handler()
-        #define GET_SysTick() SysTick_Merge()
-        #define SET_SysTick(x) SysTick_Reload(x)
-    #endif
 
-#endif
-/*  end   */
+#define	Tick_Frequency	MCU_SYS_Freq		//滴答分频
+#define	Tick_Set_CMP	Tick_Frequency/10  	//设置滴答初始值
+#define	Tick_OverfLow	0.10  	            //定时器溢出时间（24位滴答才有）
 
-#define Frequency   (MCU_SYS_Freq/10) //目前是 0.1s,SystemCoreClock 是1s,但是24位滴答跑不到SystemCoreClock。
-#define Freq_us     (MCU_SYS_Freq/1000000)   //微秒
-#define Freq_ms     (MCU_SYS_Freq/1000)      //毫秒
+#define Freq_us     (Tick_Frequency/1000000)   //微秒
+#define Freq_ms     (Tick_Frequency/1000)      //毫秒
+
 
 //很长的时间戳
 struct _SYS_Ticktime
@@ -48,8 +43,8 @@ struct _SYS_Ticktime
     volatile uint32_t SYS_Tick_L;         //24bit 的
 };
 
-uint64_t SysTick_Merge (void);
-void SysTick_Reload (uint64_t time);
+uint64_t GET_SysTick (void);
+void SET_SysTick (uint64_t time);
 
 void Sys_Time_Init (int Set);
 

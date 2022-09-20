@@ -1,6 +1,78 @@
-#include "SPI.h"
+# Base_SPI
 
-int SPI_State[3] = {0};
+~~~c
+/*
+			SCK    ->  
+                        /----\
+            MISO   ->   |SPIx|    <-    NSS/NSS2  (Serial) 
+                        \----/
+            MOSI   ->
+*/
+~~~
+
+SPI一般系统只会使用一个（一主多从）。
+
+作为从机，也只会使用一个（一从多主）。
+
+当然有可能因为布线的原因，SPI变成了一对一。
+
+所以，Base_SPI只有**一个SPI**接口（控制多个从机\响应多个主机）。
+
+但是可以主动选择使用哪个SPI。
+
+![image-20220917180312415](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220917180312415.png)
+
+### 软\硬切换
+
+~~~c
+#define SPI_Software	//屏蔽就是硬件模式
+
+#ifdef SPI_Software		//软件模式下的GPIO配置
+    #define SPI_MODE_IN    GPIO_Mode_OUT
+    #define SPI_MODE_OUT   GPIO_Mode_OUT
+#else                   //硬件SPI模式下的GPIO模式配置
+    #define SPI_MODE_IN    GPIO_Mode_OUT
+    #define SPI_MODE_OUT   GPIO_Mode_AF
+    #define SPI_Speed   SPI_BaudRatePrescaler_8		//16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+    #define SPI_Size    SPI_DataSize_8b				//8b   16b
+#endif
+~~~
+
+
+
+### 硬件模式下是否启动DMA
+
+~~~C
+#define SPI_DMA			//屏蔽就是普通模式
+~~~
+
+
+
+### 初始化
+
+​	**GPIO（可以切换SPI1、SPI2）**
+
+~~~c
+#define SPI_X   1
+
+#if (SPI_X == 1)
+#define SPI1_NSS        GPIO_Pin_4      //(CS)
+#define SPI1_SCK        GPIO_Pin_5
+#define SPI1_MISO       GPIO_Pin_6
+#define SPI1_MOSI       GPIO_Pin_7
+#define GPIO_SPI1       GPIOA
+
+#define SPI1_SCK_H()  GPIO_SPI1->BSRR = SPI1_SCK		//置高电平
+#define SPI1_SCK_L()  GPIO_SPI1->BRR = SPI1_SCK 		//置低电平
+#define SPI1_MOSI_H() GPIO_SPI1->BSRR = SPI1_MOSI
+#define SPI1_MOSI_L() GPIO_SPI1->BRR = SPI1_MOSI
+
+#define SPI1_MISO_IN() GPIO_SPI1->IDR & SPI1_MISO      //读取引脚电平
+
+//SPI2
+#elif (SPI_X == 2)
+
+#endif
 
 void SPI1_GPIO_Init(int SET)
 {
@@ -33,6 +105,14 @@ void SPI1_GPIO_Init(int SET)
         GPIO_Init(GPIO_SPI1, &GPIO_InitStructure);
     }
 }
+~~~
+
+​	**SPI**
+
+~~~~C
+#define SPI_X   1
+#define HOST_MODE
+#define SPI_Software	//屏蔽就是硬件模式
 
 void SPI_Start_Init(int SET)
 {
@@ -77,8 +157,15 @@ void SPI_Start_Init(int SET)
     #endif
 #endif
 }
+~~~~
 
-#ifdef Exist_SPI
+
+
+### 发送/接收
+
+​	**必要的延迟**
+
+~~~c
 static void SPI_Delay (int time)
 {
     #if MCU_SYS_Freq >= 72000000 
@@ -92,8 +179,13 @@ static void SPI_Delay (int time)
     while((time--) > 0);
     #endif
 }
-#endif
+~~~
 
+
+
+​	**片选NSS**
+
+~~~c
 void SPI_CS_Set(char Serial,char State)
 {
 #if (SPI_X == 1)
@@ -119,8 +211,16 @@ void SPI_CS_Set(char Serial,char State)
 #endif
 
 }
+~~~
 
-void SPI1_Send_DATA(const uint16_t DATA)
+
+
+​	**SPI发送**
+
+基础层      
+
+~~~c
+void SPI1_Send_DATA(const uint16_t DATA)	//发送数据，不考虑片选
 {
     /*
      * 写标志位
@@ -152,16 +252,14 @@ void SPI1_Send_DATA(const uint16_t DATA)
 
 #endif
 }
+~~~
 
-void SPI2_Send_DATA(const uint16_t DATA)
-{
-#if (SPI_X == 2)
 
-#endif
-}
 
-//    调用层      //
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
+调用层      
+
+~~~c
+void SPI_SET_Addr_SendData(char Serial,int Addr,int *DATA)
 {
     Addr &= 0xBFFF;
     SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
@@ -178,38 +276,53 @@ void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
     SPI_Delay (1);
     SPI_CS_Set(Serial,DISABLE);     //SPI结束
 }
+~~~
 
-uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
+
+
+
+
+​	**SPI接收**
+
+调用层      
+
+- 发需要读取的地址，等待发送完成（非发送数据为空）。
+
+- 清除读Flag（有些读一遍接收寄存器就自动清除），发一个脉冲，等GX_IC回第一个数据，此数据是向主机返回读的地址（先让主机确认一遍）。
+
+  
+
+  ![image-20220920143445002](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220920143445002.png)
+
+~~~c
+int SPI_SET_Addr_ReadData(char Serial,int Addr,int *Back_DATA)
 {
     /*
      * 等能读
      * 读
      */
-    uint16_t temp = 0;
+    int temp = 0;
     Addr &= 0xBFFF;
 #ifdef SPI_Software
-
+//暂无
 #else
     SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
     SPI_Delay (1);
     #if (SPI_X == 1)
-    SPI1_Send_DATA(Addr | 0x8000);
-
+    SPI1_Send_DATA(Addr);
+    
+	SPI_ReceiveData8(SPI1);			//以读取的方式，清除接收缓冲区
     SPI1_Send_DATA(0);
     while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_RXNE) == RESET);
-    temp = SPI_ReceiveData8(SPI1);
-
-    SPI1_Send_DATA(0);
-    while(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_RXNE) == RESET);
-    temp = SPI_ReceiveData8(SPI1);
+    *Back_DATA = SPI_ReceiveData8(SPI1);
 
     #elif (SPI_X == 2)
-
 
     #endif
     SPI_Delay (1);
     SPI_CS_Set(Serial,DISABLE);     //SPI结束
 #endif
-    return temp;
+    return (temp);
 }
+~~~
 
