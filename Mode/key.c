@@ -1,23 +1,21 @@
 #include "key.h"
 
-void KEY_Init (char Channel,int SET)
+void KEY_Init (char Channel,int Set)
 {
+#ifdef Exist_KEY
     switch (Channel) {
         case 0:
             break;
         case 1:
-        #ifdef Exist_KEY
-            KEY_GPIO_Init(SET);
-        #endif
+            KEY_GPIO_Init(Set);
             break;
         case 2:
-        #ifdef Exist_KEY
 
-        #endif
             break;
         default:
             break;
     }
+#endif
 }
 
 U8 KEY_State (char Channel)

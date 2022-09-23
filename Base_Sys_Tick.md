@@ -60,7 +60,7 @@ int SystemCoreClock    = 240 000 000;
 
 #define	Tick_Frequency	MCU_SYS_Freq/8		//滴答定时器频率
 #define	Tick_Set_CMP	Tick_Frequency/2	//设置滴答初始值
-#define	Tick_OverfLow	0.50  	            //定时器溢出时间（24位滴答才有）
+#define	Tick_Over_IT	0.50  	            //定时器溢出时间（24位滴答才有）
 
 systick_clock_source_config(SYSTICK_CLOCK_SOURCE_AHBCLK_DIV8);	//8分频
 SysTick_Config(Tick_Set_CMP);									//设置滴答初始值（不能大于滴答定时器位数），也就是0.5S溢出一次

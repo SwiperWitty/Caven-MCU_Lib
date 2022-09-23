@@ -4,7 +4,7 @@ void BZZ_Init(int SET)
 {
     #ifdef Exist_BZZ
     BZZ_GPIO_Init(SET);
-    BZZ_Clr();
+    BZZ_SET(DISABLE);
     #endif
 }
 

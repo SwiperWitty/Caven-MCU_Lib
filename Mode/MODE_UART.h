@@ -33,7 +33,8 @@ struct Uart_
     char (*Send_Data)(char Channel, const U8 *Data, int Length);
 };
 
-extern struct _Uart_Data *CV_UART;
+extern struct _Uart_Data * CV_UART[];       //别的地方定义数量
+
 
 void Uart_Init(char Channel, int Baud, int SET);
 

@@ -15,7 +15,7 @@ struct _SYS_Time
 {
     struct Caven_Date Date;
     struct Caven_Watch Watch;
-    volatile int sys_time;
+    volatile int sys_sec;
 };
 
 struct Delay_

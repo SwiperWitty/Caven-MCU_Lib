@@ -3,7 +3,7 @@
 #include "Base.h"
 
 #ifdef Exist_SYS_TIME
-    #include "time.h"
+    #include "MODE_Time.h"
 #endif
 
 #ifdef Exist_LCD
@@ -21,7 +21,7 @@
 #endif
 
 #ifdef Exist_UART
-    #include "uart_handle.h"
+    #include "MODE_UART.h"
 #endif
 
 #ifdef Exist_HC595
@@ -32,7 +32,7 @@
     #include "Steering_engine.h"
 #endif
 #ifdef Exist_Motor
-    #include "motor.h"
+    #include "MODE_motor.h"
 #endif
 
 #ifdef Exist_KEY
@@ -44,7 +44,7 @@
 #endif
 
 #ifdef Exist_Ultrasonic
-    #include "Ultrasonic.h"
+    #include "MODE_Ultrasonic.h"
 #endif
 
 #ifdef Exist_MLX90614
@@ -84,6 +84,9 @@ struct _Mode_Init
 #ifdef Exist_BZZ
     void (*BZZ)(int SET);
 #endif
+#ifdef Exist_HC595
+    void (*HC_595)(int SET);
+#endif
 
 #ifdef Exist_KEY
     void (*KEY)(char Channel,int SET);
@@ -113,6 +116,9 @@ struct _Mode_User
 #endif
     #ifdef Exist_BZZ
     struct BZZ_ BZZ;
+#endif
+#ifdef Exist_HC595
+    struct HC595_ HC595;
 #endif
 #ifdef Exist_KEY
     struct KEY_ KEY;

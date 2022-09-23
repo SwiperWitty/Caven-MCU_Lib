@@ -5,7 +5,8 @@ void LED_Init(int SET)
 {
 #ifdef Exist_LED
     LED_GPIO_Init(SET);
-
+    LED_SET(1,DISABLE);
+    
 #endif
 }
 

@@ -1,4 +1,4 @@
-#include "time.h"
+#include "MODE_Time.h"
 #include "API.h"
 
 //防止被编译器优化，并且只能在本文件使用
@@ -54,7 +54,7 @@ struct Caven_Watch Get_TIME (void)
 
     }
     temp.time_us = (GET_SysTick() % MCU_SYS_Freq) / Freq;
-
+    SYS_Time.Watch = temp;
 #endif
     return temp;
 }

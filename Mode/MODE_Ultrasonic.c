@@ -1,5 +1,4 @@
-#include "Ultrasonic.h"
-#include "Time.h"
+#include "MODE_Ultrasonic.h"
 
 void Ultrasonic_Init(int SET)
 {

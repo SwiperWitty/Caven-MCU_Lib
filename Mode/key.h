@@ -9,7 +9,7 @@ struct KEY_
     U8 (*KEY_State) (char Channel);
 };
 
-void KEY_Init (char Channel,int SET);
+void KEY_Init (char Channel,int Set);
 U8 KEY_State (char Channel);
 
 

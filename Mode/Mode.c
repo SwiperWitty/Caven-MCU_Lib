@@ -38,6 +38,9 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 #ifdef Exist_BZZ
     Mode_User.BZZ.BZZ_SET = BZZ_SET;
 #endif
+#ifdef Exist_HC595
+    Mode_User.HC595.Set_DATA = Set_DATA;
+#endif
 
 #ifdef Exist_UART
     Mode_User.UART.Send_Data = UART_Send_Data;
@@ -71,6 +74,9 @@ void Mode_Index(void)
 #endif
 #ifdef Exist_BZZ
     Mode_Init.BZZ = BZZ_Init;
+#endif
+#ifdef Exist_HC595
+    Mode_Init.HC_595 = HC595_Init;
 #endif
 
 #ifdef Exist_KEY

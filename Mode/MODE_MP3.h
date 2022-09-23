@@ -3,7 +3,8 @@
 
 //	可以跨芯片移植	需要大改底层(UART)
 
-#include "uart_handle.h"
+#include "Base.h"
+#include "Caven.h"
 
 #define	JQ8900	1
 #define	JQ6500	2
