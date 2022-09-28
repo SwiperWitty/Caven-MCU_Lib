@@ -12,7 +12,7 @@
 
 /* 【宏函数群】   */
 
-#define UART_Channel_MAX  2     //最高通道数
+#define UART_End    2     //最高通道数
 
 #ifdef Exist_UART
 /*  中断   */

@@ -19,7 +19,7 @@ struct _Uart_Data UART5_Data = {0};
 #ifdef UART_End
 struct _Uart_Data * CV_UART[UART_End];     //越狱通道
 #else
-//struct _Uart_Data * CV_UART[3];
+struct _Uart_Data * CV_UART[3];
 #endif
 
 void Uart_Init(char Channel, int Baud,int SET)

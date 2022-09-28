@@ -12,6 +12,10 @@
 #include "Base_UART.h" 
 #endif
 
+#ifdef Exist_UART
+#include "Base_SPI.h" 
+#endif
+
 
 
 

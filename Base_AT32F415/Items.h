@@ -28,12 +28,12 @@
 
 #define Exist_UART
 //#define Exist_IIC
-//#define Exist_SPI
+#define Exist_SPI
 //#define Exist_CAN
 
 //#define Exist_FLASH
                                                     /*  只需要加上逻辑才能的功能    */
-//#define Exist_LCD
+#define Exist_LCD
 //#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
 
 //#define Exist_HC38

@@ -1,9 +1,9 @@
-#include "base_Exist_GPIO.h"
+#include "Base_Exist_GPIO.h"
 
 void LCD_GPIO_Init(int SET)
 {
 #ifdef Exist_LCD
-    GPIO_InitTypeDef  GPIO_InitStructure;
+    GPIO_InitType  GPIO_InitStructure;
     if (SET)
     {
         RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_GPIOA, ENABLE);       //时钟
@@ -92,18 +92,18 @@ void HC595_GPIO_Init(int SET)
     GPIO_InitType GPIO_InitStructure;
     if (SET) 
     {
-        RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_GPIOB, ENABLE);       //时钟
+        RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_GPIOC, ENABLE);       //时钟
         
         GPIO_InitStructure.GPIO_Pins = LATCH_CLOCK | SHIFT_CLOCK | HC595_Data;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT_PP;
         GPIO_InitStructure.GPIO_MaxSpeed = GPIO_MaxSpeed_50MHz;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
+        GPIO_Init(GPIOC, &GPIO_InitStructure);
     }
     else                                                    //标志取消GPIO
     {
         GPIO_InitStructure.GPIO_Pins = LATCH_CLOCK | SHIFT_CLOCK | HC595_Data;
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
+        GPIO_Init(GPIOC, &GPIO_InitStructure);
     }
 #endif
 }

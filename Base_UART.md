@@ -13,11 +13,12 @@
 明确那些通道能用
 
 ~~~C
-#define UART1_EXIST
-#define UART2_EXIST
-#define UART3_EXIST
-#define UART4_EXIST
+#define UART1_EXIST 1
+#define UART2_EXIST 2
+#define UART3_EXIST 3
+#define UART4_EXIST 4
 
+#define UART_End 5
 ~~~
 
 

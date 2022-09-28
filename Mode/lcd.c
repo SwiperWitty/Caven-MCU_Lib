@@ -1,5 +1,4 @@
 #include "lcd.h"
-#include "pic.h"
 #include "lcdfont.h" //字库
 
 U16 BACK_COLOR = BLACK; //背景色
@@ -8,7 +7,7 @@ U16 BACK_COLOR = BLACK; //背景色
 #ifdef Exist_LCD
 void LCD_Writ_Bus(U8 dat)
 {
-	SPI_Send_DATA(2, dat);
+	SPI_Send_DATA(dat);
 }
 
 /******************************************************************************
@@ -18,8 +17,17 @@ void LCD_Writ_Bus(U8 dat)
 ******************************************************************************/
 void LCD_WR_DATA8(U8 dat)
 {
-	LCD_DC_Set(); //写数据
+	SPI_CS_Set(1,ENABLE);
 	LCD_Writ_Bus(dat);
+	SPI_CS_Set(1,DISABLE);
+}
+
+void LCD_WR_DATA(U16 dat)
+{
+	SPI_CS_Set(1,ENABLE);
+	LCD_Writ_Bus(dat >> 8);
+	LCD_Writ_Bus(dat && 0X00FF);
+	SPI_CS_Set(1,DISABLE);
 }
 
 /******************************************************************************
@@ -27,11 +35,14 @@ void LCD_WR_DATA8(U8 dat)
 	  入口数据：dat 写入的数据
 	  返回值：  无
 ******************************************************************************/
-void LCD_WR_DATA(U16 dat)
+void LCD_Send_Data(U8 *Data,int num)
 {
-	LCD_DC_Set(); //写数据
-	LCD_Writ_Bus(dat >> 8);
-	LCD_Writ_Bus(dat);
+	SPI_CS_Set(1,ENABLE);
+	for (size_t i = 0; i < num; i++)
+	{
+		LCD_Writ_Bus(*(Data + i));
+	}
+	SPI_CS_Set(1,DISABLE);
 }
 
 /******************************************************************************
@@ -39,10 +50,11 @@ void LCD_WR_DATA(U16 dat)
 	  入口数据：dat 写入的命令
 	  返回值：  无
 ******************************************************************************/
-void LCD_WR_REG(U8 dat)
+void LCD_WR_CMD(U8 dat)
 {
 	LCD_DC_Clr(); //写命令
 	LCD_Writ_Bus(dat);
+	LCD_DC_Set(); //写数据	预备
 }
 
 /******************************************************************************
@@ -55,43 +67,43 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 {
 	if (USE_HORIZONTAL == 0)
 	{
-		LCD_WR_REG(0x2a); //列地址设置
+		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1);
 		LCD_WR_DATA(x2);
-		LCD_WR_REG(0x2b); //行地址设置
+		LCD_WR_CMD(0x2b); //行地址设置
 		LCD_WR_DATA(y1);
 		LCD_WR_DATA(y2);
-		LCD_WR_REG(0x2c); //储存器写
+		LCD_WR_CMD(0x2c); //储存器写
 	}
 	else if (USE_HORIZONTAL == 1)
 	{
-		LCD_WR_REG(0x2a); //列地址设置
+		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1);
 		LCD_WR_DATA(x2);
-		LCD_WR_REG(0x2b); //行地址设置
+		LCD_WR_CMD(0x2b); //行地址设置
 		LCD_WR_DATA(y1 + 80);
 		LCD_WR_DATA(y2 + 80);
-		LCD_WR_REG(0x2c); //储存器写
+		LCD_WR_CMD(0x2c); //储存器写
 	}
 	else if (USE_HORIZONTAL == 2)
 	{
-		LCD_WR_REG(0x2a); //列地址设置
+		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1);
 		LCD_WR_DATA(x2);
-		LCD_WR_REG(0x2b); //行地址设置
+		LCD_WR_CMD(0x2b); //行地址设置
 		LCD_WR_DATA(y1);
 		LCD_WR_DATA(y2);
-		LCD_WR_REG(0x2c); //储存器写
+		LCD_WR_CMD(0x2c); //储存器写
 	}
 	else
 	{
-		LCD_WR_REG(0x2a); //列地址设置
+		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1 + 80);
 		LCD_WR_DATA(x2 + 80);
-		LCD_WR_REG(0x2b); //行地址设置
+		LCD_WR_CMD(0x2b); //行地址设置
 		LCD_WR_DATA(y1);
 		LCD_WR_DATA(y2);
-		LCD_WR_REG(0x2c); //储存器写
+		LCD_WR_CMD(0x2c); //储存器写
 	}
 }
 #endif
@@ -199,7 +211,6 @@ void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 ******************************************************************************/
 void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color)
 {
-
 	LCD_Draw_Line(x1, y1, x2, y1, color);
 	LCD_Draw_Line(x1, y1, x1, y2, color);
 	LCD_Draw_Line(x1, y2, x2, y2, color);
@@ -488,7 +499,7 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 				pic[]  图片数组
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[])
+void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 {
 #ifdef Exist_LCD
 	U16 i, j;
@@ -519,17 +530,17 @@ static void LCD_Delay(int time)
 }
 #endif
 
-void LCD_Init(int SET)
+void LCD_Init(int Set)
 {
 #ifdef Exist_LCD
-	LCD_GPIO_Init(SET);
-	SPIx_Init(2, ENABLE);
+	LCD_GPIO_Init(Set);
+	SPI_Start_Init(Set);
 	LCD_Delay(200); //等待电路复位完成
-					//	LCD_RES_Clr();LCD_Delay (20);				//Caven3.14 使用硬件复位，不需要这个
-					//	LCD_RES_Set();LCD_Delay (20);
-					//	LCD_WR_REG(0x11); //Sleep out
-					//  LCD_Delay (20);
-	LCD_WR_REG(0x36);
+//	LCD_RES_Clr();LCD_Delay (20);				//Caven3.14 使用硬件复位，不需要这个
+//	LCD_RES_Set();LCD_Delay (20);
+	LCD_WR_CMD(0x11); //Sleep out
+	LCD_Delay (20);
+	LCD_WR_CMD(0x36);
 	LCD_Delay(50);
 	if (USE_HORIZONTAL == 0)
 		LCD_WR_DATA8(0x00);
@@ -540,42 +551,42 @@ void LCD_Init(int SET)
 	else
 		LCD_WR_DATA8(0xA0);
 
-	LCD_WR_REG(0x3A);
+	LCD_WR_CMD(0x3A);
 	LCD_WR_DATA8(0x05);
 
-	LCD_WR_REG(0xB2);
+	LCD_WR_CMD(0xB2);
 	LCD_WR_DATA8(0x0C);
 	LCD_WR_DATA8(0x0C);
 	LCD_WR_DATA8(0x00);
 	LCD_WR_DATA8(0x33);
 	LCD_WR_DATA8(0x33);
 
-	LCD_WR_REG(0xB7);
+	LCD_WR_CMD(0xB7);
 	LCD_WR_DATA8(0x35);
 
-	LCD_WR_REG(0xBB);
+	LCD_WR_CMD(0xBB);
 	LCD_WR_DATA8(0x19);
 
-	LCD_WR_REG(0xC0);
+	LCD_WR_CMD(0xC0);
 	LCD_WR_DATA8(0x2C);
 
-	LCD_WR_REG(0xC2);
+	LCD_WR_CMD(0xC2);
 	LCD_WR_DATA8(0x01);
 
-	LCD_WR_REG(0xC3);
+	LCD_WR_CMD(0xC3);
 	LCD_WR_DATA8(0x12);
 
-	LCD_WR_REG(0xC4);
+	LCD_WR_CMD(0xC4);
 	LCD_WR_DATA8(0x20);
 
-	LCD_WR_REG(0xC6);
+	LCD_WR_CMD(0xC6);
 	LCD_WR_DATA8(0x0F);
 
-	LCD_WR_REG(0xD0);
+	LCD_WR_CMD(0xD0);
 	LCD_WR_DATA8(0xA4);
 	LCD_WR_DATA8(0xA1);
 
-	LCD_WR_REG(0xE0);
+	LCD_WR_CMD(0xE0);
 	LCD_WR_DATA8(0xD0);
 	LCD_WR_DATA8(0x04);
 	LCD_WR_DATA8(0x0D);
@@ -591,7 +602,7 @@ void LCD_Init(int SET)
 	LCD_WR_DATA8(0x1F);
 	LCD_WR_DATA8(0x23);
 
-	LCD_WR_REG(0xE1);
+	LCD_WR_CMD(0xE1);
 	LCD_WR_DATA8(0xD0);
 	LCD_WR_DATA8(0x04);
 	LCD_WR_DATA8(0x0C);
@@ -607,9 +618,9 @@ void LCD_Init(int SET)
 	LCD_WR_DATA8(0x20);
 	LCD_WR_DATA8(0x23);
 
-	LCD_WR_REG(0x21);
-	LCD_WR_REG(0x11);
-	LCD_WR_REG(0x29);
+	LCD_WR_CMD(0x21);
+	LCD_WR_CMD(0x11);
+	LCD_WR_CMD(0x29);
 	LCD_Delay(200);
 	LCD_Fill(0, 0, LCD_W, LCD_H, BACK_COLOR);
 #endif

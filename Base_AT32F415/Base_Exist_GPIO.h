@@ -23,8 +23,8 @@
  */
 
 #ifdef Exist_LCD
-    #define LCD_DC_Clr() GPIOA->BRE = GPIO_Pin_10    //DC_GPIO
-    #define LCD_DC_Set() GPIOA->BSRE = GPIO_Pin_10   //PA10
+    #define LCD_DC_Clr() GPIOA->BRE = GPIO_Pins_10    //DC_GPIO
+    #define LCD_DC_Set() GPIOA->BSRE = GPIO_Pins_10   //PA10
 //    #define LCD_RES_Clr()                                     //RES               //Caven 使用硬件复位
 //    #define LCD_RES_Set()
 #endif
@@ -55,16 +55,16 @@
 #endif
 
 #ifdef Exist_HC595
-    #define LATCH_CLOCK     GPIO_Pins_0         //门阀时钟
-    #define SHIFT_CLOCK     GPIO_Pins_1         //移动时钟
-    #define HC595_Data      GPIO_Pins_12        //数据
+    #define LATCH_CLOCK     GPIO_Pins_1         //门阀时钟
+    #define SHIFT_CLOCK     GPIO_Pins_2         //移动时钟
+    #define HC595_Data      GPIO_Pins_3         //数据
     
-    #define LATCH_CLOCK_Clr() GPIOB->BRE = LATCH_CLOCK
-    #define LATCH_CLOCK_Set() GPIOB->BSRE = LATCH_CLOCK
-    #define SHIFT_CLOCK_Clr() GPIOB->BRE = SHIFT_CLOCK
-    #define SHIFT_CLOCK_Set() GPIOB->BSRE = SHIFT_CLOCK
-    #define HC595_Data_Clr() GPIOB->BRE = HC595_Data
-    #define HC595_Data_Set() GPIOB->BSRE = HC595_Data
+    #define LATCH_CLOCK_Clr() GPIOC->BRE = LATCH_CLOCK
+    #define LATCH_CLOCK_Set() GPIOC->BSRE = LATCH_CLOCK
+    #define SHIFT_CLOCK_Clr() GPIOC->BRE = SHIFT_CLOCK
+    #define SHIFT_CLOCK_Set() GPIOC->BSRE = SHIFT_CLOCK
+    #define HC595_Data_Clr() GPIOC->BRE = HC595_Data
+    #define HC595_Data_Set() GPIOC->BSRE = HC595_Data
     
 #endif
 

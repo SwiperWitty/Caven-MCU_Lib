@@ -51,7 +51,7 @@ void SPI_Start_Init(int SET)
         
         #ifdef HOST_MODE
         SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-        #elif
+        #else
         SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
         #endif
         
@@ -128,7 +128,7 @@ void SPI1_Send_DATA(const uint16_t DATA)
      * 等忙位
      */
     
-#if(SPI_MODE == HOST_MODE)
+#ifdef HOST_MODE
 
     #ifdef SPI_Software
     char temp;
