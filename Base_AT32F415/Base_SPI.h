@@ -28,12 +28,13 @@
 */
 
 // 选择输出模式
-//#define SPI_Software	        //屏蔽就是硬件模式
-#define SPI_DMA			//屏蔽就是普通模式
-#define HOST_MODE
-#define SPI_X   2
-#define SPI_BufferSize  2560
-
+#ifdef Exist_SPI
+//  #define SPI_Software	        //屏蔽就是硬件模式
+    #define SPI_DMA			//屏蔽就是普通模式
+    #define HOST_MODE
+    #define SPI_X   2
+    #define SPI_BufferSize  2560
+#endif
 #ifdef SPI_DMA
 extern uint8_t SPI_DMA_RX_Buffer[SPI_BufferSize];
 #endif
@@ -44,7 +45,7 @@ extern uint8_t SPI_DMA_RX_Buffer[SPI_BufferSize];
 #else                                               //硬件SPI
 #define SPI_MODE_IN    GPIO_Mode_IN_PU
 #define SPI_MODE_OUT   GPIO_Mode_AF_PP
-#define SPI_Speed   SPI_MCLKP_2        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+#define SPI_Speed   SPI_MCLKP_16        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
 #define SPI_Size    SPI_FRAMESIZE_8BIT                //8b   16b
 #endif
 #define SPI_MODE_NSS    GPIO_Mode_OUT_PP
@@ -76,7 +77,7 @@ void SPI_Send_DATA(const uint16_t DATA);
 void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA);
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr);
 
-void SPI2_DMA_TX(int num);
+void SPI_Send_String(const void * DATA,int num);
 
 
 

@@ -2,12 +2,12 @@
 
 #define SPI_Tx_DMA_Channel     DMA1_Channel5
 
-uint8_t SPI_DMA_RX_Buffer[SPI_BufferSize];
 
 int SPI_State[3] = {0};
 
 void SPI1_GPIO_Init(int Set)
 {
+#ifdef Exist_SPI
     GPIO_InitType  GPIO_InitStructure;
     if (Set)
     {
@@ -33,10 +33,12 @@ void SPI1_GPIO_Init(int Set)
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;        //模拟输入
         GPIO_Init(GPIO_SPI1, &GPIO_InitStructure);
     }
+#endif
 }
 
 void SPI2_GPIO_Init(int Set)
 {
+#ifdef Exist_SPI
     GPIO_InitType  GPIO_InitStructure;
     if (Set)
     {
@@ -62,16 +64,14 @@ void SPI2_GPIO_Init(int Set)
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;        //模拟输入
         GPIO_Init(GPIO_SPI2, &GPIO_InitStructure);
     }
+#endif
 }
 
-void SPI2_DMA_Config (uint8_t *DMA_TX_Buffer,int BufferSize)
+void SPI2_DMA_Config (const void *DMA_TX_Buffer,int BufferSize)
 {
-    RCC_AHBPeriphClockCmd(RCC_AHBPERIPH_DMA1,ENABLE);
+#ifdef Exist_SPI
     DMA_InitType  DMA_InitStructure;
-    NVIC_InitType NVIC_InitStructure;
 
-    DMA_Reset(SPI_Tx_DMA_Channel);
-    DMA_DefaultInitParaConfig(&DMA_InitStructure);
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI2->DT;     //外设地址
     DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)DMA_TX_Buffer; //内存地址
     DMA_InitStructure.DMA_BufferSize = BufferSize;      //长度
@@ -84,15 +84,7 @@ void SPI2_DMA_Config (uint8_t *DMA_TX_Buffer,int BufferSize)
     DMA_InitStructure.DMA_Priority = DMA_PRIORITY_MEDIUM;   //设置优先级--中
     DMA_InitStructure.DMA_MTOM = DMA_MEMTOMEM_DISABLE;      //不是内存到内存
     DMA_Init(SPI_Tx_DMA_Channel, &DMA_InitStructure);
-
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
-    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-
-    SPI_I2S_DMAEnable(SPI2,SPI_I2S_DMA_TX, ENABLE);
+#endif
 }
 
 void SPI_Start_Init(int Set)
@@ -101,15 +93,15 @@ void SPI_Start_Init(int Set)
     FunctionalState set = DISABLE;
     if (Set)
         set = ENABLE;
-    #if (SPI_X == 1)
+    #if (SPIx == 1)
         SPI1_GPIO_Init(Set);
-    #elif (SPI_X == 2)
+    #elif (SPIx == 2)
         SPI2_GPIO_Init(Set);
     #endif
     
     #ifndef SPI_Software
-        #if (SPI_X == 1)
-        SPI_InitType SPI_InitStructure = {0};
+    SPI_InitType SPI_InitStructure = {0};
+        #if (SPIx == 1)
         RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_SPI1, ENABLE);
         
             #ifdef HOST_MODE
@@ -126,20 +118,33 @@ void SPI_Start_Init(int Set)
         SPI_InitStructure.SPI_FirstBit = SPI_FIRSTBIT_MSB;  //高位先行
         SPI_InitStructure.SPI_CPOLY = 7;
         SPI_Init(SPI1, &SPI_InitStructure);
+//        SPI_NSSHardwareOutputEnable(SPI2,ENABLE);
+        #ifdef SPI_DMA
+        NVIC_InitType NVIC_InitStructure;
+        RCC_AHBPeriphClockCmd(RCC_AHBPERIPH_DMA1,ENABLE);
+        NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
 
-//      SPI_SSOutputCmd(SPI1,ENABLE);
+        NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
+        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+        NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+        NVIC_Init(&NVIC_InitStructure);
+        SPI_I2S_DMAEnable(SPI2,SPI_I2S_DMA_TX, ENABLE);
+        DMA_Reset(SPI_Tx_DMA_Channel);
+        SPI2_DMA_Config (SPI_DMA_RX_Buffer,SPI_BufferSize);     //固定内存和长度（长度随时可变）
+        DMA_INTConfig(SPI_Tx_DMA_Channel,DMA_INT_TC,ENABLE);
+        #endif
 
         SPI_Enable(SPI1,set);
         #endif
-        #if (SPI_X == 2)
-        SPI_InitType SPI_InitStructure = {0};
+        #if (SPIx == 2)
         RCC_APB1PeriphClockCmd(RCC_APB1PERIPH_SPI2, ENABLE);
-        
             #ifdef HOST_MODE
             SPI_InitStructure.SPI_Mode = SPI_MODE_MASTER;
             #else
             SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
             #endif
+
         SPI_InitStructure.SPI_TransMode = SPI_TRANSMODE_FULLDUPLEX;
         SPI_InitStructure.SPI_FrameSize = SPI_Size;
         SPI_InitStructure.SPI_CPOL = SPI_CPOL_HIGH;         //空闲时SCK高电平
@@ -149,51 +154,70 @@ void SPI_Start_Init(int Set)
         SPI_InitStructure.SPI_FirstBit = SPI_FIRSTBIT_MSB;  //高位先行
         SPI_InitStructure.SPI_CPOLY = 7;
         SPI_Init(SPI2, &SPI_InitStructure);
-//        SPI_NSSHardwareOutputEnable(SPI2,ENABLE);
+
         #ifdef SPI_DMA
-        
+        RCC_AHBPeriphClockCmd(RCC_AHBPERIPH_DMA1,ENABLE);
+        SPI_I2S_DMAEnable(SPI2,SPI_I2S_DMA_TX, ENABLE);
+        DMA_Reset(SPI_Tx_DMA_Channel);
         SPI2_DMA_Config (SPI_DMA_RX_Buffer,SPI_BufferSize);     //固定内存和长度（长度随时可变）
-        DMA_INTConfig(SPI_Tx_DMA_Channel,DMA_INT_TC,ENABLE);
-
         #endif
-        SPI_Enable(SPI2,set);
 
+        // NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+        // NVIC_InitType NVIC_InitStructure;
+        // NVIC_InitStructure.NVIC_IRQChannel = SPI2_IRQn;
+        // NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+        // NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+        // NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+        // NVIC_Init(&NVIC_InitStructure);
+
+        SPI_I2S_ClearINTPendingBit(SPI2,SPI_I2S_INT_TE);
+        SPI_I2S_INTConfig(SPI2,SPI_I2S_INT_TE,set);      //SPI2发送结束中断
+        SPI_Enable(SPI2,set);
         #endif
 
     #endif
 #endif
 }
-
-#ifdef SPI_DMA
-void DMA1_Channel5_IRQHandler(void)
-{
-    if(DMA_GetITStatus(DMA1_FLAG_TC5) == SET)   //DMA发完了
-    {
-        DMA_ChannelEnable(SPI_Tx_DMA_Channel,DISABLE);          //停止DMA_5
-        SPI_CS_Set(1,DISABLE);                                  //取消片选
-        DMA_ClearITPendingBit(DMA1_FLAG_TC5);
-    }
-}
-#endif
 
 #ifdef Exist_SPI
-static void SPI_Delay (int time)
+void SPI1_IRQHandler(void)
 {
-    #if MCU_SYS_Freq >= 72000000 
-    volatile int temp;
-    for (int i = 0; i < time; ++i)
+    if(SPI_I2S_GetITStatus(SPI1,SPI_I2S_INT_TE) != RESET)     //SPI发完了
     {
-        temp = 10;            //SET
-        while((temp--) > 0);
+        SPI_CS_Set(1,DISABLE);                              //取消片选
+        SPI_I2S_ClearINTPendingBit(SPI1,SPI_I2S_INT_TE);
     }
-    #else
-    while((time--) > 0);
-    #endif
+}
+
+ void SPI2_IRQHandler(void)
+{
+    if (SPI_I2S_GetITStatus(SPI2, SPI_I2S_INT_TE) != RESET)
+    {
+        SPI_I2S_ClearINTPendingBit(SPI2,SPI_I2S_INT_TE);
+        SPI_CS_Set(1,DISABLE);                              //取消片选
+
+    }
 }
 #endif
+
+static void SPI_Delay (int time)
+{
+    if (MCU_SYS_Freq >= 72000000)
+    {
+        volatile int temp;
+        for (int i = 0; i < time; ++i)
+        {
+            temp = 100;            //SET
+            while((temp--) > 0);
+        }
+    }
+    else
+        while((time--) > 0);
+}
 
 void SPI_CS_Set(char Serial,char State)
 {
+#ifdef Exist_SPI
     switch (Serial)
     {
         case 1:
@@ -210,19 +234,8 @@ void SPI_CS_Set(char Serial,char State)
         default:
             break;
     }
+#endif
 
-}
-
-void SPI2_DMA_TX(int num)
-{
-
-    while(SPI_I2S_GetFlagStatus(SPI2,SPI_I2S_FLAG_BUSY) != RESET);      //spi不忙
-    SPI_CS_Set(1,ENABLE);
-    DMA_ChannelEnable(SPI_Tx_DMA_Channel,DISABLE);
-    DMA_ClearFlag(DMA1_FLAG_TC5);
-    DMA_SetCurrDataCounter(SPI_Tx_DMA_Channel, num);        //改变 SPI_Tx_DMA_Channel ，长度
-    DMA_ChannelEnable(SPI_Tx_DMA_Channel,ENABLE);
-    // 取消片选在中断 DMA1_Channel5_IRQn
 }
 
 void SPI_Send_DATA(const uint16_t DATA)
@@ -232,11 +245,11 @@ void SPI_Send_DATA(const uint16_t DATA)
      * 写数据
      * 等忙位
      */
-#ifdef HOST_MODE
+#ifdef Exist_SPI
     SPI_Type *Temp_SPI;
-    #if (SPI_X == 1)
+    #if (SPIx == 1)
     Temp_SPI = SPI1;
-    #elif (SPI_X == 2)
+    #elif (SPIx == 2)
     Temp_SPI = SPI2;
     #endif
 
@@ -255,9 +268,10 @@ void SPI_Send_DATA(const uint16_t DATA)
     SPI_MOSI_H();
     SPI_SCK_H();
     #else
-    while(SPI_I2S_GetFlagStatus(Temp_SPI,SPI_I2S_FLAG_TE) == RESET); //检查发送是否完成，完成以后再发送数据
+    
+    // while(SPI_I2S_GetFlagStatus(Temp_SPI,SPI_I2S_FLAG_TE) == RESET);
     SPI_I2S_TxData(Temp_SPI, DATA);
-    while(SPI_I2S_GetFlagStatus(Temp_SPI,SPI_I2S_FLAG_BUSY) != RESET); //必要  <????>
+    while(SPI_I2S_GetFlagStatus(Temp_SPI,SPI_I2S_FLAG_BUSY) != RESET); //必要  <别问，问就是玄学，跟NSS有关>
     #endif
 	
 #endif
@@ -265,10 +279,33 @@ void SPI_Send_DATA(const uint16_t DATA)
 
 
 //    调用层      //
+
+void SPI_Send_String(const void * DATA,int num)
+{
+#ifdef Exist_SPI
+    while(SPI_I2S_GetFlagStatus(SPI2,SPI_I2S_FLAG_BUSY) != RESET);      //spi不忙
+    SPI_CS_Set(1,ENABLE);
+    #ifdef  SPI_DMA
+    SPI_Enable(SPI2,ENABLE);
+    DMA_ChannelEnable(SPI_Tx_DMA_Channel,DISABLE);
+    DMA_ClearFlag(DMA1_FLAG_TC5);
+    SPI2_DMA_Config (DATA,num);
+    DMA_ChannelEnable(SPI_Tx_DMA_Channel,ENABLE);
+    #else
+    for (int i = 0; i < num; i++)
+    {
+        SPI_Send_DATA(*((uint8_t *)DATA + i));
+    }
+    
+    #endif
+#endif
+}
+
 void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
 {
 // Addr &= 0xBFFF;
-    SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
+#ifdef Exist_SPI
+    SPI_CS_Set(Serial,1);      //SPI开始（片选）
     SPI_Delay (1);
 
     SPI_Send_DATA(Addr);
@@ -276,7 +313,8 @@ void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
     SPI_Send_DATA(DATA);
 
     SPI_Delay (1);
-    SPI_CS_Set(Serial,DISABLE);     //SPI结束
+    SPI_CS_Set(Serial,0);     //SPI结束
+#endif
 }
 
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
@@ -287,16 +325,16 @@ uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
      */
     uint16_t temp = 0;
     // Addr &= 0xBFFF;
+#ifdef Exist_SPI
+    #ifdef SPI_Software
 
-#ifdef SPI_Software
-
-#else
+    #else
     SPI_Type *Temp_SPI;
-    #if (SPIX == 1)
-    Temp_SPI = SPI1;
-    #elif (SPIX == 1)
-    Temp_SPI = SPI1;
-    #endif
+        #if (SPIx == 1)
+        Temp_SPI = SPI1;
+        #elif (SPIx == 2)
+        Temp_SPI = SPI2;
+        #endif
 
     SPI_CS_Set(Serial,ENABLE);      //SPI开始（片选）
     SPI_Delay (1);
@@ -314,6 +352,7 @@ uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
 
     SPI_Delay (1);
     SPI_CS_Set(Serial,DISABLE);     //SPI结束
+    #endif
 #endif
     return temp;
 }

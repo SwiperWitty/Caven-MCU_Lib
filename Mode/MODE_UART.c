@@ -99,7 +99,7 @@ void UART1_Interrupt()                         //              Interrupt
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-//        UART_TXD_Send(Channel,temp);          //debug
+        // UART_TXD_Send(Channel,temp);          //debug
     }
 }
 #endif
@@ -139,7 +139,7 @@ void UART4_Interrupt()
     if(UART_RXD_Flag(Channel) != 0)
     {
         temp = UART_RXD_Receive(Channel);
-        Get_RXD(&CV_UART[Channel], temp);
+        Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
     }
 }
@@ -152,7 +152,7 @@ void UART5_Interrupt()
     if(UART_RXD_Flag(Channel) != 0)
     {
         temp = UART_RXD_Receive(Channel);
-        Get_RXD(&CV_UART[Channel], temp);
+        Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
     }
 }

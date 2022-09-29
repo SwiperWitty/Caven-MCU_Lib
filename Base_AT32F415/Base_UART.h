@@ -10,13 +10,13 @@
 	#define UART1_EXIST
 	#define UART2_EXIST
 	#define UART3_EXIST
-//    #define UART4_EXIST
-//    #define UART5_EXIST
+	#define UART4_EXIST
+	// #define UART5_EXIST
 	#define UART_End 6
 
 /*	标志位	*/
-	#define RXD_Falg    USART_FLAG_RDNE     //  接收标志
-	#define TXD_Falg    USART_FLAG_TRAC		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
+	#define RXD_Falg    USART_RDBF_FLAG     //  接收标志
+	#define TXD_Falg    USART_TDC_FLAG		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
 /*  中断   */
 	#ifdef UART1_EXIST
@@ -29,10 +29,10 @@
     	#define UART3_Interrupt() USART3_IRQHandler()
 	#endif
 	#ifdef UART4_EXIST
-    	#define UART4_Interrupt() USART3_IRQHandler()
+    	#define UART4_Interrupt() USART4_IRQHandler()
 	#endif
 	#ifdef UART5_EXIST
-    	#define UART5_Interrupt() USART3_IRQHandler()
+    	#define UART5_Interrupt() USART5_IRQHandler()
 	#endif
 #endif
 /*  end */

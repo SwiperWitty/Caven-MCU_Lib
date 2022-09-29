@@ -1,7 +1,8 @@
 #ifndef _ITEMS__H_
 #define _ITEMS__H_
 
-#include "at32f4xx.h"
+#include "at32f415.h"
+#include "at32f415_clock.h"     //软件配置的 基于内部48Mhz晶振  (48 / 6 / 2) * 36      APB 144M、APB1 72M、APB2 144M、（TIM All 144M）（ADC All 18M）（UART All 18M）
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->
@@ -12,32 +13,32 @@
 */
 
 #define DEBUG_OUT   1           //Debug 通道(目前是串口1)->MODE
-#define MCU_SYS_Freq SystemCoreClock
+#define MCU_SYS_Freq SystemCoreClock        //刚启动是8M，经过配置文件之后就是144（system_clock_config()之后）
 
                                                     /*  基本外设就能实现的功能    */
-#define Exist_SYS_TIME
+ #define Exist_SYS_TIME
 //#define Exist_PWM
 //#define Exist_ENCODE
 
-#define Exist_KEY
+//#define Exist_KEY
 #define Exist_LED
-#define Exist_BZZ
+//#define Exist_BZZ
 
 //#define Exist_ADC
 //#define Exist_DAC
 
 #define Exist_UART
 //#define Exist_IIC
-#define Exist_SPI
+//#define Exist_SPI
 //#define Exist_CAN
 
 //#define Exist_FLASH
                                                     /*  只需要加上逻辑才能的功能    */
-#define Exist_LCD
+//#define Exist_LCD
 //#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
 
 //#define Exist_HC38
-#define Exist_HC595
+//#define Exist_HC595
 
 //#define Exist_Ultrasonic
 //#define Exist_FindLine

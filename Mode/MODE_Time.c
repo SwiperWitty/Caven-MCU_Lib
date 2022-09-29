@@ -32,7 +32,7 @@ void Set_TIME (struct Caven_Watch time)
 #ifdef Exist_SYS_TIME
     int Seconds;
     Seconds = Hourly_to_Seconds(time);
-    SET_SysTick((U64)Seconds*(MCU_SYS_Freq));
+    SET_SysTick((U64)Seconds*(Tick_Frequency));
 
 #endif
 }
@@ -43,8 +43,8 @@ struct Caven_Watch Get_TIME (void)
     struct Caven_Watch temp = {0};
     
 #ifdef Exist_SYS_TIME
-    int Seconds = (GET_SysTick() / MCU_SYS_Freq);
-    int Freq = MCU_SYS_Freq / 1000000;           //1us
+    int Seconds = (GET_SysTick() / Tick_Frequency);
+    int Freq = Tick_Frequency / 1000000;           //1us
     temp = Seconds_to_Hourly(Seconds);
 
     if(Seconds / 86400)        //下一天
@@ -53,7 +53,7 @@ struct Caven_Watch Get_TIME (void)
         Set_TIME (temp);    //重设时间戳
 
     }
-    temp.time_us = (GET_SysTick() % MCU_SYS_Freq) / Freq;
+    temp.time_us = (GET_SysTick() % Tick_Frequency) / Freq;
     SYS_Time.Watch = temp;
 #endif
     return temp;

@@ -46,7 +46,7 @@ SPI一般系统只会使用一个（一主多从）。
 #define SPI_DMA			//屏蔽就是普通模式
 ~~~
 
-
+![image-20220929090208550](https://raw.githubusercontent.com/SwiperWitty/img/main/img/image-20220929090208550.png)
 
 ### 初始化
 
@@ -109,54 +109,143 @@ void SPI1_GPIO_Init(int SET)
 
 ​	**SPI**
 
+~~~C
+void SPI2_DMA_Config (uint8_t *DMA_TX_Buffer,int BufferSize)
+{
+    RCC_AHBPeriphClockCmd(RCC_AHBPERIPH_DMA1,ENABLE);
+    DMA_InitType  DMA_InitStructure;
+    NVIC_InitType NVIC_InitStructure;
+
+    DMA_Reset(SPI_Tx_DMA_Channel);
+    DMA_DefaultInitParaConfig(&DMA_InitStructure);
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&SPI2->DT;     //外设地址
+    DMA_InitStructure.DMA_MemoryBaseAddr = (uint32_t)DMA_TX_Buffer; //内存地址
+    DMA_InitStructure.DMA_BufferSize = BufferSize;      //长度
+    DMA_InitStructure.DMA_Direction = DMA_DIR_PERIPHERALDST;    //传输方向，从内存到外设
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PERIPHERALINC_DISABLE;    //外设地址不变
+    DMA_InitStructure.DMA_MemoryInc = DMA_MEMORYINC_ENABLE; //内存地址每次加1
+    DMA_InitStructure.DMA_PeripheralDataWidth = DMA_PERIPHERALDATAWIDTH_BYTE;   //字节传输增量
+    DMA_InitStructure.DMA_MemoryDataWidth = DMA_MEMORYDATAWIDTH_BYTE;   //字节传输宽度
+    DMA_InitStructure.DMA_Mode = DMA_MODE_NORMAL;           //非循环模式
+    DMA_InitStructure.DMA_Priority = DMA_PRIORITY_MEDIUM;   //设置优先级--中
+    DMA_InitStructure.DMA_MTOM = DMA_MEMTOMEM_DISABLE;      //不是内存到内存
+    DMA_Init(SPI_Tx_DMA_Channel, &DMA_InitStructure);
+
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+
+    SPI_I2S_DMAEnable(SPI2,SPI_I2S_DMA_TX, ENABLE);
+}
+~~~
+
+
+
 ~~~~C
 #define SPI_X   1
 #define HOST_MODE
 #define SPI_Software	//屏蔽就是硬件模式
 
-void SPI_Start_Init(int SET)
+void SPI_Start_Init(int Set)
 {
 #ifdef Exist_SPI
-    
+    FunctionalState set = DISABLE;
+    if (Set)
+        set = ENABLE;
     #if (SPI_X == 1)
-        SPI1_GPIO_Init(SET);
+        SPI1_GPIO_Init(Set);
     #elif (SPI_X == 2)
-    
+        SPI2_GPIO_Init(Set);
     #endif
     
     #ifndef SPI_Software
-        SPI_InitTypeDef SPI_InitStructure = {0};
-        NVIC_InitTypeDef NVIC_InitStructure = {0};
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
+        #if (SPI_X == 1)
+        SPI_InitType SPI_InitStructure = {0};
+        RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_SPI1, ENABLE);
         
-        #ifdef HOST_MODE
-        SPI_InitStructure.SPI_Mode = SPI_Mode_Master;
-        #elif
-        SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
-        #endif
-        
-        SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;
-        SPI_InitStructure.SPI_DataSize = SPI_Size;
-        SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;          //空闲时SCK高电平
-        SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;        //偶数边沿采样
-        SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;   //SPI_NSS_Hard/SPI_NSS_Soft
-        SPI_InitStructure.SPI_BaudRatePrescaler = SPI_Speed;  //分频
-        SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;  //高位先行
-        SPI_InitStructure.SPI_CRCPolynomial = 7;
+            #ifdef HOST_MODE
+            SPI_InitStructure.SPI_Mode = SPI_MODE_MASTER;
+            #else
+            SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
+            #endif
+        SPI_InitStructure.SPI_TransMode = SPI_TRANSMODE_FULLDUPLEX;
+        SPI_InitStructure.SPI_FrameSize = SPI_Size;
+        SPI_InitStructure.SPI_CPOL = SPI_CPOL_HIGH;          //空闲时SCK高电平
+        SPI_InitStructure.SPI_CPHA = SPI_CPHA_2EDGE;        //偶数边沿采样
+        SPI_InitStructure.SPI_NSSSEL = SPI_NSSSEL_SOFT;   //SPI_NSS_Hard/SPI_NSS_Soft
+        SPI_InitStructure.SPI_MCLKP = SPI_Speed;  //分频
+        SPI_InitStructure.SPI_FirstBit = SPI_FIRSTBIT_MSB;  //高位先行
+        SPI_InitStructure.SPI_CPOLY = 7;
         SPI_Init(SPI1, &SPI_InitStructure);
 
-        NVIC_InitStructure.NVIC_IRQChannel = SPI1_IRQn;
-        NVIC_InitStructure.NVIC_IRQChannelPriority = 2;
+//      SPI_SSOutputCmd(SPI1,ENABLE);
+
+        SPI_Enable(SPI1,set);
+        #endif
+        #if (SPI_X == 2)
+        SPI_InitType SPI_InitStructure = {0};
+        RCC_APB1PeriphClockCmd(RCC_APB1PERIPH_SPI2, ENABLE);
+        
+            #ifdef HOST_MODE
+            SPI_InitStructure.SPI_Mode = SPI_MODE_MASTER;
+            #else
+            SPI_InitStructure.SPI_Mode = SPI_Mode_Slave;
+            #endif
+        SPI_InitStructure.SPI_TransMode = SPI_TRANSMODE_FULLDUPLEX;
+        SPI_InitStructure.SPI_FrameSize = SPI_Size;
+        SPI_InitStructure.SPI_CPOL = SPI_CPOL_HIGH;         //空闲时SCK高电平
+        SPI_InitStructure.SPI_CPHA = SPI_CPHA_2EDGE;        //偶数边沿采样
+        SPI_InitStructure.SPI_NSSSEL = SPI_NSSSEL_SOFT;     //SPI_NSS_Hard/SPI_NSS_Soft
+        SPI_InitStructure.SPI_MCLKP = SPI_Speed;  //分频
+        SPI_InitStructure.SPI_FirstBit = SPI_FIRSTBIT_MSB;  //高位先行
+        SPI_InitStructure.SPI_CPOLY = 7;
+        SPI_Init(SPI2, &SPI_InitStructure);
+//        SPI_NSSHardwareOutputEnable(SPI2,ENABLE);
+        #ifdef SPI_DMA
+        NVIC_InitType NVIC_InitStructure;
+        RCC_AHBPeriphClockCmd(RCC_AHBPERIPH_DMA1,ENABLE);
+        NVIC_PriorityGroupConfig(NVIC_PriorityGroup_0);
+
+        NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
+        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
         NVIC_Init(&NVIC_InitStructure);
-//            SPI_SSOutputCmd(SPI1,ENABLE);
+        SPI_I2S_DMAEnable(SPI2,SPI_I2S_DMA_TX, ENABLE);
+        DMA_Reset(SPI_Tx_DMA_Channel);
+        SPI2_DMA_Config (SPI_DMA_RX_Buffer,SPI_BufferSize);     //固定内存和长度（长度随时可变）
+        DMA_INTConfig(SPI_Tx_DMA_Channel,DMA_INT_TC,ENABLE);
 
-        SPI_RxFIFOThresholdConfig(SPI1, SPI_RxFIFOThreshold_QF);
-        SPI_Cmd(SPI1,ENABLE);
-//          SPI_I2S_ITConfig(SPI1,SPI_I2S_IT_TXE,ENABLE);
+        #endif
+        SPI_Enable(SPI2,set);
+
+        #endif
+
     #endif
 #endif
 }
+~~~~
+
+
+
+中断
+
+~~~~c
+#ifdef SPI_DMA
+void DMA1_Channel5_IRQHandler(void)
+{
+    if(DMA_GetITStatus(DMA1_FLAG_TC5) == SET)   //DMA发完了
+    {
+        DMA_ChannelEnable(SPI_Tx_DMA_Channel,DISABLE);          //停止DMA_5
+        while(SPI_I2S_GetFlagStatus(SPI2,SPI_I2S_FLAG_BUSY) != RESET);
+        SPI_CS_Set(1,DISABLE);                                  //取消片选
+        DMA_ClearITPendingBit(DMA1_FLAG_TC5);
+    }
+}
+#endif
 ~~~~
 
 

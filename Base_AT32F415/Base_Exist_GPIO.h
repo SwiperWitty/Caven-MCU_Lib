@@ -23,63 +23,63 @@
  */
 
 #ifdef Exist_LCD
-    #define LCD_DC_Clr() GPIOA->BRE = GPIO_Pins_10    //DC_GPIO
-    #define LCD_DC_Set() GPIOA->BSRE = GPIO_Pins_10   //PA10
+    #define LCD_DC_Clr() GPIOA->clr = GPIO_PINS_10    //DC_GPIO
+    #define LCD_DC_Set() GPIOA->scr = GPIO_PINS_10   //PA10
 //    #define LCD_RES_Clr()                                     //RES               //Caven 使用硬件复位
 //    #define LCD_RES_Set()
 #endif
 
 #ifdef Exist_OLED
 
-    #define OLED_DC_Clr() GPIOA->BRE = GPIO_Pins_10    //DC_GPIO
-    #define OLED_DC_Set() GPIOA->BSRE = GPIO_Pins_10   //PA10
+    #define OLED_DC_Clr() GPIOA->clr = GPIO_PINS_10    //DC_GPIO
+    #define OLED_DC_Set() GPIOA->scr = GPIO_PINS_10   //PA10
 
 //    #define LCD_RES_Clr()                                     //RES               //Caven 使用硬件复位
 //    #define LCD_RES_Set()
 #endif
 
 #ifdef Exist_LED
-    #define LED_Clr() GPIOA->BRE = GPIO_Pins_4       //LED
-    #define LED_Set() GPIOA->BSRE = GPIO_Pins_4      //PA04
-    #define LEDR_Clr() GPIOA->BRE = GPIO_Pins_4      //PA04
-    #define LEDR_Set() GPIOA->BSRE = GPIO_Pins_4      //PA04
+    #define LED_Clr() GPIOA->clr = GPIO_PINS_4       //LED
+    #define LED_Set() GPIOA->scr = GPIO_PINS_4      //PA04
+    #define LEDR_Clr() GPIOC->clr = GPIO_PINS_2      //PA04
+    #define LEDR_Set() GPIOC->scr = GPIO_PINS_2      //PA04
 #endif
 
 #ifdef Exist_BZZ
-    #define BZZ_Clr() GPIOB->BRE = GPIO_Pins_5    //BZZ
-    #define BZZ_Set() GPIOB->BSRE = GPIO_Pins_5   //PB05
+    #define BZZ_Clr() GPIOB->clr = GPIO_PINS_5    //BZZ
+    #define BZZ_Set() GPIOB->scr = GPIO_PINS_5   //PB05
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pins_13)     //KEY,读
+    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_PINS_13)     //KEY,读
 #endif
 
 #ifdef Exist_HC595
-    #define LATCH_CLOCK     GPIO_Pins_1         //门阀时钟
-    #define SHIFT_CLOCK     GPIO_Pins_2         //移动时钟
-    #define HC595_Data      GPIO_Pins_3         //数据
+    #define LATCH_CLOCK     GPIO_PINS_1         //门阀时钟
+    #define SHIFT_CLOCK     GPIO_PINS_2         //移动时钟
+    #define HC595_Data      GPIO_PINS_3         //数据
     
-    #define LATCH_CLOCK_Clr() GPIOC->BRE = LATCH_CLOCK
-    #define LATCH_CLOCK_Set() GPIOC->BSRE = LATCH_CLOCK
-    #define SHIFT_CLOCK_Clr() GPIOC->BRE = SHIFT_CLOCK
-    #define SHIFT_CLOCK_Set() GPIOC->BSRE = SHIFT_CLOCK
-    #define HC595_Data_Clr() GPIOC->BRE = HC595_Data
-    #define HC595_Data_Set() GPIOC->BSRE = HC595_Data
+    #define LATCH_CLOCK_Clr() GPIOC->clr = LATCH_CLOCK
+    #define LATCH_CLOCK_Set() GPIOC->scr = LATCH_CLOCK
+    #define SHIFT_CLOCK_Clr() GPIOC->clr = SHIFT_CLOCK
+    #define SHIFT_CLOCK_Set() GPIOC->scr = SHIFT_CLOCK
+    #define HC595_Data_Clr() GPIOC->clr = HC595_Data
+    #define HC595_Data_Set() GPIOC->scr = HC595_Data
     
 #endif
 
 
 /*  Init-Function    */
 
-void LCD_GPIO_Init(int SET);
+void LCD_GPIO_Init(int Set);
 
-void LED_GPIO_Init(int SET);
-void BZZ_GPIO_Init(int SET);
+void LED_GPIO_Init(int Set);
+void BZZ_GPIO_Init(int Set);
 
-void HC595_GPIO_Init(int SET);
-void GXIC_GPIO_Init(int SET);
+void HC595_GPIO_Init(int Set);
+void GXIC_GPIO_Init(int Set);
 
-void KEY_GPIO_Init(int SET);
+void KEY_GPIO_Init(int Set);
 
 
 
