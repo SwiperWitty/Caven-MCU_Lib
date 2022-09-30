@@ -18,29 +18,34 @@ void Sys_Time_Init(int Set)
 
 struct _SYS_Ticktime SYS_Ticktime = {0};
 
+#ifdef Exist_SYS_TIME
 void SysTick_Handler(void)
 {
     SYS_Ticktime.SYS_Tick_H++;
 }
+#endif
 
 // Tick_Set_CMP 是起点值（设置的），因为是24位自减寄存器
 //这个返回的是，总系统滴答数，这个数是U64的，巨大
 uint64_t GET_SysTick(void)
 {
     uint64_t temp = 0;
-
+#ifdef Exist_SYS_TIME
     SYS_Ticktime.SYS_Tick_L = (Tick_Set_CMP - Sys_Time_VAL); //滴答当前值
     temp = SYS_Ticktime.SYS_Tick_H;
     temp *= Tick_Set_CMP; //乘法一定放后面，尤其是中断的东西
     temp += SYS_Ticktime.SYS_Tick_L;
+#endif
     return (temp);
 }
 
 void SET_SysTick(uint64_t time)
 {
+#ifdef Exist_SYS_TIME
     SYS_Ticktime.SYS_Tick_H = time / Tick_Set_CMP;         //高位设置
     SYS_Ticktime.SYS_Tick_L = (time % Tick_Set_CMP);       //低位设置(不设也行)
     Sys_Time_VAL = Tick_Set_CMP - SYS_Ticktime.SYS_Tick_L; //载入低位
+#endif
 }
 
 // Delay
@@ -51,7 +56,7 @@ void SYS_Delay_us(int n)
     uint64_t temp;
     int set_time = n * Freq_us;
     start_ticks = GET_SysTick();
-
+#ifdef Exist_SYS_TIME
     while (1)
     {
         end_ticks = GET_SysTick();
@@ -71,6 +76,7 @@ void SYS_Delay_us(int n)
             break;
         }
     }
+#endif
 }
 
 void SYS_Delay_ms(int n)
@@ -79,7 +85,7 @@ void SYS_Delay_ms(int n)
     uint64_t temp;
     int set_time = n * Freq_ms;
     start_ticks = GET_SysTick();
-
+#ifdef Exist_SYS_TIME
     while (1)
     {
         end_ticks = GET_SysTick();
@@ -99,6 +105,7 @@ void SYS_Delay_ms(int n)
             break;
         }
     }
+#endif
 }
 
 void SYS_Delay_S(int n)

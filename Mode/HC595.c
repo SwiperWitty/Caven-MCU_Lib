@@ -33,7 +33,7 @@ static void Send_HC595 (const unsigned char Dat)
 	char n;
     SHIFT_CLOCK_Clr();
     LATCH_CLOCK_Clr();
-    for(n = 0;n < 8;n++)								//ÉÏÉýÑØÓÐÐ§
+    for(n = 0;n < 8;n++)
     {
         if((Dat << n) & 0x80) HC595_Data_Set();
         else       			  HC595_Data_Clr();

@@ -9,7 +9,7 @@
 
 #define Freq_us (Tick_Frequency / 1000000) //微秒
 #define Freq_ms (Tick_Frequency / 1000)    //毫秒
-/* 【宏函数群】   */
+/* 【宏函数群】 会给到 mode  */
 
 //很长的时间戳（一天）
 struct _SYS_Ticktime

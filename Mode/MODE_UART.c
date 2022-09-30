@@ -22,7 +22,7 @@ struct _Uart_Data * CV_UART[UART_End];     //越狱通道
 struct _Uart_Data * CV_UART[3];
 #endif
 
-void Uart_Init(char Channel, int Baud,int SET)
+void Uart_Init(char Channel, const int Baud,int SET)
 {
 #ifdef Exist_UART
     switch (Channel)
@@ -63,7 +63,7 @@ void Uart_Init(char Channel, int Baud,int SET)
 }
 
 #ifdef Exist_UART
-static char Get_RXD(struct _Uart_Data *Target, char res) //接收处理函数
+static char Get_RXD(struct _Uart_Data *Target, const char res) //接收处理函数
 {
     if (!Target->Rxd_Received)      // 0 允许接收，其他不允许接收
     {
@@ -91,7 +91,7 @@ static char Get_RXD(struct _Uart_Data *Target, char res) //接收处理函数
 #endif
 
 #ifdef UART1_EXIST
-void UART1_Interrupt()                         //              Interrupt
+void UART1_Interrupt()                         //Interrupt
 {
     uint8_t temp,Channel = 1;
     if(UART_RXD_Flag(Channel) != 0)
@@ -99,7 +99,10 @@ void UART1_Interrupt()                         //              Interrupt
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-        // UART_TXD_Send(Channel,temp);          //debug
+        #ifdef DEBUG_RX_TX
+        UART_TXD_Send(Channel,temp);          //debug
+        #endif
+        
     }
 }
 #endif
@@ -113,7 +116,9 @@ void UART2_Interrupt()
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-//        UART_TXD_Send(Channel,temp);          //debug
+        #ifdef DEBUG_RX_TX
+        UART_TXD_Send(Channel,temp);          //debug
+        #endif
     }
 }
 #endif
@@ -127,7 +132,9 @@ void UART3_Interrupt()
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-//        UART_TXD_Send(Channel,temp);          //debug
+        #ifdef DEBUG_RX_TX
+        UART_TXD_Send(Channel,temp);          //debug
+        #endif
     }
 }
 #endif
@@ -141,6 +148,9 @@ void UART4_Interrupt()
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
+        #ifdef DEBUG_RX_TX
+        UART_TXD_Send(Channel,temp);          //debug
+        #endif
     }
 }
 #endif
@@ -148,12 +158,15 @@ void UART4_Interrupt()
 #ifdef UART5_EXIST
 void UART5_Interrupt()
 {
-    uint8_t temp,Channel = 4;
+    uint8_t temp,Channel = 5;
     if(UART_RXD_Flag(Channel) != 0)
     {
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
+        #ifdef DEBUG_RX_TX
+        UART_TXD_Send(Channel,temp);          //debug
+        #endif
     }
 }
 #endif
@@ -162,17 +175,15 @@ void UART5_Interrupt()
 char UART_Send_Data(char Channel, const U8 *Data, int Length)
 {
 #ifdef Exist_UART
-	int temp = Length;
-    if (temp > UART_Length_MAX)
-        temp = UART_Length_MAX;
-
+	int temp = MIN(Length,UART_Length_MAX);
     int i = 0;
+
     while (temp--)
     {
         UART_TXD_Send(Channel,Data[i++]);       //等待标志位在里面  
     }
 #endif
-    return 1;
+    return (1);
 }
 
 void UART_Send_String(char Channel, const char *String)

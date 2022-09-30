@@ -10,8 +10,9 @@
                                           -->[XXX]->MODE
                                          //
                     C(Lib)->Caven->API->
-*/
 
+*/
+#define TURE   TRUE
 #define DEBUG_OUT   1           //Debug 通道(目前是串口1)->MODE
 #define MCU_SYS_Freq SystemCoreClock        //刚启动是8M，经过配置文件之后就是144（system_clock_config()之后）
 
@@ -29,7 +30,7 @@
 
 #define Exist_UART
 //#define Exist_IIC
-//#define Exist_SPI
+#define Exist_SPI
 //#define Exist_CAN
 
 //#define Exist_FLASH
@@ -38,7 +39,7 @@
 //#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
 
 //#define Exist_HC38
-//#define Exist_HC595
+#define Exist_HC595
 
 //#define Exist_Ultrasonic
 //#define Exist_FindLine
