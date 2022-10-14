@@ -1,7 +1,6 @@
 #include "Base_SPI.h"
 
 #ifdef Exist_SPI
-    
 
     #if (SPIx == 1)
         spi_type *Temp_SPI = SPI1;
@@ -57,7 +56,6 @@ void SPI2_GPIO_Init(int Set)
     if (Set)
     {
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
-
         gpio_init_struct.gpio_pins = SPI2_SCK | SPI2_MOSI;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
@@ -85,6 +83,25 @@ void SPI2_GPIO_Init(int Set)
 #endif
 }
 
+void SPI1_DMA_Config (const void *DMA_TX_Buffer,int BufferSize)
+{
+#ifdef Exist_SPI
+    dma_init_type dma_init_struct;
+    dma_default_para_init(&dma_init_struct);        
+    dma_init_struct.buffer_size = BufferSize;       //长度
+    dma_init_struct.memory_base_addr = (uint32_t)DMA_TX_Buffer;
+    dma_init_struct.peripheral_base_addr = (uint32_t)&SPI1->dt;
+    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //内存到外设
+    dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
+    dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
+    dma_init_struct.memory_inc_enable = TRUE;                       //内存地址是否自动递增
+    dma_init_struct.peripheral_inc_enable = FALSE;                  //外设地址是否自动递增
+    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //设置优先级--中
+    dma_init_struct.loop_mode_enable = FALSE;                       //非循环模式
+    dma_init(SPI_Tx_DMA_Channel, &dma_init_struct);
+#endif
+
+}
 void SPI2_DMA_Config (const void *DMA_TX_Buffer,int BufferSize)
 {
 #ifdef Exist_SPI
@@ -169,7 +186,7 @@ void SPI1_IRQHandler(void)
 {
     if (spi_i2s_flag_get(SPI1, SPI_I2S_TDBE_FLAG) == 1)
     {
-        if(spi_i2s_flag_get(SPI1,SPI_I2S_BF_FLAG) == 0)
+        if(spi_i2s_flag_get(SPI1,SPI_I2S_BF_FLAG) == 0)     //busy
         {
             spi_i2s_interrupt_enable(SPI1, SPI_I2S_TDBE_INT, FALSE);
             SPI_CS_Set(1,FALSE);          //取消片选
@@ -231,7 +248,7 @@ void SPI_CS_Set(char Serial,char State)
 
 }
 
-//普通发送，只管SCLK MOSI不管 NSS
+//普通发送，只管SCLK、MOSI不管 NSS
 void SPI_Send_DATA(const uint16_t DATA)     
 {
     /*
@@ -274,15 +291,20 @@ void SPI_Send_String(const void * DATA,int num)
     
     SPI_CS_Set(1,TRUE);
     #ifdef  SPI_DMA
-    
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);
-    dma_flag_clear(DMA1_FDT5_FLAG);
-
     dma_channel_enable(SPI_Tx_DMA_Channel,FALSE);
-    SPI2_DMA_Config (DATA,num);                                 //重新配置
-    dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);
-    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);        //开SPI中断
-    while(!dma_flag_get(DMA1_FDT5_FLAG));
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);
+        #if (SPIx == 1)
+        // dma_flag_clear(DMA1_FDT3_FLAG);
+        SPI1_DMA_Config (DATA,num);                                 //重新配置
+
+        #elif (SPIx == 2)
+        // dma_flag_clear(DMA1_FDT5_FLAG);
+        SPI2_DMA_Config (DATA,num);                                 //重新配置
+        
+        #endif // DEBUG
+    dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);                        //开始DMA
+    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);         //开SPI中断
+    // while(!dma_flag_get(DMA1_FDT5_FLAG));
     #else
 
     for (int i = 0; i < num; i++)

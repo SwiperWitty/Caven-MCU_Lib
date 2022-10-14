@@ -29,7 +29,7 @@
 //#define Exist_DAC
 
 #define Exist_UART
-//#define Exist_IIC
+#define Exist_IIC
 #define Exist_SPI
 //#define Exist_CAN
 
