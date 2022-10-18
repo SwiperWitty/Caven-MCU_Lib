@@ -68,6 +68,20 @@
     
 #endif
 
+#ifdef Exist_HC138
+    #define HC595_D1    GPIO_PINS_1
+    #define HC595_D2    GPIO_PINS_2
+    #define HC595_D3    GPIO_PINS_3         //数据
+    
+    #define HC138_D1_H() GPIOC->scr = HC595_D1
+    #define HC138_D1_L() GPIOC->clr = HC595_D1
+    #define HC138_D2_H() GPIOC->scr = HC595_D2
+    #define HC138_D2_L() GPIOC->clr = HC595_D2
+    #define HC138_D3_H() GPIOC->scr = HC595_D3
+    #define HC138_D3_L() GPIOC->clr = HC595_D3
+    
+#endif
+
 
 /*  Init-Function    */
 
@@ -76,6 +90,7 @@ void LCD_GPIO_Init(int Set);
 void LED_GPIO_Init(int Set);
 void BZZ_GPIO_Init(int Set);
 
+void HC138_GPIO_Init(int Set);
 void HC595_GPIO_Init(int Set);
 void GXIC_GPIO_Init(int Set);
 

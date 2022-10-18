@@ -56,7 +56,7 @@ static void HC595_END (void)
 #endif
 }
 
-void Set_DATA (const unsigned char *Dat,char num)
+void HC595_Set_DATA (const unsigned char *Dat,char num)
 {
 	char m;
 	for(m = 0; m < num;m++)

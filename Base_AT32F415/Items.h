@@ -25,7 +25,7 @@
 #define Exist_LED
 //#define Exist_BZZ
 
-//#define Exist_ADC
+#define Exist_ADC
 //#define Exist_DAC
 
 #define Exist_UART
@@ -38,7 +38,7 @@
 //#define Exist_LCD
 //#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
 
-//#define Exist_HC38
+#define Exist_HC138
 #define Exist_HC595
 
 //#define Exist_Ultrasonic

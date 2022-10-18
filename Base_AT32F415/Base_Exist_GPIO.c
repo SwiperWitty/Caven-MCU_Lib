@@ -108,6 +108,32 @@ void KEY_GPIO_Init(int Set)
 #endif
 }
 
+void HC138_GPIO_Init(int Set)
+{
+#ifdef Exist_HC138
+    gpio_init_type gpio_init_struct;
+    gpio_default_para_init(&gpio_init_struct);
+    if (Set) 
+    {
+        crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);       //时钟
+
+        gpio_init_struct.gpio_pins = HC595_D1 | HC595_D2 | HC595_D3;
+        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(GPIOC, &gpio_init_struct);
+    }
+    else                                                    //标志取消GPIO
+    {
+        gpio_init_struct.gpio_pins = HC595_D1 | HC595_D2 | HC595_D3;
+        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(GPIOC, &gpio_init_struct);
+    }
+#endif
+}
+
 void HC595_GPIO_Init(int Set)
 {
 #ifdef Exist_HC595

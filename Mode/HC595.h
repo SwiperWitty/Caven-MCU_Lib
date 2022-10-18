@@ -5,8 +5,8 @@
 #include "Caven.h"
 
 /*
-	±¾ÎÄµµ¿âÊÇ OtaviaÓÃÓÚ ¿ØÖÆ ZenoµÄ 74CH595Çı¶¯³ÌĞò¡¢Æä¼æÈİÁË¼¶ÁªÊä³ö£¨¶à¸ö»º³åÆ÷£©
-    ¹Ü½Å¶¨ÒåÔÚ base_sys_time ÎÄ¼ş
+	æœ¬æ–‡æ¡£åº“æ˜¯ Otaviaç”¨äº æ§åˆ¶ Zenoçš„ 74CH595é©±åŠ¨ç¨‹åºã€å…¶å…¼å®¹äº†çº§è”è¾“å‡ºï¼ˆå¤šä¸ªç¼“å†²å™¨ï¼‰
+    ç®¡è„šå®šä¹‰åœ¨ Base_Exist_GPIO æ–‡ä»¶
 */
 
 struct HC595_
@@ -15,7 +15,7 @@ struct HC595_
 };
 
 void HC595_Init (int SET);
-void Set_DATA (const unsigned char *Dat,char num);
+void HC595_Set_DATA (const unsigned char *Dat,char num);
 
 
 #endif

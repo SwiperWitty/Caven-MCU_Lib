@@ -83,13 +83,13 @@ void SPI2_GPIO_Init(int Set)
 #endif
 }
 
-void SPI1_DMA_Config (const void *DMA_TX_Buffer,int BufferSize)
+void SPI1_DMA_Config (const void *DMA_Buffer,int BufferSize)
 {
 #ifdef Exist_SPI
     dma_init_type dma_init_struct;
     dma_default_para_init(&dma_init_struct);        
     dma_init_struct.buffer_size = BufferSize;       //长度
-    dma_init_struct.memory_base_addr = (uint32_t)DMA_TX_Buffer;
+    dma_init_struct.memory_base_addr = (uint32_t)DMA_Buffer;
     dma_init_struct.peripheral_base_addr = (uint32_t)&SPI1->dt;
     dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //内存到外设
     dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
@@ -102,13 +102,13 @@ void SPI1_DMA_Config (const void *DMA_TX_Buffer,int BufferSize)
 #endif
 
 }
-void SPI2_DMA_Config (const void *DMA_TX_Buffer,int BufferSize)
+void SPI2_DMA_Config (const void *DMA_Buffer,int BufferSize)
 {
 #ifdef Exist_SPI
     dma_init_type dma_init_struct;
     dma_default_para_init(&dma_init_struct);        
     dma_init_struct.buffer_size = BufferSize;       //长度
-    dma_init_struct.memory_base_addr = (uint32_t)DMA_TX_Buffer;
+    dma_init_struct.memory_base_addr = (uint32_t)DMA_Buffer;
     dma_init_struct.peripheral_base_addr = (uint32_t)&SPI2->dt;
     dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //内存到外设
     dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
@@ -180,33 +180,6 @@ void SPI_Start_Init(int Set)
     #endif
 #endif
 }
-
-#ifdef Exist_SPI
-void SPI1_IRQHandler(void)
-{
-    if (spi_i2s_flag_get(SPI1, SPI_I2S_TDBE_FLAG) == 1)
-    {
-        if(spi_i2s_flag_get(SPI1,SPI_I2S_BF_FLAG) == 0)     //busy
-        {
-            spi_i2s_interrupt_enable(SPI1, SPI_I2S_TDBE_INT, FALSE);
-            SPI_CS_Set(1,FALSE);          //取消片选
-//            printf("SPI ok \r\n");
-        }
-    }
-}
-
- void SPI2_IRQHandler(void)
-{
-    if (spi_i2s_flag_get(SPI2, SPI_I2S_TDBE_FLAG) == 1)
-    {
-        if(spi_i2s_flag_get(SPI2,SPI_I2S_BF_FLAG) == 0)
-        {
-            spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //关中断
-            SPI_CS_Set(1,FALSE);          //取消片选
-        }
-    }
-}
-#endif
 
 #ifdef Exist_SPI
 static void SPI_Delay (int time)
@@ -375,4 +348,31 @@ uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
 #endif
     return temp;
 }
+
+#ifdef Exist_SPI
+void SPI1_IRQHandler(void)
+{
+    if (spi_i2s_flag_get(SPI1, SPI_I2S_TDBE_FLAG) == 1)
+    {
+        if(spi_i2s_flag_get(SPI1,SPI_I2S_BF_FLAG) == 0)     //busy
+        {
+            spi_i2s_interrupt_enable(SPI1, SPI_I2S_TDBE_INT, FALSE);
+            SPI_CS_Set(1,FALSE);          //取消片选
+//            printf("SPI ok \r\n");
+        }
+    }
+}
+
+ void SPI2_IRQHandler(void)
+{
+    if (spi_i2s_flag_get(SPI2, SPI_I2S_TDBE_FLAG) == 1)
+    {
+        if(spi_i2s_flag_get(SPI2,SPI_I2S_BF_FLAG) == 0)
+        {
+            spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //关中断
+            SPI_CS_Set(1,FALSE);          //取消片选
+        }
+    }
+}
+#endif
 

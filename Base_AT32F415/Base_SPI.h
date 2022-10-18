@@ -92,7 +92,7 @@ void SPI_Send_String(const void * DATA,int num);
 #define SPI_MOSI_H() GPIO_SPI1->scr = SPI1_MOSI
 #define SPI_MOSI_L() GPIO_SPI1->clr = SPI1_MOSI
 
-#define SPI_MISO_IN() GPIO_SPI1->IPTDT & SPI1_MISO      //读取引脚电平
+#define SPI_MISO_IN() GPIO_SPI1->idt & SPI1_MISO      //读取引脚电平
 
 #elif (SPIx == 2)
 #define SPI_NSS_H()  GPIO_SPI2->scr = SPI2_NSS		//置高电平
@@ -102,7 +102,7 @@ void SPI_Send_String(const void * DATA,int num);
 #define SPI_MOSI_H() GPIO_SPI2->scr = SPI2_MOSI
 #define SPI_MOSI_L() GPIO_SPI2->clr = SPI2_MOSI
 
-#define SPI_MISO_IN() GPIO_SPI2->IPTDT & SPI2_MISO      //读取引脚电平
+#define SPI_MISO_IN() GPIO_SPI2->idt & SPI2_MISO      //读取引脚电平
 
 #endif
 
