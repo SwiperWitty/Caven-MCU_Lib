@@ -10,14 +10,17 @@ void LCD_GPIO_Init(int Set)
         crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);       //时钟
 
         gpio_init_struct.gpio_pins = GPIO_PINS_10;            //LCD_DC
-        gpio_init_struct.GPIO_Mode = GPIO_Mode_OUT_PP;        //推挽输出
-        gpio_init_struct.GPIO_MaxSpeed = GPIO_MaxSpeed_50MHz; //速度50MHz
-        gpio_init(GPIOA, &gpio_init_struct);    //初始化GPIOA
+        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(GPIOA, &gpio_init_struct);
     }
     else
     {
         gpio_init_struct.gpio_pins = GPIO_PINS_10;
-        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOA, &gpio_init_struct);
     }
 #endif

@@ -17,7 +17,7 @@
 #define MCU_SYS_Freq SystemCoreClock        //刚启动是8M，经过配置文件之后就是144（system_clock_config()之后）
 
                                                     /*  基本外设就能实现的功能    */
- #define Exist_SYS_TIME
+#define Exist_SYS_TIME
 //#define Exist_PWM
 //#define Exist_ENCODE
 
@@ -34,22 +34,23 @@
 //#define Exist_CAN
 
 //#define Exist_FLASH
+    
                                                     /*  只需要加上逻辑才能的功能    */
-//#define Exist_LCD
-//#define Exist_OLED    //一般这两个是二选一（占用的都是SPI）
+#define Exist_LCD
+//#define Exist_OLED            //一般这两个是二选一（占用的都是SPI）
 
 #define Exist_HC138
 #define Exist_HC595
 
-//#define Exist_Ultrasonic
-//#define Exist_FindLine
+//#define Exist_Ultrasonic          //超声波测距
+//#define Exist_FindLine            //循迹
 
-//#define Exist_Voice
+#define Exist_Voice               //语音播报(MP3)
 
-//#define Exist_Motor
-//#define Exist_Steering_Engine
+//#define Exist_Motor               //电机
+#define Exist_Steering_Engine       //舵机
 
-//#define Exist_MLX90614
+//#define Exist_MLX90614            //红外测温
 
 
 /*  进一步的逻辑关系    */
@@ -80,7 +81,7 @@
     #endif
 #endif
 
-#ifdef Exist_Steering_Engine
+#ifdef Exist_Steering_Engine        //舵机基于TIM4-PWM
     #ifndef Exist_PWM
         #define Exist_PWM
     #endif

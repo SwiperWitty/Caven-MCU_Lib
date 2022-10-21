@@ -95,7 +95,7 @@ void Uart3_Init(int Baud,int Set)
     crm_periph_clock_enable(CRM_USART3_PERIPH_CLOCK, set);                  //重映射时钟
     crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);      
     crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
-    gpio_pin_remap_config(USART3_GMUX_0001,TRUE);                           //重映射
+    gpio_pin_remap_config(USART3_GMUX_0001,TRUE);                           //重映射串口
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
 
@@ -163,8 +163,19 @@ void Uart4_Init(int Baud,int Set)
 #endif
 }
 
-void Uart5_Init(int Baud,int SET)
+void Uart5_Init(int Baud,int Set)
 {
+    confirm_state set = FALSE;
+    Temp = UART4;
+    usart_reset(Temp);
+    if (Set)
+        set = TRUE;
+    crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, set);
+    crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
+    crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+
+    gpio_pin_remap_config(SWJTAG_GMUX_010,TRUE);                //支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
+
 }
 
 char UART_RXD_Flag(char Channel)

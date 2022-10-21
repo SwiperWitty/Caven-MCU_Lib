@@ -31,6 +31,7 @@ void IIC_Start_Init(int SET)
     if (SET)
     {
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
+        
         gpio_init_struct.gpio_pins = IIC_SCL;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;

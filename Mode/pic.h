@@ -1,5 +1,5 @@
-//给LCD或者其他设备准备的图片数据
-//#define  PICTURE
+//
+#define  PICTURE
 #ifdef PICTURE
 const unsigned char gImage_am_60[7200] = { /* 0X10,0X10,0X00,0X3C,0X00,0X3C,0X01,0X1B, */
 0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,0X00,

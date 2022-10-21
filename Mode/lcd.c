@@ -10,6 +10,11 @@ void LCD_Writ_Bus(U8 dat)
 	SPI_Send_DATA(dat);
 }
 
+void LCD_Writ_String(const void * DATA,int num)
+{
+    SPI_Send_String(DATA,num);
+}
+
 /******************************************************************************
 	  函数说明：LCD写入数据
 	  入口数据：dat 写入的数据
@@ -26,7 +31,7 @@ void LCD_WR_DATA(U16 dat)
 {
 	SPI_CS_Set(1,ENABLE);
 	LCD_Writ_Bus(dat >> 8);
-	LCD_Writ_Bus(dat && 0X00FF);
+	LCD_Writ_Bus(dat & 0X00FF);
 	SPI_CS_Set(1,DISABLE);
 }
 
@@ -107,6 +112,7 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 	}
 }
 #endif
+//以上不提供到其他文件
 
 /******************************************************************************
 	  函数说明：在指定区域填充颜色
@@ -502,18 +508,23 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 {
 #ifdef Exist_LCD
-	U16 i, j;
 	U32 k = 0;
-	LCD_Address_Set(x, y, x + length - 1, y + width - 1);
-	for (i = 0; i < length; i++)
-	{
-		for (j = 0; j < width; j++)
-		{
-			LCD_WR_DATA8(pic[k * 2]);
-			LCD_WR_DATA8(pic[k * 2 + 1]);
-			k++;
-		}
-	}
+	LCD_Address_Set(x, y, (x + length) - 1, (y + width) - 1);
+//	for (int i = 0; i < length; i++)
+//	{
+//		for (int j = 0; j < width; j++)
+//		{
+//			LCD_WR_DATA8(pic[k * 2]);
+//			LCD_WR_DATA8(pic[k * 2 + 1]);
+//			k++;
+//		}
+//	}
+    k = length * width;
+    for(int i = 0;i < k;i++)
+    {
+        LCD_WR_DATA8(pic[i]);
+    }
+//    LCD_Writ_String(pic,k);
 #endif
 }
 

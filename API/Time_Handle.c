@@ -13,13 +13,16 @@ int Hourly_to_Seconds(struct Caven_Watch Item)
 struct Caven_Watch Seconds_to_Hourly(int Seconds)
 {
     struct Caven_Watch temp;
-    temp.hour = Seconds / 3600;
-    temp.minutes = (Seconds % 3600) / 60;
-    temp.second = Seconds % 60;
+    int i;
+    i = Seconds / 3600;
+    temp.hour = MIN(i,24);
     
-    temp.hour = MIN(temp.hour,24);
-    temp.minutes = MIN(temp.minutes,60);
-    temp.second = MIN(temp.second,60);
+    i = (Seconds % 3600) / 60;
+    temp.minutes = i;
+    
+    i = Seconds % 60;
+    temp.second = i;
+    
     return temp;
 }
 

@@ -1,92 +1,61 @@
-//#include "Steering_engine.h"
-//
-//#define Angle_Num	1.11
-//
-//int Set_Angle_Cal_180(float Angle)	//舵机角度计算	0C = (0 * Angle_Num) + 150 = 150 <set angle calculator>
-//{
-//	int Time_PWM = 150;
-//	if(Angle <= 90 || Angle >= -90) Time_PWM = (Angle * Angle_Num) + 150;
-//	return Time_PWM;
-//}
-//
-//void Init_Steering_Engine_T4 (void)
-//{
-//	SysTick_Config(SystemCoreClock/100000);					//360 Steering_Engine_360_Sport	Init
-//	PWM_x_Init(Steering_PWM, Arr_T4, Por_T4, ENABLE);							//20ms pwm  20ms 1.5ms (0) 0.5ms (-90) 2.5ms (+90)
-//	TIM_SetCompare1(TIM4, Set_Angle_Cal_180(0));
-//	TIM_SetCompare2(TIM4, Set_Angle_Cal_180(0));
-//	TIM_SetCompare3(TIM4, Set_Angle_Cal_180(0));
-//	TIM_SetCompare4(TIM4, Set_Angle_Cal_180(0));
-//}
-//
-//void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time)
-//{
-//	int Time_PWM = 150;
-//	if(Speed > 100)	Speed = 100;
-//	if(Rotation == 'r' || Rotation == 'R')
-//	{
-//		Time_PWM = 150 - (Speed * 0.5);
-//	}
-//	else if(Rotation == 'l' || Rotation == 'L')
-//	{
-//		Time_PWM = 150 + (Speed * 0.5);
-//	}
-//	switch(Channel)
-//	{
-//		case(1):
-//		{
-//			TIM_SetCompare1(TIM4, Time_PWM);
-//            TIM_SetCompare1(TIM4, 150);
-//			break;
-//		}
-//		case(2):
-//		{
-//			TIM_SetCompare2(TIM4, Time_PWM);
-//            TIM_SetCompare2(TIM4, 150);
-//			break;
-//		}
-//		case(3):
-//		{
-//			TIM_SetCompare3(TIM4, Time_PWM);
-//            TIM_SetCompare3(TIM4, 150);
-//			break;
-//		}
-//		case(4):
-//		{
-//			TIM_SetCompare4(TIM4, Time_PWM);
-//            TIM_SetCompare4(TIM4, 150);
-//			break;
-//		}
-//		default:
-//			break;
-//	}
-//}
-//
-//void Steering_Engine_Angle(char Channel,float Angle)
-//{
-//	switch(Channel)
-//	{
-//		case(1):
-//		{
-//			TIM_SetCompare1(TIM4, Set_Angle_Cal_180(Angle));
-//			break;
-//		}
-//		case(2):
-//		{
-//			TIM_SetCompare2(TIM4, Set_Angle_Cal_180(Angle));
-//			break;
-//		}
-//		case(3):
-//		{
-//			TIM_SetCompare3(TIM4, Set_Angle_Cal_180(Angle));
-//			break;
-//		}
-//		case(4):
-//		{
-//			TIM_SetCompare4(TIM4, Set_Angle_Cal_180(Angle));
-//			break;
-//		}
-//		default:
-//			break;
-//	}
-//}
+#include "Steering_engine.h"
+
+#define Angle_coefficient	1.11
+
+
+void Steering_Engine_Init (int Set)
+{
+#ifdef Exist_Steering_Engine
+    TIM4_PWM_Start_Init(Arr_T4,Por_T4,Set);
+    Steering_Engine_Angle(1,0);
+    Steering_Engine_Angle(2,0);
+    Steering_Engine_Angle(3,0);
+    Steering_Engine_Angle(4,0);     //默认0°
+#endif
+
+}
+
+/*
+舵机角度计算
+x = Angle_coefficient
+90° ->  (-90 * x) + 150 = 50  
+0°  ->  (0 * x) + 150   = 150 <set angle calculator>    
+90° ->  (90 * x) + 150  = 250  
+解得 Angle_coefficient = 1.11
+*/
+int Set_Angle_Cal_180(float Angle)	
+{
+#ifdef Exist_Steering_Engine
+	int Time_PWM = 150;
+	if(Angle <= 90 || Angle >= -90) Time_PWM = (Angle * Angle_coefficient) + 150;       //符合范围
+	return Time_PWM;
+#endif
+}
+
+/*  通道、设置角度  */
+void Steering_Engine_Angle(char Channel,float Angle)
+{
+#ifdef Exist_Steering_Engine
+
+    TIM4_PWMx_SetValue(Channel,Set_Angle_Cal_180(Angle));
+
+#endif
+}
+
+/*  通道、旋转方向、旋转的速度、保持的时间  */
+void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time)
+{
+#ifdef Exist_Steering_Engine
+	int Time_PWM = 150;
+	if(Speed > 100)	Speed = 100;
+	if(Rotation == 'r' || Rotation == 'R')
+	{
+		Time_PWM = 150 - (Speed * 0.5);
+	}
+	else if(Rotation == 'l' || Rotation == 'L')
+	{
+		Time_PWM = 150 + (Speed * 0.5);
+	}
+    TIM4_PWMx_SetValue(Channel,Time_PWM);
+#endif
+}

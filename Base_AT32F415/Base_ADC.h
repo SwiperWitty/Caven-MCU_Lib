@@ -3,6 +3,12 @@
 
 #include "Items.h"
 
+#ifdef Exist_ADC
+    #define ADC_VREF                         (3.3)
+    #define ADC_TEMP_BASE                    (1.26)
+    #define ADC_TEMP_SLOPE                   (-0.00423)
+#endif
+
 /*
     使用DMA来读ADC的好处是一次可以获取所有的数据。
     而且快速
@@ -20,9 +26,11 @@
 // #define ADC_IO_PA7  ADC_CHANNEL_7
 #define ADC_IO_PB0  ADC_CHANNEL_8
 #define ADC_IO_PB1  ADC_CHANNEL_9
+#define ADC_Temp    ADC_CHANNEL_16      //温传
 
 
 void ADC_Start_Init(int Set);
 void ADC_Get_List(int *Target);
+float ADC_Get_Temperature(void);
 
 #endif 

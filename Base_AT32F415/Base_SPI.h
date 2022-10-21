@@ -14,6 +14,7 @@
     软件SPI慢，但是它可以指定任意IO口(目前只发不收)。
     尽量使 SPI_GPIO 在同一组GPIO上（A/B/C/D）
     SPI是主动通信（主从），主机的收发逻辑不需要中断，但是从机需要（傻了吧，这是不全面的）。
+    DMA和普通模式是可以一起用的
 																					2022.02.26
     SPI的唯一要求————越快越好，目前软件模拟 461kHz(8bit)，硬件SPI参考-SPI_Speed-定义。
     软件模式 -- 4Mhz
@@ -48,7 +49,7 @@
 #else                                               //硬件SPI
 #define SPI_MODE_IN    GPIO_MODE_INPUT
 #define SPI_MODE_OUT   GPIO_MODE_MUX
-#define SPI_Speed   SPI_MCLK_DIV_2        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+#define SPI_Speed   SPI_MCLK_DIV_16        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
 #define SPI_Size    SPI_FRAME_8BIT                  //8b   16b
 #endif
 #define SPI_MODE_NSS    GPIO_MODE_OUTPUT

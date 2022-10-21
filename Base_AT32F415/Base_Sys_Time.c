@@ -1,10 +1,17 @@
 #include "Base_Sys_time.h"
 
 #define Sys_Time_VAL SysTick->VAL
+int Tick_Full;       //提取宏，很多宏都是以运输的形式存在的，每次调用都会算一遍
+int Freq_ms;
+int Freq_us;
 
 void Sys_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
+    Tick_Full = Tick_Set_CMP;
+    Freq_ms = (Tick_Frequency / 1000);
+    Freq_us = (Tick_Frequency / 1000000);
+    
     if (Set)
     {
         SysTick_Config(Tick_Set_CMP);
@@ -27,13 +34,15 @@ void SysTick_Handler(void)
 
 // Tick_Set_CMP 是起点值（设置的），因为是24位自减寄存器
 //这个返回的是，总系统滴答数，这个数是U64的，巨大
+
+
 uint64_t GET_SysTick(void)
 {
     uint64_t temp = 0;
 #ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Tick_L = (Tick_Set_CMP - Sys_Time_VAL); //滴答当前值
+    SYS_Ticktime.SYS_Tick_L = (Tick_Full - Sys_Time_VAL); //滴答当前值
     temp = SYS_Ticktime.SYS_Tick_H;
-    temp *= Tick_Set_CMP; //乘法一定放后面，尤其是中断的东西
+    temp *= Tick_Full;                                             //乘法一定放后面，尤其是中断的东西
     temp += SYS_Ticktime.SYS_Tick_L;
 #endif
     return (temp);
@@ -42,9 +51,9 @@ uint64_t GET_SysTick(void)
 void SET_SysTick(uint64_t time)
 {
 #ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Tick_H = time / Tick_Set_CMP;         //高位设置
-    SYS_Ticktime.SYS_Tick_L = (time % Tick_Set_CMP);       //低位设置(不设也行)
-    Sys_Time_VAL = Tick_Set_CMP - SYS_Ticktime.SYS_Tick_L; //载入低位
+    SYS_Ticktime.SYS_Tick_H = time / Tick_Full;         //高位设置
+    SYS_Ticktime.SYS_Tick_L = (time % Tick_Full);       //低位设置(不设也行)
+    Sys_Time_VAL = Tick_Full - SYS_Ticktime.SYS_Tick_L; //载入低位
 #endif
 }
 

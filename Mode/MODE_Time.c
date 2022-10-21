@@ -15,12 +15,16 @@ struct _SYS_Time SYS_Time = {
     .Watch.minutes = 59,
     .Watch.second = 56,
 };
+int Tick_Freq;
+int Tick_ms;
+int Tick_us;
 
 void Time_Init(int SET)
 {
 #ifdef Exist_SYS_TIME
     Sys_Time_Init (SET);
-
+    Tick_Freq = Tick_Frequency;
+    Tick_us = Tick_Freq / 1000000;
 #endif
 }
 
@@ -32,7 +36,7 @@ void Set_TIME (struct Caven_Watch time)
 #ifdef Exist_SYS_TIME
     int Seconds;
     Seconds = Hourly_to_Seconds(time);
-    SET_SysTick((U64)Seconds*(Tick_Frequency));
+    SET_SysTick((U64)Seconds*(Tick_Freq));
 
 #endif
 }
@@ -40,23 +44,23 @@ void Set_TIME (struct Caven_Watch time)
 
 struct Caven_Watch Get_TIME (void)
 {
-    struct Caven_Watch temp = {0};
+    struct Caven_Watch temp_Watch = {0};
     
 #ifdef Exist_SYS_TIME
-    int Seconds = (GET_SysTick() / Tick_Frequency);
-    int Freq = Tick_Frequency / 1000000;           //1us
-    temp = Seconds_to_Hourly(Seconds);
+    U64 Temp = GET_SysTick();
+    int Seconds = (int)(Temp / Tick_Freq);
+    temp_Watch = Seconds_to_Hourly(Seconds);
 
-    if(Seconds / 86400)        //下一天
+    if((Seconds / 86400) > 0)        //下一天
     {
-        Destroy(&temp,sizeof(temp));
-        Set_TIME (temp);    //重设时间戳
+        Destroy(&temp_Watch,sizeof(temp_Watch));
+        Set_TIME (temp_Watch);      //重设时间戳0,0,0
 
     }
-    temp.time_us = (GET_SysTick() % Tick_Frequency) / Freq;
-    SYS_Time.Watch = temp;
+    temp_Watch.time_us = (Temp % Tick_Freq) / Tick_us;
+    SYS_Time.Watch = temp_Watch;
 #endif
-    return temp;
+    return temp_Watch;
 }
 
 int Get_Lose_Tiem (struct Caven_Watch time)

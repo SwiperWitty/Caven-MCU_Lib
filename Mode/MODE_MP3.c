@@ -1,14 +1,16 @@
 #include "MODE_MP3.h"
 
-U8 Array_mp3[8];
 
-void Voice_Init(void)
+void Voice_Init(int Set)
 {
-	//Uart2_Init(Voice_Baud,ENABLE);
+#ifdef Exist_Voice
+	Uart2_Init(Voice_Baud,Set);
+#endif
 }
 
 void Voice(char Model,char Num)
 {
+    char Array_mp3[8];
 	if(Model == JQ8900)
 	{
 		Array_mp3[0] = 0xAA;
@@ -17,10 +19,6 @@ void Voice(char Model,char Num)
 		Array_mp3[3] = 0x00;
 		Array_mp3[4] = Num;
 		Array_mp3[5] = 0xB3+Num;
-        for(int n = 0;n < 6;n++)
-        {
-            //UART_TXD_Send(2,Array_mp3[n]);
-        }
 	}
 	else if(Model == JQ6500)
 	{
@@ -30,11 +28,13 @@ void Voice(char Model,char Num)
 		Array_mp3[3] = 0x00;
 		Array_mp3[4] = Num;
 		Array_mp3[5] = 0xEF;
-        for(int n = 0;n < 6;n++)
-        {
-            //UART_TXD_Send(2,Array_mp3[n]);
-        }
 	}
 	else
 		return;
+#ifdef Exist_Voice
+    for(int n = 0;n < 6;n++)
+    {
+        UART_TXD_Send(2,Array_mp3[n]);
+    }
+#endif
 }

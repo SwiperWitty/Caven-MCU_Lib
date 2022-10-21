@@ -5,13 +5,19 @@
 #include "Caven.h"
 
 #define Steering_PWM 4
-#define	Arr_T4	1999
-#define Por_T4	720
+#define	Arr_T4	2000
+#define Por_T4	1440
 
-//	T = (arr + 1 * por + 1) / 72MHz = 20MS
+//	T = (arr + 1 * por + 1) / 144MHz = 20MS
 
-//void Init_Steering_Engine_T4(void);
-//void Steering_Engine_Angle(char Channel,float Angle);
-//void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time);
+struct Steering_Engine_
+{
+    void (*Set_Angle)(char Channel,float Angle);
+    void (*Set_360_Sport)(char Channel,char Rotation,char Speed,int Time);
+};
+
+void Steering_Engine_Init (int Set);
+void Steering_Engine_Angle(char Channel,float Angle);
+void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time);
 
 #endif

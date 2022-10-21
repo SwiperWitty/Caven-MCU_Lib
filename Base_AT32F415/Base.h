@@ -24,5 +24,9 @@
 #include "Base_ADC.h" 
 #endif
 
+#ifdef Exist_PWM
+#include "Base_PWM.h"
+#endif
+
 //Base文件没有结构体索引
 #endif

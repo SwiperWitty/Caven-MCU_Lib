@@ -32,6 +32,9 @@
     #include "HC138.h"
 #endif
 
+#ifdef Exist_Voice
+    #include "MODE_MP3.h"
+#endif
 #ifdef Exist_Steering_Engine    //动力输出
     #include "Steering_engine.h"
 #endif
@@ -102,6 +105,13 @@ struct _Mode_Init
     void (*Ultrasonic)(int SET);
 #endif
 
+#ifdef Exist_Voice
+    void (*Voice) (int Set);
+#endif
+#ifdef Exist_Steering_Engine
+    void (*Steering_Engine) (int Set);
+#endif
+
 
 };
 
@@ -136,6 +146,14 @@ struct _Mode_User
 #ifdef Exist_Ultrasonic
     struct Ultrasonic_ Ultrasonic;
 #endif
+
+#ifdef Exist_Voice
+    struct MP3_ MP3;
+#endif
+#ifdef Exist_Steering_Engine
+    struct Steering_Engine_ Steering_Engine;
+#endif
+
 
 };
 

@@ -1,4 +1,4 @@
-#include "mode.h"
+#include "Mode.h"
 
 struct _Mode_Init Mode_Init;
 struct _Mode_User Mode_User;    //结构体实体
@@ -57,6 +57,14 @@ static void Mode_User_index(void)		//索引 功能函数 本体
     Mode_User.Ultrasonic.Distance = Distance;
 #endif
 
+#ifdef Exist_Voice
+    Mode_User.MP3.Voice = Voice;
+#endif
+#ifdef Exist_Steering_Engine
+    Mode_User.Steering_Engine.Set_Angle = Steering_Engine_Angle;
+    Mode_User.Steering_Engine.Set_360_Sport = Steering_Engine_360_Sport;
+#endif  
+
 }   //  Mode_User
 
 void Mode_Index(void)
@@ -91,6 +99,14 @@ void Mode_Index(void)
 #ifdef Exist_Ultrasonic
     Mode_Init.Ultrasonic = Ultrasonic_Init;
 #endif
+
+#ifdef Exist_Voice
+    Mode_Init.Voice = Voice_Init;
+#endif
+#ifdef Exist_Steering_Engine
+    Mode_Init.Steering_Engine = Steering_Engine_Init;
+#endif  
+
 }   //  Mode_Index
 
 //--------------------------------//

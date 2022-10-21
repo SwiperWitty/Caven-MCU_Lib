@@ -7,8 +7,7 @@
 #define Tick_Set_CMP (Tick_Frequency / 2)   //设置滴答初始值(/2 就是 1/2 s)
 #define Tick_Over_IT (0.50)                 //定时器溢出时间（24位滴答才有）
 
-#define Freq_us (Tick_Frequency / 1000000) //微秒
-#define Freq_ms (Tick_Frequency / 1000)    //毫秒
+
 /* 【宏函数群】 会给到 mode  */
 
 //很长的时间戳（一天）

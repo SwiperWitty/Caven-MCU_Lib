@@ -1,5 +1,6 @@
 #include "Base_adc.h"
 
+
 int Channel_NUM;
 __IO uint16_t dma_trans_complete_flag = 0;
 uint16_t ADC1_valuetab_list[20];
@@ -125,6 +126,10 @@ void ADC_Start_Init(int Set)
     #ifdef ADC_IO_PB1
     adc_ordinary_channel_set(ADC1, ADC_IO_PB1, list++, ADC_Speed);
     #endif
+    #ifdef ADC_Temp
+    adc_ordinary_channel_set(ADC1, ADC_Temp, list++, ADC_Speed);
+    adc_tempersensor_vintrv_enable(TRUE);                           //开温传
+    #endif
 
     Channel_NUM = list - 1;
     ADC1_DMA_Config (ADC1_valuetab_list, Channel_NUM);
@@ -167,6 +172,16 @@ void ADC_Get_List(int *Target)
         Target[i] = ADC1_valuetab_list[i];
     }
 
+}
+
+float ADC_Get_Temperature(void)
+{
+    float Temp = 0;
+#ifdef ADC_Temp
+    Temp = ADC1_valuetab_list[Channel_NUM-1];                                     //温传是最后一个
+    Temp = (ADC_TEMP_BASE - Temp * ADC_VREF / 4096) / ADC_TEMP_SLOPE + 25;
+#endif
+    return Temp;
 }
 
 void DMA1_Channel1_IRQHandler(void)

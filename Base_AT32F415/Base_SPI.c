@@ -11,6 +11,7 @@
     #endif
 #endif
 
+__IO uint16_t SPI_complete_flag = 1;
 
 void SPI1_GPIO_Init(int Set)
 {
@@ -20,6 +21,7 @@ void SPI1_GPIO_Init(int Set)
     if (Set)
     {
         crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK,TRUE);
+        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
 
         gpio_init_struct.gpio_pins = SPI1_SCK | SPI1_MOSI;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
@@ -56,6 +58,8 @@ void SPI2_GPIO_Init(int Set)
     if (Set)
     {
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
+        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+        
         gpio_init_struct.gpio_pins = SPI2_SCK | SPI2_MOSI;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
@@ -221,7 +225,7 @@ void SPI_CS_Set(char Serial,char State)
 
 }
 
-//普通发送，只管SCLK、MOSI不管 NSS
+//普通\软件 发送，只管SCLK、MOSI不管 NSS
 void SPI_Send_DATA(const uint16_t DATA)     
 {
     /*
@@ -249,6 +253,7 @@ void SPI_Send_DATA(const uint16_t DATA)
     while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //发送缓冲区空了
     spi_i2s_data_transmit(Temp_SPI, DATA);
     //while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
+    
     #endif
 	
 #endif
@@ -261,35 +266,37 @@ void SPI_Send_DATA(const uint16_t DATA)
 void SPI_Send_String(const void * DATA,int num)
 {
 #ifdef Exist_SPI
+    #ifdef  SPI_DMA 
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) == 1);         //可以开始传输
+    while(SPI_complete_flag == 0);                                  //等SPI中断
+    SPI_complete_flag = 0;
     
-    SPI_CS_Set(1,TRUE);
-    #ifdef  SPI_DMA
     dma_channel_enable(SPI_Tx_DMA_Channel,FALSE);
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);
+    SPI_CS_Set(1,TRUE);                 //开始片选
         #if (SPIx == 1)
         // dma_flag_clear(DMA1_FDT3_FLAG);
         SPI1_DMA_Config (DATA,num);                                 //重新配置
-
         #elif (SPIx == 2)
         // dma_flag_clear(DMA1_FDT5_FLAG);
         SPI2_DMA_Config (DATA,num);                                 //重新配置
-        
-        #endif // DEBUG
-    dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);                        //开始DMA
-    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);         //开SPI中断
-    // while(!dma_flag_get(DMA1_FDT5_FLAG));
+        #endif 
+                                                         
+        dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);                        //开始DMA
+        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);         //开SPI中断
+    
     #else
-
+    SPI_CS_Set(1,TRUE);                 //开始片选
     for (int i = 0; i < num; i++)
     {
         SPI_Send_DATA(*((uint8_t *)DATA + i));
     }
         #ifdef SPI_Software
-    SPI_CS_Set(1,0);
+    SPI_CS_Set(1,0);                    //关
         #else
-    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);        //开中断
+    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);        //开中断，让他自己结束片选
         #endif
     #endif
+    
 #endif
 }
 
@@ -358,6 +365,7 @@ void SPI1_IRQHandler(void)
         {
             spi_i2s_interrupt_enable(SPI1, SPI_I2S_TDBE_INT, FALSE);
             SPI_CS_Set(1,FALSE);          //取消片选
+            SPI_complete_flag = 1;
 //            printf("SPI ok \r\n");
         }
     }
@@ -371,6 +379,7 @@ void SPI1_IRQHandler(void)
         {
             spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //关中断
             SPI_CS_Set(1,FALSE);          //取消片选
+            SPI_complete_flag = 1;
         }
     }
 }
