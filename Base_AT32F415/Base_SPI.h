@@ -49,7 +49,7 @@
 #else                                               //硬件SPI
 #define SPI_MODE_IN    GPIO_MODE_INPUT
 #define SPI_MODE_OUT   GPIO_MODE_MUX
-#define SPI_Speed   SPI_MCLK_DIV_16        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+#define SPI_Speed   SPI_MCLK_DIV_8        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
 #define SPI_Size    SPI_FRAME_8BIT                  //8b   16b
 #endif
 #define SPI_MODE_NSS    GPIO_MODE_OUTPUT

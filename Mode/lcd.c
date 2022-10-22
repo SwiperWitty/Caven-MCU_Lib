@@ -57,9 +57,11 @@ void LCD_Send_Data(U8 *Data,int num)
 ******************************************************************************/
 void LCD_WR_CMD(U8 dat)
 {
+    SPI_CS_Set(1,ENABLE);
 	LCD_DC_Clr(); //写命令
 	LCD_Writ_Bus(dat);
 	LCD_DC_Set(); //写数据	预备
+    SPI_CS_Set(1,DISABLE);
 }
 
 /******************************************************************************
@@ -124,15 +126,13 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 {
 #ifdef Exist_LCD
-	U16 i, j;
+    int i = (x_end - x_sta) * (y_end - y_sta);
 	LCD_Address_Set(x_sta, y_sta, x_end - 1, y_end - 1); //设置显示范围
-	for (i = y_sta; i < y_end; i++)
-	{
-		for (j = x_sta; j < x_end; j++)
-		{
-			LCD_WR_DATA(color);
-		}
-	}
+    for(;i > 0;i--)
+    {
+        LCD_WR_DATA(color);
+    }
+
 #endif
 }
 
@@ -508,7 +508,7 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 {
 #ifdef Exist_LCD
-	U32 k = 0;
+	U32 k = length * width;
 	LCD_Address_Set(x, y, (x + length) - 1, (y + width) - 1);
 //	for (int i = 0; i < length; i++)
 //	{
@@ -519,12 +519,12 @@ void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 //			k++;
 //		}
 //	}
-    k = length * width;
-    for(int i = 0;i < k;i++)
-    {
-        LCD_WR_DATA8(pic[i]);
-    }
-//    LCD_Writ_String(pic,k);
+    
+//    for(int i = 0;i < k;i++)
+//    {
+//        LCD_WR_DATA8(pic[i]);
+//    }
+    LCD_Writ_String(pic,k);
 #endif
 }
 
@@ -547,6 +547,7 @@ void LCD_Init(int Set)
 	LCD_GPIO_Init(Set);
 	SPI_Start_Init(Set);
 	LCD_Delay(200); //等待电路复位完成
+
 //	LCD_RES_Clr();LCD_Delay (20);				//Caven3.14 使用硬件复位，不需要这个
 //	LCD_RES_Set();LCD_Delay (20);
 	LCD_WR_CMD(0x11); //Sleep out

@@ -24,6 +24,7 @@ void Time_Init(int SET)
 #ifdef Exist_SYS_TIME
     Sys_Time_Init (SET);
     Tick_Freq = Tick_Frequency;
+    Tick_ms = Tick_Freq / 1000;
     Tick_us = Tick_Freq / 1000000;
 #endif
 }

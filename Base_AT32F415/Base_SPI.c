@@ -60,15 +60,15 @@ void SPI2_GPIO_Init(int Set)
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
         crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
         
-        gpio_init_struct.gpio_pins = SPI2_SCK | SPI2_MOSI;
+        gpio_init_struct.gpio_pins = SPI2_NSS;                  //NSS-输出模式（输出）
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_mode = SPI_MODE_OUT;
+        gpio_init_struct.gpio_mode = SPI_MODE_NSS;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIO_SPI2, &gpio_init_struct);
         
-        gpio_init_struct.gpio_pins = SPI2_NSS;
-        gpio_init_struct.gpio_mode = SPI_MODE_NSS;                //NSS-输出模式（输出）
+        gpio_init_struct.gpio_pins = SPI2_SCK | SPI2_MOSI;      //SCK、MOSI输出模式（复用）
+        gpio_init_struct.gpio_mode = SPI_MODE_OUT;
         gpio_init(GPIO_SPI2, &gpio_init_struct);
         
         gpio_init_struct.gpio_pins = SPI2_MISO;
@@ -137,6 +137,7 @@ void SPI_Start_Init(int Set)
     #elif (SPIx == 2)
         SPI2_GPIO_Init(set);
     #endif
+    SPI_CS_Set(1,0);
     
     #ifndef SPI_Software
     spi_i2s_reset(Temp_SPI);
@@ -150,7 +151,7 @@ void SPI_Start_Init(int Set)
             crm_periph_clock_enable(CRM_SPI2_PERIPH_CLOCK, set);
             nvic_irq_enable(SPI2_IRQn, 1, 0);
         #endif
-
+    
         #ifdef HOST_MODE
         spi_init_struct.master_slave_mode =SPI_MODE_MASTER;
         #else
@@ -159,8 +160,8 @@ void SPI_Start_Init(int Set)
         spi_init_struct.frame_bit_num = SPI_Size;
         spi_init_struct.mclk_freq_division = SPI_Speed;
         spi_init_struct.first_bit_transmission = SPI_FIRST_BIT_MSB;
-        spi_init_struct.clock_polarity = SPI_CLOCK_POLARITY_LOW;
-        spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;
+        spi_init_struct.clock_polarity = SPI_CLOCK_POLARITY_HIGH;           //闲时 SCK状态
+        spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;                //上升沿让从机读
         spi_init_struct.cs_mode_selection = SPI_CS_SOFTWARE_MODE;
         spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;
         spi_init(Temp_SPI, &spi_init_struct);
@@ -250,9 +251,12 @@ void SPI_Send_DATA(const uint16_t DATA)
     //    SPI_SCK_H();              // 0 / 0不需要上升
     #else
 
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //发送缓冲区空了
     spi_i2s_data_transmit(Temp_SPI, DATA);
-    //while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
+    
+//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //发送缓冲区空了
+//    spi_i2s_data_transmit(Temp_SPI, DATA);
+//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
     
     #endif
 	
@@ -263,7 +267,7 @@ void SPI_Send_DATA(const uint16_t DATA)
 //    调用层      //
 
 //大量发送，Soft/Hard
-void SPI_Send_String(const void * DATA,int num)
+void SPI_Send_String(const void * DATA,int num)                 //这个会绑一个指针，在发送数据途中，不要让目标指针改变！
 {
 #ifdef Exist_SPI
     #ifdef  SPI_DMA 
