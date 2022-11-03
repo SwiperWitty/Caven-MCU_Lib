@@ -10,6 +10,7 @@ void Voice_Init(int Set)
 
 void Voice(char Model,char Num)
 {
+#ifdef Exist_Voice
     char Array_mp3[8];
 	if(Model == JQ8900)
 	{
@@ -31,7 +32,7 @@ void Voice(char Model,char Num)
 	}
 	else
 		return;
-#ifdef Exist_Voice
+
     for(int n = 0;n < 6;n++)
     {
         UART_TXD_Send(2,Array_mp3[n]);

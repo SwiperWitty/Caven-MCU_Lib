@@ -25,11 +25,15 @@ x = Angle_coefficient
 */
 int Set_Angle_Cal_180(float Angle)	
 {
+    int Time_PWM = 150;
 #ifdef Exist_Steering_Engine
-	int Time_PWM = 150;
-	if(Angle <= 90 || Angle >= -90) Time_PWM = (Angle * Angle_coefficient) + 150;       //符合范围
-	return Time_PWM;
+	
+	if(Angle <= 90 || Angle >= -90) 
+    {
+        Time_PWM = (Angle * Angle_coefficient) + 150;       //符合范围
+    }
 #endif
+    return Time_PWM;
 }
 
 /*  通道、设置角度  */

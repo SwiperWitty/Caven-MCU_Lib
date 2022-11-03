@@ -59,7 +59,7 @@
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_PINS_13)     //KEY,读
+    #define KEY_IN() gpio_input_data_bit_read(GPIOC,GPIO_PINS_13)     //KEY,读
 #endif
 
 #ifdef Exist_HC595
@@ -90,6 +90,14 @@
     
 #endif
 
+#ifdef Exist_DS18B20
+    #define DS18B20_IO    GPIO_PINS_1
+    #define DS18B20_Clock    GPIOA
+
+    #define DS18B20_IO_H() DS18B20_Clock->scr = DS18B20_IO
+    #define DS18B20_IO_L() DS18B20_Clock->clr = DS18B20_IO
+#endif
+
 
 /*  Init-Function    */
 
@@ -100,11 +108,9 @@ void BZZ_GPIO_Init(int Set);
 
 void HC138_GPIO_Init(int Set);
 void HC595_GPIO_Init(int Set);
-void GXIC_GPIO_Init(int Set);
+void DS18B20_GPIO_Init(int Set);
 
 void KEY_GPIO_Init(int Set);
-
-
 
 
 #endif
