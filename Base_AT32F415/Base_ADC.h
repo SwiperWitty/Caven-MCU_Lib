@@ -1,7 +1,15 @@
 #ifndef BASE_ADC__H_
 #define BASE_ADC__H_
 
-#include "Items.h"
+#ifdef DEFAULT
+#include "items.h"              //默认功能
+#endif
+
+#ifndef DEFAULT
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
+
+/****************/
 
 #ifdef Exist_ADC
     #define ADC_VREF                         (3.3)

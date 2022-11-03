@@ -1,7 +1,16 @@
 #ifndef _BASE_H__
 #define _BASE_H__
 
-#include "items.h"              //功能使能、指定文件（因MCU而异）
+#ifdef DEFAULT
+#include "items.h"              //默认功能
+#endif
+
+#ifndef DEFAULT
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
+
+/****************/
+
 #include "Base_Exist_GPIO.h"    //items的附属（LED、BZZ之类的）
 
 #ifdef Exist_SYS_TIME          //这种保护不占内存，所以尽可能写

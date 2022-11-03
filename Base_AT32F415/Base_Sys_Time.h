@@ -1,7 +1,15 @@
 #ifndef _SYS_TIME_H__
 #define _SYS_TIME_H__
 
-#include "Items.h"
+#ifdef DEFAULT
+#include "items.h"              //默认功能
+#endif
+
+#ifndef DEFAULT
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
+
+/****************/
 
 #define Tick_Frequency (MCU_SYS_Freq/8)   //滴答分频（8分频）
 #define Tick_Set_CMP (Tick_Frequency / 2)   //设置滴答初始值(/2 就是 1/2 s)

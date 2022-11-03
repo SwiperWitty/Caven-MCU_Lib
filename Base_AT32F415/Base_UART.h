@@ -1,7 +1,15 @@
 #ifndef _Base_UART_H__
 #define _Base_UART_H__
 
-#include "items.h"      //功能使能、指定文件（因MCU而异）
+#ifdef DEFAULT
+#include "items.h"              //默认功能
+#endif
+
+#ifndef DEFAULT
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
+
+/****************/
 #include "stdio.h"
 
 
