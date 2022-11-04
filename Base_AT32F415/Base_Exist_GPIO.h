@@ -96,6 +96,8 @@
 
     #define DS18B20_IO_H() DS18B20_Clock->scr = DS18B20_IO
     #define DS18B20_IO_L() DS18B20_Clock->clr = DS18B20_IO
+
+    #define DS18B20_IO_R() gpio_input_data_bit_read(DS18B20_Clock,DS18B20_IO)     // 读
 #endif
 
 
@@ -108,9 +110,13 @@ void BZZ_GPIO_Init(int Set);
 
 void HC138_GPIO_Init(int Set);
 void HC595_GPIO_Init(int Set);
+
 void DS18B20_GPIO_Init(int Set);
 
 void KEY_GPIO_Init(int Set);
+
+/*  other    */
+void DS18B20_IO_Config(int Set);
 
 
 #endif

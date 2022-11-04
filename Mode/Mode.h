@@ -32,6 +32,10 @@
     #include "HC138.h"
 #endif
 
+#ifdef Exist_DS18B20
+    #include "DS18B20.h"
+#endif
+
 #ifdef Exist_Voice
     #include "MODE_MP3.h"
 #endif
