@@ -1,47 +1,60 @@
-#include "IIC.h"
+#include "Base_IIC.h"
 
 
 void IIC_SDA_Satar (char GPIO_Mode)
 {
 #ifdef Exist_IIC
-    GPIO_InitTypeDef  GPIO_InitStructure = {0};
-    GPIO_InitStructure.GPIO_Pin = IIC_SDA;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode;
+    gpio_init_type gpio_init_struct;
 
-    GPIO_Init(GPIO_IIC, &GPIO_InitStructure);
-#endif
-}
-
-void IIC_Init(int SET)
-{
-#ifdef Exist_IIC
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-    GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);
-    GPIO_InitTypeDef  GPIO_InitStructure;
-    if (SET)
+    if(GPIO_Mode == IIC_Mode_OUT)
     {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);   //GPIOB
-        GPIO_InitStructure.GPIO_Pin = IIC_SCL;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIO_IIC, &GPIO_InitStructure);
-
-        IIC_SDA_Satar (IIC_Mode_OUT);
+        gpio_init_struct.gpio_mode = IIC_Mode_OUT;
     }
     else
     {
-        GPIO_InitStructure.GPIO_Pin = IIC_SCL | IIC_SDA;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
-        GPIO_Init(GPIO_IIC, &GPIO_InitStructure);
+        gpio_init_struct.gpio_mode = IIC_Mode_IN;
+    }
+    gpio_init_struct.gpio_pins = IIC_SDA;
+    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+    gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+    
+    gpio_init_struct.gpio_pull = GPIO_PULL_UP;
+    gpio_init(GPIO_IIC, &gpio_init_struct);
+#endif
+}
+
+void IIC_Start_Init(int SET)
+{
+#ifdef Exist_IIC
+    gpio_init_type  gpio_init_struct;
+    gpio_default_para_init(&gpio_init_struct);
+    if (SET)
+    {
+        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
+        
+        gpio_init_struct.gpio_pins = IIC_SCL;
+        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+        gpio_init_struct.gpio_mode = IIC_Mode_OUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(GPIO_IIC, &gpio_init_struct);             //单纯启动SCL
+
+        IIC_SDA_Satar (IIC_Mode_OUT);                       //启动SDA
+    }
+    else
+    {
+        gpio_init_struct.gpio_pins = IIC_SCL|IIC_SDA;
+        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(GPIO_IIC, &gpio_init_struct);
     }
 #endif
 }
 // **   //
-
+#ifdef Exist_IIC
 static void IIC_Delay (int time)
 {
-    int temp;
+    volatile int temp;
     for (int i = 0; i < time; ++i)
     {
         temp = IIC_Base_Speed;            //SET
@@ -114,6 +127,7 @@ char IIC_WaitASK(void)  //一定要有从设备响应
     } while (Time < 20);
     return temp;
 }
+#endif
 
 void IIC_Write_DATA(char DATA,int Speed)
 {

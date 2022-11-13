@@ -15,9 +15,9 @@ void BZZ_SET(int SET)
 {
     #ifdef Exist_BZZ
     if(SET)
-        BZZ_Set();
+        BZZ_H();
     else
-        BZZ_Clr();
+        BZZ_L();
     #endif
 }
 

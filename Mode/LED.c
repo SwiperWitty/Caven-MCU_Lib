@@ -16,15 +16,15 @@ void LED_SET(char Channel,int SET)
     switch (Channel) {
         case 1:
             if(SET)
-                LED_Clr();
+                LED_L();
             else
-                LED_Set();
+                LED_H();
             break;
         case 2:
             if(SET)
-                LEDR_Clr();
+                LEDR_L();
             else
-                LEDR_Set();
+                LEDR_H();
             break;
         default:
             break;
@@ -45,9 +45,9 @@ void WS2812_Delay(int time)
 void WS2812_Reset (void)
 {
 #ifdef Exist_LED
-	LED_Clr();
+	LED_L();
 	WS2812_Delay(60);
-	LED_Set();
+	LED_H();
 #endif
 }
 
@@ -59,20 +59,20 @@ void WS2812_write_byte(char data)
 	{
 	    if((temp << i) & 0x80)
 	    {
-	        LED_Set();
+	        LED_H();
 	        WS2812_Delay(7);
-	        LED_Clr();
+	        LED_L();
 	        WS2812_Delay(3);
 	    }
 	    else
 	    {
-            LED_Set();
+            LED_H();
             WS2812_Delay(3);
-            LED_Clr();
+            LED_L();
 	        WS2812_Delay(6);
         }
 	}
-	LED_Clr();
+	LED_L();
 #endif
 }
 

@@ -49,6 +49,7 @@ void DS18B20_Init (int Set)
 
 void Write_Byte (char Data)
 {
+#ifdef Exist_DS18B20
     char Temp = Data;
     DS18B20_GPIO_Init(1);
     DS18B20_IO_H();
@@ -75,11 +76,13 @@ void Write_Byte (char Data)
 
     }
     DS18B20_Delay (50);
+#endif
 }
 
 char Read_Byte (void)
 {
     char Data;
+#ifdef Exist_DS18B20
     for (char i = 0; i < 8; i++)
     {
         DS18B20_IO_Config(1);
@@ -95,6 +98,7 @@ char Read_Byte (void)
     }
 
     DS18B20_IO_Config(1);
+#endif
     return Data;
 }
 

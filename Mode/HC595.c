@@ -4,9 +4,9 @@ void HC595_Init (int Set)
 {
 #ifdef Exist_HC595
     HC595_GPIO_Init(Set);
-	HC595_Data_Clr();
-    SHIFT_CLOCK_Clr();
-    LATCH_CLOCK_Clr();
+	HC595_Data_L();
+    SHIFT_CLOCK_L();
+    LATCH_CLOCK_L();
 #endif
 }
 
@@ -31,15 +31,15 @@ static void Send_HC595 (const unsigned char Dat)
 {
 #ifdef Exist_HC595
 	char n;
-    SHIFT_CLOCK_Clr();
-    LATCH_CLOCK_Clr();
+    SHIFT_CLOCK_L();
+    LATCH_CLOCK_L();
     for(n = 0;n < 8;n++)
     {
-        if((Dat << n) & 0x80) HC595_Data_Set();
-        else       			  HC595_Data_Clr();
-        SHIFT_CLOCK_Set();
+        if((Dat << n) & 0x80) HC595_Data_H();
+        else       			  HC595_Data_L();
+        SHIFT_CLOCK_H();
         HC595_Delay (10);
-		SHIFT_CLOCK_Clr();
+		SHIFT_CLOCK_L();
         HC595_Delay (10);
     }
 #endif
@@ -48,11 +48,11 @@ static void Send_HC595 (const unsigned char Dat)
 static void HC595_END (void)
 {
 #ifdef Exist_HC595
-    LATCH_CLOCK_Clr();
+    LATCH_CLOCK_L();
     HC595_Delay (10);
-	LATCH_CLOCK_Set();
+	LATCH_CLOCK_H();
     HC595_Delay (10);
-	LATCH_CLOCK_Clr();
+	LATCH_CLOCK_L();
 #endif
 }
 

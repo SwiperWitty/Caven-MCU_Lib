@@ -58,9 +58,9 @@ void LCD_Send_Data(U8 *Data,int num)
 void LCD_WR_CMD(U8 dat)
 {
     SPI_CS_Set(1,ENABLE);
-	LCD_DC_Clr(); //写命令
+	LCD_DC_L(); //写命令
 	LCD_Writ_Bus(dat);
-	LCD_DC_Set(); //写数据	预备
+	LCD_DC_H(); //写数据	预备
     SPI_CS_Set(1,DISABLE);
 }
 

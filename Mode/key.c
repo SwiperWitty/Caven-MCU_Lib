@@ -26,7 +26,7 @@ U8 KEY_State (char Channel)
         case 0:
             break;
         case 1:
-            temp = KEY_IN();
+            temp = KEY_R();
             break;
         default:
             break;

@@ -31,71 +31,71 @@
  */
 
 #ifdef Exist_LCD
-    #define LCD_DC_L() GPIOA->clr = GPIO_PINS_10    //DC_GPIO
-    #define LCD_DC_H() GPIOA->scr = GPIO_PINS_10   //PA10
+    #define LCD_DC_L() GPIOA->BRR = GPIO_Pin_10    //DC_GPIO
+    #define LCD_DC_H() GPIOA->BSRR = GPIO_Pin_10   //PA10
 //    #define LCD_RES_L()                                     //RES               //Caven 使用硬件复位
 //    #define LCD_RES_H()
 #endif
 
 #ifdef Exist_OLED
 
-    #define OLED_DC_L() GPIOA->clr = GPIO_PINS_10    //DC_GPIO
-    #define OLED_DC_H() GPIOA->scr = GPIO_PINS_10   //PA10
+    #define OLED_DC_L() GPIOA->BRR = GPIO_Pin_10    //DC_GPIO
+    #define OLED_DC_H() GPIOA->BSRR = GPIO_Pin_10   //PA10
 
 //    #define LCD_RES_L()                                     //RES               //Caven 使用硬件复位
 //    #define LCD_RES_H()
 #endif
 
 #ifdef Exist_LED
-    #define LED_L() GPIOA->clr = GPIO_PINS_4       //LED
-    #define LED_H() GPIOA->scr = GPIO_PINS_4      //PA04
-    #define LEDR_L() GPIOC->clr = GPIO_PINS_2      //PA04
-    #define LEDR_H() GPIOC->scr = GPIO_PINS_2      //PA04
+    #define LED_L() GPIOB->BRR = GPIO_Pin_5       //LED
+    #define LED_H() GPIOB->BSRR = GPIO_Pin_5      //PA04
+    #define LEDR_L() GPIOD->BRR = GPIO_Pin_3      //PA04
+    #define LEDR_H() GPIOD->BSRR = GPIO_Pin_3      //PA04
 #endif
 
 #ifdef Exist_BZZ
-    #define BZZ_L() GPIOB->clr = GPIO_PINS_5    //BZZ
-    #define BZZ_H() GPIOB->scr = GPIO_PINS_5   //PB05
+    #define BZZ_L() GPIOB->BRR = GPIO_Pin_5    //BZZ
+    #define BZZ_H() GPIOB->BSRR = GPIO_Pin_5   //PB05
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_R() gpio_input_data_bit_read(GPIOC,GPIO_PINS_13)     //KEY,读
+    #define KEY_R() gpio_input_data_bit_read(GPIOC,GPIO_Pin_13)     //KEY,读
 #endif
 
 #ifdef Exist_HC595
-    #define LATCH_CLOCK     GPIO_PINS_1         //门阀时钟
-    #define SHIFT_CLOCK     GPIO_PINS_2         //移动时钟
-    #define HC595_Data      GPIO_PINS_3         //数据
+    #define LATCH_CLOCK     GPIO_Pin_1         //门阀时钟
+    #define SHIFT_CLOCK     GPIO_Pin_2         //移动时钟
+    #define HC595_Data      GPIO_Pin_3         //数据
     
-    #define LATCH_CLOCK_L() GPIOC->clr = LATCH_CLOCK
-    #define LATCH_CLOCK_H() GPIOC->scr = LATCH_CLOCK
-    #define SHIFT_CLOCK_L() GPIOC->clr = SHIFT_CLOCK
-    #define SHIFT_CLOCK_H() GPIOC->scr = SHIFT_CLOCK
-    #define HC595_Data_L() GPIOC->clr = HC595_Data
-    #define HC595_Data_H() GPIOC->scr = HC595_Data
+    #define LATCH_CLOCK_L() GPIOC->BRR = LATCH_CLOCK
+    #define LATCH_CLOCK_H() GPIOC->BSRR = LATCH_CLOCK
+    #define SHIFT_CLOCK_L() GPIOC->BRR = SHIFT_CLOCK
+    #define SHIFT_CLOCK_H() GPIOC->BSRR = SHIFT_CLOCK
+    #define HC595_Data_L() GPIOC->BRR = HC595_Data
+    #define HC595_Data_H() GPIOC->BSRR = HC595_Data
     
 #endif
 
 #ifdef Exist_HC138
-    #define HC595_D1    GPIO_PINS_1
-    #define HC595_D2    GPIO_PINS_2
-    #define HC595_D3    GPIO_PINS_3         //数据
+    #define HC595_D1    GPIO_Pin_1
+    #define HC595_D2    GPIO_Pin_2
+    #define HC595_D3    GPIO_Pin_3         //数据
     
-    #define HC138_D1_H() GPIOC->scr = HC595_D1
-    #define HC138_D1_L() GPIOC->clr = HC595_D1
-    #define HC138_D2_H() GPIOC->scr = HC595_D2
-    #define HC138_D2_L() GPIOC->clr = HC595_D2
-    #define HC138_D3_H() GPIOC->scr = HC595_D3
-    #define HC138_D3_L() GPIOC->clr = HC595_D3
+    #define HC138_D1_H() GPIOC->BSRR = HC595_D1
+    #define HC138_D1_L() GPIOC->BRR = HC595_D1
+    #define HC138_D2_H() GPIOC->BSRR = HC595_D2
+    #define HC138_D2_L() GPIOC->BRR = HC595_D2
+    #define HC138_D3_H() GPIOC->BSRR = HC595_D3
+    #define HC138_D3_L() GPIOC->BRR = HC595_D3
     
 #endif
 
 #ifdef Exist_DS18B20
-    #define DS18B20_IO    GPIO_PINS_1
+    #define DS18B20_IO    GPIO_Pin_1
     #define DS18B20_Clock    GPIOA
 
-    #define DS18B20_IO_H() DS18B20_Clock->scr = DS18B20_IO
-    #define DS18B20_IO_L() DS18B20_Clock->clr = DS18B20_IO
+    #define DS18B20_IO_H() DS18B20_Clock->BSRR = DS18B20_IO
+    #define DS18B20_IO_L() DS18B20_Clock->BRR = DS18B20_IO
 
     #define DS18B20_IO_R() gpio_input_data_bit_read(DS18B20_Clock,DS18B20_IO)     // 读
 #endif
