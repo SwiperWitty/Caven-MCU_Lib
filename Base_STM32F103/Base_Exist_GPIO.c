@@ -35,7 +35,7 @@ void LED_GPIO_Init(int Set)
         GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);    //支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
 
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOB, ENABLE);       //时钟
-        gpio_init_struct.GPIO_Pin  = GPIO_Pin_5;
+        gpio_init_struct.GPIO_Pin  = GPIO_Pin_5 | GPIO_Pin_4;
         gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
         gpio_init_struct.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_Init(GPIOB, &gpio_init_struct);

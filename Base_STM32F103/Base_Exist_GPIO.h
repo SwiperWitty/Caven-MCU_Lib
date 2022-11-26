@@ -49,8 +49,8 @@
 #ifdef Exist_LED
     #define LED_L() GPIOB->BRR = GPIO_Pin_5       //LED
     #define LED_H() GPIOB->BSRR = GPIO_Pin_5      //PA04
-    #define LEDR_L() GPIOD->BRR = GPIO_Pin_3      //PA04
-    #define LEDR_H() GPIOD->BSRR = GPIO_Pin_3      //PA04
+    #define LEDR_L() GPIOB->BRR = GPIO_Pin_4      //PA04
+    #define LEDR_H() GPIOB->BSRR = GPIO_Pin_4      //PA04
 #endif
 
 #ifdef Exist_BZZ
