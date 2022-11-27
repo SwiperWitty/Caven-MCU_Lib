@@ -25,9 +25,9 @@ static void Mode_User_index(void)		//索引 功能函数 本体
     Mode_User.Delay.Delay_ms = SYS_Delay_ms;
     Mode_User.Delay.Delay_S = SYS_Delay_S;
 	
-	Mode_User.TIME.Get_TIME = Get_TIME;
-	Mode_User.TIME.Set_TIME = Set_TIME;
-	Mode_User.TIME.Get_Lose_Tiem = Get_Lose_Tiem;
+	Mode_User.Sys_Clock.Get_TIME = Get_TIME;
+	Mode_User.Sys_Clock.Set_TIME = Set_TIME;
+	Mode_User.Sys_Clock.Get_Lose_Tiem = Get_Lose_Tiem;
 #endif
 
 #ifdef Exist_LED
@@ -75,7 +75,7 @@ void Mode_Index(void)
     Mode_Init.LCD = LCD_Init;
 #endif
 #ifdef Exist_SYS_TIME
-    Mode_Init.TIME = Time_Init;
+    Mode_Init.Sys_Clock = Sys_Clock_Init;
 #endif
 #ifdef Exist_UART
     Mode_Init.UART = Uart_Init;

@@ -83,7 +83,7 @@ struct _Mode_Init
 	void (*LCD)(int SET);
 #endif
 #ifdef Exist_SYS_TIME
-	void (*TIME)(int SET);
+	void (*Sys_Clock)(int SET);
 #endif
 
 #ifdef Exist_UART
@@ -127,7 +127,7 @@ struct _Mode_User
 #endif
 #ifdef Exist_SYS_TIME
     struct Delay_ Delay;
-	struct TIME_ TIME;
+	struct TIME_ Sys_Clock;
 #endif
 #ifdef Exist_UART
     struct Uart_ UART;

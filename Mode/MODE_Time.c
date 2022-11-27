@@ -19,7 +19,7 @@ int Tick_Freq;
 int Tick_ms;
 int Tick_us;
 
-void Time_Init(int SET)
+void Sys_Clock_Init(int SET)
 {
 #ifdef Exist_SYS_TIME
     Sys_Time_Init (SET);

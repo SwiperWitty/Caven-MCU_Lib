@@ -41,7 +41,7 @@ struct TIME_
 extern struct _SYS_Time SYS_Time;
 #endif
 
-void Time_Init(int SET);
+void Sys_Clock_Init(int SET);
 
 void Delay_10us(int num);
 void Delay_ms(int num);
