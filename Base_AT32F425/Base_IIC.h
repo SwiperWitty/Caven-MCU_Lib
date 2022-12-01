@@ -37,7 +37,7 @@
 #define IIC_SCL_H() GPIO_IIC->scr = IIC_SCL
 #define IIC_SCL_L() GPIO_IIC->clr = IIC_SCL
 
-#define IIC_SDA_R() gpio_input_data_bit_read(GPIO_IIC,IIC_SDA)        //读取引脚电平
+#define IIC_SDA_IN() GPIO_IIC->idt & IIC_SDA        //读取引脚电平
 #endif
 //
 

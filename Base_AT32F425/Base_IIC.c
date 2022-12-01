@@ -119,7 +119,7 @@ char IIC_WaitASK(void)  //一定要有从设备响应
     do {
         IIC_Delay(1);
         Time++;
-        if (IIC_SDA_R() == 0)      //找到数据，即可跳出
+        if (IIC_SDA_IN() == 0)      //找到数据，即可跳出
         {
             temp = 1;
             break;
@@ -158,7 +158,7 @@ char IIC_Read_DATA(char DATA,int Speed)
     for (int i = 0; i < 8; i++) {
         IIC_SCL_L();      //准备数据变更
         IIC_Delay(Speed);
-        temp = ((char)IIC_SDA_R() << i);
+        temp = ((char)IIC_SDA_IN() << i);
         IIC_Delay(Speed);
         IIC_SCL_H();      //数据变更完成
         IIC_Delay(Speed);

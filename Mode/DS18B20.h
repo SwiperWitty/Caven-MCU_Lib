@@ -3,7 +3,10 @@
 
 #include "Base.h"
 
-void DS18B20_Init (int Set);
+	// 30min  set 60max
+	// 1-L  15min read (60min next)
+
+char DS18B20_Init (int Set);
 
 float DS18B20_Get_Temp(void);
 
