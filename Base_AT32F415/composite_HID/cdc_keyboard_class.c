@@ -4,25 +4,8 @@
   * @version  v2.0.7
   * @date     2022-08-16
   * @brief    usb cdc and keyboard class type
-  **************************************************************************
-  *                       Copyright notice & Disclaimer
-  *
-  * The software Board Support Package (BSP) that is made available to
-  * download from Artery official website is the copyrighted work of Artery.
-  * Artery authorizes customers to use, copy, and distribute the BSP
-  * software and its related documentation for the purpose of design and
-  * development in conjunction with Artery microcontrollers. Use of the
-  * software is governed by this copyright notice and the following disclaimer.
-  *
-  * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
-  * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
-  * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
-  * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
-  * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
-  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
-  *
-  **************************************************************************
-  */
+  **************************************************************************  */
+
 #include "usbd_core.h"
 #include "cdc_keyboard_class.h"
 #include "cdc_keyboard_desc.h"
@@ -52,9 +35,8 @@ static usb_sts_type class_event_handler(void *udev, usbd_event_type event);
 static usb_sts_type cdc_class_setup_handler(void *udev, usb_setup_type *setup);
 static usb_sts_type keyboard_class_setup_handler(void *udev, usb_setup_type *setup);
 
-static void usb_vcp_cmd_process(void *udev, uint8_t cmd, uint8_t *buff, uint16_t len);
 
-vcp_keyboard_type vcp_keyboard_struct;
+HID_compilation_type HID_compilation;
 
 #define SHIFT 0x80
 const static unsigned char _asciimap[128] =
@@ -190,16 +172,6 @@ const static unsigned char _asciimap[128] =
   0	// DEL
 };
 
-linecoding_type linecoding_vcpkybrd =
-{
-  115200,
-  0x00,
-  0x00,
-  0x08
-};
-
-/* static variable */
-
 
 /* usb device class handler */
 usbd_class_handler cdc_keyboard_class_handler =
@@ -213,7 +185,7 @@ usbd_class_handler cdc_keyboard_class_handler =
   class_out_handler,
   class_sof_handler,
   class_event_handler,
-  &vcp_keyboard_struct,
+  &HID_compilation,
 };
 
 /**
@@ -226,7 +198,7 @@ static usb_sts_type class_init_handler(void *udev)
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
 //    custom_hid_type *pcshid = (custom_hid_type *)pudev->class_handler->pdata;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata; 
 
   /* open in endpoint */
 //  usbd_ept_open(pudev, USBD_VCPKYBRD_CDC_INT_EPT, EPT_INT_TYPE, USBD_VCPKYBRD_CMD_MAXPACKET_SIZE);    //!!!!
@@ -241,15 +213,11 @@ static usb_sts_type class_init_handler(void *udev)
   usbd_ept_open(pudev, USBD_VCPKYBRD_HID_IN_EPT, EPT_INT_TYPE, USBD_VCPKYBRD_IN_MAXPACKET_SIZE);
 
   /* set out endpoint to receive status */
-  usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, vcpkybrd->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
+  usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, HID->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
 
-  vcpkybrd->g_tx_completed = 1;
-  vcpkybrd->g_keyboard_tx_completed = 1;
+  HID->g_custom_tx_completed = 1;
+  HID->g_keyboard_tx_completed = 1;
 
-  vcpkybrd->linecoding.bitrate = linecoding_vcpkybrd.bitrate;
-  vcpkybrd->linecoding.data = linecoding_vcpkybrd.data;
-  vcpkybrd->linecoding.format = linecoding_vcpkybrd.format;
-  vcpkybrd->linecoding.parity = linecoding_vcpkybrd.parity;
   return status;
 }
 
@@ -288,7 +256,7 @@ static usb_sts_type class_setup_handler(void *udev, usb_setup_type *setup)      
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-    custom_hid_type *pcshid = (custom_hid_type *)pudev->class_handler->pdata;
+    custom_hid_type *pcshid = (custom_hid_type *)pudev->class_handler->pdata;         //!!!!    custom_hid_type
   switch(setup->bmRequestType & USB_REQ_RECIPIENT_MASK)
   {
     case USB_REQ_RECIPIENT_INTERFACE:
@@ -330,7 +298,7 @@ static usb_sts_type class_setup_handler(void *udev, usb_setup_type *setup)      
           usbd_ctrl_recv(pudev, pcshid->hid_set_report, setup->wLength);
           break;
 		case HID_REQ_GET_REPORT:
-          usbd_ctrl_send(pudev, pcshid->hid_get_report, setup->wLength);
+//          usbd_ctrl_send(pudev, pcshid->hid_get_report, setup->wLength);
           break;
         default:
           usbd_ctrl_unsupport(pudev);
@@ -351,32 +319,31 @@ static usb_sts_type cdc_class_setup_handler(void *udev, usb_setup_type *setup)
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;
   uint16_t len;
   uint8_t *buf;
     
   switch(setup->bmRequestType & USB_REQ_TYPE_RESERVED)
   {
-    /* class request */
-      
+    /* class request */  
     case USB_REQ_TYPE_CLASS:
       switch(setup->bRequest)
       {
         case HID_REQ_SET_PROTOCOL:
-          vcpkybrd->hid_protocol = (uint8_t)setup->wValue;
+          HID->hid_protocol = (uint8_t)setup->wValue;
           break;
         case HID_REQ_GET_PROTOCOL:
-          usbd_ctrl_send(pudev, (uint8_t *)&vcpkybrd->hid_protocol, 1);
+          usbd_ctrl_send(pudev, (uint8_t *)&HID->hid_protocol, 1);
           break;
         case HID_REQ_SET_IDLE:
-          vcpkybrd->hid_set_idle = (uint8_t)(setup->wValue >> 8);
+          HID->hid_set_idle = (uint8_t)(setup->wValue >> 8);
           break;
         case HID_REQ_GET_IDLE:
-          usbd_ctrl_send(pudev, (uint8_t *)&vcpkybrd->hid_set_idle, 1);
+          usbd_ctrl_send(pudev, (uint8_t *)&HID->hid_set_idle, 1);
           break;
         case HID_REQ_SET_REPORT:
-          vcpkybrd->hid_state = HID_REQ_SET_REPORT;
-          usbd_ctrl_recv(pudev, vcpkybrd->hid_set_report, setup->wLength);
+//          vcpkybrd->hid_state = HID_REQ_SET_REPORT;
+//          usbd_ctrl_recv(pudev, vcpkybrd->hid_set_report, setup->wLength);
           break;
         default:
           usbd_ctrl_unsupport(pudev);
@@ -401,10 +368,10 @@ static usb_sts_type cdc_class_setup_handler(void *udev, usb_setup_type *setup)
           usbd_ctrl_send(pudev, (uint8_t *)buf, len);
           break;
         case USB_STD_REQ_GET_INTERFACE:
-          usbd_ctrl_send(pudev, (uint8_t *)&vcpkybrd->alt_setting, 1);
+          usbd_ctrl_send(pudev, (uint8_t *)&HID->alt_setting, 1);
           break;
         case USB_STD_REQ_SET_INTERFACE:
-          vcpkybrd->alt_setting = setup->wValue;
+          HID->alt_setting = setup->wValue;
           break;
         default:
           break;
@@ -427,7 +394,7 @@ static usb_sts_type keyboard_class_setup_handler(void *udev, usb_setup_type *set
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;
   uint16_t len;
   uint8_t *buf;
 
@@ -438,20 +405,20 @@ static usb_sts_type keyboard_class_setup_handler(void *udev, usb_setup_type *set
       switch(setup->bRequest)
       {
         case HID_REQ_SET_PROTOCOL:
-          vcpkybrd->hid_protocol = (uint8_t)setup->wValue;
+          HID->hid_protocol = (uint8_t)setup->wValue;
           break;
         case HID_REQ_GET_PROTOCOL:
-          usbd_ctrl_send(pudev, (uint8_t *)&vcpkybrd->hid_protocol, 1);
+          usbd_ctrl_send(pudev, (uint8_t *)&HID->hid_protocol, 1);
           break;
         case HID_REQ_SET_IDLE:
-          vcpkybrd->hid_set_idle = (uint8_t)(setup->wValue >> 8);
+          HID->hid_set_idle = (uint8_t)(setup->wValue >> 8);
           break;
         case HID_REQ_GET_IDLE:
-          usbd_ctrl_send(pudev, (uint8_t *)&vcpkybrd->hid_set_idle, 1);
+          usbd_ctrl_send(pudev, (uint8_t *)&HID->hid_set_idle, 1);
           break;
         case HID_REQ_SET_REPORT:
-          vcpkybrd->hid_state = HID_REQ_SET_REPORT;
-          usbd_ctrl_recv(pudev, vcpkybrd->hid_set_report, setup->wLength);
+//          vcpkybrd->hid_state = HID_REQ_SET_REPORT;
+//          usbd_ctrl_recv(pudev, vcpkybrd->hid_set_report, setup->wLength);
           break;
         default:
           usbd_ctrl_unsupport(pudev);
@@ -476,10 +443,10 @@ static usb_sts_type keyboard_class_setup_handler(void *udev, usb_setup_type *set
           usbd_ctrl_send(pudev, (uint8_t *)buf, len);
           break;
         case USB_STD_REQ_GET_INTERFACE:
-          usbd_ctrl_send(pudev, (uint8_t *)&vcpkybrd->alt_setting, 1);
+          usbd_ctrl_send(pudev, (uint8_t *)&HID->alt_setting, 1);
           break;
         case USB_STD_REQ_SET_INTERFACE:
-          vcpkybrd->alt_setting = setup->wValue;
+          HID->alt_setting = setup->wValue;
           break;
         default:
           break;
@@ -515,19 +482,15 @@ static usb_sts_type class_ept0_rx_handler(void *udev)
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata; 
   uint32_t recv_len = usbd_get_recv_len(pudev, 0);
   /* ...user code... */
-  if( vcpkybrd->g_req == SET_LINE_CODING)
-  {
-    /* class process */
-    usb_vcp_cmd_process(udev, vcpkybrd->g_req, vcpkybrd->g_cmd, recv_len);
-  }
 
-  if( vcpkybrd->hid_state == HID_REQ_SET_REPORT)
+  if( HID->hid_state == HID_REQ_SET_REPORT)     //使用端点0接收
   {
     /* hid buffer process */
-    vcpkybrd->hid_state = 0;
+//    usb_hid_buf_process(udev, pcshid->hid_set_report, recv_len);
+    HID->hid_state = 0;
   }
   return status;
 }
@@ -542,18 +505,18 @@ static usb_sts_type class_in_handler(void *udev, uint8_t ept_num)
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata; 
 
   /* ...user code...
     trans next packet data
   */
   if((ept_num & 0x7F) == (USBD_VCPKYBRD_CDC_BULK_IN_EPT & 0x7F))
   {
-    vcpkybrd->g_tx_completed = 1;
+    HID->g_custom_tx_completed = 1;                           
   }
   if((ept_num & 0x7F) == (USBD_VCPKYBRD_HID_IN_EPT & 0x7F))
   {
-    vcpkybrd->g_keyboard_tx_completed = 1;
+    HID->g_keyboard_tx_completed = 1;
   }
 
   return status;
@@ -569,13 +532,13 @@ static usb_sts_type class_out_handler(void *udev, uint8_t ept_num)
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;
 
   /* get endpoint receive data length  */
-  vcpkybrd->g_rxlen = usbd_get_recv_len(pudev, ept_num);
+  HID->g_rxlen = usbd_get_recv_len(pudev, ept_num);
 
   /*set recv flag*/
-  vcpkybrd->g_rx_completed = 1;
+  HID->g_custom_rx_completed = 1;    //!!!!
 
   return status;
 }
@@ -631,25 +594,25 @@ static usb_sts_type class_event_handler(void *udev, usbd_event_type event)
   * @param  recv_data: receive buffer
   * @retval receive data len
   */
-uint16_t usb_vcpkybrd_vcp_get_rxdata(void *udev, uint8_t *recv_data)        //接收
+uint16_t usb_Data_get_rxdata(void *udev, uint8_t *recv_data)        //接收
 {
   uint16_t i_index = 0;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata; 
   uint16_t tmp_len = 0;
-  if(vcpkybrd->g_rx_completed == 0)
+  if(HID->g_custom_rx_completed == 0)
   {
     return 0;
   }
-  vcpkybrd->g_rx_completed = 0;
+  HID->g_custom_rx_completed = 0;
 
-  tmp_len = vcpkybrd->g_rxlen;
-  for(i_index = 0; i_index < vcpkybrd->g_rxlen; i_index ++)
+  tmp_len = HID->g_rxlen;
+  for(i_index = 0; i_index < HID->g_rxlen; i_index ++)
   {
-    recv_data[i_index] = vcpkybrd->g_rx_buff[i_index];
+    recv_data[i_index] = HID->g_rx_buff[i_index];
   }
     
-  usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, vcpkybrd->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
+  usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, HID->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
 //usbd_ept_send(pudev, USBD_VCPKYBRD_CDC_BULK_IN_EPT, vcpkybrd->g_rx_buff, vcpkybrd->g_rxlen);
   return tmp_len;
 }
@@ -661,14 +624,14 @@ uint16_t usb_vcpkybrd_vcp_get_rxdata(void *udev, uint8_t *recv_data)        //�
   * @param  len: send length
   * @retval error status
   */
-error_status usb_vcpkybrd_vcp_send_data(void *udev, uint8_t *send_data, uint16_t len)
+error_status usb_vcpkybrd_vcp_send_data(void *udev, uint8_t *send_data, uint16_t len)   //这个不好用
 {
   error_status status = SUCCESS;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
-  if(vcpkybrd->g_tx_completed)
+  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;  
+  if(HID->g_custom_tx_completed)
   {
-    vcpkybrd->g_tx_completed = 0;
+    HID->g_custom_tx_completed = 0;
     usbd_ept_send(pudev, USBD_VCPKYBRD_CDC_BULK_IN_EPT, send_data, len);
   }
   else
@@ -678,42 +641,6 @@ error_status usb_vcpkybrd_vcp_send_data(void *udev, uint8_t *send_data, uint16_t
   return status;
 }
 
-
-/**
-  * @brief  usb device class request function
-  * @param  udev: to the structure of usbd_core_type
-  * @param  cmd: request number
-  * @param  buff: request buffer
-  * @param  len: buffer length
-  * @retval none
-  */
-static void usb_vcp_cmd_process(void *udev, uint8_t cmd, uint8_t *buff, uint16_t len)
-{
-  usbd_core_type *pudev = (usbd_core_type *)udev;
-  vcp_keyboard_type *vcpkybrd = (vcp_keyboard_type *)pudev->class_handler->pdata;
-  switch(cmd)
-  {
-    case SET_LINE_CODING:
-      vcpkybrd->linecoding.bitrate = (uint32_t)(buff[0] | (buff[1] << 8) | (buff[2] << 16) | (buff[3] <<24));
-      vcpkybrd->linecoding.format = buff[4];
-      vcpkybrd->linecoding.parity = buff[5];
-      vcpkybrd->linecoding.data = buff[6];
-      break;
-
-    case GET_LINE_CODING:
-      buff[0] = (uint8_t)vcpkybrd->linecoding.bitrate;
-      buff[1] = (uint8_t)(vcpkybrd->linecoding.bitrate >> 8);
-      buff[2] = (uint8_t)(vcpkybrd->linecoding.bitrate >> 16);
-      buff[3] = (uint8_t)(vcpkybrd->linecoding.bitrate >> 24);
-      buff[4] = (uint8_t)(vcpkybrd->linecoding.format);
-      buff[5] = (uint8_t)(vcpkybrd->linecoding.parity);
-      buff[6] = (uint8_t)(vcpkybrd->linecoding.data);
-      break;
-
-    default:
-      break;
-  }
-}
 
 /**
   * @brief  usb device class send report
@@ -789,6 +716,7 @@ void usb_vcpkybrd_keyboard_send_char(void *udev, uint8_t ascii_code)
     keyboard_buf[2] = ascii_code;
     usb_vcpkybrd_class_send_report(udev, keyboard_buf, 8);
   }
+  //delay
 }
 
 

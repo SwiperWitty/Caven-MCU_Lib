@@ -50,7 +50,7 @@ extern "C" {
 /**
   * @brief usb use endpoint define
   */
-#define USBD_VCPKYBRD_CDC_INT_EPT                 0x82
+//#define USBD_VCPKYBRD_CDC_INT_EPT                 0x82
 #define USBD_VCPKYBRD_CDC_BULK_IN_EPT             0x81
 #define USBD_VCPKYBRD_CDC_BULK_OUT_EPT            0x01
 #define USBD_VCPKYBRD_HID_IN_EPT                  0x82
@@ -102,12 +102,12 @@ typedef struct
   uint8_t g_req;
   uint8_t hid_state;
   uint16_t g_len, g_rxlen;
-  __IO uint8_t g_tx_completed;
-  __IO uint8_t g_rx_completed;
+  __IO uint8_t g_custom_tx_completed;
+  __IO uint8_t g_custom_rx_completed;
   __IO uint8_t g_keyboard_tx_completed;
 
-  linecoding_type linecoding;
-}vcp_keyboard_type;
+  linecoding_type linecoding;                       //NO1
+}HID_compilation_type;     //vcp_keyboard_type
 
 /**
   * @}
@@ -117,7 +117,7 @@ typedef struct
   * @{
   */
 extern usbd_class_handler cdc_keyboard_class_handler;
-uint16_t usb_vcpkybrd_vcp_get_rxdata(void *udev, uint8_t *recv_data);
+uint16_t usb_Data_get_rxdata(void *udev, uint8_t *recv_data);
 error_status usb_vcpkybrd_vcp_send_data(void *udev, uint8_t *send_data, uint16_t len);
 usb_sts_type usb_vcpkybrd_class_send_report(void *udev, uint8_t *report, uint16_t len);
 void usb_vcpkybrd_keyboard_send_char(void *udev, uint8_t ascii_code);

@@ -98,7 +98,7 @@ ALIGNED_HEAD static uint8_t g_usbd_descriptor[USB_DEVICE_DESC_LEN] ALIGNED_TAIL 
   USB_MFC_STRING,                        /* Index of manufacturer string */
   USB_PRODUCT_STRING,                    /* Index of product string */
   USB_SERIAL_STRING,                     /* Index of serial number string */
-  1                                      /* bNumConfigurations */
+  1,                                     /* bNumConfigurations */
 };
 
 /**
