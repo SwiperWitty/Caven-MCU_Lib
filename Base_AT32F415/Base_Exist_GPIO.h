@@ -30,6 +30,15 @@
                                                                      ————202207.14
  */
 
+#define READ_Config		0
+#define WRITE_Config	1
+
+//User io
+#define User_hot_off() GPIOB->clr = GPIO_PINS_6  
+#define User_hot_on() GPIOB->scr = GPIO_PINS_6   
+#define User_09V() GPIOA->clr = GPIO_PINS_1      
+#define User_12V() GPIOA->scr = GPIO_PINS_1   
+
 #ifdef Exist_LCD
     #define LCD_DC_L() GPIOA->clr = GPIO_PINS_10    //DC_GPIO
     #define LCD_DC_H() GPIOA->scr = GPIO_PINS_10   //PA10
@@ -114,6 +123,8 @@ void HC595_GPIO_Init(int Set);
 void DS18B20_GPIO_Init(int Set);
 
 void KEY_GPIO_Init(int Set);
+
+void User_GPIO_Init(int Set);	//!!!!
 
 /*  other    */
 void DS18B20_IO_Config(int Set);

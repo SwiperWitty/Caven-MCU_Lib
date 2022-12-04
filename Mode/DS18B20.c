@@ -30,18 +30,20 @@ char DS18B20_Start (void)
 	
 	DS18B20_IO_H();
     DS18B20_IO_Config(READ_Config);
-	
+	DS18B20_Delay (50);
     int time = 0;
     do{
         DS18B20_Delay (50);
         time++;
-        if(time > 10)
+        if(time > 6)
         {
             DS18B20_GPIO_Init(0);
             DS18B20_Exist_Flag = 0;
             return temp;                    //启动失败了
         }
-    }while(DS18B20_IO_R() == 0);
+    }while(DS18B20_IO_R() == 1);
+	DS18B20_IO_Config(WRITE_Config);
+	DS18B20_IO_H();DS18B20_Delay (50);
 	temp = 1;
 	return temp;
 }
@@ -68,7 +70,7 @@ void Write_Byte (char Data)
 {
 #ifdef Exist_DS18B20
     char Temp = Data;
-    DS18B20_GPIO_Init(1);
+//    DS18B20_GPIO_Init(1);
     DS18B20_IO_H();
     DS18B20_Delay (10);
 	

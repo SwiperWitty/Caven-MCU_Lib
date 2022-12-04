@@ -400,21 +400,21 @@ void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode
 	for (i = 0; i < TypefaceNum; i++)
 	{
 		if (sizey == 16)
-			temp = ascii_1608[num][i]; //调用8x16字体
+		{temp = ascii_1608[num][i];} //调用8x16字体
 		else if (sizey == 24)
-			temp = ascii_2412[num][i]; //调用12x24字体
+		{temp = ascii_2412[num][i];} //调用12x24字体
 		else if (sizey == 32)
-			temp = ascii_3216[num][i]; //调用16x32字体
+		{temp = ascii_3216[num][i];} //调用16x32字体
 		else
-			return;
+		{return;}
 		for (t = 0; t < 8; t++)
 		{
 			if (!mode) //非叠加模式
 			{
 				if (temp & (0x01 << t))
-					LCD_WR_DATA(fc);
+				{LCD_WR_DATA(fc);}
 				else
-					LCD_WR_DATA(bc);
+				{LCD_WR_DATA(bc);}
 				m++;
 				if (m % sizex == 0)
 				{
@@ -425,7 +425,7 @@ void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode
 			else //叠加模式
 			{
 				if (temp & (0x01 << t))
-					LCD_Draw_Point(x, y, fc); //画一个点
+				{LCD_Draw_Point(x, y, fc);} //画一个点
 				x++;
 				if ((x - x0) == sizex)
 				{
@@ -455,11 +455,11 @@ void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mo
 	while (*s != 0)
 	{
 		if (sizey == 24)
-			LCD_Show_Chinese24x24(x, y, s, fc, bc, sizey, mode);
+		{LCD_Show_Chinese24x24(x, y, s, fc, bc, sizey, mode);}
 		else if (sizey == 32)
-			LCD_Show_Chinese32x32(x, y, s, fc, bc, sizey, mode);
+		{LCD_Show_Chinese32x32(x, y, s, fc, bc, sizey, mode);}
 		else
-			return;
+		{return;}
 		s += 2;
 		x += sizey;
 	}
@@ -482,9 +482,9 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 		x *= (sizey / 2);
 		y *= (sizey);
 		if (x > LCD_W)
-			x = LCD_W;
+		{x = LCD_W;}
 		if (y > LCD_H)
-			y = LCD_W;
+		{y = LCD_W;}
 	}
 	else
 		return;
@@ -508,23 +508,19 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 {
 #ifdef Exist_LCD
-	U32 k = length * width;
-	LCD_Address_Set(x, y, (x + length) - 1, (y + width) - 1);
-//	for (int i = 0; i < length; i++)
-//	{
-//		for (int j = 0; j < width; j++)
-//		{
-//			LCD_WR_DATA8(pic[k * 2]);
-//			LCD_WR_DATA8(pic[k * 2 + 1]);
-//			k++;
-//		}
-//	}
-    
-//    for(int i = 0;i < k;i++)
-//    {
-//        LCD_WR_DATA8(pic[i]);
-//    }
-    LCD_Writ_String(pic,k);
+	u16 i,j;
+	u32 k = 0;
+	LCD_Address_Set(x,y,(x+length-1),(y+width-1));
+	for(i=0;i<length;i++)
+	{
+		for(j=0;j<width;j++)
+		{
+			LCD_WR_DATA8(pic[k*2]);
+			LCD_WR_DATA8(pic[k*2+1]);
+			k++;
+		}
+		
+	}
 #endif
 }
 

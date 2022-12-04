@@ -1,5 +1,35 @@
 #include "Base_Exist_GPIO.h"
 
+void User_GPIO_Init(int Set)
+{
+	
+    gpio_init_type gpio_init_struct;
+    gpio_default_para_init(&gpio_init_struct);
+    if (Set) 
+    {
+//		crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK,TRUE);
+        
+//        gpio_init_struct.gpio_pins = GPIO_PINS_6;
+//        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+//        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+//        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+//        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+//        gpio_init(GPIOB, &gpio_init_struct);
+//		
+//		gpio_init_struct.gpio_pins = GPIO_PINS_1;
+//		gpio_init(GPIOA, &gpio_init_struct);
+        
+    }
+    else                                                    //标志取消GPIO
+    {
+//        gpio_init_struct.gpio_pins = GPIO_PINS_4;
+//        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+//        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+//        gpio_init(GPIOA, &gpio_init_struct);
+    }
+	
+}
+
 void LCD_GPIO_Init(int Set)
 {
 #ifdef Exist_LCD
