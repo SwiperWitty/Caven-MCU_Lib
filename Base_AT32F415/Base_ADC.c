@@ -5,8 +5,9 @@ float VDDA = 3.30; 							//其实这个是动态的，ADC内部基准源
 float VCC_Cfc = (10+1.5)/1.5;				//Coefficient
 
 int Channel_NUM;
+u16 ADC1_valuetab_list[20];
+
 __IO uint16_t dma_trans_complete_flag = 0;
-uint16_t ADC1_valuetab_list[20];
 #endif
 
 void ADC_GPIO_Init(int Set)
@@ -64,7 +65,7 @@ void ADC_GPIO_Init(int Set)
 #endif
 }
 
-void ADC1_DMA_Config (const void *DMA_Buffer,int BufferSize)
+void ADC1_DMA_Config (void *DMA_Buffer,int BufferSize)
 {
 #ifdef Exist_ADC
     dma_init_type dma_init_struct;
@@ -156,7 +157,7 @@ void ADC_Start_Init(int Set)
 }
 
 
-void ADC_Get_List(int *Target)
+void ADC_Get_List(void)
 {
 #ifdef Exist_ADC
     if (Channel_NUM > 18)
@@ -168,14 +169,15 @@ void ADC_Get_List(int *Target)
         ADC1_valuetab_list[i] = 0;
     }
     
-    adc_ordinary_software_trigger_enable(ADC1, TRUE);
-    while(dma_trans_complete_flag == 0);
+    adc_ordinary_software_trigger_enable(ADC1, TRUE);   //开始ADC转换（软件触发）
+    while(dma_trans_complete_flag == 0);                //等DMA
     dma_trans_complete_flag = 0;
-
-    for (int i = 0; i < Channel_NUM; i++)
-    {
-        Target[i] = ADC1_valuetab_list[i];
-    }
+    //接下来交给中断
+    
+//    for (int i = 0; i < Channel_NUM; i++)
+//    {
+//        Target[i] = ADC1_valuetab_list[i];
+//    }
 #endif
 }
 
@@ -184,7 +186,7 @@ float ADC_Get_Temperature(void)
     float Temp = 0;
 #ifdef ADC_Temp
 	adc_ordinary_software_trigger_enable(ADC1, TRUE);
-    while(dma_trans_complete_flag == 0);		//等转换
+    while(dma_trans_complete_flag == 0);
     dma_trans_complete_flag = 0;
 	
     Temp = ADC1_valuetab_list[Channel_NUM-1];                                     //温传是最后一个
@@ -194,10 +196,23 @@ float ADC_Get_Temperature(void)
     return Temp;
 }
 
+float ADC_Conversion_Vol(int NUM)
+{
+    float Temp = NUM;
+    
+#ifdef Exist_ADC
+    Temp /= ADC_MAX;
+    Temp *= ADC_VREF;
+#endif
+    
+    return Temp;
+}
+
+
 #ifdef Exist_ADC
 void DMA1_Channel1_IRQHandler(void)
 {
-    if(dma_flag_get(DMA1_FDT1_FLAG) != RESET)
+    if(dma_flag_get(DMA1_FDT1_FLAG) != RESET)       //ADC数据全部完成
     {
         dma_flag_clear(DMA1_FDT1_FLAG);
         dma_trans_complete_flag = 1;

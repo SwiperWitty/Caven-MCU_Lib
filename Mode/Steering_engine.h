@@ -6,7 +6,7 @@
 
 #define Steering_PWM 4
 #define	Arr_T4	2000
-#define Por_T4	1440
+#define Por_T4	SystemCoreClock / 100000      //144 000 000 / 100000 = 1440
 
 //	T = (arr + 1 * por + 1) / 144MHz = 20MS
 

@@ -44,10 +44,15 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 #ifdef Exist_HC138
     Mode_User.HC138.Set_DATA = HC138_Set_Data;
 #endif
+#ifdef Exist_DS18B20
+    Mode_User.DS18B20.Get_Temp = DS18B20_Get_Temp;
+#endif
 
 #ifdef Exist_UART
-    Mode_User.UART.Send_Data = UART_Send_Data;
-    Mode_User.UART.Send_String = UART_Send_String;
+    Mode_User.UART.WAY_Send_Data = UART_Send_Data;
+    Mode_User.UART.WAY_Send_String = UART_Send_String;
+    
+    Mode_User.UART.DATA_UART = CV_UART;
 #endif
 
 #ifdef Exist_KEY
@@ -65,9 +70,17 @@ static void Mode_User_index(void)		//索引 功能函数 本体
     Mode_User.Steering_Engine.Set_360_Sport = Steering_Engine_360_Sport;
 #endif  
 
-}   //  Mode_User
+#ifdef Exist_ADC
+    Mode_User.USER_ADC.WAY_Get_Temperature = ADC_Get_Temperature;   //方法
+    Mode_User.USER_ADC.WAY_Conversion_Vol = ADC_Conversion_Vol; 
+    Mode_User.USER_ADC.WAY_Get_List = ADC_Get_List;
+    
+    Mode_User.USER_ADC.DATA_List = ADC1_valuetab_list;      //数据
+#endif
 
-void Mode_Index(void)
+}   //  Mode_User 
+
+void Mode_Index(void) 
 {
     Mode_User_index();
 
@@ -92,6 +105,9 @@ void Mode_Index(void)
 #ifdef Exist_HC138
     Mode_Init.HC_138 = HC138_Init;
 #endif
+#ifdef Exist_DS18B20
+    Mode_Init.DS18B20 = DS18B20_Init;
+#endif
 
 #ifdef Exist_KEY
     Mode_Init.KEY = KEY_Init;
@@ -106,6 +122,10 @@ void Mode_Index(void)
 #ifdef Exist_Steering_Engine
     Mode_Init.Steering_Engine = Steering_Engine_Init;
 #endif  
+
+#ifdef Exist_ADC
+    Mode_Init.User_ADC = ADC_Start_Init;
+#endif
 
 }   //  Mode_Index
 

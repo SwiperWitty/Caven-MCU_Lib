@@ -27,7 +27,7 @@
 #define S32 signed int
 #define U64 unsigned long long
 
-#define Buff_Length 500
+#define Buff_Length 200
     
 #ifndef ENABLE
     #define ENABLE 1

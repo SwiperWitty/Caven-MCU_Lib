@@ -14,11 +14,23 @@
 #ifdef Exist_ADC
 	extern float VDDA;
 	extern float VCC_Cfc;
-	
+	extern u16 ADC1_valuetab_list[20];
+    
+    #define ADC_MAX                          4096   
     #define ADC_VREF                         VDDA
     #define ADC_TEMP_BASE                    (1.26)
     #define ADC_TEMP_SLOPE                   (-0.00423)
 
+//面向对象编程
+
+struct _USER_ADC_
+{
+    void (*WAY_Get_List) (void);            //这是方法,获取ADC原始值
+    float (*WAY_Get_Temperature) (void);    //这是方法,获取MCU温度
+    float (*WAY_Conversion_Vol) (int NUM);  //这是方法,将ADC转换为电压
+    
+    u16 * DATA_List;       //这是数据，初始化记得绑定         
+};
 
 /*
     使用DMA来读ADC的好处是一次可以获取所有的数据。
@@ -42,7 +54,9 @@
 #endif
 
 void ADC_Start_Init(int Set);
-void ADC_Get_List(int *Target);
+
+void ADC_Get_List(void);
 float ADC_Get_Temperature(void);
+float ADC_Conversion_Vol(int NUM);
 
 #endif 

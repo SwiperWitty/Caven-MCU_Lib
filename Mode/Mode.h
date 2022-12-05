@@ -102,6 +102,10 @@ struct _Mode_Init
     void (*HC_138)(int SET);
 #endif
 
+#ifdef Exist_DS18B20
+    char (*DS18B20)(int SET);
+#endif
+
 #ifdef Exist_KEY
     void (*KEY)(char Channel,int SET);
 #endif
@@ -114,6 +118,10 @@ struct _Mode_Init
 #endif
 #ifdef Exist_Steering_Engine
     void (*Steering_Engine) (int Set);
+#endif
+
+#ifdef Exist_ADC
+    void (*User_ADC) (int Set);
 #endif
 
 
@@ -130,7 +138,7 @@ struct _Mode_User
 	struct TIME_ Sys_Clock;
 #endif
 #ifdef Exist_UART
-    struct Uart_ UART;
+    struct _Uart_ UART;                             //面向对象
 #endif
 #ifdef Exist_LED
     struct LED_ LED;
@@ -144,6 +152,10 @@ struct _Mode_User
 #ifdef Exist_HC138
     struct HC138_ HC138;
 #endif
+#ifdef Exist_DS18B20
+    struct DS18B20_ DS18B20;
+#endif
+
 #ifdef Exist_KEY
     struct KEY_ KEY;
 #endif
@@ -158,10 +170,24 @@ struct _Mode_User
     struct Steering_Engine_ Steering_Engine;
 #endif
 
-
+#ifdef Exist_ADC
+    struct _USER_ADC_ USER_ADC;
+#endif
 };
 
 void Mode_Index(void); //初始化Mode函数索引,真正功能的初始化请调用结构体中函数指针(Mode_Init)
 void Debug_Out(const char *String);
+
+
+
+//以下是勘误，如果你已完成配置请将其注释！
+
+#if END_Data != NO_END
+    #warning "Attention that UART requires end Data !!! File: ./Base./<Base_UART.h> "
+#endif
+
+
+
+
 
 #endif

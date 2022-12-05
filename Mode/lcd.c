@@ -1,4 +1,4 @@
-#include "lcd.h"
+#include "LCD.h"
 #include "lcdfont.h" //字库
 
 U16 BACK_COLOR = BLACK; //背景色

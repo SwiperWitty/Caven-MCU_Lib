@@ -356,3 +356,5 @@ int fputc(int ch, FILE *f)      //printf
     return (ch);
 }
 
+//你找中断？UART的中断权限给MODE了！
+

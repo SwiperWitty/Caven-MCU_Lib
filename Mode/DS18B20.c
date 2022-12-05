@@ -7,7 +7,7 @@ unsigned char Minus_Flag=0;  //负温度标志位
 int DS18B20_Time = 0;
 int DS18B20_Exist_Flag = 0;
 
-void DS18B20_Delay (int Num)
+static void DS18B20_Delay (int Num)
 {
 #ifdef Exist_DS18B20
     for (Num *= 5; Num > 0; Num--)
@@ -24,6 +24,7 @@ void DS18B20_Delay (int Num)
 char DS18B20_Start (void)
 {
 	char temp = 0;
+#ifdef Exist_DS18B20
 	DS18B20_IO_Config(WRITE_Config);
 	DS18B20_IO_H();DS18B20_Delay (50);
 	DS18B20_IO_L();DS18B20_Delay (500);
@@ -45,14 +46,16 @@ char DS18B20_Start (void)
 	DS18B20_IO_Config(WRITE_Config);
 	DS18B20_IO_H();DS18B20_Delay (50);
 	temp = 1;
+#endif
 	return temp;
 }
 
 char DS18B20_Init (int Set)
 {
 	char temp = 0;
-#ifdef Exist_DS18B20
     DS18B20_GPIO_Init(Set);
+    DS18B20_Delay (1);
+#ifdef Exist_DS18B20
     DS18B20_Time = (MCU_SYS_Freq/6000000);
 	DS18B20_Delay (500);
 	if(DS18B20_Start () == 1)
@@ -62,11 +65,11 @@ char DS18B20_Init (int Set)
 	}
 	DS18B20_Delay (50);
 	DS18B20_Get_Temp();
-	return temp; 
 #endif
+	return temp; 
 }
 
-void Write_Byte (char Data)
+static void Write_Byte (char Data)
 {
 #ifdef Exist_DS18B20
     char Temp = Data;
@@ -97,7 +100,7 @@ void Write_Byte (char Data)
 #endif
 }
 
-char Read_Byte (void)
+static char Read_Byte (void)
 {
     char Data = 0;
 #ifdef Exist_DS18B20

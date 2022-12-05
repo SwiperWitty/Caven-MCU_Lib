@@ -65,25 +65,27 @@ void Uart_Init(char Channel, const int Baud,int SET)
 #ifdef Exist_UART
 static char Get_RXD(struct _Uart_Data *Target, const char res) //接收处理函数
 {
-    if (!Target->Rxd_Received)      // 0 允许接收，其他不允许接收
+    if (Target->Rxd_Received < 2)      // 0 允许接收，其他不允许接收
     {
         Target->DATA.index = 1;         //U8内有数据
         Target->UART_RxdBuff[Target->DATA.Length++] = res;
         #if END_Data != NO_END      //如果有 停止符
         if (res == END_Data)    //Get停止符
         {
-            Target->Rxd_Received = 1;
+            Target->Rxd_Received = 2;       //满足停止条件的接收
         }
+        #else
+        Target->Rxd_Received = 1;           //自由接收模式
         #endif
 
         #ifdef UART_Length_MAX
         if (Target->DATA.Length > UART_Length_MAX) //超长（异常需要清零）
         {
-            Target->Rxd_Received = 2;
+            Target->Rxd_Received = 3;       //超长的接收
         }
         #endif
 
-        Target->DATA.Poit_U8 = Target->UART_RxdBuff;
+        Target->DATA.Poit_U8 = Target->UART_RxdBuff;        //指针绑定，指针同步-RxdBuff
 
     }
     return Target->Rxd_Received;

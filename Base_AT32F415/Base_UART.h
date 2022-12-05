@@ -22,7 +22,7 @@
 	// #define UART5_EXIST
 	#define UART_End 6
 
-	#define END_Data    '}'             //这个作为串口接收【结束符】
+    #define END_Data    '}'             //这个作为串口接收【结束符】                     //因为单片机差异性所以放在这
 	#define NO_END      'N'             //如果【结束符】和它相同，那么就没有 结束符
 
 /*	标志位	*/
