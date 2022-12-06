@@ -27,6 +27,17 @@
 #include "usb_core.h"
 #include "usbd_core.h"
 #include "usbd_sdr.h"
+#include "BASE.h"       //!!!!
+
+
+void usb_delay_ms(uint32_t num)
+{
+    #ifdef Exist_SYS_TIME
+    SYS_Delay_ms(num);
+    #else
+        usb_delay_ms(num);
+    #endif
+}
 
 /** @addtogroup AT32F415_middlewares_usbd_drivers
   * @{
@@ -620,7 +631,7 @@ void usbd_remote_wakeup(usbd_core_type *udev)
 
     /* delay 10 ms */
     usb_delay_ms(10);
-
+      
     /* clear remote wakup */
     usb_remote_wkup_clear(udev->usb_reg);
   }

@@ -1,18 +1,23 @@
 #include "cdc_keyboard_class.h"
 #include "cdc_keyboard_desc.h"
+#include "BASE.h"
+
 #include "USB_User.h"
 #include "usbd_int.h"
 
+
 otg_core_type otg_core_struct;      //  USB全局控制量
 
+#ifdef Exist_USB
 static void usb_low_power_wakeup_config(void);
 static void usb_clock48m_select(usb_clk48_s clk_s);
 static void usb_gpio_config(void);
 static void usb_low_power_wakeup_config(void);
-
+#endif
 
 void USB_User_init (void)  
 {
+#ifdef Exist_USB
     usb_gpio_config();
     usb_low_power_wakeup_config();
 
@@ -30,17 +35,25 @@ void USB_User_init (void)
             USB_ID,
             &cdc_keyboard_class_handler,
             &cdc_keyboard_desc_handler);
+    usb_delay_ms(500);
+#endif
 }
 
 uint16_t USB_Buffer_Receive (uint8_t *Data)
 {
+#ifdef Exist_USB
     uint16_t len = 0;
     len = usb_Data_get_rxdata(&otg_core_struct.dev, Data);
     return len;
+#else 
+    return 0;
+    
+#endif
 }
 
 uint16_t USB_Buffer_send (const void *Data,uint16_t *bufflen)
 {
+#ifdef Exist_USB
     uint16_t Buff_MAX = 64;
     uint8_t Buffer[64];
     uint16_t temp = *bufflen,temp2 = 0;
@@ -73,10 +86,15 @@ uint16_t USB_Buffer_send (const void *Data,uint16_t *bufflen)
     }while(temp > 0);
 
     return 0;
+#else 
+    return 1;
+#endif
+    
 }
 
 void keyboard_send_string(uint8_t *string, uint8_t len)
 {
+#ifdef Exist_USB
     uint8_t index = 0;
     usbd_core_type *pudev = &otg_core_struct.dev; 
     HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;
@@ -102,11 +120,13 @@ void keyboard_send_string(uint8_t *string, uint8_t len)
             }
         }
     }
+#endif
 }
 
 
 uint16_t USB_Keyboard_Send_Data (uint8_t *data, uint16_t u16Sendlen)
 {
+#ifdef Exist_USB
     uint16_t  i,j,k = 0;
     uint8_t u8SendBuffer[128];        //转换区
 
@@ -125,6 +145,7 @@ uint16_t USB_Keyboard_Send_Data (uint8_t *data, uint16_t u16Sendlen)
     }
     
     keyboard_send_string(u8SendBuffer,k);        //这个不需要缓存区
+#endif
     return u16Sendlen;
 }
 
@@ -232,7 +253,4 @@ void usb_gpio_config(void)
   gpio_init(OTG_PIN_GPIO, &gpio_init_struct);
 
 }
-
-
-
 

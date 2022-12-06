@@ -35,6 +35,7 @@ extern "C" {
 
 /* includes ------------------------------------------------------------------*/
 #include "usb_conf.h"
+#include "Caven.h"      //Caven
 
 /** @addtogroup AT32F415_middlewares_usb_drivers
   * @{
@@ -250,8 +251,8 @@ typedef struct
 /**
   * @brief min and max define
   */
-#define MIN(a, b)  (uint16_t)(((a) < (b)) ? (a) : (b)) /*!< min define*/
-#define MAX(a, b)  (uint16_t)(((a) > (b)) ? (a) : (b)) /*!< max define*/
+//#define MIN(a, b)  (uint16_t)(((a) < (b)) ? (a) : (b)) /*!< min define*/
+//#define MAX(a, b)  (uint16_t)(((a) > (b)) ? (a) : (b)) /*!< max define*/
 
 /**
   * @brief low byte and high byte define
