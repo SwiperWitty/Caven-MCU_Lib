@@ -17,6 +17,10 @@
 #include "Base_sys_time.h"
 #endif
 
+#ifdef Exist_FLASH
+#include "Base_Flash.h"
+#endif
+
 #ifdef Exist_UART
 #include "Base_UART.h" 
 #endif

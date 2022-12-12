@@ -9,7 +9,7 @@
 int ASCII_TO_Keyboard(const char *Source,char *Target)
 {
     int Length = strlen(Source);
-    printf("length : %d\n",Length);
+//    printf("length : %d\n",Length);
     if (Length > 50)
         return (-1);
     char str[50];
