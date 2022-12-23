@@ -9,16 +9,16 @@ void LCD_GPIO_Init(int Set)
     {
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOA, ENABLE);       //时钟
 
-        gpio_init_struct->GPIO_Pin  = GPIO_Pin_10;
-        gpio_init_struct->GPIO_Speed = GPIO_Speed_50MHz;
-        gpio_init_struct->GPIO_Mode = GPIO_Mode_Out_PP;
+        gpio_init_struct.GPIO_Pin  = GPIO_Pin_10;
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_Init(GPIOA, &gpio_init_struct);
     }
     else
     {
-        gpio_init_struct->GPIO_Pin  = GPIO_Pin_10;
-        gpio_init_struct->GPIO_Speed = GPIO_Speed_50MHz;
-        gpio_init_struct->GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        gpio_init_struct.GPIO_Pin  = GPIO_Pin_10;
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_Init(GPIOA, &gpio_init_struct);
     }
 #endif

@@ -1,60 +1,144 @@
 #include "Base_UART.h" 
 
 #ifdef Exist_UART
-static usart_type * Temp;
+static USART_TypeDef * Temp;
 
 #endif
 
 void Uart1_Init(int Baud,int Set)
 {
 #ifdef UART1_EXIST
-    confirm_state set = FALSE;
+    FunctionalState set = DISABLE;
     Temp = USART1;
-    usart_reset(Temp);
+    USART_DeInit(Temp);
     if (Set)
-        set = TRUE;
+        set = ENABLE;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	USART_InitTypeDef USART_InitStructure; //
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 		//设置中断组，4位抢占优先级，4位响应优先级
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	//AFIO复用功能模块时钟
 
-    crm_periph_clock_enable(CRM_USART1_PERIPH_CLOCK, set);
-    crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
-    gpio_init_type gpio_init_struct;
-    gpio_default_para_init(&gpio_init_struct);
-
-    gpio_init_struct.gpio_pins = GPIO_PINS_9;                           //Tx
-    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-    gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-    gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
-    gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-    gpio_init(GPIOA, &gpio_init_struct);
-
-    gpio_init_struct.gpio_pins = GPIO_PINS_10;                           //Rx
-    gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
-    gpio_init_struct.gpio_pull = GPIO_PULL_UP;
-    gpio_init(GPIOA, &gpio_init_struct);
-
-    nvic_priority_group_config(NVIC_PRIORITY_GROUP_0);
-    nvic_irq_enable(USART1_IRQn, 0, 1);
-
-    usart_init(Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);   //波特率、位数、停止位
-    usart_transmitter_enable(Temp, TRUE);         //发送使能
-    usart_receiver_enable(Temp, TRUE);            //接收使能
-
-    usart_parity_selection_config(Temp,USART_PARITY_NONE);    //无奇偶校验
-    usart_interrupt_enable(Temp, USART_RDBF_INT, TRUE);
-    usart_enable(Temp, TRUE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
+//    GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);		//串口1重映射
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6; //TXD
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;	  //RXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU; //
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+    /***/
+    USART_InitStructure.USART_BaudRate = Baud; //波特率；
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //数据位8位；
+    USART_InitStructure.USART_StopBits = USART_StopBits_1; //停止位1位；
+    USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
+    USART_Init(Temp, &USART_InitStructure);
+    
+    NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		  //响应优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    USART_ITConfig(Temp, USART_IT_RXNE, set);   //
+    USART_Cmd(Temp, set);					    //
 #endif
 }
 
 void Uart2_Init(int Baud,int Set)
 {    
 #ifdef UART2_EXIST
+    FunctionalState set = DISABLE;
+    Temp = USART2;
+    USART_DeInit(Temp);
+    if (Set)
+        set = ENABLE;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	USART_InitTypeDef USART_InitStructure; //
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 		//设置中断组，4位抢占优先级，4位响应优先级
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	//AFIO复用功能模块时钟
 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; //USART2 TX；
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推挽输出；
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOA, &GPIO_InitStructure); //端口A；
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3; //USART2 RX；
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入；
+    GPIO_Init(GPIOA, &GPIO_InitStructure); //端口A；
+    
+    /***/
+    USART_InitStructure.USART_BaudRate = Baud; //波特率；
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //数据位8位；
+    USART_InitStructure.USART_StopBits = USART_StopBits_1; //停止位1位；
+    USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
+    USART_Init(Temp, &USART_InitStructure);
+    
+    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;		  //响应优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    USART_ITConfig(Temp, USART_IT_RXNE, set);   //
+    USART_Cmd(Temp, set);					    //
 #endif
 }
 
 void Uart3_Init(int Baud,int Set)
 {
 #ifdef UART3_EXIST
+    FunctionalState set = DISABLE;
+    Temp = USART3;
+    USART_DeInit(Temp);
+    if (Set)
+        set = ENABLE;
+	GPIO_InitTypeDef GPIO_InitStructure;
+	USART_InitTypeDef USART_InitStructure; //
+	NVIC_InitTypeDef NVIC_InitStructure;
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 		//设置中断组，4位抢占优先级，4位响应优先级
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	//AFIO复用功能模块时钟
 
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
+    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);		//串口3重映射，与串口4 IO一致（STM32F103RB版本只有串口3没有4）
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //USART3 TX；
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11; //USART3 RX；
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+    
+    /***/
+    USART_InitStructure.USART_BaudRate = Baud; //波特率；
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //数据位8位；
+    USART_InitStructure.USART_StopBits = USART_StopBits_1; //停止位1位；
+    USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
+    USART_Init(Temp, &USART_InitStructure);
+    
+    NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		  //响应优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    USART_ITConfig(Temp, USART_IT_RXNE, set);   //
+    USART_Cmd(Temp, set);					    //
 #endif
 }
 
@@ -115,7 +199,7 @@ char UART_RXD_Flag(char Channel)
         return (0);
     }
 #ifdef Exist_UART
-    res = usart_flag_get(Temp,RXD_Falg);
+    res = USART_GetITStatus(Temp,RXD_Falg);
 #endif
     return res;
 }
@@ -153,7 +237,7 @@ void UART_RXD_Flag_Clear(char Channel)
         return;
     }
 #ifdef Exist_UART
-    usart_flag_clear(Temp, RXD_Falg);
+    USART_ClearFlag(Temp, RXD_Falg);
 #endif
     return;
 }
@@ -195,7 +279,7 @@ uint16_t UART_RXD_Receive(char Channel)     //RXD 读取值
         break;
     }
     #ifdef Exist_UART
-    res = usart_data_receive(Temp);
+    res = USART_ReceiveData(Temp);
     #endif
     return res;
     
@@ -241,8 +325,8 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
 //error,直接返回
     }
 #ifdef Exist_UART
-    while (usart_flag_get(Temp, TXD_Falg) == RESET);  
-    usart_data_transmit(Temp, DATA);
+    while (USART_GetFlagStatus(Temp, TXD_Falg) == RESET);  
+    USART_SendData(Temp, DATA);
     // usart_flag_clear(Temp, TXD_Falg);        //可以不要
 #endif
 }
@@ -253,7 +337,7 @@ int fputc(int ch, FILE *f)      //printf
     #ifdef Exist_UART
 //    USART_SendData(USART1,(uint8_t)ch);
 //    while (!USART_GetFlagStatus(USART1, TXD_Falg));
-    UART_TXD_Send(1,(uint8_t)ch);
+    UART_TXD_Send(DEBUG_OUT,(uint8_t)ch);
     #endif
 #endif // DEBUG
     return (ch);

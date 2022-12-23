@@ -14,7 +14,7 @@ void Sys_Time_Init(int Set)
     
     if (Set)
     {
-        SysTick_Config(Tick_Set_CMP);
+        while(SysTick_Config(Tick_Set_CMP));
     }
     else
         NVIC_SystemReset();

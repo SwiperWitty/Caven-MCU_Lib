@@ -14,7 +14,7 @@ void Sys_Time_Init(int Set)
     
     if (Set)
     {
-        SysTick_Config(Tick_Set_CMP);
+        while(SysTick_Config(Tick_Set_CMP));
         systick_clock_source_config(SYSTICK_CLOCK_SOURCE_AHBCLK_DIV8); // 8分
     }
     else

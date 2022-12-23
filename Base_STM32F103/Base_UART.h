@@ -26,8 +26,8 @@
 	#define NO_END      'N'             //如果【结束符】和它相同，那么就没有 结束符
 
 /*	标志位	*/
-	#define RXD_Falg    USART_RDBF_FLAG     //  接收标志
-	#define TXD_Falg    USART_TDC_FLAG		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
+	#define RXD_Falg    USART_IT_RXNE     //  接收标志
+	#define TXD_Falg    USART_FLAG_TC		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
 /*  中断   */
 	#ifdef UART1_EXIST

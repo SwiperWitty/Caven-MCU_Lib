@@ -179,11 +179,10 @@ void Mode_Index(void); //初始化Mode函数索引,真正功能的初始化请�
 void Debug_Out(const char *String);
 
 
-
 //以下是勘误，如果你已完成配置请将其注释！
 
 #if END_Data != NO_END
-    #warning "Attention that UART requires end Data !!! File: ./Base./<Base_UART.h> "
+//    #warning "Attention that UART requires end Data !!! File: ./Base./<Base_UART.h> "
 #endif
 
 
