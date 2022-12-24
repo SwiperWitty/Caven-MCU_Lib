@@ -53,9 +53,9 @@ char DS18B20_Start (void)
 char DS18B20_Init (int Set)
 {
 	char temp = 0;
+#ifdef Exist_DS18B20
     DS18B20_GPIO_Init(Set);
     DS18B20_Delay (1);
-#ifdef Exist_DS18B20
     DS18B20_Time = (MCU_SYS_Freq/6000000);
 	DS18B20_Delay (500);
 	if(DS18B20_Start () == 1)
