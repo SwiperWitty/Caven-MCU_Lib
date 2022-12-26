@@ -147,7 +147,7 @@ void IIC_Write_DATA(char DATA,int Speed)
 #endif
 }
 
-char IIC_Read_DATA(char DATA,int Speed)
+char IIC_Read_DATA(int Speed)
 {
     char temp = 0;
 #ifdef Exist_IIC
@@ -209,13 +209,13 @@ char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed)
     return BK;
 }
 
-char IIC_Receive_DATA(char Addr,const char *Data,char *Target,char ACK,int Length,int Speed)
+char IIC_Receive_DATA(char Addr,char *Target,char ACK,int Length,int Speed)
 {
     char BK = 0;
 #ifdef Exist_IIC
     IIC_StartBit();
     IIC_Write_DATA((Addr << 1) | 0x01,Speed);      //读模式
-    if(ACK && BK == 0)      //需要使用ACK
+    if(ACK)      //需要使用ACK
     {
         BK = IIC_WaitASK();
         if (BK == 0)
@@ -224,13 +224,13 @@ char IIC_Receive_DATA(char Addr,const char *Data,char *Target,char ACK,int Lengt
             return BK;
         }
     }
-    else if(ACK == 0)       //不需要使用ACK
+    else       //不需要使用ACK
     {
         IIC_ASK();
         BK = 1;
     }
     //地址结束
-    Target[0] = IIC_Read_DATA(Data[0],Speed);
+    Target[0] = IIC_Read_DATA(Speed);
 
     IIC_StopBit();
 //IIC结束
