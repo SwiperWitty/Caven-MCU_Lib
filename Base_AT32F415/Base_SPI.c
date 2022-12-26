@@ -179,9 +179,7 @@ void SPI_Start_Init(int Set)
         spi_enable(Temp_SPI, set);
         
     #else
-        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, FALSE);
-        spi_enable(Temp_SPI, FALSE);
-        spi_i2s_reset(Temp_SPI);
+
     #endif
 #endif
 }
@@ -208,6 +206,9 @@ void SPI_CS_Set(char Serial,char State)
 #ifdef Exist_SPI
     switch (Serial)
     {
+        case 0:
+            SPI_NSS_H();     //  High
+        break;
         case 1:
             if (State) {
                 SPI_NSS_L();      //  Low
@@ -251,12 +252,12 @@ void SPI_Send_DATA(const uint16_t DATA)
     //    SPI_SCK_H();              // 0 / 0不需要上升
     #else
 
-    spi_i2s_data_transmit(Temp_SPI, DATA);
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
-    
-//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //发送缓冲区空了
 //    spi_i2s_data_transmit(Temp_SPI, DATA);
 //    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
+    
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //发送缓冲区空了
+    spi_i2s_data_transmit(Temp_SPI, DATA);
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
     
     #endif
 	
@@ -381,9 +382,9 @@ void SPI1_IRQHandler(void)
     {
         if(spi_i2s_flag_get(SPI2,SPI_I2S_BF_FLAG) == 0)
         {
-            spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //关中断
-            SPI_CS_Set(1,FALSE);          //取消片选
-            SPI_complete_flag = 1;
+//            spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //关中断
+//            SPI_CS_Set(1,FALSE);          //取消片选
+//            SPI_complete_flag = 1;
         }
     }
 }

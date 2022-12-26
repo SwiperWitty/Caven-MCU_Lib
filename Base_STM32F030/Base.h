@@ -15,7 +15,7 @@
 
 
 #ifdef Exist_IIC
-#include "IIC.h"
+#include "Base_IIC.h"
 #endif
 
 

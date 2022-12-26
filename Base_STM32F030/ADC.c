@@ -150,7 +150,7 @@ int Get_ADCx_Num (int Channel)
 }
 
 //To obtain the voltage
-float ADC_Num_to_Vol(int num)
+float ADC_Conversion_Vol(int num)
 {
 	float vol = num;
 
@@ -160,11 +160,11 @@ float ADC_Num_to_Vol(int num)
 }
 
 //To obtain the temperature (℃)  
-float Get_MCU_Temp(void)
+float ADC_Get_Temperature(void)
 {
 	float temperature = 0;
 #ifdef Exist_ADC
-    temperature = ADC_Num_to_Vol(Get_ADCx_Num(MCU_Temp));
+    temperature = ADC_Conversion_Vol(Get_ADCx_Num(MCU_Temp));
     temperature = (1.43 - temperature) / 0.0043 + 25;
 #endif
 	return (temperature);

@@ -39,18 +39,18 @@
 #endif
 
 #ifdef Exist_LED
-    #define LED_Clr() GPIOA->BRR = GPIO_Pin_4       //LED
-    #define LED_Set() GPIOA->BSRR = GPIO_Pin_4      //PA04
-    #define LEDR_Clr() GPIOA->BSRR = GPIO_Pin_4      //PA04
-    #define LEDR_Set() GPIOA->BSRR = GPIO_Pin_4      //PA04
+    #define LED_L() GPIOA->BRR = GPIO_Pin_4       //LED
+    #define LED_H() GPIOA->BSRR = GPIO_Pin_4      //PA04
+    #define LEDR_L() GPIOA->BRR = GPIO_Pin_4      //PA04
+    #define LEDR_H() GPIOA->BSRR = GPIO_Pin_4      //PA04
 #endif
 #ifdef Exist_BZZ
-    #define BZZ_Clr() GPIOB->BCR = GPIO_Pin_5    //BZZ
-    #define BZZ_Set() GPIOB->BSHR = GPIO_Pin_5   //PB05
+    #define BZZ_L() GPIOB->BCR = GPIO_Pin_5    //BZZ
+    #define BZZ_H() GPIOB->BSHR = GPIO_Pin_5   //PB05
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,读
+    #define KEY_R() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,读
 #endif
 
 

@@ -38,15 +38,15 @@ struct ADC_
 {
     int (*Get_ADCx_Num) (int Channel);
     
-    float (*Get_ADCx_Vol) (int Channel);
-    float (*Get_MCU_Temp) (void);
+    float (*ADC_Conversion_Vol) (int Channel);
+    float (*ADC_Get_Temperature) (void);
 };
 
 void ADCx_Init(int ADC_x, int SET);
 
 int Get_ADCx_Num (int Channel);
 
-float ADC_Num_to_Vol(int num);
-float Get_MCU_Temp(void);
+float ADC_Conversion_Vol(int num);
+float ADC_Get_Temperature(void);
 
 #endif
