@@ -165,17 +165,8 @@ void Uart4_Init(int Baud,int Set)
 
 void Uart5_Init(int Baud,int Set)
 {
-    confirm_state set = FALSE;
-    Temp = UART4;
-    usart_reset(Temp);
-    if (Set)
-        set = TRUE;
-    crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, set);
-    crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
-    crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
 
-    gpio_pin_remap_config(SWJTAG_GMUX_010,TRUE);                //支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
-
+	
 }
 
 char UART_RXD_Flag(char Channel)
@@ -344,17 +335,19 @@ void UART_TXD_Send(char Channel,uint16_t DATA)
 #endif
 }
 
-//int fputc(int ch, FILE *f)      //printf
-//{
-//#ifdef DEBUG_OUT
-//    #ifdef Exist_UART
-////    USART_SendData(USART1,(uint8_t)ch);
-////    while (!USART_GetFlagStatus(USART1, TXD_Falg));
-//    UART_TXD_Send(DEBUG_OUT,(uint8_t)ch);
-//    #endif
-//#endif // DEBUG
-//    return (ch);
-//}
+#ifdef UART_pf
+int fputc(int ch, FILE *f)      //printf
+{
+#ifdef DEBUG_OUT
+    #ifdef Exist_UART
+//    USART_SendData(USART1,(uint8_t)ch);
+//    while (!USART_GetFlagStatus(USART1, TXD_Falg));
+    UART_TXD_Send(DEBUG_OUT,(uint8_t)ch);
+    #endif
+#endif // DEBUG
+    return (ch);
+}
+#endif
 
 //你找中断？UART的中断权限给MODE了！
 
