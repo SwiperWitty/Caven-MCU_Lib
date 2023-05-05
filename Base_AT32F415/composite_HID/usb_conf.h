@@ -49,7 +49,7 @@ extern "C" {
 /**
   * @brief enable usb device mode
   */
-#define USE_OTG_DEVICE_MODE
+#define USE_OTG_DEVICE_MODE         //USE_OTG_HOST_MODE
 
 /**
   * @brief enable usb host mode
