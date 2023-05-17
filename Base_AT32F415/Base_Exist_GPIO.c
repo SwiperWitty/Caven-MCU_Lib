@@ -30,6 +30,34 @@ void User_GPIO_Init(int Set)
 	
 }
 
+void STEP_Motor (int Set)
+{
+    //BYJ_48 4线
+#ifdef Exist_STEP_Motor
+    gpio_init_type gpio_init_struct;
+    gpio_default_para_init(&gpio_init_struct);
+    if (Set) 
+    {
+		crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK,TRUE);
+        
+        gpio_init_struct.gpio_pins = STEP_OUT1 | STEP_OUT2 | STEP_OUT3 | STEP_OUT4;
+        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(STEP_Clock, &gpio_init_struct);
+
+    }
+    else                                                    //标志取消GPIO
+    {
+        gpio_init_struct.gpio_pins = STEP_OUT1 | STEP_OUT2 | STEP_OUT3 | STEP_OUT4;
+        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(STEP_Clock, &gpio_init_struct);
+    }
+#endif
+}
+
 void LCD_GPIO_Init(int Set)
 {
 #ifdef Exist_LCD

@@ -109,6 +109,18 @@
     #define DS18B20_IO_R() gpio_input_data_bit_read(DS18B20_Clock,DS18B20_IO)     // 读
 #endif
 
+#ifdef Exist_STEP_Motor
+    #define STEP_OUT1   GPIO_PINS_0
+    #define STEP_OUT2   GPIO_PINS_1 
+    #define STEP_OUT3   GPIO_PINS_2 
+    #define STEP_OUT4   GPIO_PINS_3 
+    #define STEP_Clock  GPIOC
+
+    #define STEP_OUT_L(x) (STEP_Clock->clr = 0x0001 << (x))
+    #define STEP_OUT_H(x) (STEP_Clock->scr = 0x0001 << (x))
+
+#endif
+
 
 /*  Init-Function    */
 
@@ -126,6 +138,6 @@ void User_GPIO_Init(int Set);	//!!!!
 
 /*  other    */
 void DS18B20_IO_Config(int Set);
-
+void STEP_Motor (int Set);
 
 #endif
