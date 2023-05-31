@@ -58,7 +58,9 @@ static void IIC_Delay (int time)
     for (int i = 0; i < time; ++i)
     {
         temp = IIC_Base_Speed;            //SET
-        while((--temp) > 0);
+        do{
+            NOP();
+        }while((temp--) > 0);
     }
 }
 

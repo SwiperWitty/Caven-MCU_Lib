@@ -32,10 +32,10 @@
 #define IIC_SDA        GPIO_PINS_11
 #define GPIO_IIC       GPIOB
 
-#define IIC_SDA_H() GPIO_IIC->scr = IIC_SDA         //置高电平
-#define IIC_SDA_L() GPIO_IIC->clr = IIC_SDA         //置低电平
-#define IIC_SCL_H() GPIO_IIC->scr = IIC_SCL
-#define IIC_SCL_L() GPIO_IIC->clr = IIC_SCL
+#define IIC_SDA_H() GPIO_IIC->Reg_IO_H = IIC_SDA         //置高电平
+#define IIC_SDA_L() GPIO_IIC->Reg_IO_L = IIC_SDA         //置低电平
+#define IIC_SCL_H() GPIO_IIC->Reg_IO_H = IIC_SCL
+#define IIC_SCL_L() GPIO_IIC->Reg_IO_L = IIC_SCL
 
 #define IIC_SDA_R() gpio_input_data_bit_read(GPIO_IIC,IIC_SDA)        //读取引脚电平
 #endif
