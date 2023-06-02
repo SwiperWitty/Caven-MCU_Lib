@@ -25,6 +25,10 @@
 #include "Base_UART.h" 
 #endif
 
+#ifdef Exist_UART
+#include "USB_User.h" 
+#endif
+
 #ifdef Exist_SPI
 #include "Base_SPI.h" 
 #endif

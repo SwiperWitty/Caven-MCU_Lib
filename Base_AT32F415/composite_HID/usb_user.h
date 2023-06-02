@@ -1,23 +1,31 @@
 #ifndef __USB_USER_H
 #define __USB_USER_H
 
-#include "usb_core.h"
-#include "at32f415.h"
-#include "string.h"
+#include "BASE.h"
 
-#include "cdc_keyboard_class.h"
+#include "usb_core.h"
+
+struct USB_         //功能（不包括初始化）
+{
+    //keyboard
+    int (*Keyboard_Send_String) (char *string);
+    int (*Keyboard_Send_Data) (char *data, int Sendlen);
+    //custom
+    int (*Custom_Send) (const void *Data,int bufflen);        //有缓冲的发送
+    int (*Custom_Receive) (char *Data);
+};
+
 
 extern otg_core_type otg_core_struct;
 
 
-void USB_User_init (void);
+void USB_User_init (int SET);
 //keyboard
-void keyboard_send_string(uint8_t *string, uint8_t len);
-uint16_t USB_Keyboard_Send_Data (uint8_t *data, uint16_t u16Sendlen);
-
+int USB_Keyboard_Send_String (char *string);
+int USB_Keyboard_Send_Data (char *data, int Sendlen);
 //custom
-uint16_t USB_Buffer_send (const void *Data,uint16_t *bufflen);        //有缓冲的发送
-uint16_t USB_Buffer_Receive (uint8_t *Data);
+int USB_Buffer_send (const void *Data,int bufflen);        //有缓冲的发送
+int USB_Buffer_Receive (char *Data);
 
 #endif
 

@@ -94,7 +94,7 @@ struct _Mode_Init
 	void (*UART)(char Channel,int Baud,int SET);
 #endif
 #ifdef Exist_USB
-	void (*USB)(void);
+	void (*USB)(int SET);
 #endif
     
 #ifdef Exist_LED
@@ -149,8 +149,8 @@ struct _Mode_User
     struct _Uart_ UART;                             //面向对象
 #endif
 #ifdef Exist_USB
-    //
-#endif    
+    struct USB_ USB_HID;
+#endif 
 
 #ifdef Exist_LED
     struct LED_ LED;

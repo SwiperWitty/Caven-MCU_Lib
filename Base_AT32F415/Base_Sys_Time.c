@@ -5,6 +5,18 @@ int Tick_Full;       //提取宏，很多宏都是以运输的形式存在的，
 int Freq_ms;
 int Freq_us;
 
+void Base_Delay (int time,int Speed)
+{
+    volatile int temp;
+    for (int i = 0; i < time; ++i)
+    {
+        temp = Speed;            //SET
+        do{
+            NOP();
+        }while((temp--) > 0);
+    }
+}
+
 void Sys_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
