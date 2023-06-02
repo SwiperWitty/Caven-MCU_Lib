@@ -13,17 +13,7 @@ void HC595_Init (int Set)
 #ifdef Exist_HC595
 static void HC595_Delay (int time)
 {
-    if (MCU_SYS_Freq >= 72000000)
-    {
-        volatile int temp;
-        for (int i = 0; i < time; ++i)
-        {
-            temp = 10;            //SET
-            while((temp--) > 0);
-        }
-    }
-    else
-        while((time--) > 0);
+    Base_Delay (time,5);
 }
 #endif
 

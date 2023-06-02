@@ -1,7 +1,5 @@
 #include "cdc_keyboard_class.h"
 #include "cdc_keyboard_desc.h"
-#include "BASE.h"
-
 #include "USB_User.h"
 #include "usbd_int.h"
 
@@ -15,48 +13,55 @@ static void usb_gpio_config(void);
 static void usb_low_power_wakeup_config(void);
 #endif
 
-void USB_User_init (void)  
+void USB_User_init (int SET)  
 {
 #ifdef Exist_USB
-    usb_gpio_config();
-    usb_low_power_wakeup_config();
+    if(SET)
+    {
+        usb_gpio_config();
+        usb_low_power_wakeup_config();
 
-    /* enable otgfs clock */
-    crm_periph_clock_enable(OTG_CLOCK, TRUE);
-    /* select usb 48m clcok source */
-    usb_clock48m_select(USB_CLK_HEXT);
+        /* enable otgfs clock */
+        crm_periph_clock_enable(OTG_CLOCK, TRUE);
+        /* select usb 48m clcok source */
+        usb_clock48m_select(USB_CLK_HEXT);
 
-    /* enable otgfs irq */
-    nvic_irq_enable(OTG_IRQ, 0, 0);
-    otg_core_struct.cfg.vbusig = 1;       //关掉PA9
-    /* init usb */
-    usbd_init(&otg_core_struct,
-            USB_FULL_SPEED_CORE_ID,
-            USB_ID,
-            &cdc_keyboard_class_handler,
-            &cdc_keyboard_desc_handler);
-    usb_delay_ms(500);
+        /* enable otgfs irq */
+        nvic_irq_enable(OTG_IRQ, 0, 0);
+        otg_core_struct.cfg.vbusig = 1;       //关掉PA9
+        /* init usb */
+        usbd_init(&otg_core_struct,
+                USB_FULL_SPEED_CORE_ID,
+                USB_ID,
+                &cdc_keyboard_class_handler,
+                &cdc_keyboard_desc_handler);
+        usb_delay_ms(500);
+    }
+    else
+    {
+        crm_periph_clock_enable(OTG_CLOCK, FALSE);
+    }
 #endif
 }
 
-uint16_t USB_Buffer_Receive (uint8_t *Data)
+int USB_Buffer_Receive (char *Data)
 {
-#ifdef Exist_USB
-    uint16_t len = 0;
-    len = usb_Data_get_rxdata(&otg_core_struct.dev, Data);
+    int len = 0;
+#ifdef Exist_USB 
+    len = usb_Data_get_rxdata(&otg_core_struct.dev, (uint8_t *)Data);
+
+#endif
     return len;
-#else 
-    return 0;
-    
-#endif
 }
 
-uint16_t USB_Buffer_send (const void *Data,uint16_t *bufflen)
+int USB_Buffer_send (const void *Data,int bufflen)
 {
+    int temp = 0;
 #ifdef Exist_USB
     uint16_t Buff_MAX = 64;
+    uint16_t temp2;
     uint8_t Buffer[64];
-    uint16_t temp = *bufflen,temp2 = 0;
+    temp = bufflen,temp2 = 0;
     usbd_core_type *pudev = &otg_core_struct.dev; 
     
     HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;      //USB-HID
@@ -85,20 +90,22 @@ uint16_t USB_Buffer_send (const void *Data,uint16_t *bufflen)
         memset(Buffer,0,Buff_MAX);
     }while(temp > 0);
 
-    return 0;
-#else 
-    return 1;
 #endif
-    
+    return temp;
 }
 
-void keyboard_send_string(uint8_t *string, uint8_t len)
+int USB_Keyboard_Send_String(char *string)
 {
+    int length = 0;
 #ifdef Exist_USB
     uint8_t index = 0;
+    length = strlen(string);
+    if(length > 64)
+        length = 64;
+    
     usbd_core_type *pudev = &otg_core_struct.dev; 
     HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;
-    for(index = 0; index < len; index ++)
+    for(index = 0; index < length; index ++)
     {
         while(1)
         {
@@ -121,16 +128,20 @@ void keyboard_send_string(uint8_t *string, uint8_t len)
         }
     }
 #endif
+    return length;
 }
 
 
-uint16_t USB_Keyboard_Send_Data (uint8_t *data, uint16_t u16Sendlen)
+int USB_Keyboard_Send_Data (char *data, int Sendlen)
 {
+    int length = 0;
 #ifdef Exist_USB
     uint16_t  i,j,k = 0;
-    uint8_t u8SendBuffer[128];        //转换区
-
-    for(i = 0;i < u16Sendlen;i++)
+    char u8SendBuffer[128];        //转换区
+    memset(u8SendBuffer,0,sizeof(u8SendBuffer));
+    length = Sendlen;
+    
+    for(i = 0;i < length;i++)
     {
         j = (data[i] >> 4) & 0x0f;
         if(j <= 9)
@@ -144,9 +155,9 @@ uint16_t USB_Keyboard_Send_Data (uint8_t *data, uint16_t u16Sendlen)
         {u8SendBuffer[k++] = j + ('A' - 0x0a); }
     }
     
-    keyboard_send_string(u8SendBuffer,k);        //这个不需要缓存区
+    USB_Keyboard_Send_String(u8SendBuffer);        //这个不需要缓存区
 #endif
-    return u16Sendlen;
+    return length;
 }
 
 

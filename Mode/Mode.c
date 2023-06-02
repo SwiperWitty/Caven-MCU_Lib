@@ -6,7 +6,7 @@ struct _Mode_User Mode_User;    //结构体实体
 
 static void Mode_User_index(void)		//索引 功能函数 本体
 {
-    Mode_User.Debug_Out = Debug_Out;
+    Mode_User.Debug_Out = NULL;
 #ifdef Exist_LCD
     Mode_User.LCD.Fill = LCD_Fill;
 
@@ -56,11 +56,14 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 #endif
 
 #ifdef Exist_USB
-
+    Mode_User.USB_HID.Keyboard_Send_Data = USB_Keyboard_Send_Data;
+    Mode_User.USB_HID.Keyboard_Send_String = USB_Keyboard_Send_String;
+    Mode_User.USB_HID.Custom_Send = USB_Buffer_send;
+    Mode_User.USB_HID.Custom_Receive = USB_Buffer_Receive;
 #endif
 
 #ifdef Exist_KEY
-    Mode_User.KEY.KEY_State = KEY_State;
+    Mode_User.KEY.K_State = KEY_State;
 #endif
 #ifdef Exist_Ultrasonic
     Mode_User.Ultrasonic.Distance = Distance;

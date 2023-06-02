@@ -55,8 +55,8 @@ extern "C" {
 /**
   * @brief usb vendor id and product id define
   */
-#define USBD_VCPKYBRD_VENDOR_ID          0x03eb
-#define USBD_VCPKYBRD_PRODUCT_ID         0x2421
+#define USBD_VCPKYBRD_VENDOR_ID          0x03eb     //VID
+#define USBD_VCPKYBRD_PRODUCT_ID         0x2421     //PID
 
 
 /**
