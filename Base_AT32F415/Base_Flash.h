@@ -43,17 +43,13 @@
     #define FLASH_END       FLASH_DATA_END              //Flash最大Flash
 #endif
 
-#define Fast_R08_Flash(x)   *(__IO uint8_t*)(x)
-#define Fast_R16_Flash(x)   *(__IO uint16_t*)(x)
 #define GET_Area_Addr(Area) ((Area) * FLASH_AREA_SIZE + FLASH_START)
 #define GET_Addr_Area(Addr) ((Addr - FLASH_START) / FLASH_AREA_SIZE)
 
-char Flash_Addr_Check(int Addr_Start,int Addr_End);
+int Addr_Get_Area(int Addr);
+int Flash_Clear_Area(int Area_Start,int size);              //以区位单位，清除数据（0xff）
 
-char Flash_Clear_Area(char Area_Start,char Area_End);               //以区位单位，清除数据（0xff）
-
-char Flash_Read_Data (int Addr,void *Data,int Lenght);
-char Flash_Save_Data (int Addr,const uint16_t *Data,int Lenght);
-char Flash_Save_Area (void * Data,char Area_Start,int Lenght);      //保存一个区数据
+int Flash_Read_Data (int Addr,void *Data,int size);
+int Flash_Save_Data (int Addr,void *Data,int size);
 
 #endif

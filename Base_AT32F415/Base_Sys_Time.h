@@ -39,4 +39,7 @@ void SYS_Delay_S(int n);
 
 void Base_Delay (int time,int Speed);
 
+void IWDG_Configuration(void);
+void Feed_Watchdog(void);
+
 #endif

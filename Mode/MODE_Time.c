@@ -64,7 +64,7 @@ struct Caven_Watch Get_TIME (void)
     return temp_Watch;
 }
 
-int Get_Lose_Tiem (struct Caven_Watch time)
+int Get_Lose_Time (struct Caven_Watch time)
 {
 	int temp = 0;
 #ifdef Exist_SYS_TIME

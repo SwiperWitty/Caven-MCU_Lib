@@ -1,6 +1,7 @@
 #include "Base_Sys_time.h"
 
 #define Sys_Time_VAL SysTick->VAL
+#define LLTIMER_REG (Tick_Set_CMP - Sys_Time_VAL)
 int Tick_Full;       //提取宏，很多宏都是以运输的形式存在的，每次调用都会算一遍
 int Freq_ms;
 int Freq_us;
@@ -52,7 +53,7 @@ uint64_t GET_SysTick(void)
 {
     uint64_t temp = 0;
 #ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Tick_L = (Tick_Full - Sys_Time_VAL); //滴答当前值
+    SYS_Ticktime.SYS_Tick_L = LLTIMER_REG; //滴答当前值
     temp = SYS_Ticktime.SYS_Tick_H;
     temp *= Tick_Full;                                             //乘法一定放后面，尤其是中断的东西
     temp += SYS_Ticktime.SYS_Tick_L;
@@ -68,6 +69,16 @@ void SET_SysTick(uint64_t time)
     Sys_Time_VAL = Tick_Full - SYS_Ticktime.SYS_Tick_L; //载入低位
 #endif
 }
+
+void IWDG_Configuration(void)
+{
+
+}
+
+void feed_watchdog(void)
+{
+
+} 
 
 // Delay
 //

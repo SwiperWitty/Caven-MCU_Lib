@@ -34,7 +34,7 @@ struct TIME_
 {
 	void (*Set_TIME) (struct Caven_Watch);
 	struct Caven_Watch (*Get_TIME) (void);
-	int (*Get_Lose_Tiem) (struct Caven_Watch time);
+	int (*Get_Lose_Time) (struct Caven_Watch time);
 };
 
 #ifdef Exist_SYS_TIME
@@ -49,7 +49,7 @@ void Delay_S(char num);
 
 void Set_TIME (struct Caven_Watch);
 struct Caven_Watch Get_TIME (void);
-int Get_Lose_Tiem (struct Caven_Watch time);
+int Get_Lose_Time (struct Caven_Watch time);
 
 
 #endif

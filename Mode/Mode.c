@@ -27,7 +27,7 @@ static void Mode_User_index(void)		//索引 功能函数 本体
 	
 	Mode_User.Sys_Clock.Get_TIME = Get_TIME;
 	Mode_User.Sys_Clock.Set_TIME = Set_TIME;
-	Mode_User.Sys_Clock.Get_Lose_Tiem = Get_Lose_Tiem;
+	Mode_User.Sys_Clock.Get_Lose_Time = Get_Lose_Time;
 #endif
 
 #ifdef Exist_LED
