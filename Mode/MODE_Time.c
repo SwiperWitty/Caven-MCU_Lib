@@ -46,9 +46,9 @@ void Set_TIME (struct Caven_Watch time)
 struct Caven_Watch Get_TIME (void)
 {
     struct Caven_Watch temp_Watch = {0};
-    
+    SYS_Tick_type stamp;
 #ifdef Exist_SYS_TIME
-    U64 Temp = GET_SysTick();
+    U64 Temp = GET_SysTick(&stamp);
     int Seconds = (int)(Temp / Tick_Freq);
     temp_Watch = Seconds_to_Hourly(Seconds);
 

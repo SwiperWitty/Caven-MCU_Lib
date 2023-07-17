@@ -1,22 +1,15 @@
 #include "Base_Sys_time.h"
 
-#define Sys_Time_VAL SysTick->VAL
-#define LLTIMER_REG (Tick_Set_CMP - Sys_Time_VAL)
-int Tick_Full;       //提取宏，很多宏都是以运输的形式存在的，每次调用都会算一遍
+#define Sys_Time_VAL    SysTick->VAL
+#define LLTIMER_REG     (Tick_Set_CMP - Sys_Time_VAL)
+
+//提取宏，很多宏都是以运算(a * b)的形式存在的，每次调用都会算一遍
+int Tick_Full;       
 int Freq_ms;
 int Freq_us;
 
-void Base_Delay (int time,int Speed)
-{
-    volatile int temp;
-    for (int i = 0; i < time; ++i)
-    {
-        temp = Speed;            //SET
-        do{
-            NOP();
-        }while((temp--) > 0);
-    }
-}
+//
+SYS_Tick_type SYS_Ticktime = {0};       //无需担心，他是自动的
 
 void Sys_Time_Init(int Set)
 {
@@ -29,6 +22,8 @@ void Sys_Time_Init(int Set)
     {
         while(SysTick_Config(Tick_Set_CMP));
         systick_clock_source_config(SYSTICK_CLOCK_SOURCE_AHBCLK_DIV8); // 8分
+        if(Set == 2)
+        {}
     }
     else
         NVIC_SystemReset();
@@ -36,7 +31,7 @@ void Sys_Time_Init(int Set)
 #endif
 }
 
-struct _SYS_Ticktime SYS_Ticktime = {0};
+
 
 #ifdef Exist_SYS_TIME
 void SysTick_Handler(void)
@@ -45,17 +40,29 @@ void SysTick_Handler(void)
 }
 #endif
 
-// Tick_Set_CMP 是起点值（设置的），因为是24位自减寄存器
+uint64_t SysTick_type_Change_NUM (SYS_Tick_type stamp)
+{
+    uint64_t temp = 0;
+#ifdef Exist_SYS_TIME
+    stamp.SYS_Tick_L = LLTIMER_REG; //滴答当前值
+    temp = stamp.SYS_Tick_H;
+    temp *= Tick_Full;              //乘法一定放后面，尤其是中断的东西
+    temp += stamp.SYS_Tick_L;
+#endif
+    return (temp);
+}
+
 //这个返回的是，总系统滴答数，这个数是U64的，巨大
-
-
-uint64_t GET_SysTick(void)
+uint64_t GET_SysTick (SYS_Tick_type *stamp)
 {
     uint64_t temp = 0;
 #ifdef Exist_SYS_TIME
     SYS_Ticktime.SYS_Tick_L = LLTIMER_REG; //滴答当前值
-    temp = SYS_Ticktime.SYS_Tick_H;
-    temp *= Tick_Full;                                             //乘法一定放后面，尤其是中断的东西
+    stamp->SYS_Tick_H = SYS_Ticktime.SYS_Tick_H;
+    stamp->SYS_Tick_L = SYS_Ticktime.SYS_Tick_L;
+    temp = stamp->SYS_Tick_H;
+    
+    temp *= Tick_Full;              //乘法一定放后面，尤其是中断的东西
     temp += SYS_Ticktime.SYS_Tick_L;
 #endif
     return (temp);
@@ -75,24 +82,41 @@ void IWDG_Configuration(void)
 
 }
 
-void feed_watchdog(void)
+void Feed_watchdog(void)
 {
 
 } 
 
 // Delay
-//
+/*
+    a * b 个 NOP
+*/
+void Base_Delay (int time,int Speed)
+{
+    #ifdef NOP
+    volatile int temp;
+    for (int i = 0; i < time; ++i)
+    {
+        temp = Speed;            //SET
+        do{
+            NOP();
+        }while((temp--) > 0);
+    }
+    #endif
+}
+
 void SYS_Delay_us(int n)
 {
     uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
     uint64_t temp;
     int set_time = n * Freq_us;
-    start_ticks = GET_SysTick();
+    SYS_Tick_type stt_temp;
+    start_ticks = GET_SysTick(&stt_temp);
 #ifdef Exist_SYS_TIME
     while (1)
     {
-        end_ticks = GET_SysTick();
-
+        end_ticks = GET_SysTick(&stt_temp);
+        
         if (end_ticks > start_ticks)
         {
             temp = end_ticks - start_ticks;
@@ -116,11 +140,12 @@ void SYS_Delay_ms(int n)
     uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
     uint64_t temp;
     int set_time = n * Freq_ms;
-    start_ticks = GET_SysTick();
+    SYS_Tick_type stt_temp;
+    start_ticks = GET_SysTick(&stt_temp);
 #ifdef Exist_SYS_TIME
     while (1)
     {
-        end_ticks = GET_SysTick();
+        end_ticks = GET_SysTick(&stt_temp);
 
         if (end_ticks > start_ticks)
         {
