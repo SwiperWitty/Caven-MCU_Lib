@@ -1,5 +1,5 @@
-#ifndef __Exist_FLASH__H_
-#define __Exist_FLASH__H_
+#ifndef __BASE_FLASH__H_
+#define __BASE_FLASH__H_
 
 #ifdef DEFAULT
 #include "items.h"              //默认功能

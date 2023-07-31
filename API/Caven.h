@@ -6,9 +6,9 @@
     仅用于32位系统
     #include "Caven.h"
 */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
 
 
 /*
@@ -30,8 +30,8 @@
 #define Buff_Length 200
     
 #ifndef ENABLE
-    #define ENABLE 1
     #define DISABLE 0
+    #define ENABLE (!DISABLE)
 #endif
 
 #define Destroy(X,N) memset((X),0,(N))        //销毁 的地址 (X)  长度 (N)

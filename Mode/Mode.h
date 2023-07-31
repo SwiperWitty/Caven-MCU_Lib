@@ -65,7 +65,9 @@
 #ifdef Exist_MLX90614
     #include "mlx90614.h"
 #endif
-
+#ifdef Exist_RTC8564
+#include "Mode_RTC8564.h"
+#endif
 
 
 /*

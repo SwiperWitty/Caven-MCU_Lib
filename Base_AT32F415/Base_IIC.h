@@ -22,6 +22,8 @@
 //配置
 #ifdef Exist_IIC
 #define IIC_Base_Speed  12
+#define IIC_R_BIT       0X01
+#define IIC_W_BIT       0X00
 #define IIC_Mode_IN     GPIO_MODE_INPUT
 #define IIC_Mode_OUT    GPIO_MODE_OUTPUT
 
@@ -42,8 +44,8 @@
 //
 
 void IIC_Start_Init(int SET);
-char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed);
-char IIC_Receive_DATA(char Addr, char *Target,char ACK,int Length,int Speed);
+int IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed);
+int IIC_Receive_DATA(char Addr, char *Target,char ACK,int Length,int Speed);
 
 
 
