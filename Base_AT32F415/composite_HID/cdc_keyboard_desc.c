@@ -120,14 +120,14 @@ ALIGNED_HEAD static uint8_t g_usbd_configuration[USBD_VCPKYBRD_CONFIG_DESC_SIZE]
   0xC0,                                  /* bmAttributes: self powered */
   0x32,                                  /* MaxPower 100 mA: this current is used for detecting vbus */
 
-//  0x08, /* bLength */
-//  0x0B, /* bDescriptorType */
-//  0x00, /* bFirstInterface */
-//  0x02, /* bInterfaceCount */
-//  0x03, /* bFunctionClass */
-//  0x00, /* bFunctionSubClass */
-//  0x00, /* bFunctionProtocol */
-//  0x00, /* iFunction (Index of string descriptor describing this function) */
+  0x08, /* bLength */
+  0x0B, /* bDescriptorType */
+  0x00, /* bFirstInterface */
+  0x01, /* bInterfaceCount */   //!!!!
+  0x03, /* bFunctionClass */
+  0x00, /* bFunctionSubClass */
+  0x00, /* bFunctionProtocol */
+  0x00, /* iFunction (Index of string descriptor describing this function) */
 
   USB_DEVICE_IF_DESC_LEN,                /* bLength: interface descriptor size */
   USB_DESCIPTOR_TYPE_INTERFACE,          /* bDescriptorType: interface descriptor type */
@@ -166,14 +166,14 @@ ALIGNED_HEAD static uint8_t g_usbd_configuration[USBD_VCPKYBRD_CONFIG_DESC_SIZE]
   VCPKYBRD_HID_BINTERVAL_TIME,                                  /* bInterval: interval for polling endpoint for data transfers */
     //49
   
-//  0x08, /* bLength */
-//  0x0B, /* bDescriptorType */
-//  0x01, /* bFirstInterface */
-//  0x01, /* bInterfaceCount */
-//  0x03, /* bFunctionClass */
-//  0x00, /* bFunctionSubClass */
-//  0x01, /* bFunctionProtocol */
-//  0x00, /* iFunction (Index of string descriptor describing this function) */
+  0x08, /* bLength */
+  0x0B, /* bDescriptorType */
+  0x01, /* bFirstInterface */
+  0x01, /* bInterfaceCount */
+  0x03, /* bFunctionClass */
+  0x01, /* bFunctionSubClass */
+  0x01, /* bFunctionProtocol */
+  0x00, /* iFunction (Index of string descriptor describing this function) */
 
   USB_DEVICE_IF_DESC_LEN,                /* bLength: interface descriptor size */
   USB_DESCIPTOR_TYPE_INTERFACE,          /* bDescriptorType: interface descriptor type */

@@ -62,8 +62,8 @@ extern "C" {
 /**
   * @brief usb descriptor size define
   */
-#define USBD_VCPKYBRD_CONFIG_DESC_SIZE            82
-#define USBD_SIZE_KEYBOARD_DESC         0x3e
+#define USBD_VCPKYBRD_CONFIG_DESC_SIZE  82//0X42
+#define USBD_SIZE_KEYBOARD_DESC         0x3E
 #define USBD_SIZE_Report_HID_DESC       0x22
 
 #define USBD_VCPKYBRD_SIZ_STRING_LANGID           4
@@ -72,8 +72,8 @@ extern "C" {
 /**
   * @brief usb string define(vendor, product configuration, interface)
   */
-#define USBD_VCPKYBRD_DESC_MANUFACTURER_STRING    "GX-WL"
-#define USBD_VCPKYBRD_DESC_PRODUCT_STRING         "GXWL_2108_Keyboard"
+#define USBD_VCPKYBRD_DESC_MANUFACTURER_STRING    "Cavendish"
+#define USBD_VCPKYBRD_DESC_PRODUCT_STRING         "Cavendish-3.14"
 #define USBD_VCPKYBRD_DESC_CONFIGURATION_STRING   "Composite HID and Keyboard Config"
 #define USBD_VCPKYBRD_DESC_INTERFACE_STRING       "HID Interface"
 
