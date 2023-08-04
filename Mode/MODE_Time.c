@@ -36,21 +36,21 @@ void Set_TIME (struct Caven_Watch time)
 {
 #ifdef Exist_SYS_TIME
     int Seconds;
-    Seconds = Hourly_to_Seconds(time);
+    Seconds = API_Hourly_to_Seconds(time);
     SET_SysTick((U64)Seconds*(Tick_Freq));
 
 #endif
 }
 
 
-struct Caven_Watch Get_TIME (void)
+struct Caven_Watch MODE_Get_TIME (void)
 {
     struct Caven_Watch temp_Watch = {0};
     SYS_Tick_type stamp;
 #ifdef Exist_SYS_TIME
     U64 Temp = GET_SysTick(&stamp);
     int Seconds = (int)(Temp / Tick_Freq);
-    temp_Watch = Seconds_to_Hourly(Seconds);
+    temp_Watch = API_Seconds_to_Hourly(Seconds);
 
     if((Seconds / 86400) > 0)        //下一天
     {
@@ -68,7 +68,7 @@ int Get_Lose_Time (struct Caven_Watch time)
 {
 	int temp = 0;
 #ifdef Exist_SYS_TIME
-	struct Caven_Watch Now = Get_TIME();
+	struct Caven_Watch Now = MODE_Get_TIME();
 	temp = Now.time_us - time.time_us;
 	if(temp < 0)
 	{

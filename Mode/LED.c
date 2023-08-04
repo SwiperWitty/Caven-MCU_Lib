@@ -1,16 +1,16 @@
 #include "LED.h"
 
 
-void LED_Init(int SET)
+void MODE_LED_Init(int SET)
 {
 #ifdef Exist_LED
     LED_GPIO_Init(SET);
-    LED_SET(1,DISABLE);
+    MODE_LED_SET(1,DISABLE);
     
 #endif
 }
 
-void LED_SET(char Channel,int SET)
+void MODE_LED_SET(char Channel,int SET)
 {
 #ifdef Exist_LED
     switch (Channel) {
@@ -76,7 +76,7 @@ void WS2812_write_byte(char data)
 #endif
 }
 
-void LED_REG(struct Caven_Color Color,int SET)
+void MODE_LED_REG(struct Caven_Color Color,int SET)
 {
 //    NVIC_SETPRIMASK();
 	if(SET)

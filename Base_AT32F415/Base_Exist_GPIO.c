@@ -94,14 +94,14 @@ void LED_GPIO_Init(int Set)
         crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK,TRUE);
         crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK,TRUE);
         
-        gpio_init_struct.gpio_pins = GPIO_PINS_4;
+        gpio_init_struct.gpio_pins = GPIO_LED;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOA, &gpio_init_struct);
         
-        gpio_init_struct.gpio_pins = GPIO_PINS_2;
+        gpio_init_struct.gpio_pins = GPIO_LEDR;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
@@ -110,7 +110,7 @@ void LED_GPIO_Init(int Set)
     }
     else                                                    //标志取消GPIO
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_4;
+        gpio_init_struct.gpio_pins = GPIO_LED;
         gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOA, &gpio_init_struct);

@@ -48,7 +48,7 @@ void Delay_ms(int num);
 void Delay_S(char num);
 
 void Set_TIME (struct Caven_Watch);
-struct Caven_Watch Get_TIME (void);
+struct Caven_Watch MODE_Get_TIME (void);
 int Get_Lose_Time (struct Caven_Watch time);
 
 

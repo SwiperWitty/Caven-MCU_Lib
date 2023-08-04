@@ -1,7 +1,7 @@
 #include "Time_Handle.h"
 
 //这个是 秒 级的转换，基于Caven_Watch
-int Hourly_to_Seconds(struct Caven_Watch Item)
+int API_Hourly_to_Seconds(struct Caven_Watch Item)
 {
     int temp;
     temp = Item.second + (Item.minutes * 60) + (Item.hour * 3600); //设置的超时时差（秒级）
@@ -10,7 +10,7 @@ int Hourly_to_Seconds(struct Caven_Watch Item)
 }
 
 //这个是 秒 级的转换
-struct Caven_Watch Seconds_to_Hourly(int Seconds)
+struct Caven_Watch API_Seconds_to_Hourly(int Seconds)
 {
     struct Caven_Watch temp;
     int i;
@@ -27,7 +27,7 @@ struct Caven_Watch Seconds_to_Hourly(int Seconds)
 }
 
 //Over_Time函数需要时分秒、微秒
-char Over_Time(struct _Over_time *Item)
+char API_Over_Time(struct _Over_time *Item)
 {
     if (Item->last_data != *(int *)Item->Now_data) //数据在跳动
     {
@@ -47,8 +47,8 @@ char Over_Time(struct _Over_time *Item)
         {
             int temp_num[2] = {0};
             int temp_us = 0;
-            temp_num[0] = Hourly_to_Seconds(Item->last_Time);
-            temp_num[1] = Hourly_to_Seconds(*Item->Now_Time);//早算早舒服
+            temp_num[0] = API_Hourly_to_Seconds(Item->last_Time);
+            temp_num[1] = API_Hourly_to_Seconds(*Item->Now_Time);//早算早舒服
             
             if(temp_num[0] > temp_num[1])
             {
@@ -56,7 +56,7 @@ char Over_Time(struct _Over_time *Item)
             }
             
             temp_num[0] = temp_num[1] - temp_num[0];        //计算秒的差值
-            temp_num[1] = Hourly_to_Seconds(Item->Set_Time);//计算设置的秒
+            temp_num[1] = API_Hourly_to_Seconds(Item->Set_Time);//计算设置的秒
             
             if(Item->Now_Time->time_us < Item->last_Time.time_us)
             {

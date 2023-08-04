@@ -43,6 +43,7 @@
     #define FLASH_END       FLASH_DATA_END              //Flash最大Flash
 #endif
 
+#define EMPTY_DATA  0xFFFFFFFF
 #define GET_Area_Addr(Area) ((Area) * FLASH_AREA_SIZE + FLASH_START)
 #define GET_Addr_Area(Addr) ((Addr - FLASH_START) / FLASH_AREA_SIZE)
 

@@ -32,9 +32,9 @@ struct Time_Handle_
 };
 
 //函数目录
-char Over_Time(struct _Over_time *Item);            //此函数会被多次调用，请不要循环对多个功能使用函数内部变量
-int Hourly_to_Seconds(struct Caven_Watch Item);
-struct Caven_Watch Seconds_to_Hourly (int Seconds);
+char API_Over_Time(struct _Over_time *Item);            //此函数会被多次调用，请不要循环对多个功能使用函数内部变量
+int API_Hourly_to_Seconds(struct Caven_Watch Item);
+struct Caven_Watch API_Seconds_to_Hourly (int Seconds);
 
 
 #endif

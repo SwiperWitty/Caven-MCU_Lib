@@ -55,10 +55,11 @@
 
 #ifdef Exist_LED
     #define GPIO_LED    GPIO_Pin_4      //PA04
-    #define LED_L() GPIOA->Reg_IO_L = LED_R
-    #define LED_H() GPIOA->Reg_IO_H = LED_R
-    #define LEDR_L() GPIOC->Reg_IO_L = GPIO_PINS_2
-    #define LEDR_H() GPIOC->Reg_IO_H = GPIO_PINS_2
+    #define GPIO_LEDR   GPIO_Pin_2      //PC02
+    #define LED_L() GPIOA->Reg_IO_L = GPIO_LED
+    #define LED_H() GPIOA->Reg_IO_H = GPIO_LED
+    #define LEDR_L() GPIOC->Reg_IO_L = GPIO_LEDR
+    #define LEDR_H() GPIOC->Reg_IO_H = GPIO_LEDR
 #endif
 
 #ifdef Exist_BZZ

@@ -14,11 +14,11 @@ int Addr_Get_Area(int Addr)
 #ifdef Exist_FLASH 
     if((Addr >= FLASH_END) || (Addr < FLASH_START))
     { 
-        printf("S-ERROR\r\n"); 
+//        printf("S-ERROR\r\n"); 
         retval = (-1);
         return retval;
     }
-    retval = GET_Addr_Area(Addr);
+    retval = (Addr - FLASH_START) / FLASH_AREA_SIZE;
 
 #endif
     return retval;
@@ -47,7 +47,7 @@ int Flash_Clear_Area(int Addr,int size)
         {return ERROR;}
         
         //Clear
-        retval = flash_sector_erase(i);
+        retval = flash_sector_erase(GET_Area_Addr(i));
         if(retval != FLASH_OPERATE_DONE)
         {
 //            printf("p: Clr ERROR \r\n");
@@ -68,7 +68,7 @@ int Flash_Save_Data (int Addr,void *Data,int size)
     int retval = SUCCESS;
 #ifdef Exist_FLASH 
     char status;
-    int array[0x200];         //缓冲区
+    int array[0x200];         // 缓冲区(给写区域) 
     int size_array = sizeof(array);
     int temp;
     int StartSector, EndSector;
@@ -76,8 +76,7 @@ int Flash_Save_Data (int Addr,void *Data,int size)
     EndSector = Addr_Get_Area(Addr + size);
     if(StartSector == (-1) || EndSector == (-1) || Data == NULL)
     {
-        retval = ERROR;
-        return retval;
+        return -1;
     }
     flash_unlock();
     for(int i = StartSector;i <= EndSector;i++)
@@ -87,34 +86,38 @@ int Flash_Save_Data (int Addr,void *Data,int size)
         if((status == FLASH_PROGRAM_ERROR) || (status == FLASH_EPP_ERROR))
         {flash_flag_clear(FLASH_PRGMERR_FLAG | FLASH_EPPERR_FLAG);}
         else if(status == FLASH_OPERATE_TIMEOUT)
-        {return ERROR;}
+        {return -1;}
         //Clear
-        status = flash_sector_erase(i);
+        status = flash_sector_erase(GET_Area_Addr(i));      
         if(status != FLASH_OPERATE_DONE)
         {
 //            printf("p: Clr ERROR \r\n");
-            return ERROR;
+            return -1;
         }
     }
     /* write data_32 to the corresponding address */
     for(int i = 0; i < size;)
     {
+        if(*(__IO int *)Addr != EMPTY_DATA)     //不能写
+        {
+            return -1;
+        }
         if((size - i)/size_array)
         {temp = size_array;}
         else
-        {temp = size - i;}
+        {temp = size - i;}                      //本次需要写入的数量
         
         memset(array,0,size_array);
         memcpy(array,(char *)Data + i,temp);
         int k = 0;
-        for(int j = 0;j < temp;)    //一定会多
+        for(int j = 0;j < temp;)
         {
-            if(FLASH_OPERATE_DONE == flash_byte_program(Addr, array[k++]))
+            if(FLASH_OPERATE_DONE == flash_word_program(Addr, array[k++]))      //32bit
             {
                 Addr = Addr + 4;    //more
                 j += 4;
             }else
-            { 
+            {
                 while(1);
             }
         }
