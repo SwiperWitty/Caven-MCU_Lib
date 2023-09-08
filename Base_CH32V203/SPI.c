@@ -137,6 +137,7 @@ void SPIx_Init(char Channel,int SET)
 #endif
 }
 
+#ifdef Exist_SPI
 static void SPI_Delay (int time)
 {
     volatile int temp;
@@ -146,6 +147,7 @@ static void SPI_Delay (int time)
         while((temp--) > 0);
     }
 }
+#endif
 
 void SPI_CS_Set(char Serial,char State)
 {

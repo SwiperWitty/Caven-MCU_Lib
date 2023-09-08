@@ -9,7 +9,7 @@
 
 //* 底层 *//
 
-#ifdef Base_SysTick
+#ifdef Exist_SYS_TIME
 static uint32_t SysTick_Config(u64 ticks)
 {
     SysTick->CTLR = (u32)0x00;                  //关闭系统计数器STK，计数器停止计数
@@ -76,6 +76,7 @@ void SysTick_Reload (uint64_t time)
 
 void SYS_Delay_us (int n)
 {
+#ifdef Exist_SYS_TIME
     u64 start_ticks,end_ticks;
     int set_time = n * (SystemCoreClock / 1000000);
     start_ticks = GET_SysTick();
@@ -95,11 +96,12 @@ void SYS_Delay_us (int n)
                 break;
         }
     }
-
+#endif
 }
 
 void SYS_Delay_ms (int n)
 {
+#ifdef Exist_SYS_TIME
     u64 start_ticks,end_ticks;
     int set_time = n * (SystemCoreClock / 1000);
     start_ticks = GET_SysTick();
@@ -119,6 +121,7 @@ void SYS_Delay_ms (int n)
                 break;
         }
     }
+#endif
 }
 
 void SYS_Delay_S (int n)

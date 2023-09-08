@@ -5,8 +5,9 @@ volatile FLASH_Status EraseStatus,SaveStatus = 0;   //擦除状态、保存状�
 
 int Read_Flash(int Address)
 {
+    int temp = 0;
 #ifdef Exist_FLASH
-    int temp;
+
     volatile FLASH_Status FLASHStatus = 0;
     RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
     __disable_irq();
@@ -20,8 +21,9 @@ int Read_Flash(int Address)
     while(FLASHStatus != FLASH_COMPLETE);       //等上一个状态完成
     RCC->CFGR0 &= ~(uint32_t)RCC_HPRE_DIV2;
     __enable_irq();
-    return temp;
+
 #endif
+    return temp;
 }
 
 /*
