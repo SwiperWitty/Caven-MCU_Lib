@@ -11,7 +11,7 @@
 #define __HW_CONFIG_H
 
 #include "usb_type.h" 
-#include "Caven.h"
+#include "Caven_Type.h"
  
 // #ifdef	DEBUG
 // #define printf_usb(X...) printf(X)

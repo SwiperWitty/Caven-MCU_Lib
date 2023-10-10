@@ -2,7 +2,7 @@
 #define _HC595_H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 /*
 	本文档库是 Otavia用于 控制 Zeno的 74CH595驱动程序、其兼容了级联输出（多个缓冲器）

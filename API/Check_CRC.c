@@ -1,4 +1,4 @@
-#include "Check_CRC16.h"
+#include "Check_CRC.h"
 
 static const unsigned short CRC_CCITT_table[256] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
@@ -65,7 +65,7 @@ unsigned short CRC16_CCITT(unsigned char* pchMsg, unsigned short wDataLen) // 1.
 *
 *   调用参数:
 *       CRC_byte       要计算的数据
-*    	 last_CRC_value 上次计算的CRC值
+*		last_CRC_value 上次计算的CRC值
 *   返回值:
 *       函数新计算的CRC值
 *   函数代码:
@@ -86,15 +86,14 @@ unsigned short CRC16_CCITT_CalateByte(unsigned char CheckByte, unsigned short La
 *
 *   调用参数:
 *       ptr 计算的数据起始地址
-len 计算的数据长度
+*		len 计算的数据长度
 *   返回值:
 *       函数计算的CRC值
 *   函数代码:
 */
 
-unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, unsigned short len)
+unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, int len)
 {
-
 	unsigned short crc_result = 0x0000;
 
 	while (len--)
@@ -102,7 +101,6 @@ unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, unsigned short len)
 		crc_result = CRC16_CCITT_CalateByte(*ptr, crc_result);
 		ptr++;
 	}
-
 
 	return crc_result;
 }

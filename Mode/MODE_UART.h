@@ -2,7 +2,7 @@
 #define _UART_HANDLE__H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 /*
         【API】      ————C语言环境即可运行
     判断串口结束的 define被丢到底层了(很烦)        ———— 2022.8.18

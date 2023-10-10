@@ -2,7 +2,7 @@
 #define _KEY__H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 struct KEY_
 {

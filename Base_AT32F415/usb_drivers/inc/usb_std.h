@@ -35,7 +35,7 @@ extern "C" {
 
 /* includes ------------------------------------------------------------------*/
 #include "usb_conf.h"
-#include "Caven.h"      //Caven
+#include "Caven_Type.h"      //Caven
 
 /** @addtogroup AT32F415_middlewares_usb_drivers
   * @{

@@ -13,7 +13,7 @@
 */
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 // Trig	PB04
 // Echo	PB05

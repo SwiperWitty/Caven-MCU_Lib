@@ -9,7 +9,7 @@
 #ifndef API_KEYBOARD_H_
 #define API_KEYBOARD_H_
 
-#include "Caven.h"
+#include "Caven_Type.h"
 
 struct USB_FUN_
 {

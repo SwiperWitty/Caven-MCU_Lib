@@ -2,7 +2,7 @@
 #define __LCD_H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 /*
         【Mode】      ————C语言环境即可运行

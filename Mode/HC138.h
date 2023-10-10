@@ -2,7 +2,7 @@
 #define _HC138_H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 /*
     38-译码器（8选1）

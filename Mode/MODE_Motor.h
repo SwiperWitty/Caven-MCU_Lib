@@ -2,7 +2,7 @@
 #define _MOTOR_H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 //	可以跨芯片移植	需要大改底层
 /*

@@ -2,7 +2,7 @@
 #define _MODE_RTC8564_H_
 
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 #define RTC8564_ADDR    0X51
 

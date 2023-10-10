@@ -1,7 +1,7 @@
 #ifndef _MODE_H__
 #define _MODE_H__
 #include "Base.h"
-#include "Caven.h"
+#include "Caven_Type.h"
 
 #ifdef Exist_SYS_TIME
     #include "MODE_Time.h"
