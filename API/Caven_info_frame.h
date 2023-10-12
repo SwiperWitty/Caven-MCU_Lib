@@ -13,7 +13,9 @@
     可能需要依赖外部的crc校验函数
 */
 
-
+/*
+    此结构体包含指针变量，所以此结构体需要初始化其中的指针。
+*/
 typedef struct
 {
     unsigned short Head;    //2byte
@@ -32,7 +34,11 @@ typedef struct
     unsigned short End_crc; //2byte 
 }Caven_info_packet_Type; 
 
+int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);
 
-int Caven_info_frame_Fun (Caven_info_packet_Type const standard,Caven_info_packet_Type *target,uint16_t data , char channel);
+int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data);
+int Caven_info_Split_packet_Fun(Caven_info_packet_Type const soure, unsigned char *data); 
+
+
 
 #endif

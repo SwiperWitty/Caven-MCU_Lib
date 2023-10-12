@@ -3,24 +3,36 @@
 #include "Check_CRC.h"
 
 /*
-** Caven_info_frame_Fun 处理 Caven_info_packet
-** standard ：标准要求
-** target   : 目标包
+Caven_info_Make_packet_Fun 
+** make packet 
+** 将[data]数据转化成[packet] 
+传参 
+** standard ：标准要求(不需要指针索引)
+** target   : 目标包(指针，这个包内的指针必须要有索引) 
 ** data     ：数据来源（填入）
-** channel  ：数据来源（方式）
+return   : retval 
+** -0x80 < retval < 0 协议消息解析错误
+** retval = -0x80 包里存在协议消息没处理
+** retval = -0x8F 目标包的指针没有索引
+** retval & 0x80 >= 0 获取到协议消息
+** retval 其他 获取中（包含没开始retval = 0）
 */
-int Caven_info_frame_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint16_t data, char channel)
+int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data)
 {
     int retval = 0;
     int temp = 0, i = 0;
     static int s_status = 0;
     static int s_getnum = 0;
-    static uint8_t s_array_buff[300];
+    static uint8_t s_array_buff[300];               /* 可以不清除 */
     static Caven_info_packet_Type s_temp_packet = {0};
 
-    if ((target->Result & 0x80) || target == NULL) /* 目标有数据没处理 & 标准不存在 (如果不想进入处理,end_flag = 0x80) */
+    if (target->Result & 0x80) /* 目标有数据没处理 */
     {
-        return -1;
+        return (-0x80);       
+    }
+    if (target == NULL || target->p_Data == NULL)
+    {
+        return (-0x8F);
     }
 
     switch (s_status)
@@ -86,8 +98,8 @@ int Caven_info_frame_Fun(Caven_info_packet_Type const standard, Caven_info_packe
     case 5: /* Size */
         s_array_buff[s_getnum++] = data;
         s_temp_packet.Size = (s_temp_packet.Size << 8) + data;
-        
-        if (s_getnum >= 9)
+        temp =  7 + 2;
+        if (s_getnum >= temp)
         {
             if (s_temp_packet.Size > standard.Size)
             {
@@ -106,7 +118,7 @@ int Caven_info_frame_Fun(Caven_info_packet_Type const standard, Caven_info_packe
     case 6: /* p_Data */
         s_array_buff[s_getnum++] = data;
         temp =  7 + 2 + s_temp_packet.Size;
-        if (temp >= s_getnum)
+        if (s_getnum >= temp)
         {
             s_temp_packet.p_Data = s_array_buff[9];     //
             s_status++;
@@ -137,141 +149,96 @@ int Caven_info_frame_Fun(Caven_info_packet_Type const standard, Caven_info_packe
     /*  结果    */
     if (s_status < 0) // error
     {
-        target->end_flag = status;
-        memset(&temp_data, 0, sizeof(temp_data));
-
-        retval = status;
-        status = 0;
-        getnum = 0;
+        memset(&s_temp_packet, 0, sizeof(Caven_info_packet_Type));
+        retval = s_status;
+        s_status = 0;
+        s_getnum = 0;
     }
-    else if (s_temp_packet.Result & 0x80 != 0)  // secc 
+    else if (s_temp_packet.Result & 0x80 != 0) // secc 
     {
-        i = 5;
+        temp =  (7 + 2) - 1;
+        s_temp_packet.p_Data = target->p_Data;  /* 提取目标的数据指针 */
+        memcpy(s_temp_packet.p_Data, &s_array_buff[temp], s_temp_packet.Size);
         *target = s_temp_packet;
-        memset(target->buff, 0, sizeof(target->buff)); // ou
-        memcpy(target->buff, &temp_data.buff[i], target->buff_length);
-        target->pack_length = getnum;
-        target->end_flag = status;
 
-        memset(&temp_data, 0, sizeof(temp_data));
-
+        memset(&s_temp_packet, 0, sizeof(Caven_info_packet_Type));
         retval = 0x80;
         s_status = 0;
-        getnum = 0;
+        s_getnum = 0;
     }
     else // doing
     {
-        target->end_flag = 0;
+        target->Result = 0;
         retval = s_status;
     }
+    return retval;
 }
 
-int data_handle_XA(packet_data const standard, packet_data *target, u16 data, char mchannel)
+/*
+Caven_info_Split_packet_Fun 
+** split packet 
+** 将[packet]数据转化成[data] 
+传参 
+** source ：数据来源包(指针，这个包内的指针必须要有索引) 
+** data     ：数据目标
+return   : retval 
+** retval < 0 转化错误 
+** retval = 0 转化成功 
+** retval = (-0x8F) 指针未索引  
+*/
+int Caven_info_Split_packet_Fun(Caven_info_packet_Type const soure, unsigned char *data)
 {
     int retval = 0;
-    int temp = 0, i = 0;
-    static int status = 0;
-    static int getnum = 0;
-    static packet_data temp_data = {0};
-
-    if ((target->end_flag & 0x80) || target == NULL) // 目标没处理 & 标准不存在 (如果不想进入处理,end_flag = 0x80)
+    int temp = 0;
+    int getnum = 0;
+    uint8_t array_buff[300];
+    if (data == NULL || soure.p_Data == NULL)
     {
-        return -1;
+        retval = (-0x8F);
     }
-    switch (status)
+    else
     {
-    case 0: // 头
-        temp_data.packet_head = (temp_data.packet_head << 8) + data;
-        if (temp_data.packet_head == standard.packet_head)
-        {
-            getnum = 0;
-            temp_data.buff[getnum++] = (temp_data.packet_head >> 8) & 0x00ff;
-            temp_data.buff[getnum++] = (temp_data.packet_head) & 0x00ff;
-            status++;
-        }
-        break;
-    case 1: // RS485地址
-        temp_data.buff[getnum++] = data;
-        temp_data.flag_485 = data;
-        if (temp_data.flag_485 == standard.flag_485)
-        {
-            status++;
-        }
-        else
-        {
-            status = (-1);
-        }
-        break;
-    case 2: // cmd
-        temp_data.buff[getnum++] = data;
-        temp_data.cmd = data;
-        status++;
-        break;
-    case 3: // length
-        temp_data.buff[getnum++] = data;
-        temp_data.buff_length = data & 0xFF;
-        status++;
-        if (temp_data.buff_length == 0)
-        {
-            status++; // 0个 buff，直接去crc
-        }
-        break;
-    case 4: //  buff
-        temp_data.buff[getnum++] = data;
-        temp = 5 + temp_data.buff_length;
-        if (getnum >= temp)
-        {
-            status++;
-        }
-        break;
+        array_buff[getnum ++] = soure.Head & 0xff;
+        array_buff[getnum ++] = (soure.Head >> 8) & 0xff;
 
-    case 5: //  crc
-        temp_data.buff[getnum++] = data;
-        temp_data.crc = data & 0xff;
-        temp = CRC_8BIT_XA(&temp_data.buff[2], 3 + temp_data.buff_length);
+        array_buff[getnum ++] = soure.Versions;
+        array_buff[getnum ++] = soure.Type;
+        array_buff[getnum ++] = soure.Addr;
+        array_buff[getnum ++] = soure.Cmd;
+        array_buff[getnum ++] = soure.Cmd_sub;
 
-        if (temp == temp_data.crc)
-        {
-            status |= 0x80; // secc
-        }
-        else
-        {
-            status = (-3);
-        }
+        array_buff[getnum ++] = soure.Size & 0xff;
+        array_buff[getnum ++] = (soure.Size >> 8) & 0xff;
 
-        break;
-    default:
-        break;
+        memcpy(&array_buff[(getnum - 1)],soure.p_Data,soure.Size);
+        getnum += soure.Size;
+
+        array_buff[getnum ++] = soure.Result;
+        
+        array_buff[getnum ++] = soure.End_crc & 0xff;
+        array_buff[getnum ++] = (soure.End_crc >> 8) & 0xff;
+
     }
-    /*  结果      */
-    if (status < 0) // error
-    {
-        target->end_flag = status;
-        memset(&temp_data, 0, sizeof(temp_data));
+    return retval;
+}
 
-        retval = status;
-        status = 0;
-        getnum = 0;
-    }
-    else if (status > 0x80) // secc
+/*
+Caven_info_packet_index_Fun 
+** index 索引
+** 将数据[data]绑定到[packet]的指针变量
+传参 
+** target ：数据源包(这个包内有指针变量) 
+** data     ：要绑定的数据目标
+return   : retval 
+** retval < 0 索引错误 
+** retval = 0 索引成功 
+*/
+int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data)
+{
+    int retval = 0;
+    if (target != NULL)
     {
-        i = 5;
-        *target = temp_data;
-        memset(target->buff, 0, sizeof(target->buff)); // ou
-        memcpy(target->buff, &temp_data.buff[i], target->buff_length);
-        target->pack_length = getnum;
-        target->end_flag = status;
-
-        memset(&temp_data, 0, sizeof(temp_data));
-
-        retval = 0x80;
-        status = 0;
-        getnum = 0;
-    }
-    else // doing
-    {
-        target->end_flag = 0;
-        retval = status;
+        target->p_Data = data;
     }
     return retval;
 }
