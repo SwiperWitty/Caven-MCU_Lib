@@ -1,7 +1,7 @@
 #ifndef _API__H_
 #define _API__H_
 
-#include "Check_CRC16.h"
+#include "Check_CRC.h"
 #include "Time_Handle.h"
 #include "DATA_Handle.h"
 #include "keyboard.h"
@@ -22,7 +22,7 @@
 
 struct API_Data_
 {
-    U16 (*Get_CRC16)(U8 *ptr, U16 len);
+    unsigned short (*Get_CRC16)(unsigned char *ptr, int len);
     
     struct Time_Handle_ Time;
     struct Data_Handle_ Data;
