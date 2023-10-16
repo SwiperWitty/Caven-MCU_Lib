@@ -35,7 +35,7 @@ void SysTick_Handler(void)
 //这个返回的是，总系统滴答数，这个数是U64的，巨大
 
 
-uint64_t GET_SysTick(void)
+uint64_t GET_SysTick (SYS_Tick_type *stamp)
 {
     uint64_t temp = 0;
 #ifdef Exist_SYS_TIME
@@ -63,11 +63,12 @@ void SYS_Delay_us(int n)
     uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
     uint64_t temp;
     int set_time = n * Freq_us;
-    start_ticks = GET_SysTick();
+    SYS_Tick_type stamp;
+    start_ticks = GET_SysTick(&stamp);
 #ifdef Exist_SYS_TIME
     while (1)
     {
-        end_ticks = GET_SysTick();
+        end_ticks = GET_SysTick(&stamp);
 
         if (end_ticks > start_ticks)
         {
@@ -92,11 +93,12 @@ void SYS_Delay_ms(int n)
     uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
     uint64_t temp;
     int set_time = n * Freq_ms;
-    start_ticks = GET_SysTick();
+    SYS_Tick_type stamp;
+    start_ticks = GET_SysTick(&stamp);
 #ifdef Exist_SYS_TIME
     while (1)
     {
-        end_ticks = GET_SysTick();
+        end_ticks = GET_SysTick(&stamp);
 
         if (end_ticks > start_ticks)
         {

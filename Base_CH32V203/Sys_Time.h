@@ -50,7 +50,14 @@
 #endif
 /*  end   */
 
-#define Frequency ~((u64)0x00)) //目前是 10us 全满FF
+#define Frequency ~((u64)0x00) //目前是 10us 全满FF
+
+//很长的时间戳（一天）
+typedef struct _SYS_Ticktime
+{
+    unsigned int SYS_Tick_H; //每Frequency进1
+    unsigned int SYS_Tick_L; // 24bit 的
+} SYS_Tick_type;
 
 void Sys_Time_Init (int Set);
 

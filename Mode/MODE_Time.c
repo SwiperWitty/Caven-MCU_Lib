@@ -48,8 +48,8 @@ struct Caven_Watch MODE_Get_TIME (void)
     struct Caven_Watch temp_Watch = {0};
 
 #ifdef Exist_SYS_TIME
-    
-    U64 Temp = GET_SysTick();
+    SYS_Tick_type stamp;
+    U64 Temp = GET_SysTick(&stamp);
     int Seconds = (int)(Temp / Tick_Freq);
     temp_Watch = API_Seconds_to_Hourly(Seconds);
 

@@ -36,14 +36,14 @@
 #define Freq_ms     (Tick_Frequency/1000)      //毫秒
 
 
-//很长的时间戳
-struct _SYS_Ticktime
+//很长的时间戳（一天）
+typedef struct _SYS_Ticktime
 {
-    volatile uint32_t SYS_Tick_H;         //每Frequency进1 
-    volatile uint32_t SYS_Tick_L;         //24bit 的
-};
+    unsigned int SYS_Tick_H; //每Frequency进1
+    unsigned int SYS_Tick_L; // 24bit 的
+} SYS_Tick_type;
 
-uint64_t GET_SysTick (void);
+uint64_t GET_SysTick (SYS_Tick_type *stamp);
 void SET_SysTick (uint64_t time);
 
 void Sys_Time_Init (int Set);

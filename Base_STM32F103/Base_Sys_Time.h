@@ -21,16 +21,16 @@ Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
 /* 【宏函数群】 会给到 mode  */
 
 //很长的时间戳（一天）
-struct _SYS_Ticktime
+typedef struct _SYS_Ticktime
 {
-    volatile uint32_t SYS_Tick_H; //每Frequency进1
-    volatile uint32_t SYS_Tick_L; // 24bit 的
-};
+    unsigned int SYS_Tick_H; //每Frequency进1
+    unsigned int SYS_Tick_L; // 24bit 的
+} SYS_Tick_type;
 
 extern struct _SYS_Ticktime SYS_Ticktime;
 
 // source
-uint64_t GET_SysTick(void); //请在空闲时尽可能调用它
+uint64_t GET_SysTick (SYS_Tick_type *stamp); //请在空闲时尽可能调用它
 void SET_SysTick(uint64_t time);
 
 // Init
