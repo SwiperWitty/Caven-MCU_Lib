@@ -17,11 +17,12 @@
     #define UART_Length_MAX    Buff_Length      //Buff MAX 长度(来自Caven)
 #endif
 
-#define DEBUG_RX_TX                   //
+#define DEBUG_RX_BK_TX  0   // 0:off 1:on 
+
 
 struct _Uart_Data
 {
-    struct Caven_Data DATA;
+    Caven_Data_Type DATA;
     char Rxd_Received;
     U8 UART_RxdBuff[UART_Length_MAX];       //串口数据在这，大小由MCU的底层决定
 };
@@ -38,7 +39,7 @@ struct _Uart_
 extern struct _Uart_Data * CV_UART[];       //别的地方定义数量，且它是指针数组
 
 
-void Uart_Init(char Channel, int Baud, int SET);
+int Uart_Init(char Channel, const int Baud,D_pFun UART_pFun,int SET);
 
 void UART_Send_String(char Channel, const char *String);
 char UART_Send_Data(char Channel, const U8 *Data, int Length);

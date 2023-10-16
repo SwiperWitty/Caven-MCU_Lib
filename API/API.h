@@ -1,11 +1,18 @@
 #ifndef _API__H_
 #define _API__H_
 
-#include "Check_CRC.h"
-#include "Time_Handle.h"
-#include "DATA_Handle.h"
 #include "keyboard.h"
 
+/* 数据处理 */
+#include "DATA_Handle.h"
+#include "Check_CRC.h"
+#include "Caven_info_frame.h"
+
+/* 时间处理 */
+#include "Time_Handle.h"
+
+
+/********************************/
 
 /*
     API会与底层隔离，c 环境即可运行

@@ -2,18 +2,23 @@
 
 #ifdef UART1_EXIST
 struct _Uart_Data UART1_Data = {0};
+D_pFun UART1_IRQ_Do;
 #endif
 #ifdef UART2_EXIST
 struct _Uart_Data UART2_Data = {0};
+D_pFun UART2_IRQ_Do;
 #endif
 #ifdef UART3_EXIST
 struct _Uart_Data UART3_Data = {0};
+D_pFun UART3_IRQ_Do;
 #endif
 #ifdef UART4_EXIST
 struct _Uart_Data UART4_Data = {0}; 
+D_pFun UART4_IRQ_Do;
 #endif
 #ifdef UART5_EXIST
 struct _Uart_Data UART5_Data = {0}; 
+D_pFun UART5_IRQ_Do;
 #endif
 
 #ifdef UART_End
@@ -22,8 +27,9 @@ struct _Uart_Data * CV_UART[UART_End];     //越狱通道
 struct _Uart_Data * CV_UART[3];
 #endif
 
-void Uart_Init(char Channel, const int Baud,int SET)
+int Uart_Init(char Channel, const int Baud,D_pFun UART_pFun,int SET)
 {
+    int retavl = 1;
 #ifdef Exist_UART
     switch (Channel)
     {
@@ -31,28 +37,38 @@ void Uart_Init(char Channel, const int Baud,int SET)
     #ifdef UART1_EXIST
         Uart1_Init(Baud,SET);
         CV_UART[Channel] = &UART1_Data;                 //数据绑定
+        UART1_IRQ_Do = UART_pFun;
+        retavl = 0;
     #endif
         break;
     case 2:
     #ifdef UART2_EXIST
         Uart2_Init(Baud,SET);
         CV_UART[Channel] = &UART2_Data;                 //数据绑定
+        UART2_IRQ_Do = UART_pFun;
+        retavl = 0;
     #endif
         break;
     case 3:
     #ifdef UART3_EXIST
         Uart3_Init(Baud,SET);
         CV_UART[Channel] = &UART3_Data;                 //数据绑定
+        UART3_IRQ_Do = UART_pFun;
+        retavl = 0;
     #endif
         break;
     case 4:
     #ifdef UART4_EXIST
         Uart4_Init(Baud,SET);
         CV_UART[Channel] = &UART4_Data;                 //数据绑定
+        UART4_IRQ_Do = UART_pFun;
+        retavl = 0;
     #endif
         #ifdef UART5_EXIST
         Uart5_Init(Baud,SET);
         CV_UART[Channel] = &UART5_Data;                 //数据绑定
+        UART5_IRQ_Do = UART_pFun;
+        retavl = 0;
     #endif
         break;
     default:
@@ -60,6 +76,7 @@ void Uart_Init(char Channel, const int Baud,int SET)
     }
 
 #endif
+return retavl;
 }
 
 #ifdef Exist_UART
@@ -101,7 +118,7 @@ void UART1_Interrupt()                         //Interrupt
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-        #ifdef DEBUG_RX_TX
+        #if DEBUG_RX_BK_TX
         UART_TXD_Send(Channel,temp);          //debug
         #endif
         
@@ -118,7 +135,7 @@ void UART2_Interrupt()
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-        #ifdef DEBUG_RX_TX
+        #if DEBUG_RX_BK_TX
         UART_TXD_Send(Channel,temp);          //debug
         #endif
     }
@@ -132,9 +149,10 @@ void UART3_Interrupt()
     if(UART_RXD_Flag(Channel) != 0)
     {
         temp = UART_RXD_Receive(Channel);
-        Get_RXD(CV_UART[Channel], temp);
+        if(UART3_IRQ_Do != NULL){
+            UART3_IRQ_Do(temp); }
         UART_RXD_Flag_Clear(Channel);
-        #ifdef DEBUG_RX_TX
+        #if DEBUG_RX_BK_TX
         UART_TXD_Send(Channel,temp);          //debug
         #endif
     }
@@ -150,7 +168,7 @@ void UART4_Interrupt()
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-        #ifdef DEBUG_RX_TX
+        #if DEBUG_RX_BK_TX
         UART_TXD_Send(Channel,temp);          //debug
         #endif
     }
@@ -166,7 +184,7 @@ void UART5_Interrupt()
         temp = UART_RXD_Receive(Channel);
         Get_RXD(CV_UART[Channel], temp);
         UART_RXD_Flag_Clear(Channel);
-        #ifdef DEBUG_RX_TX
+        #if DEBUG_RX_BK_TX
         UART_TXD_Send(Channel,temp);          //debug
         #endif
     }

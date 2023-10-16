@@ -3,14 +3,16 @@
 
 #define CRC_16_CCITT            0x1021
 
+#ifdef CAVEN    /* 预编译 */
 #include "Caven_Type.h"
+#else
+#include "stdint.h"
+#endif
 /*
-        ��API��      ��������C���Ի�����������
-    Over_Time       ���ݳ�ʱ����
 
 
 */
-
+int ModBusCRC16(unsigned char *data, int len);
 unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, int len);
 
 #endif

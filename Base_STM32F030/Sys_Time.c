@@ -33,7 +33,7 @@ void SysTick_Handler(void)
 }
 
 //这个返回的是，总系统滴答数
-uint64_t GET_SysTick (void)
+uint64_t GET_SysTick (SYS_Tick_type *stamp)
 {
     uint64_t temp = 0;
     

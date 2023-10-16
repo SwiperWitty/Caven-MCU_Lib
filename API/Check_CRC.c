@@ -104,3 +104,25 @@ unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, int len)
 
 	return crc_result;
 }
+
+//x16+x15+x2+1
+int ModBusCRC16(unsigned char *data, int len)
+{
+    int i, j, temp, CRC16;
+
+    CRC16 = 0xFFFF;             //CRC寄存器初始值
+    for (i = 0; i < len; i++)
+    {
+        CRC16 ^= data[i];
+        for (j = 0; j < 8; j++)
+        {
+            temp = (int)(CRC16 & 0x0001);
+            CRC16 >>= 1;
+            if (temp == 1)
+            {
+                CRC16 ^= 0xA001;    //异或多项式
+            }
+        }
+    }
+    return CRC16;
+}

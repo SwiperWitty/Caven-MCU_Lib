@@ -5,6 +5,9 @@
 #include "Caven_Type.h"
 #else
 #include "stdint.h"
+#include "string.h"
+#include "stddef.h"
+#include "stdio.h"
 #endif
 
 /*
@@ -34,6 +37,7 @@ typedef struct
     unsigned short End_crc; //2byte 
 }Caven_info_packet_Type; 
 
+int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);
 
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data);
