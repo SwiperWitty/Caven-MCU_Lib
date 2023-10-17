@@ -13,7 +13,7 @@
                     C(Lib)->Caven->API->
 */
 
-#define USE_HORIZONTAL 0 //设置横屏或者竖屏显示 0或1为竖屏 2或3为横屏
+#define USE_HORIZONTAL 0 // 设置默认横屏或者竖屏显示 0或1为竖屏 2或3为横屏
 #define LCD_W 240        // X MAX 240
 #define LCD_H 240        // Y MAX 240
 
@@ -21,7 +21,7 @@
 #define LCD_DATA 1 //写数据
 
 extern U16	BACK_COLOR; //背景色
-extern U8 	HORIZONTAL; //设置横屏或者竖屏
+extern U8 	LCD_HORIZONTAL; //设置横屏或者竖屏
 
 //画笔颜色
 #define WHITE         	 0xFFFF
@@ -58,6 +58,8 @@ struct LCD_
     void (*Show_String)(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //显示字符串
     void (*Show_Chinese)(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //显示汉字串
     void (*Show_Picture)(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //显示图片
+
+    int (*Set_HORIZONTAL)(char set);
 };
 
 void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //指定区域填充颜色
@@ -70,6 +72,9 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char
 void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //显示汉字串
 void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //显示图片
 
+int LCD_Set_HORIZONTAL(char set);
+
 void LCD_Init(int SET); // LCD初始化
+
 
 #endif

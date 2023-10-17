@@ -70,7 +70,6 @@ unsigned short CRC16_CCITT(unsigned char* pchMsg, unsigned short wDataLen) // 1.
 *       函数新计算的CRC值
 *   函数代码:
 */
-
 unsigned short CRC16_CCITT_CalateByte(unsigned char CheckByte, unsigned short LastCRC)
 {
 	return (LastCRC << 8) ^ CRC_CCITT_table[(LastCRC >> 8) ^ CheckByte];
@@ -91,7 +90,6 @@ unsigned short CRC16_CCITT_CalateByte(unsigned char CheckByte, unsigned short La
 *       函数计算的CRC值
 *   函数代码:
 */
-
 unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, int len)
 {
 	unsigned short crc_result = 0x0000;
@@ -105,12 +103,12 @@ unsigned short CRC16_CCITT_CalculateBuf(unsigned char *ptr, int len)
 	return crc_result;
 }
 
-//x16+x15+x2+1
+// x16+x15+x2+1
 int ModBusCRC16(unsigned char *data, int len)
 {
     int i, j, temp, CRC16;
 
-    CRC16 = 0xFFFF;             //CRC寄存器初始值
+    CRC16 = 0xFFFF;					/* CRC寄存器初始值 */
     for (i = 0; i < len; i++)
     {
         CRC16 ^= data[i];
@@ -120,7 +118,7 @@ int ModBusCRC16(unsigned char *data, int len)
             CRC16 >>= 1;
             if (temp == 1)
             {
-                CRC16 ^= 0xA001;    //异或多项式
+                CRC16 ^= 0xA001;	/* 异或多项式 */
             }
         }
     }

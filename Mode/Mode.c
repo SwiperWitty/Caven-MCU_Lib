@@ -18,6 +18,8 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.LCD.Show_String = LCD_Show_String;
     Mode_Use.LCD.Show_Chinese = LCD_Show_Chinese;
     Mode_Use.LCD.Show_Picture = LCD_Show_Picture;
+
+    Mode_Use.LCD.Set_HORIZONTAL = LCD_Set_HORIZONTAL;
 #endif
 
 #ifdef Exist_SYS_TIME

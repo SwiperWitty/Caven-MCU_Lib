@@ -2,7 +2,7 @@
 #include "lcdfont.h" //字库
 
 U16 BACK_COLOR = BLACK; //背景色
-U8 	HORIZONTAL = USE_HORIZONTAL;
+U8 	LCD_HORIZONTAL = USE_HORIZONTAL;
 
 #ifdef Exist_LCD
 void LCD_Writ_Bus(U8 dat)
@@ -72,7 +72,7 @@ void LCD_WR_CMD(U8 dat)
 ******************************************************************************/
 void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 {
-	if (HORIZONTAL == 0)
+	if (LCD_HORIZONTAL == 0)
 	{
 		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1);
@@ -82,7 +82,7 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 		LCD_WR_DATA(y2);
 		LCD_WR_CMD(0x2c); //储存器写
 	}
-	else if (HORIZONTAL == 1)
+	else if (LCD_HORIZONTAL == 1)
 	{
 		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1);
@@ -92,7 +92,7 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 		LCD_WR_DATA(y2 + 80);
 		LCD_WR_CMD(0x2c); //储存器写
 	}
-	else if (HORIZONTAL == 2)
+	else if (LCD_HORIZONTAL == 2)
 	{
 		LCD_WR_CMD(0x2a); //列地址设置
 		LCD_WR_DATA(x1);
@@ -134,6 +134,25 @@ void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
     }
 
 #endif
+}
+
+/******************************************************************************
+	  函数说明：设置屏幕显示方向
+	  入口数据：0或1为竖屏 2或3为横屏
+				如果是其他值，则理解为查询当前屏幕方向
+	  返回值：  返回当前屏幕显示方向
+******************************************************************************/
+int LCD_Set_HORIZONTAL(char set)
+{
+	int retval = 0;
+#ifdef Exist_LCD
+	if(set < 4 && set >= 0)
+	{
+		LCD_HORIZONTAL = set;
+	}
+	retval = LCD_HORIZONTAL;
+#endif
+	return retval;
 }
 
 /******************************************************************************
@@ -550,7 +569,7 @@ void LCD_Init(int Set)
 	LCD_Delay (20);
 	LCD_WR_CMD(0x36);
 	LCD_Delay(50);
-	switch (HORIZONTAL)
+	switch (LCD_HORIZONTAL)
 	{
 		case 0:
 			LCD_WR_DATA8(0x00);
