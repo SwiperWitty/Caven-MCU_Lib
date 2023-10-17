@@ -79,7 +79,7 @@
 */
 
 extern struct _Mode_Init Mode_Init;
-extern struct _Mode_User Mode_User;
+extern struct _Mode_Use Mode_Use;
 
 
 struct _Mode_Init
@@ -137,7 +137,7 @@ struct _Mode_Init
 
 };
 
-struct _Mode_User
+struct _Mode_Use
 {
     void (*Debug_Out)(const char *String);          //提倡写一个Debug
 #ifdef Exist_LCD
