@@ -1,4 +1,4 @@
-#include "adc.h"
+#include "Base_adc.h"
 
 char ADC_State = 0;
 int Calibrattion_Val = 0;

@@ -1,4 +1,4 @@
-#include "Flash.h"
+#include "Base_Flash.h"
 #include "string.h"
 
 volatile FLASH_Status EraseStatus,SaveStatus = 0;   //擦除状态、保存状态
