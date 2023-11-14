@@ -1,12 +1,18 @@
-#ifndef __LCDFONT_H
-#define __LCDFONT_H
+#ifndef __LCDFONT_H_
+#define __LCDFONT_H_
 
-#ifdef Exist_LCD
-    #define  String_Lib
-//    #define String_Chinese
+#ifdef DEFAULT
+#include "items.h"              /*	默认功能	*/
+#else
+#include "User_items.h"         /*	自行设置功能，一般出现在本地文件的User中	*/
 #endif
 
-#ifdef String_Lib
+#ifdef Exist_LCD
+    #define  STRING_ASC
+//    #define STRING_CHN
+#endif
+
+#ifdef STRING_ASC
 const unsigned char ascii_1608[][16]={
 {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00},/*" ",0*/
 {0x00,0x00,0x00,0x08,0x08,0x08,0x08,0x08,0x08,0x08,0x00,0x00,0x18,0x18,0x00,0x00},/*"!",1*/
@@ -301,7 +307,7 @@ const unsigned char ascii_3216[][64]={
 };
 #endif
 
-#ifdef String_Chinese
+#ifdef STRING_CHN
 typedef struct 
 {
 	unsigned char Index[2];	

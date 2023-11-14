@@ -282,7 +282,7 @@ void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color)
 ******************************************************************************/
 void LCD_Show_Chinese24x24(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
 {
-#ifdef String_Chinese
+#ifdef STRING_CHN
 	char i, j, m = 0;
 	U16 k;
 	U16 HZnum;		 //汉字数目
@@ -344,7 +344,7 @@ void LCD_Show_Chinese24x24(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, ch
 ******************************************************************************/
 void LCD_Show_Chinese32x32(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
 {
-#ifdef String_Chinese
+#ifdef STRING_CHN
 	char i, j, m = 0;
 	U16 k;
 	U16 HZnum;		 //汉字数目
@@ -406,7 +406,7 @@ void LCD_Show_Chinese32x32(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, ch
 ******************************************************************************/
 void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode)
 {
-#ifdef String_Lib
+#ifdef STRING_ASC
 	char temp, sizex, t, m = 0;
 	U16 i, TypefaceNum; //一个字符所占字节大小
 	U16 x0 = x;
@@ -563,10 +563,12 @@ void LCD_Init(int Set)
 
 	LCD_Delay(300); // 等待电路复位完成
 
+	#ifdef LCD_RES_L
 	LCD_RES_L();
 	LCD_Delay(200); //
 	LCD_RES_H();
 	LCD_Delay(100);
+	#endif
 	LCD_Set_HORIZONTAL(USE_HORIZONTAL);
 
 //************* Start Initial Sequence **********// 

@@ -2,11 +2,9 @@
 #define _BASE_SPI_H__
 
 #ifdef DEFAULT
-#include "items.h"              //默认功能
-#endif
-
-#ifndef DEFAULT
-#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#include "items.h"              /*	默认功能	*/
+#else
+#include "User_items.h"         /*	自行设置功能，一般出现在本地文件的User中	*/
 #endif
 
 /****************/
@@ -42,7 +40,7 @@
 
 // 选择输出模式
 #ifdef Exist_SPI
-//    #define SPI_Software	        //屏蔽就是硬件模式
+    #define SPI_Software	        //屏蔽就是硬件模式
     #ifndef SPI_Software
 //        #define SPI_DMA			    //屏蔽就是普通模式
     #endif

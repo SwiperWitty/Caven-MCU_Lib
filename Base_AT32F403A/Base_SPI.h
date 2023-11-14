@@ -2,11 +2,9 @@
 #define _BASE_SPI_H__
 
 #ifdef DEFAULT
-#include "items.h"              //Ä¬ÈÏ¹¦ÄÜ
-#endif
-
-#ifndef DEFAULT
-#include "User_items.h"         //×ÔĞĞÉèÖÃ¹¦ÄÜ£¬Ò»°ã³öÏÖÔÚ±¾µØÎÄ¼şµÄUserÖĞ
+#include "items.h"              /*	é»˜è®¤åŠŸèƒ½	*/
+#else
+#include "User_items.h"         /*	è‡ªè¡Œè®¾ç½®åŠŸèƒ½ï¼Œä¸€èˆ¬å‡ºç°åœ¨æœ¬åœ°æ–‡ä»¶çš„Userä¸­	*/
 #endif
 
 /****************/
@@ -18,43 +16,43 @@
                         \----/
             MOSI   ->
     
-    ·ÖÎªÓ²¼şSPI/Èí¼şSPI
-    Èí¼şSPIÂı£¬µ«ÊÇËü¿ÉÒÔÖ¸¶¨ÈÎÒâIO¿Ú(Ä¿Ç°Ö»·¢²»ÊÕ)¡£
-    ¾¡Á¿Ê¹ SPI_GPIO ÔÚÍ¬Ò»×éGPIOÉÏ£¨A/B/C/D£©
-    SPIÊÇÖ÷¶¯Í¨ĞÅ£¨Ö÷´Ó£©£¬Ö÷»úµÄÊÕ·¢Âß¼­²»ĞèÒªÖĞ¶Ï£¬µ«ÊÇ´Ó»úĞèÒª£¨ÉµÁË°É£¬ÕâÊÇ²»È«ÃæµÄ£©¡£
-    DMAºÍÆÕÍ¨Ä£Ê½ÊÇ¿ÉÒÔÒ»ÆğÓÃµÄ
+    åˆ†ä¸ºç¡¬ä»¶SPI/è½¯ä»¶SPI
+    è½¯ä»¶SPIæ…¢ï¼Œä½†æ˜¯å®ƒå¯ä»¥æŒ‡å®šä»»æ„IOå£(ç›®å‰åªå‘ä¸æ”¶)ã€‚
+    å°½é‡ä½¿ SPI_GPIO åœ¨åŒä¸€ç»„GPIOä¸Šï¼ˆA/B/C/Dï¼‰
+    SPIæ˜¯ä¸»åŠ¨é€šä¿¡ï¼ˆä¸»ä»ï¼‰ï¼Œä¸»æœºçš„æ”¶å‘é€»è¾‘ä¸éœ€è¦ä¸­æ–­ï¼Œä½†æ˜¯ä»æœºéœ€è¦ï¼ˆå‚»äº†å§ï¼Œè¿™æ˜¯ä¸å…¨é¢çš„ï¼‰ã€‚
+    DMAå’Œæ™®é€šæ¨¡å¼æ˜¯å¯ä»¥ä¸€èµ·ç”¨çš„
 																					2022.02.26
-    SPIµÄÎ¨Ò»ÒªÇó¡ª¡ª¡ª¡ªÔ½¿ìÔ½ºÃ£¬Ä¿Ç°Èí¼şÄ£Äâ 461kHz(8bit)£¬Ó²¼şSPI²Î¿¼-SPI_Speed-¶¨Òå¡£
-    Èí¼şÄ£Ê½ -- 4Mhz
-    Ó²¼şÆÕÍ¨Ä£Ê½ -- 36Mhz
-    Ó²¼şDMAÄ£Ê½  -- 36Mhz
+    SPIçš„å”¯ä¸€è¦æ±‚â€”â€”â€”â€”è¶Šå¿«è¶Šå¥½ï¼Œç›®å‰è½¯ä»¶æ¨¡æ‹Ÿ 461kHz(8bit)ï¼Œç¡¬ä»¶SPIå‚è€ƒ-SPI_Speed-å®šä¹‰ã€‚
+    è½¯ä»¶æ¨¡å¼ -- 4Mhz
+    ç¡¬ä»¶æ™®é€šæ¨¡å¼ -- 36Mhz
+    ç¡¬ä»¶DMAæ¨¡å¼  -- 36Mhz
                                                                                     2022.07.26
-    SPIµÄÈí¼şÄ£Äâ·½Ê½Îªsize-8bit,Ó²¼şSPI¿ÉÒÔÊÇsize-8bit/size-16bit
-    SPIÈí¼ş·½Ä£Äâ·½Ê½ÎªÉÏÉıÑØ¶Á(0,0)
-    SPIÒ»°ãÖ»»áÊ¹ÓÃÒ»¸ö£¨SPI1£©£¬µ«ÊÇÓ²¼ş¿ÉÄÜ±»Õ¼ÓÃÓÚÊÇÑ¡ÔñSPI2£¨ÍÆ¼öÖ»Ê¹ÓÃÒ»¸öSPI£©
+    SPIçš„è½¯ä»¶æ¨¡æ‹Ÿæ–¹å¼ä¸ºsize-8bit,ç¡¬ä»¶SPIå¯ä»¥æ˜¯size-8bit/size-16bit
+    SPIè½¯ä»¶æ–¹æ¨¡æ‹Ÿæ–¹å¼ä¸ºä¸Šå‡æ²¿è¯»(0,0)
+    SPIä¸€èˆ¬åªä¼šä½¿ç”¨ä¸€ä¸ªï¼ˆSPI1ï¼‰ï¼Œä½†æ˜¯ç¡¬ä»¶å¯èƒ½è¢«å ç”¨äºæ˜¯é€‰æ‹©SPI2ï¼ˆæ¨èåªä½¿ç”¨ä¸€ä¸ªSPIï¼‰
                                                                                     2022.08.15
-    SPIµÄÓ²¼şNSS¾ÍÊÇÒ»Ö±À­µÍ¡£¹·¶¼²»ÓÃ¡£
+    SPIçš„ç¡¬ä»¶NSSå°±æ˜¯ä¸€ç›´æ‹‰ä½ã€‚ç‹—éƒ½ä¸ç”¨ã€‚
                                                                                     2022.08.19  
-    SPI×öÖ÷»ú£ºÈí¼ş¡¢Ó²¼ş£¨°üÀ¨DMA£©Íê³É£¬Ã»ÓĞDMA½ÓÊÕ
+    SPIåšä¸»æœºï¼šè½¯ä»¶ã€ç¡¬ä»¶ï¼ˆåŒ…æ‹¬DMAï¼‰å®Œæˆï¼Œæ²¡æœ‰DMAæ¥æ”¶
                                                                                     2022.10.14                                                                                                                                                                
 
 */
 
-// Ñ¡ÔñÊä³öÄ£Ê½
+// é€‰æ‹©è¾“å‡ºæ¨¡å¼
 #ifdef Exist_SPI
-    #define SPI_Software	        //ÆÁ±Î¾ÍÊÇÓ²¼şÄ£Ê½
+    #define SPI_Software	        //å±è”½å°±æ˜¯ç¡¬ä»¶æ¨¡å¼
     #ifndef SPI_Software
-        #define SPI_DMA			    //ÆÁ±Î¾ÍÊÇÆÕÍ¨Ä£Ê½
+//        #define SPI_DMA			    //å±è”½å°±æ˜¯æ™®é€šæ¨¡å¼
     #endif
     #define HOST_MODE
     #define SPIx   2
 #endif
 
 
-#ifdef SPI_Software                                 //Èí¼şSPI
+#ifdef SPI_Software                                 //è½¯ä»¶SPI
 #define SPI_MODE_IN    GPIO_MODE_INPUT
 #define SPI_MODE_OUT   GPIO_MODE_OUTPUT
-#else                                               //Ó²¼şSPI
+#else                                               //ç¡¬ä»¶SPI
 #define SPI_MODE_IN    GPIO_MODE_INPUT
 #define SPI_MODE_OUT   GPIO_MODE_MUX
 #define SPI_Speed   SPI_MCLK_DIV_8        //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
@@ -78,13 +76,13 @@
 
 void SPI_Start_Init(int Set);
 
-//    Çı¶¯²ã      //
+//    é©±åŠ¨å±‚      //
 
 void SPI_CS_Set(char Serial,char State);
 
 void SPI_Send_DATA(const uint16_t DATA);
 
-//    µ÷ÓÃ²ã      //
+//    è°ƒç”¨å±‚      //
 
 void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA);
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr);
@@ -94,24 +92,24 @@ void SPI_Send_String(const void * DATA,int num);
 
 
 #if (SPIx == 1)
-#define SPI_NSS_H()  GPIO_SPI1->scr = SPI1_NSS		//ÖÃ¸ßµçÆ½
-#define SPI_NSS_L()  GPIO_SPI1->clr = SPI1_NSS 		//ÖÃµÍµçÆ½
-#define SPI_SCK_H()  GPIO_SPI1->scr = SPI1_SCK
-#define SPI_SCK_L()  GPIO_SPI1->clr = SPI1_SCK 
-#define SPI_MOSI_H() GPIO_SPI1->scr = SPI1_MOSI
-#define SPI_MOSI_L() GPIO_SPI1->clr = SPI1_MOSI
+#define SPI_NSS_H()  GPIO_SPI1->Reg_IO_H = SPI1_NSS     //ç½®é«˜ç”µå¹³
+#define SPI_NSS_L()  GPIO_SPI1->Reg_IO_L = SPI1_NSS     //ç½®ä½ç”µå¹³
+#define SPI_SCK_H()  GPIO_SPI1->Reg_IO_H = SPI1_SCK
+#define SPI_SCK_L()  GPIO_SPI1->Reg_IO_L = SPI1_SCK 
+#define SPI_MOSI_H() GPIO_SPI1->Reg_IO_H = SPI1_MOSI
+#define SPI_MOSI_L() GPIO_SPI1->Reg_IO_L = SPI1_MOSI
 
-#define SPI_MISO_R() gpio_input_data_bit_read(GPIO_SPI1,SPI1_MISO)      //¶ÁÈ¡Òı½ÅµçÆ½
+#define SPI_MISO_R() gpio_input_data_bit_read(GPIO_SPI1,SPI1_MISO)      //è¯»å–å¼•è„šç”µå¹³
 
 #elif (SPIx == 2)
-#define SPI_NSS_H()  GPIO_SPI2->scr = SPI2_NSS		//ÖÃ¸ßµçÆ½
-#define SPI_NSS_L()  GPIO_SPI2->clr = SPI2_NSS 		//ÖÃµÍµçÆ½
-#define SPI_SCK_H()  GPIO_SPI2->scr = SPI2_SCK
-#define SPI_SCK_L()  GPIO_SPI2->clr = SPI2_SCK 
-#define SPI_MOSI_H() GPIO_SPI2->scr = SPI2_MOSI
-#define SPI_MOSI_L() GPIO_SPI2->clr = SPI2_MOSI
+#define SPI_NSS_H()  GPIO_SPI2->Reg_IO_H = SPI2_NSS     //ç½®é«˜ç”µå¹³
+#define SPI_NSS_L()  GPIO_SPI2->Reg_IO_L = SPI2_NSS     //ç½®ä½ç”µå¹³
+#define SPI_SCK_H()  GPIO_SPI2->Reg_IO_H = SPI2_SCK
+#define SPI_SCK_L()  GPIO_SPI2->Reg_IO_L = SPI2_SCK 
+#define SPI_MOSI_H() GPIO_SPI2->Reg_IO_H = SPI2_MOSI
+#define SPI_MOSI_L() GPIO_SPI2->Reg_IO_L = SPI2_MOSI
 
-#define SPI_MISO_R() gpio_input_data_bit_read(GPIO_SPI2,SPI2_MISO)      //¶ÁÈ¡Òı½ÅµçÆ½
+#define SPI_MISO_R() gpio_input_data_bit_read(GPIO_SPI2,SPI2_MISO)      //è¯»å–å¼•è„šç”µå¹³
 
 #endif
 

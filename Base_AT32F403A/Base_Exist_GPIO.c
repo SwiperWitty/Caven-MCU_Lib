@@ -35,7 +35,7 @@ void LCD_GPIO_Init(int SET)
 void LED_GPIO_Init(int SET)
 {
 #ifdef Exist_LED
-    GPIO_InitTypeDef GPIO_InitStructure;
+    gpio_init_type GPIO_InitStructure;
     if (SET) 
     {
         RCC_AHBPeriphClockCmd(RCC_AHBPeriph_GPIOA,ENABLE);

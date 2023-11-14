@@ -31,7 +31,7 @@ void SPI1_GPIO_Init(int Set)
         gpio_init(GPIO_SPI1, &gpio_init_struct);
         
         gpio_init_struct.gpio_pins = SPI1_NSS;
-        gpio_init_struct.gpio_mode = SPI_MODE_NSS;                //NSS-Êä³öÄ£Ê½£¨Êä³ö£©
+        gpio_init_struct.gpio_mode = SPI_MODE_NSS;                //NSS-è¾“å‡ºæ¨¡å¼ï¼ˆè¾“å‡ºï¼‰
         gpio_init(GPIO_SPI1, &gpio_init_struct);
         
         gpio_init_struct.gpio_pins = SPI1_MISO;
@@ -60,14 +60,14 @@ void SPI2_GPIO_Init(int Set)
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
         crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
         
-        gpio_init_struct.gpio_pins = SPI2_NSS;                  //NSS-Êä³öÄ£Ê½£¨Êä³ö£©
+        gpio_init_struct.gpio_pins = SPI2_NSS;                  //NSS-è¾“å‡ºæ¨¡å¼ï¼ˆè¾“å‡ºï¼‰
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = SPI_MODE_NSS;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIO_SPI2, &gpio_init_struct);
         
-        gpio_init_struct.gpio_pins = SPI2_SCK | SPI2_MOSI;      //SCK¡¢MOSIÊä³öÄ£Ê½£¨¸´ÓÃ£©
+        gpio_init_struct.gpio_pins = SPI2_SCK | SPI2_MOSI;      //SCKã€MOSIè¾“å‡ºæ¨¡å¼ï¼ˆå¤ç”¨ï¼‰
         gpio_init_struct.gpio_mode = SPI_MODE_OUT;
         gpio_init(GPIO_SPI2, &gpio_init_struct);
         
@@ -92,16 +92,16 @@ void SPI1_DMA_Config (const void *DMA_Buffer,int BufferSize)
 #ifdef Exist_SPI
     dma_init_type dma_init_struct;
     dma_default_para_init(&dma_init_struct);        
-    dma_init_struct.buffer_size = BufferSize;       //³¤¶È
+    dma_init_struct.buffer_size = BufferSize;       //é•¿åº¦
     dma_init_struct.memory_base_addr = (uint32_t)DMA_Buffer;
     dma_init_struct.peripheral_base_addr = (uint32_t)&SPI1->dt;
-    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //ÄÚ´æµ½ÍâÉè
+    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //å†…å­˜åˆ°å¤–è®¾
     dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
     dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
-    dma_init_struct.memory_inc_enable = TRUE;                       //ÄÚ´æµØÖ·ÊÇ·ñ×Ô¶¯µİÔö
-    dma_init_struct.peripheral_inc_enable = FALSE;                  //ÍâÉèµØÖ·ÊÇ·ñ×Ô¶¯µİÔö
-    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //ÉèÖÃÓÅÏÈ¼¶--ÖĞ
-    dma_init_struct.loop_mode_enable = FALSE;                       //·ÇÑ­»·Ä£Ê½
+    dma_init_struct.memory_inc_enable = TRUE;                       //å†…å­˜åœ°å€æ˜¯å¦è‡ªåŠ¨é€’å¢
+    dma_init_struct.peripheral_inc_enable = FALSE;                  //å¤–è®¾åœ°å€æ˜¯å¦è‡ªåŠ¨é€’å¢
+    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //è®¾ç½®ä¼˜å…ˆçº§--ä¸­
+    dma_init_struct.loop_mode_enable = FALSE;                       //éå¾ªç¯æ¨¡å¼
     dma_init(SPI_Tx_DMA_Channel, &dma_init_struct);
 #endif
 
@@ -111,16 +111,16 @@ void SPI2_DMA_Config (const void *DMA_Buffer,int BufferSize)
 #ifdef Exist_SPI
     dma_init_type dma_init_struct;
     dma_default_para_init(&dma_init_struct);        
-    dma_init_struct.buffer_size = BufferSize;       //³¤¶È
+    dma_init_struct.buffer_size = BufferSize;       //é•¿åº¦
     dma_init_struct.memory_base_addr = (uint32_t)DMA_Buffer;
     dma_init_struct.peripheral_base_addr = (uint32_t)&SPI2->dt;
-    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //ÄÚ´æµ½ÍâÉè
+    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //å†…å­˜åˆ°å¤–è®¾
     dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
     dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
-    dma_init_struct.memory_inc_enable = TRUE;                       //ÄÚ´æµØÖ·ÊÇ·ñ×Ô¶¯µİÔö
-    dma_init_struct.peripheral_inc_enable = FALSE;                  //ÍâÉèµØÖ·ÊÇ·ñ×Ô¶¯µİÔö
-    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //ÉèÖÃÓÅÏÈ¼¶--ÖĞ
-    dma_init_struct.loop_mode_enable = FALSE;                       //·ÇÑ­»·Ä£Ê½
+    dma_init_struct.memory_inc_enable = TRUE;                       //å†…å­˜åœ°å€æ˜¯å¦è‡ªåŠ¨é€’å¢
+    dma_init_struct.peripheral_inc_enable = FALSE;                  //å¤–è®¾åœ°å€æ˜¯å¦è‡ªåŠ¨é€’å¢
+    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //è®¾ç½®ä¼˜å…ˆçº§--ä¸­
+    dma_init_struct.loop_mode_enable = FALSE;                       //éå¾ªç¯æ¨¡å¼
     dma_init(SPI_Tx_DMA_Channel, &dma_init_struct);
 #endif
 
@@ -146,7 +146,7 @@ void SPI_Start_Init(int Set)
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_0);
         #if (SPIx == 1)
             crm_periph_clock_enable(CRM_SPI1_PERIPH_CLOCK, TRUE);
-            nvic_irq_enable(SPI1_IRQn, 1, 0);                       //SPIÖĞ¶ÏÊÇÓÃÀ´ ½ÓÊÕNSSµÄ
+            nvic_irq_enable(SPI1_IRQn, 1, 0);                       //SPIä¸­æ–­æ˜¯ç”¨æ¥ æ¥æ”¶NSSçš„
         #elif (SPIx == 2)
             crm_periph_clock_enable(CRM_SPI2_PERIPH_CLOCK, set);
             nvic_irq_enable(SPI2_IRQn, 1, 0);
@@ -160,22 +160,22 @@ void SPI_Start_Init(int Set)
         spi_init_struct.frame_bit_num = SPI_Size;
         spi_init_struct.mclk_freq_division = SPI_Speed;
         spi_init_struct.first_bit_transmission = SPI_FIRST_BIT_MSB;
-        spi_init_struct.clock_polarity = SPI_CLOCK_POLARITY_HIGH;           //ÏĞÊ± SCK×´Ì¬
-        spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;                //ÉÏÉıÑØÈÃ´Ó»ú¶Á
+        spi_init_struct.clock_polarity = SPI_CLOCK_POLARITY_HIGH;           //é—²æ—¶ SCKçŠ¶æ€
+        spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;                //ä¸Šå‡æ²¿è®©ä»æœºè¯»
         spi_init_struct.cs_mode_selection = SPI_CS_SOFTWARE_MODE;
         spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;
         spi_init(Temp_SPI, &spi_init_struct);
 
         #ifdef SPI_DMA
-        spi_i2s_dma_transmitter_enable (Temp_SPI, TRUE);        //·¢ËÍµÄDMA
+        spi_i2s_dma_transmitter_enable (Temp_SPI, TRUE);        //å‘é€çš„DMA
         crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
 
-        dma_reset(SPI_Tx_DMA_Channel);                          //È¡ÏûÅäÖÃ
-        // SPI2_DMA_Config (0,SPI_BufferSize);                     //ÖØĞÂÅäÖÃ
+        dma_reset(SPI_Tx_DMA_Channel);                          //å–æ¶ˆé…ç½®
+        // SPI2_DMA_Config (0,SPI_BufferSize);                     //é‡æ–°é…ç½®
         dma_channel_enable(SPI_Tx_DMA_Channel,FALSE);
         #endif
         
-        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, FALSE);    //ÏÈ±ğ¿ª <FALSE>
+        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, FALSE);    //å…ˆåˆ«å¼€ <FALSE>
         spi_enable(Temp_SPI, set);
         
     #else
@@ -227,37 +227,37 @@ void SPI_CS_Set(char Serial,char State)
 
 }
 
-//ÆÕÍ¨\Èí¼ş ·¢ËÍ£¬Ö»¹ÜSCLK¡¢MOSI²»¹Ü NSS
+//æ™®é€š\è½¯ä»¶ å‘é€ï¼Œåªç®¡SCLKã€MOSIä¸ç®¡ NSS
 void SPI_Send_DATA(const uint16_t DATA)     
 {
     /*
-     * Ğ´±êÖ¾Î»
-     * Ğ´Êı¾İ
-     * µÈÃ¦Î»
+     * å†™æ ‡å¿—ä½
+     * å†™æ•°æ®
+     * ç­‰å¿™ä½
      */
 #ifdef Exist_SPI
     #ifdef SPI_Software
     char temp;
     for (int i = 0; i < 8; i++)
     {
-        SPI_SCK_L();           //Ô¤±¸DownÑØ
+        SPI_SCK_L();           //é¢„å¤‡Downæ²¿
         temp = (DATA << i) & 0x80;
         if (temp)
-            SPI_MOSI_H();      //Êı¾İ1
+            SPI_MOSI_H();      //æ•°æ®1
         else
-            SPI_MOSI_L();      //Êı¾İ0
-        SPI_SCK_H();           //Íê³ÉDownÑØ
+            SPI_MOSI_L();      //æ•°æ®0
+        SPI_SCK_H();           //å®ŒæˆDownæ²¿
     }
     SPI_MOSI_H();
-    //    SPI_SCK_H();              // 0 / 0²»ĞèÒªÉÏÉı
+    //    SPI_SCK_H();              // 0 / 0ä¸éœ€è¦ä¸Šå‡
     #else
 
 //    spi_i2s_data_transmit(Temp_SPI, DATA);
-//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPIÃ¦¾Í»á = 1£¬²»Ã¦¾ÍÊÇ0
+//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPIå¿™å°±ä¼š = 1ï¼Œä¸å¿™å°±æ˜¯0
     
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //·¢ËÍ»º³åÇø¿ÕÁË
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //å‘é€ç¼“å†²åŒºç©ºäº†
     spi_i2s_data_transmit(Temp_SPI, DATA);
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPIÃ¦¾Í»á = 1£¬²»Ã¦¾ÍÊÇ0
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPIå¿™å°±ä¼š = 1ï¼Œä¸å¿™å°±æ˜¯0
     
     #endif
 	
@@ -265,40 +265,40 @@ void SPI_Send_DATA(const uint16_t DATA)
 }
 
 
-//    µ÷ÓÃ²ã      //
+//    è°ƒç”¨å±‚      //
 
-//´óÁ¿·¢ËÍ£¬Soft/Hard
-void SPI_Send_String(const void * DATA,int num)                 //Õâ¸ö»á°óÒ»¸öÖ¸Õë£¬ÔÚ·¢ËÍÊı¾İÍ¾ÖĞ£¬²»ÒªÈÃÄ¿±êÖ¸Õë¸Ä±ä£¡
+//å¤§é‡å‘é€ï¼ŒSoft/Hard
+void SPI_Send_String(const void * DATA,int num)                 //è¿™ä¸ªä¼šç»‘ä¸€ä¸ªæŒ‡é’ˆï¼Œåœ¨å‘é€æ•°æ®é€”ä¸­ï¼Œä¸è¦è®©ç›®æ ‡æŒ‡é’ˆæ”¹å˜ï¼
 {
 #ifdef Exist_SPI
     #ifdef  SPI_DMA 
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) == 1);         //¿ÉÒÔ¿ªÊ¼´«Êä
-    while(SPI_complete_flag == 0);                                  //µÈSPIÖĞ¶Ï
+    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) == 1);         //å¯ä»¥å¼€å§‹ä¼ è¾“
+    while(SPI_complete_flag == 0);                                  //ç­‰SPIä¸­æ–­
     SPI_complete_flag = 0;
     
     dma_channel_enable(SPI_Tx_DMA_Channel,FALSE);
-    SPI_CS_Set(1,TRUE);                 //¿ªÊ¼Æ¬Ñ¡
+    SPI_CS_Set(1,TRUE);                 //å¼€å§‹ç‰‡é€‰
         #if (SPIx == 1)
         // dma_flag_clear(DMA1_FDT3_FLAG);
-        SPI1_DMA_Config (DATA,num);                                 //ÖØĞÂÅäÖÃ
+        SPI1_DMA_Config (DATA,num);                                 //é‡æ–°é…ç½®
         #elif (SPIx == 2)
         // dma_flag_clear(DMA1_FDT5_FLAG);
-        SPI2_DMA_Config (DATA,num);                                 //ÖØĞÂÅäÖÃ
+        SPI2_DMA_Config (DATA,num);                                 //é‡æ–°é…ç½®
         #endif 
                                                          
-        dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);                        //¿ªÊ¼DMA
-        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);         //¿ªSPIÖĞ¶Ï
+        dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);                        //å¼€å§‹DMA
+        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);         //å¼€SPIä¸­æ–­
     
     #else
-    SPI_CS_Set(1,TRUE);                 //¿ªÊ¼Æ¬Ñ¡
+    SPI_CS_Set(1,TRUE);                 //å¼€å§‹ç‰‡é€‰
     for (int i = 0; i < num; i++)
     {
         SPI_Send_DATA(*((uint8_t *)DATA + i));
     }
         #ifdef SPI_Software
-    SPI_CS_Set(1,0);                    //¹Ø
+    SPI_CS_Set(1,0);                    //å…³
         #else
-    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);        //¿ªÖĞ¶Ï£¬ÈÃËû×Ô¼º½áÊøÆ¬Ñ¡
+    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);        //å¼€ä¸­æ–­ï¼Œè®©ä»–è‡ªå·±ç»“æŸç‰‡é€‰
         #endif
     #endif
     
@@ -309,7 +309,7 @@ void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
 {
 // Addr &= 0xBFFF;
 #ifdef Exist_SPI
-    SPI_CS_Set(Serial,1);      //SPI¿ªÊ¼£¨Æ¬Ñ¡£©
+    SPI_CS_Set(Serial,1);      //SPIå¼€å§‹ï¼ˆç‰‡é€‰ï¼‰
     SPI_Delay (1);
 
     SPI_Send_DATA(Addr);
@@ -324,8 +324,8 @@ void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
 {
     /*
-     * µÈÄÜ¶Á
-     * ¶Á
+     * ç­‰èƒ½è¯»
+     * è¯»
      */
     uint16_t temp = 0;
     // Addr &= 0xBFFF;
@@ -340,7 +340,7 @@ uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
         Temp_SPI = SPI2;
         #endif
 
-    SPI_CS_Set(Serial,TRUE);      //SPI¿ªÊ¼£¨Æ¬Ñ¡£©
+    SPI_CS_Set(Serial,TRUE);      //SPIå¼€å§‹ï¼ˆç‰‡é€‰ï¼‰
     SPI_Delay (1);
     
     SPI_Send_DATA(Addr);
@@ -369,7 +369,7 @@ void SPI1_IRQHandler(void)
         if(spi_i2s_flag_get(SPI1,SPI_I2S_BF_FLAG) == 0)     //busy
         {
             spi_i2s_interrupt_enable(SPI1, SPI_I2S_TDBE_INT, FALSE);
-            SPI_CS_Set(1,FALSE);          //È¡ÏûÆ¬Ñ¡
+            SPI_CS_Set(1,FALSE);          //å–æ¶ˆç‰‡é€‰
             SPI_complete_flag = 1;
 //            printf("SPI ok \r\n");
         }
@@ -382,8 +382,8 @@ void SPI1_IRQHandler(void)
     {
         if(spi_i2s_flag_get(SPI2,SPI_I2S_BF_FLAG) == 0)
         {
-//            spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //¹ØÖĞ¶Ï
-//            SPI_CS_Set(1,FALSE);          //È¡ÏûÆ¬Ñ¡
+//            spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, FALSE);    //å…³ä¸­æ–­
+//            SPI_CS_Set(1,FALSE);          //å–æ¶ˆç‰‡é€‰
 //            SPI_complete_flag = 1;
         }
     }
