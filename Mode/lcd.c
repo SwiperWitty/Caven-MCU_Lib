@@ -1,7 +1,7 @@
 #include "LCD.h"
 #include "lcdfont.h" //字库
 
-U16 BACK_COLOR = BLACK; //背景色
+U16 BACK_COLOR = WHITE; //背景色
 U8 	LCD_HORIZONTAL = USE_HORIZONTAL;
 
 #ifdef Exist_LCD
@@ -72,46 +72,44 @@ void LCD_WR_CMD(U8 dat)
 ******************************************************************************/
 void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 {
+	u16 x_sta,y_sta,x_end,y_end;
+
 	if (LCD_HORIZONTAL == 0)
 	{
-		LCD_WR_CMD(0x2a); //列地址设置
-		LCD_WR_DATA(x1);
-		LCD_WR_DATA(x2);
-		LCD_WR_CMD(0x2b); //行地址设置
-		LCD_WR_DATA(y1);
-		LCD_WR_DATA(y2);
-		LCD_WR_CMD(0x2c); //储存器写
+		x_sta = (x1);
+		x_end = (x2);
+		y_sta = (y1);
+		y_end = (y2);
 	}
 	else if (LCD_HORIZONTAL == 1)
 	{
-		LCD_WR_CMD(0x2a); //列地址设置
-		LCD_WR_DATA(x1);
-		LCD_WR_DATA(x2);
-		LCD_WR_CMD(0x2b); //行地址设置
-		LCD_WR_DATA(y1 + 80);
-		LCD_WR_DATA(y2 + 80);
-		LCD_WR_CMD(0x2c); //储存器写
+		x_sta = (x1);
+		x_end = (x2);
+		y_sta = (y1 + 80);
+		y_end = (y2 + 80);
 	}
 	else if (LCD_HORIZONTAL == 2)
 	{
-		LCD_WR_CMD(0x2a); //列地址设置
-		LCD_WR_DATA(x1);
-		LCD_WR_DATA(x2);
-		LCD_WR_CMD(0x2b); //行地址设置
-		LCD_WR_DATA(y1);
-		LCD_WR_DATA(y2);
-		LCD_WR_CMD(0x2c); //储存器写
+		x_sta = (x1);
+		x_end = (x2);
+		y_sta = (y1);
+		y_end = (y2);
 	}
 	else
 	{
-		LCD_WR_CMD(0x2a); //列地址设置
-		LCD_WR_DATA(x1 + 80);
-		LCD_WR_DATA(x2 + 80);
-		LCD_WR_CMD(0x2b); //行地址设置
-		LCD_WR_DATA(y1);
-		LCD_WR_DATA(y2);
-		LCD_WR_CMD(0x2c); //储存器写
+		x_sta = (x1 + 80);
+		x_end = (x2 + 80);
+		y_sta = (y1);
+		y_end = (y2);
 	}
+
+	LCD_WR_CMD(0x2a); // 列地址设置
+	LCD_WR_DATA(x_sta);
+	LCD_WR_DATA(x_end);
+	LCD_WR_CMD(0x2b); // 行地址设置
+	LCD_WR_DATA(y_sta);
+	LCD_WR_DATA(y_end);
+	LCD_WR_CMD(0x2c); // 储存器写
 }
 #endif
 //以上不提供到其他文件
@@ -146,7 +144,7 @@ int LCD_Set_HORIZONTAL(char set)
 {
 	int retval = 0;
 #ifdef Exist_LCD
-	if(set < 4 && set >= 0)
+	if(set < 4)
 	{
 		LCD_HORIZONTAL = set;
 	}
@@ -561,28 +559,32 @@ void LCD_Init(int Set)
 #ifdef Exist_LCD
 	LCD_GPIO_Init(Set);
 	SPI_Start_Init(Set);
-	LCD_Delay(200); //等待电路复位完成
+	LCD_WR_DATA8(0x00);
 
-//	LCD_RES_Clr();LCD_Delay (20);				//Caven3.14 使用硬件复位，不需要这个
-//	LCD_RES_Set();LCD_Delay (20);
-	LCD_WR_CMD(0x11); //Sleep out
-	LCD_Delay (20);
-	LCD_WR_CMD(0x36);
-	LCD_Delay(50);
+	LCD_Delay(300); // 等待电路复位完成
+
+	LCD_RES_L();
+	LCD_Delay(200); //
+	LCD_RES_H();
+	LCD_Delay(100);
+	LCD_Set_HORIZONTAL(USE_HORIZONTAL);
+
+//************* Start Initial Sequence **********// 
+	LCD_WR_CMD(0x36);			// res
 	switch (LCD_HORIZONTAL)
 	{
-		case 0:
-			LCD_WR_DATA8(0x00);
-			break;
-		case 1:
-			LCD_WR_DATA8(0xC0);
-			break;
-		case 2:
-			LCD_WR_DATA8(0x70);
-			break;
-		default:
-			LCD_WR_DATA8(0xA0);
-			break;
+	case 0:
+		LCD_WR_DATA8(0x00);
+		break;
+	case 1:
+		LCD_WR_DATA8(0xC0);
+		break;
+	case 2:
+		LCD_WR_DATA8(0x70);
+		break;
+	default:
+		LCD_WR_DATA8(0xA0);
+		break;
 	}
 
 	LCD_WR_CMD(0x3A);
@@ -655,7 +657,7 @@ void LCD_Init(int Set)
 	LCD_WR_CMD(0x21);
 	LCD_WR_CMD(0x11);
 	LCD_WR_CMD(0x29);
-	LCD_Delay(200);
+	LCD_Delay(100);
 	LCD_Fill(0, 0, LCD_W, LCD_H, BACK_COLOR);
 #endif
 }

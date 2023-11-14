@@ -3,22 +3,18 @@
 
 #ifdef DEFAULT
 #include "items.h"              //默认功能
-#endif
-
-#ifndef DEFAULT
+#else
 #include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
 #endif
 
-#include "uart.h"
-#include "Base_SPI.h"
-#include "IIC.h"
-
-#include "adc.h"
-
-#include "sys_time.h"
-#include "PWM.h"
-
 #include "Base_Exist_GPIO.h"
+
+#ifdef Exist_SPI 
+#include "Base_SPI.h"
+#endif
+
+
+
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->

@@ -6,20 +6,29 @@ void LCD_GPIO_Init(int SET)
     gpio_init_type GPIO_InitStructure;
     if (SET)
     {
-        crm_periph_reset(CRM_GPIOA_PERIPH_RESET, TRUE);   //使能A端口时钟
-
-        GPIO_InitStructure.gpio_pins = GPIO_PINS_10;      //LCD_DC
-        GPIO_InitStructure.gpio_mode = GPIO_MODE_OUTPUT;         //推挽输出
+        crm_periph_reset(CRM_GPIOA_PERIPH_RESET, TRUE);     /*    使能A端口时钟 */
+        crm_periph_reset(CRM_GPIOB_PERIPH_RESET, TRUE);     /*    使能B端口时钟 */
+        
+        GPIO_InitStructure.gpio_pins = GPIO_PINS_10;        //LCD_DC
+        GPIO_InitStructure.gpio_mode = GPIO_MODE_OUTPUT;    /* 推挽输出 */
         GPIO_InitStructure.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
         GPIO_InitStructure.gpio_pull = GPIO_PULL_NONE;
         GPIO_InitStructure.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;   
+        gpio_init(GPIOA, &GPIO_InitStructure);      /* 初始化GPIOA   */
+        
+        GPIO_InitStructure.gpio_pins = GPIO_PINS_0; //LCD_RES
+        gpio_init(GPIOB, &GPIO_InitStructure);      /* 初始化GPIOB   */
     }
     else
     {
         GPIO_InitStructure.gpio_pins = GPIO_PINS_10;
         GPIO_InitStructure.gpio_mode = GPIO_MODE_INPUT;
+        gpio_init(GPIOA, &GPIO_InitStructure);    /* 初始化GPIOA   */
+        
+        GPIO_InitStructure.gpio_pins = GPIO_PINS_0; //LCD_RES
+        gpio_init(GPIOB, &GPIO_InitStructure);      /* 初始化GPIOB   */
     }
-    gpio_init(GPIOA, &GPIO_InitStructure);    //初始化GPIOA
+    
 #endif
 }
 
