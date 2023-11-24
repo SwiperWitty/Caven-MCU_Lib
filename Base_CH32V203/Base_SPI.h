@@ -1,7 +1,11 @@
 #ifndef _SPI__H_
 #define _SPI__H_
 
-#include "Items.h"
+#if DEFAULT
+#include "items.h"              //默认功能
+#else
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
 
 /*
     分为硬件SPI/软件SPI

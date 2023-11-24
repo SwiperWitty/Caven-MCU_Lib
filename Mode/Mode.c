@@ -23,13 +23,18 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 #endif
 
 #ifdef Exist_SYS_TIME
-    Mode_Use.Delay.Delay_us = SYS_Delay_us;
-    Mode_Use.Delay.Delay_ms = SYS_Delay_ms;
-    Mode_Use.Delay.Delay_S = SYS_Delay_S;
+    Mode_Use.TIME.Delay_Us = MODE_Delay_Us;
+    Mode_Use.TIME.Delay_Ms = MODE_Delay_Ms;
+    Mode_Use.TIME.Delay_S = MODE_Delay_S;
 	
-	Mode_Use.Sys_Clock.Get_TIME = MODE_Get_TIME;
-	Mode_Use.Sys_Clock.Set_TIME = Set_TIME;
-	Mode_Use.Sys_Clock.Get_Lose_Time = Get_Lose_Time;
+    Mode_Use.TIME.Get_Watch_Fun = MODE_TIME_Get_Watch_Fun;
+    Mode_Use.TIME.Get_Date_Fun = MODE_TIME_Get_Date_Fun;
+    Mode_Use.TIME.Get_differ_Fun = MODE_TIME_Get_differ_Fun;
+    Mode_Use.TIME.SYNC_TIME_Fun = SYNC_TIME_Fun;
+
+    Mode_Use.TIME.Set_Date_Fun = MODE_TIME_Set_Date_Fun;
+    Mode_Use.TIME.Set_Watch_Fun = MODE_TIME_Set_Watch_Fun;
+
 #endif
 
 #ifdef Exist_LED
@@ -51,10 +56,9 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 #endif
 
 #ifdef Exist_UART
-    Mode_Use.UART.WAY_Send_Data = UART_Send_Data;
-    Mode_Use.UART.WAY_Send_String = UART_Send_String;
-    
-    Mode_Use.UART.DATA_UART = CV_UART;
+    Mode_Use.UART.Send_Data_Fun = MODE_UART_Send_Data_Fun;
+    Mode_Use.UART.Send_String_Fun = MODE_UART_Send_String_Fun;
+    Mode_Use.UART.Receive_Bind_Fun = MODE_UART_Receive_Bind_Fun;
 #endif
 
 #ifdef Exist_USB
@@ -94,11 +98,11 @@ void Mode_Index(void)
     Mode_Use_index();
     
 #ifdef Exist_SYS_TIME
-    Mode_Init.Sys_Clock = Sys_Clock_Init;
+    Mode_Init.TIME = MODE_TIME_Init;
 #endif
     
 #ifdef Exist_UART
-    Mode_Init.UART = Uart_Init;
+    Mode_Init.UART = MODE_UART_Init;
 #endif
 #ifdef Exist_USB
     Mode_Init.USB = USB_User_init;
@@ -149,6 +153,10 @@ void Mode_Index(void)
 void Debug_Out(const char *String)              //选一个通信接口为Debug
 {
 #ifdef Exist_UART
-    UART_Send_String(DEBUG_OUT,String);
+    if (DEBUG_OUT == m_UART_CH1)
+    {
+        MODE_UART_Send_String_Fun(m_UART_CH1,String);
+    }
+
 #endif
 }

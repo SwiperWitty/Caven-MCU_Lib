@@ -2,47 +2,40 @@
 #define _UART_HANDLE__H_
 
 #include "Base.h"
-#include "Caven_Type.h"
+#include "API.h"
+
 /*
         【API】      ————C语言环境即可运行
     判断串口结束的 define被丢到底层了(很烦)        ———— 2022.8.18
 
-    //没数据？ 看看 END_Data      
-    // DEBUG_RX_TX 看通不通 
+    //没数据？ 看看 END_Data
+    // DEBUG_RX_TX 看通不通
 */
 
 #ifdef MCU_Buff_Len
     #define UART_Length_MAX    MCU_Buff_Len     //Buff MAX 长度(来自Items & User_items)
 #else
-    #define UART_Length_MAX    Buff_Length      //Buff MAX 长度(来自Caven)
+    #define UART_Length_MAX    BUFF_MAX         //Buff MAX 长度(来自Caven_Type)
 #endif
 
 #define DEBUG_RX_BK_TX  0   // 0:off 1:on 
 
 
-struct _Uart_Data
+typedef struct
 {
-    Caven_Data_Type DATA;
-    char Rxd_Received;
-    U8 UART_RxdBuff[UART_Length_MAX];       //串口数据在这，大小由MCU的底层决定
-};
-
-
-struct _Uart_
-{
-    void (*WAY_Send_String)(char Channel, const char *String);
-    char (*WAY_Send_Data)(char Channel, const U8 *Data, int Length);
+    void (*Send_String_Fun)(UART_mType Channel, const char *String);
+    void (*Send_Data_Fun)(UART_mType Channel, const U8 *Data, int Length);
     
-    struct _Uart_Data **DATA_UART;          //指针的指针，慎用
-};
-
-extern struct _Uart_Data * CV_UART[];       //别的地方定义数量，且它是指针数组
+    void (*Receive_Bind_Fun)(UART_mType Channel, D_pFun UART_pFun);
+}MODE_UART_Way;
 
 
-int Uart_Init(char Channel, const int Baud,D_pFun UART_pFun,int SET);
+int MODE_UART_Init(UART_mType Channel,int Baud,int SET);
 
-void UART_Send_String(char Channel, const char *String);
-char UART_Send_Data(char Channel, const U8 *Data, int Length);
 
+void MODE_UART_Send_Data_Fun(UART_mType Channel, const U8 *Data, int Length);
+void MODE_UART_Send_String_Fun(UART_mType Channel, const char *String);
+
+void MODE_UART_Receive_Bind_Fun(UART_mType Channel, D_pFun UART_pFun);
 
 #endif

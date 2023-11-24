@@ -1,57 +1,68 @@
-#ifndef _UART_X__H_
-#define _UART_X__H_
+/*
+ * Base_UART.h
+ * 需要规定什么使用宏函数，什么时候直接用函数。
+ * 但是他们调用的时候是一样的，所以单纯在Base里面纠结。
+ * 
+为了方便上层统一调用，本文件需要提供以下函数
 
-#include "Items.h"
+int Base_UART_Init(UART_mType Channel,int Baud,int SET);
+void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA);
 
-#define RXD_Falg    USART_IT_RXNE     //  接收标志
-#define TXD_Falg    USART_FLAG_TC       //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
+int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun);
 
-/* 【宏函数群】   */
+ */
+#ifndef _Base_UART__H_
+#define _Base_UART__H_
 
-#define UART_Channel_MAX  2     //最高通道数
-
-#define END_Data    'N'             //这个作为串口接收【结束符】
-#define NO_END      'N'             //如果【结束符】和它相同，那么就没有 结束符
-
-
-#ifdef Exist_UART
-/*  中断   */
-
-    #define UART1_Interrupt() USART1_IRQHandler()
-    #define UART2_Interrupt() USART2_IRQHandler()
-    #define UART3_Interrupt() USART3_IRQHandler()
-
-    void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
-    void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
-    void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));      //很关键
-
-    #if UART_Channel_MAX >= 4
-        #define UART4_Interrupt() UART4_IRQHandler()
-    #endif
-    #if UART_Channel_MAX >= 5
-        #define UART5_Interrupt() UART5_IRQHandler()
-    #endif
-
+#if DEFAULT
+#include "Items.h"              //默认功能
+#else
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
 #endif
 
-/*  end */
+#include "Caven_Type.h"
 
-void Uart1_Init(int Baud,int SET);
-void Uart2_Init(int Baud,int SET);
-void Uart3_Init(int Baud,int SET);
-#ifdef UART_Channel_MAX
-    #if UART_Channel_MAX >= 4
-    void Uart4_Init(int Baud,int SET);
-    #endif
-    #if UART_Channel_MAX >= 5
-    void Uart5_Init(int Baud,int SET);
-    #endif
+typedef enum
+{
+//    m_UART_CH0 = 0,
+    m_UART_CH1 = 1,
+    m_UART_CH2,
+    m_UART_CH3,
+//    m_UART_CH4,
+//    m_UART_CH5,
+}UART_mType;
+
+
+#if (Exist_UART & OPEN_0001)
+void USART0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+#define UART0_HANDLERIT() USART0_IRQHandler()
 #endif
 
-uint16_t UART_RXD_Receive(char Channel);
-void UART_TXD_Send(char Channel,uint16_t DATA);
+#if (Exist_UART & OPEN_0010)
+void USART1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+#define UART1_HANDLERIT() USART1_IRQHandler()
+#endif
 
-char UART_RXD_Flag(char Channel);
-void UART_RXD_Flag_Clear(char Channel);
+#if (Exist_UART & OPEN_0100)
+void USART2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+#define UART2_HANDLERIT() USART2_IRQHandler()
+#endif
+
+#if (Exist_UART & OPEN_1000)
+void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+#define UART3_HANDLERIT() USART3_IRQHandler()
+#endif
+
+
+// fun
+int Base_UART_Init(UART_mType Channel,int Baud,int SET);
+void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA);
+
+/*
+ * 接收入口的状态机，这个很重要
+ * 在初始化之后执行一次
+ * 不可用阻塞
+ */
+int State_Machine_Bind(UART_mType Channel,D_pFun UART_pFun);
 
 #endif

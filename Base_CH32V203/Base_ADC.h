@@ -1,24 +1,16 @@
 #ifndef _ADC_H_
 #define _ADC_H_
 
-//	可以跨芯片移植	需要大改底层
 /*
-			ADC_1        PA4  			ADC1		ADC_Channel_4
-			ADC_2        PA5  			ADC1		ADC_Channel_4
-
-
-												--2021.12.04
+ *  Base_ADC.h
+ *
 */
 
-/*
-    SDK->Items->GPIO(Exist_GPIO)->BASE->
-                                         \\
-                                          -->[ADC]->MODE
-                                         //
-                    C(Lib)->Caven->API->
-*/
-
-#include "Items.h"
+#if DEFAULT
+#include "items.h"              //默认功能
+#else
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
 
 #define ADC_0 ADC_Channel_0
 #define ADC_1 ADC_Channel_1

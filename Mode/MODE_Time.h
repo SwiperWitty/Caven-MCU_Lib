@@ -1,7 +1,9 @@
+
 #ifndef _TIME_H__
 #define _TIME_H__
 
 /*
+    MODE_Time.h
     这个文件不依赖MCU的MDK（指编译能过）
     但是需要使用Base文件才能正常运行
     一般依赖于 SysTick & SysTick_Handler，缺一不可
@@ -10,46 +12,54 @@
     我做了一件及其愚蠢的事情（耗时2天），以后所有的栈都必须加括号！！！！！
                                                                         ————2022.10.21
     
-    
 */
 
 #include "Base.h"
-#include "Caven_Type.h"
+#include "API.h"
 
-struct _SYS_Time
+#define Exist_SYS_TIME
+
+typedef struct
 {
-    struct Caven_Date Date;
-    struct Caven_Watch Watch;
-    volatile int sys_sec;
-};
+    Caven_Date_Type Date;
+    Caven_Watch_Type Watch;
+    Caven_TIME_Type TIME;
+    volatile int SYNC_Flag;
+}Real_TIME_Type;
 
-struct Delay_
+
+typedef struct
 {
-    void (*Delay_us)(int num);
-    void (*Delay_ms)(int num);
-    void (*Delay_S)(int num);
-};
+    void (*Set_Date_Fun) (Caven_Date_Type time);
+    void (*Set_Watch_Fun) (Caven_Watch_Type time);
 
-struct TIME_
-{
-	void (*Set_TIME) (struct Caven_Watch);
-	struct Caven_Watch (*Get_TIME) (void);
-	int (*Get_Lose_Time) (struct Caven_Watch time);
-};
+    Caven_Date_Type (*Get_Date_Fun) (void);
+    Caven_Watch_Type (*Get_Watch_Fun) (void);
+    Caven_Watch_Type (*Get_differ_Fun) (Caven_Watch_Type temp_a,
+                                        Caven_Watch_Type temp_b);
+    int (*SYNC_TIME_Fun) (void);
 
-#ifdef Exist_SYS_TIME
-extern struct _SYS_Time SYS_Time;
+    void (*Delay_Us) (int num);
+    void (*Delay_Ms) (int num);
+    void (*Delay_S)  (int num);
+}MODE_TIME_Way;
+
+
+int MODE_TIME_Init(int SET);
+
+void MODE_TIME_Set_Date_Fun (Caven_Date_Type time);
+void MODE_TIME_Set_Watch_Fun (Caven_Watch_Type time);
+
+Caven_Date_Type MODE_TIME_Get_Date_Fun (void);
+Caven_Watch_Type MODE_TIME_Get_Watch_Fun (void);
+Caven_Watch_Type  MODE_TIME_Get_differ_Fun (Caven_Watch_Type temp_a,
+                                    Caven_Watch_Type temp_b);
+int SYNC_TIME_Fun (void);
+
+void MODE_Delay_Us(int num);
+void MODE_Delay_Ms(int num);
+void MODE_Delay_S (int num);
+
+
 #endif
 
-void Sys_Clock_Init(int SET);
-
-void Delay_10us(int num);
-void Delay_ms(int num);
-void Delay_S(char num);
-
-void Set_TIME (struct Caven_Watch);
-struct Caven_Watch MODE_Get_TIME (void);
-int Get_Lose_Time (struct Caven_Watch time);
-
-
-#endif

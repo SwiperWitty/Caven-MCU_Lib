@@ -1,7 +1,8 @@
 #ifndef _MODE_H__
 #define _MODE_H__
+
 #include "Base.h"
-#include "Caven_Type.h"
+#include "API.h"
 
 #ifdef Exist_SYS_TIME
     #include "MODE_Time.h"
@@ -86,52 +87,52 @@ struct _Mode_Init
 {
     char empty;
 #ifdef Exist_LCD
-	void (*LCD)(int SET);
+	int (*LCD)(int SET);
 #endif
 #ifdef Exist_SYS_TIME
-	void (*Sys_Clock)(int SET);
+	int (*TIME)(int SET);
 #endif
 
 #ifdef Exist_UART
-    int (*UART)(char Channel, const int Baud,D_pFun UART_pFun,int SET);
+	int (*UART)(UART_mType Channel,int Baud,int SET);
 #endif
 #ifdef Exist_USB
-	void (*USB)(int SET);
+	int (*USB)(int SET);
 #endif
     
 #ifdef Exist_LED
-	void (*LED)(int SET);
+	int (*LED)(int SET);
 #endif
 #ifdef Exist_BZZ
-    void (*BZZ)(int SET);
+	int (*BZZ)(int SET);
 #endif
 #ifdef Exist_HC595
-    void (*HC_595)(int SET);
+	int (*HC_595)(int SET);
 #endif
 #ifdef Exist_HC138
-    void (*HC_138)(int SET);
+	int (*HC_138)(int SET);
 #endif
 
 #ifdef Exist_DS18B20
-    char (*DS18B20)(int SET);
+	int (*DS18B20)(int SET);
 #endif
 
 #ifdef Exist_KEY
-    void (*KEY)(char Channel,int SET);
+	int (*KEY)(char Channel,int SET);
 #endif
 #ifdef Exist_Ultrasonic
-    void (*Ultrasonic)(int SET);
+	int (*Ultrasonic)(int SET);
 #endif
 
 #ifdef Exist_Voice
-    void (*Voice) (int Set);
+	int (*Voice) (int Set);
 #endif
 #ifdef Exist_Steering_Engine
-    void (*Steering_Engine) (int Set);
+	int (*Steering_Engine) (int Set);
 #endif
 
 #ifdef Exist_ADC
-    void (*User_ADC) (int Set);
+	int (*User_ADC) (int Set);
 #endif
 
 
@@ -140,20 +141,19 @@ struct _Mode_Init
 struct _Mode_Use
 {
     void (*Debug_Out)(const char *String);          //提倡写一个Debug
-#ifdef Exist_LCD
-    struct LCD_ LCD;
-#endif
+
 #ifdef Exist_SYS_TIME
-    struct Delay_ Delay;
-	struct TIME_ Sys_Clock;
+    MODE_TIME_Way TIME;
 #endif
 #ifdef Exist_UART
-    struct _Uart_ UART;                             //面向对象
+    MODE_UART_Way UART;                             //面向对象
 #endif
 #ifdef Exist_USB
     struct USB_ USB_HID;
 #endif 
-
+#ifdef Exist_LCD
+    struct LCD_ LCD;
+#endif
 #ifdef Exist_LED
     struct LED_ LED;
 #endif
@@ -191,15 +191,6 @@ struct _Mode_Use
 
 void Mode_Index(void); //初始化Mode函数索引,真正功能的初始化请调用结构体中函数指针(Mode_Init)
 void Debug_Out(const char *String);
-
-
-//以下是勘误，如果你已完成配置请将其注释！
-
-#if END_Data != NO_END
-//    #warning "Attention that UART requires end Data !!! File: ./Base./<Base_UART.h> "
-#endif
-
-
 
 
 

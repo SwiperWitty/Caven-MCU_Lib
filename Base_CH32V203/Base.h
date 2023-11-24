@@ -1,11 +1,9 @@
 #ifndef _BASE_H__
 #define _BASE_H__
 
-#ifdef DEFAULT
+#if DEFAULT
 #include "items.h"              //默认功能
-#endif
-
-#ifndef DEFAULT
+#else
 #include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
 #endif
 
@@ -25,7 +23,7 @@
 #include "Base_UART.h"
 #endif
 
-#ifdef Exist_UART
+#ifdef Exist_USB
 #include "USB_User.h"
 #endif
 

@@ -11,7 +11,7 @@ int Freq_us;
 //
 SYS_Tick_type SYS_Ticktime = {0};       //无需担心，他是自动的
 
-void Sys_Time_Init(int Set)
+void SYS_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
     Tick_Full = Tick_Set_CMP;
@@ -77,23 +77,37 @@ void SET_SysTick(uint64_t time)
 #endif
 }
 
-void IWDG_Configuration(void)
+void SYS_Set_Tick (Caven_TIME_Type * time)
 {
 
 }
 
-void Feed_watchdog(void)
+void SYS_Get_Tick (Caven_TIME_Type * time)
 {
 
+}
+
+void SYS_IWDG_Configuration (void)
+{
+#ifdef Exist_SYS_TIME
+
+#endif
+}
+
+void SYS_Feed_Watchdog (void)
+{
+#ifdef Exist_SYS_TIME
+
+#endif
 } 
 
 // Delay
 /*
     a * b 个 NOP
 */
-void Base_Delay (int time,int Speed)
+void SYS_Base_Delay (int time,int Speed)
 {
-    #ifdef NOP
+#ifdef NOP
     volatile int temp;
     for (int i = 0; i < time; ++i)
     {
@@ -102,7 +116,7 @@ void Base_Delay (int time,int Speed)
             NOP();
         }while((temp--) > 0);
     }
-    #endif
+#endif
 }
 
 void SYS_Delay_us(int n)

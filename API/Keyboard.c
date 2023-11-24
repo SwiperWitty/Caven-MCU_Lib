@@ -1,8 +1,6 @@
 /*
  * Keyboard.c
  *
- *  Created on: 2022年7月22日
- *      Author: gxwl
  */
 #include "keyboard.h"
 

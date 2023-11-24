@@ -1,16 +1,11 @@
 #ifndef __Exist_GPIO__H_
 #define __Exist_GPIO__H_
 
-#include "Items.h"
-
-/*
-                GPIO_Init(Exist_GPIO)->
-    SDK->Items->                       BASE->
-                Peripheral(UART、ADC)->      \\
-                                              -->[XXX]->MODE
-                                             //
-                        C(Lib)->Caven->API->
-*/
+#if DEFAULT
+#include "items.h"              //默认功能
+#else
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
 
 /*
         本文件在上述关系图中属于 【GPIO_Init】
@@ -38,12 +33,12 @@
 //    #define LCD_RES_Set()
 #endif
 
-#ifdef Exist_LED
+//#ifdef Exist_LED
     #define LED_Clr() GPIOB->BCR = GPIO_Pin_11    //LED
     #define LED_Set() GPIOB->BSHR = GPIO_Pin_11   //PB011
     #define LEDR_Clr() GPIOA->BCR = GPIO_Pin_8    //LED_Red
     #define LEDR_Set() GPIOA->BSHR = GPIO_Pin_8   //PA008
-#endif
+//#endif
 #ifdef Exist_BZZ
     #define BZZ_Clr() GPIOB->BCR = GPIO_Pin_5    //BZZ
     #define BZZ_Set() GPIOB->BSHR = GPIO_Pin_5   //PB05
@@ -65,6 +60,5 @@ void LED_GPIO_Init(int SET);
 void BZZ_GPIO_Init(int SET);
 
 void KEY_GPIO_Init(int SET);
-void GXIC_GPIO_Init(int SET);
 
 #endif

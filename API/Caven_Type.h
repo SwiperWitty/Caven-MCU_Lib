@@ -2,9 +2,9 @@
 #define _CAVEN_TYPE__H_
 
 /*
-    这是一个【纯C】的【.h】文件，是各个底层【.h】的 “共同语言”，上层管理函数的【.h】不需要包含
-    仅用于32位系统
-    #include "Caven_Type.h"
+ * Caven_Type.h file
+ * 这是一个【纯C】的【.h】文件，是各个底层【.h】的 “共同语言”，上层管理函数的【.h】不需要包含
+ *
 */
 #include "stdio.h"
 #include "stdlib.h"
@@ -12,11 +12,11 @@
 #include "stdint.h"
 
 /*
-    SDK->Items->GPIO(Exist_GPIO)->BASE->
-                                         \\
-                                          -->[XXX]->MODE
-                                         //
-                    C(Lib)->Caven->API->
+ *          SDK->Items
+ *                      \\
+ *                      -->Base     -->Mode
+ *                      //          //
+ *  C(Lib)->Caven_Type->        API
 */
 
 #ifndef u8
@@ -49,31 +49,38 @@
     #define MIN(a,b)    ((a)<(b))?(a):(b)               // 比较函数返回最小值，防止过大
 #endif
 
-#define Destroy(X,N) memset((X),0,(N))                  // 销毁 的地址 (X)  长度 (N)
+#define DESTROY(X,N) memset((X),0,(N))                  // 销毁 的地址 (X)  长度 (N)
 
 
-#define Buff_Length 300
+#define BUFF_MAX 300
 
 
-// 日期
-typedef struct Caven_Date
+// 日期 8byte
+typedef struct
 {
     int year;
     U8 month;
     U8 day;
-    U8 week;
+    U16 Days;
 }Caven_Date_Type;
 
-// 时间
-typedef struct Caven_Watch
+// 时间 8byte
+typedef struct
 {
     U8 hour;
     U8 minutes;
     U8 second;
-    U32 time_us;          // 这里 1000 000为1S （us）
+    U32 time_us;          // 这里最大 1000 000
 }Caven_Watch_Type;
 
-// 颜色
+// 系统运行总时长 8byte
+typedef struct
+{
+    U32 SYS_Sec;
+    U32 SYS_Us;
+}Caven_TIME_Type;
+
+// 颜色 4byte
 typedef struct Caven_Color
 {
     U8 REG;
@@ -99,7 +106,7 @@ typedef struct Caven_Data           //这个数据是动态的
 
 
 // Function
-typedef void (*D_pFun) (uint8_t data);
-
+typedef void (*D_pFun) (u8 data);
+typedef void (*V_pFun) (void);
 
 #endif

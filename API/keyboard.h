@@ -1,8 +1,6 @@
 /*
  * keyboard.h
  *
- *  Created on: 2022年7月22日
- *      Author: gxwl
  *      键盘表
  */
 

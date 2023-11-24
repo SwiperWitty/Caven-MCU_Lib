@@ -1,14 +1,16 @@
 /*
- * Flash.h
+ * Base_Flash.h
  *
- *  Created on: 2022年8月1日
- *      Author: gxwl
  */
 
 #ifndef __FLASH_H_
 #define __FLASH_H_
 
-#include "Items.h"
+#if DEFAULT
+#include "items.h"              //默认功能
+#else
+#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#endif
 
 #ifdef Exist_FLASH
     #define FLASH_PAGE_SIZE ((uint32_t)256)         //一页的大小
