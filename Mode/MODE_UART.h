@@ -23,10 +23,10 @@
 
 typedef struct
 {
-    void (*Send_String_Fun)(UART_mType Channel, const char *String);
-    void (*Send_Data_Fun)(UART_mType Channel, const U8 *Data, int Length);
+    void (*Send_String_pFun)(UART_mType Channel, const char *String);
+    void (*Send_Data_pFun)(UART_mType Channel, const U8 *Data, int Length);
     
-    void (*Receive_Bind_Fun)(UART_mType Channel, D_pFun UART_pFun);
+    void (*Receive_Bind_pFun)(UART_mType Channel, D_pFun UART_pFun);
 }MODE_UART_Way;
 
 

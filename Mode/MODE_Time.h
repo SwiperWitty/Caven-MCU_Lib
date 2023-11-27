@@ -19,6 +19,10 @@
 
 #define Exist_SYS_TIME
 
+/*
+ * (Date.Days + Watch) -> TIME -> Tick
+ *
+ */
 typedef struct
 {
     Caven_Date_Type Date;
@@ -30,31 +34,31 @@ typedef struct
 
 typedef struct
 {
-    void (*Set_Date_Fun) (Caven_Date_Type time);
-    void (*Set_Watch_Fun) (Caven_Watch_Type time);
+    void (*Set_Date_pFun)(Caven_Date_Type time);
+    void (*Set_Watch_pFun)(Caven_Watch_Type time);
 
-    Caven_Date_Type (*Get_Date_Fun) (void);
-    Caven_Watch_Type (*Get_Watch_Fun) (void);
-    Caven_Watch_Type (*Get_differ_Fun) (Caven_Watch_Type temp_a,
-                                        Caven_Watch_Type temp_b);
-    int (*SYNC_TIME_Fun) (void);
+    Caven_Date_Type (*Get_Date_pFun)(void);
+    Caven_Watch_Type (*Get_Watch_pFun)(void);
+    Caven_Watch_Type (*Get_differ_pFun)(Caven_Watch_Type temp_a,
+                                       Caven_Watch_Type temp_b);
+    int (*SYNC_TIME_pFun)(void);
 
-    void (*Delay_Us) (int num);
-    void (*Delay_Ms) (int num);
-    void (*Delay_S)  (int num);
+    void (*Delay_Us)(int num);
+    void (*Delay_Ms)(int num);
+    void (*Delay_S) (int num);
 }MODE_TIME_Way;
 
 
 int MODE_TIME_Init(int SET);
 
-void MODE_TIME_Set_Date_Fun (Caven_Date_Type time);
-void MODE_TIME_Set_Watch_Fun (Caven_Watch_Type time);
+void MODE_TIME_Set_Date_Fun(Caven_Date_Type time);
+void MODE_TIME_Set_Watch_Fun(Caven_Watch_Type time);
 
-Caven_Date_Type MODE_TIME_Get_Date_Fun (void);
-Caven_Watch_Type MODE_TIME_Get_Watch_Fun (void);
-Caven_Watch_Type  MODE_TIME_Get_differ_Fun (Caven_Watch_Type temp_a,
-                                    Caven_Watch_Type temp_b);
-int SYNC_TIME_Fun (void);
+Caven_Date_Type MODE_TIME_Get_Date_Fun(void);
+Caven_Watch_Type MODE_TIME_Get_Watch_Fun(void);
+Caven_Watch_Type  MODE_TIME_Get_differ_Fun(Caven_Watch_Type temp_a,
+                                            Caven_Watch_Type temp_b);
+int SYNC_TIME_Fun(void);
 
 void MODE_Delay_Us(int num);
 void MODE_Delay_Ms(int num);

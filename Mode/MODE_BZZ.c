@@ -1,17 +1,17 @@
-#include "BZZ.h"
+#include <MODE_BZZ.h>
 
-void BZZ_Init(int SET)
+void MODE_BZZ_Init(int SET)
 {
     #ifdef Exist_BZZ
     BZZ_GPIO_Init(SET);
-    BZZ_SET(DISABLE);
+    MODE_BZZ_SET_Fun(DISABLE);
     #endif
 }
 
 /*
  * 蜂鸣器必须用NPN管不然给爷死
  */
-void BZZ_SET(int SET)
+void MODE_BZZ_SET_Fun(int SET)
 {
     #ifdef Exist_BZZ
     if(SET)

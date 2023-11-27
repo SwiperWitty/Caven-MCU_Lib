@@ -9,17 +9,17 @@
 #endif
 
 #ifdef Exist_LCD
-    #include "LCD.h"            //显示输出
+    #include "MODE_LCD.h"            //显示输出
 #endif
 #ifdef Exist_OLED
     #include "OLED.h"            //显示输出
 #endif
 
 #ifdef Exist_BZZ
-    #include "BZZ.h"            //BZZ输出
+    #include <MODE_BZZ.h>            //BZZ输出
 #endif
 #ifdef Exist_LED
-    #include "LED.h"            //LED输出
+    #include <MODE_LED.h>            //LED输出
 #endif
 
 #ifdef Exist_UART
@@ -51,8 +51,8 @@
     #include "MODE_motor.h"
 #endif
 
-#ifdef Exist_KEY
-    #include "KEY.h"            //按键输入
+#ifdef EXIST_BUTTON
+    #include "MODE_Button.h"            //按键输入
 #endif
 
 #ifdef Exist_FindLine
@@ -87,7 +87,7 @@ struct _Mode_Init
 {
     char empty;
 #ifdef Exist_LCD
-	int (*LCD)(int SET);
+	void (*LCD)(int SET);
 #endif
 #ifdef Exist_SYS_TIME
 	int (*TIME)(int SET);
@@ -101,16 +101,16 @@ struct _Mode_Init
 #endif
     
 #ifdef Exist_LED
-	int (*LED)(int SET);
+	void (*LED)(int SET);
 #endif
 #ifdef Exist_BZZ
-	int (*BZZ)(int SET);
+	void (*BZZ)(int SET);
 #endif
 #ifdef Exist_HC595
-	int (*HC_595)(int SET);
+	void (*HC_595)(int SET);
 #endif
 #ifdef Exist_HC138
-	int (*HC_138)(int SET);
+	void (*HC_138)(int SET);
 #endif
 
 #ifdef Exist_DS18B20
@@ -118,7 +118,7 @@ struct _Mode_Init
 #endif
 
 #ifdef Exist_KEY
-	int (*KEY)(char Channel,int SET);
+	void (*KEY)(char Channel,int SET);
 #endif
 #ifdef Exist_Ultrasonic
 	int (*Ultrasonic)(int SET);
@@ -155,10 +155,10 @@ struct _Mode_Use
     struct LCD_ LCD;
 #endif
 #ifdef Exist_LED
-    struct LED_ LED;
+    MODE_LED_Way LED;
 #endif
     #ifdef Exist_BZZ
-    struct BZZ_ BZZ;
+    MODE_BZZ_Way BZZ;
 #endif
 #ifdef Exist_HC595
     struct HC595_ HC595;

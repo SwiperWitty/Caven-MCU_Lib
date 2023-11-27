@@ -47,6 +47,7 @@ void SYS_Feed_Watchdog (void);
     #define TICK_SET_CMP    ~((u64)0x00)        //(Tick_Frequency / 2)       //设置滴答初始值(/2 就是 1/2 s)
     #define TICK_OVER_IT                        //定时器中断一次需要的时间
 
+    #define SYSTICK_NUM (SysTick->CNT)
     #define SYS_TIME_INTERRUPT_GETFLAG()    SysTick->SR
     #define SYS_TIME_INTERRUPT_CLEANFLAG()  SysTick->SR = 0
 
@@ -72,7 +73,7 @@ void SYS_Time_Set(Caven_TIME_Type * time);
 void SYS_Time_Get(Caven_TIME_Type * time);
 
 // Delay
-void SYS_Base_Delay(int time,int Speed);
+void SYS_Delay_Base(int time, int speed);
 
 void SYS_Delay_us(int n);
 void SYS_Delay_ms(int n);

@@ -130,7 +130,6 @@ void Uart1_Init(int Baud,int SET)
         temp = ENABLE;
     else
         temp = DISABLE;
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, temp);	  // USART1  (APB2)
 //  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟(暂不需要)
@@ -189,28 +188,29 @@ void UART1_HANDLERIT()
 #if (Exist_UART & OPEN_0100)
 void Uart2_Init(int Baud,int SET)
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-    
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+    USART_InitTypeDef USART_InitStructure = {0};
+    NVIC_InitTypeDef NVIC_InitStructure = {0};
+    USART_TypeDef * UART_Temp = USART2;
     FunctionalState temp;
+
     if(SET)
         temp = ENABLE;
     else
         temp = DISABLE;
-    
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);		 //设置中断组，4位抢占优先级，4位响应优先级
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE); // AFIO复用功能模块时钟
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE); //  PA02 PA03
-    RCC_APB2PeriphClockCmd(RCC_APB1Periph_USART2, temp);
-    
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;		// USART2 TX；
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推挽输出；
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, temp);    // USART2  (APB1)
+//  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);    // AFIO复用功能模块时钟(暂不需要)
+//  GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);         //端口复用
+    USART_DeInit(UART_Temp);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;       // RXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;       // TXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-    GPIO_Init(GPIOA, &GPIO_InitStructure);				  //端口A；
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;			  // USART2 RX；
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入；
-    GPIO_Init(GPIOA, &GPIO_InitStructure);				  //端口A；
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     if (!temp)
     {
@@ -219,23 +219,22 @@ void Uart2_Init(int Baud,int SET)
     }
     GPIO_Init(GPIOA, &GPIO_InitStructure);
 
-    USART_InitStructure.USART_BaudRate = Baud;					//波特率；
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //数据位8位；
-    USART_InitStructure.USART_StopBits = USART_StopBits_1;		//停止位1位；
-    USART_InitStructure.USART_Parity = USART_Parity_No;			//无校验位；
+    USART_InitStructure.USART_BaudRate = Baud;
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-    USART_Init(USART2, &USART_InitStructure);		//配置串口参数
-    
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); //设置中断组，4位抢占优先级，4位响应优先级；
-    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;		  //中断号；
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; //抢占优先级；
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;		  //响应优先级
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
+    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+    USART_InitStructure.USART_Parity = USART_Parity_No;         //
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;      //
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //
+    USART_Init(UART_Temp, &USART_InitStructure);
+    USART_ITConfig(UART_Temp, RXD_Falg, temp);
 
-    USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
-    USART_Cmd(USART2, temp); //使能串口
+    NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;           // USART2
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;   // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;          // 响应优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = temp;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    USART_Cmd(UART_Temp, temp);
 }
 
 void UART2_HANDLERIT()

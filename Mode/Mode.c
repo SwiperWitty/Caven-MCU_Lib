@@ -8,18 +8,18 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 {
     Mode_Use.Debug_Out = NULL;
 #ifdef Exist_LCD
-    Mode_Use.LCD.Fill = LCD_Fill;
+    Mode_Use.LCD.Fill_pFun = LCD_Fill;
 
-    Mode_Use.LCD.Draw_Point = LCD_Draw_Point;
-    Mode_Use.LCD.Draw_Line = LCD_Draw_Line;
-    Mode_Use.LCD.Draw_Circle = LCD_Draw_Circle;
-    Mode_Use.LCD.Draw_Rectangle = LCD_Draw_Rectangle;
+    Mode_Use.LCD.Draw_Point_pFun = LCD_Draw_Point;
+    Mode_Use.LCD.Draw_Line_pFun = LCD_Draw_Line;
+    Mode_Use.LCD.Draw_Circle_pFun = LCD_Draw_Circle;
+    Mode_Use.LCD.Draw_Rectangle_pFun = LCD_Draw_Rectangle;
     
-    Mode_Use.LCD.Show_String = LCD_Show_String;
-    Mode_Use.LCD.Show_Chinese = LCD_Show_Chinese;
-    Mode_Use.LCD.Show_Picture = LCD_Show_Picture;
+    Mode_Use.LCD.Show_String_pFun = LCD_Show_String;
+    Mode_Use.LCD.Show_Chinese_pFun = LCD_Show_Chinese;
+    Mode_Use.LCD.Show_Picture_pFun = LCD_Show_Picture;
 
-    Mode_Use.LCD.Set_HORIZONTAL = LCD_Set_HORIZONTAL;
+    Mode_Use.LCD.Set_Direction_pFun = LCD_Set_HORIZONTAL;
 #endif
 
 #ifdef Exist_SYS_TIME
@@ -27,23 +27,23 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.TIME.Delay_Ms = MODE_Delay_Ms;
     Mode_Use.TIME.Delay_S = MODE_Delay_S;
 	
-    Mode_Use.TIME.Get_Watch_Fun = MODE_TIME_Get_Watch_Fun;
-    Mode_Use.TIME.Get_Date_Fun = MODE_TIME_Get_Date_Fun;
-    Mode_Use.TIME.Get_differ_Fun = MODE_TIME_Get_differ_Fun;
-    Mode_Use.TIME.SYNC_TIME_Fun = SYNC_TIME_Fun;
+    Mode_Use.TIME.Get_Watch_pFun = MODE_TIME_Get_Watch_Fun;
+    Mode_Use.TIME.Get_Date_pFun = MODE_TIME_Get_Date_Fun;
+    Mode_Use.TIME.Get_differ_pFun = MODE_TIME_Get_differ_Fun;
+    Mode_Use.TIME.SYNC_TIME_pFun = SYNC_TIME_Fun;
 
-    Mode_Use.TIME.Set_Date_Fun = MODE_TIME_Set_Date_Fun;
-    Mode_Use.TIME.Set_Watch_Fun = MODE_TIME_Set_Watch_Fun;
+    Mode_Use.TIME.Set_Date_pFun = MODE_TIME_Set_Date_Fun;
+    Mode_Use.TIME.Set_Watch_pFun = MODE_TIME_Set_Watch_Fun;
 
 #endif
 
 #ifdef Exist_LED
-    Mode_Use.LED.LED_SET = MODE_LED_SET;
-    Mode_Use.LED.LED_REG = MODE_LED_REG;
+    Mode_Use.LED.RGB_pFun = MODE_LED_RGB_Fun;
+    Mode_Use.LED.SET_pFun = MODE_LED_SET_Fun;
 
 #endif
 #ifdef Exist_BZZ
-    Mode_Use.BZZ.BZZ_SET = BZZ_SET;
+    Mode_Use.BZZ.SET_pFun = MODE_BZZ_SET_Fun;
 #endif
 #ifdef Exist_HC595
     Mode_Use.HC595.Set_DATA = HC595_Set_DATA;
@@ -56,9 +56,9 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 #endif
 
 #ifdef Exist_UART
-    Mode_Use.UART.Send_Data_Fun = MODE_UART_Send_Data_Fun;
-    Mode_Use.UART.Send_String_Fun = MODE_UART_Send_String_Fun;
-    Mode_Use.UART.Receive_Bind_Fun = MODE_UART_Receive_Bind_Fun;
+    Mode_Use.UART.Send_Data_pFun = MODE_UART_Send_Data_Fun;
+    Mode_Use.UART.Send_String_pFun = MODE_UART_Send_String_Fun;
+    Mode_Use.UART.Receive_Bind_pFun = MODE_UART_Receive_Bind_Fun;
 #endif
 
 #ifdef Exist_USB
@@ -100,7 +100,7 @@ void Mode_Index(void)
 #ifdef Exist_SYS_TIME
     Mode_Init.TIME = MODE_TIME_Init;
 #endif
-    
+
 #ifdef Exist_UART
     Mode_Init.UART = MODE_UART_Init;
 #endif
@@ -112,10 +112,10 @@ void Mode_Index(void)
     Mode_Init.LED = MODE_LED_Init;
 #endif
 #ifdef Exist_LCD
-    Mode_Init.LCD = LCD_Init;
+    Mode_Init.LCD = MODE_LCD_Init;
 #endif
 #ifdef Exist_BZZ
-    Mode_Init.BZZ = BZZ_Init;
+    Mode_Init.BZZ = MODE_BZZ_Init;
 #endif
 
 #ifdef Exist_HC595

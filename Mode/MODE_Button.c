@@ -1,8 +1,8 @@
-#include "key.h"
+#include "MODE_Button.h"
 
-void KEY_Init (char Channel,int Set)
+void MODE_Button_Init (char Channel,int Set)
 {
-#ifdef Exist_KEY
+#ifdef Exist_BUTTON
     switch (Channel) {
         case 0:
             break;
@@ -18,15 +18,17 @@ void KEY_Init (char Channel,int Set)
 #endif
 }
 
-U8 KEY_State (char Channel)
+u32 MODE_Get_Button_STATE (char Channel)
 {
-    U8 temp = 1;
-	#ifdef Exist_KEY
+    u32 temp = 0;
+	#ifdef Exist_BUTTON
     switch (Channel) {
         case 0:
             break;
         case 1:
-            temp = KEY_R();
+            if (BUTTON_STATE()) {
+                temp |= (0x01 << Channel);
+            }
             break;
         default:
             break;

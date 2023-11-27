@@ -2,7 +2,7 @@
 #define __Exist_GPIO__H_
 
 #if DEFAULT
-#include "items.h"              //默认功能
+#include "Items.h"              //默认功能
 #else
 #include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
 #endif
@@ -18,38 +18,37 @@
  */
 
 #ifdef Exist_LCD
-    #define LCD_DC_Clr() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
-    #define LCD_DC_Set() GPIOA->BSHR = GPIO_Pin_10   //PA10
-//    #define LCD_RES_Clr()                                     //RES               //Caven 使用硬件复位
-//    #define LCD_RES_Set()
+    #define OLED_DC_L() GPIO_ResetBits(GPIOA, GPIO_Pin_10)  //DC_GPIO
+    #define OLED_DC_H() GPIO_SetBits(GPIOA, GPIO_Pin_10)    //PA10
+
+    #define LCD_RES_L() GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //RES
+    #define LCD_RES_H() GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB0
 #endif
 
 #ifdef Exist_OLED
+    #define OLED_DC_L() GPIO_ResetBits(GPIOA, GPIO_Pin_10)  //DC_GPIO
+    #define OLED_DC_H() GPIO_SetBits(GPIOA, GPIO_Pin_10)    //PA10
 
-    #define OLED_DC_Clr() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
-    #define OLED_DC_Set() GPIOA->BSHR = GPIO_Pin_10   //PA10
-
-//    #define LCD_RES_Clr()                                     //RES               //Caven 使用硬件复位
-//    #define LCD_RES_Set()
+    #define LCD_RES_L() GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //RES
+    #define LCD_RES_H() GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB0
 #endif
 
-//#ifdef Exist_LED
-    #define LED_Clr() GPIOB->BCR = GPIO_Pin_11    //LED
-    #define LED_Set() GPIOB->BSHR = GPIO_Pin_11   //PB011
-    #define LEDR_Clr() GPIOA->BCR = GPIO_Pin_8    //LED_Red
-    #define LEDR_Set() GPIOA->BSHR = GPIO_Pin_8   //PA008
-//#endif
+#ifdef Exist_LED
+    #define LED_L()     GPIO_ResetBits(GPIOB, GPIO_Pin_4)   //LED
+    #define LED_H()     GPIO_SetBits(GPIOB, GPIO_Pin_4)     //PB04
+    #define LEDBLUE_L()  GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //LED_bluetooth
+    #define LEDBLUE_H()  GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB00
+    #define LEDWIFI_L() GPIO_ResetBits(GPIOB, GPIO_Pin_1)   //LED
+    #define LEDWIFI_H() GPIO_SetBits(GPIOB, GPIO_Pin_1)     //PB01
+#endif
 #ifdef Exist_BZZ
-    #define BZZ_Clr() GPIOB->BCR = GPIO_Pin_5    //BZZ
-    #define BZZ_Set() GPIOB->BSHR = GPIO_Pin_5   //PB05
+    #define BZZ_L() GPIO_ResetBits(GPIOB, GPIO_Pin_7)   //LED
+    #define BZZ_H() GPIO_SetBits(GPIOB, GPIO_Pin_7)     //PB07
 #endif
 
-#ifdef Exist_KEY
-    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,读
+#ifdef Exist_BUTTON
+    #define BUTTON_STATE() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     // Button
 #endif
-
-    #define Reset_L() GPIOB->BCR = GPIO_Pin_14
-    #define Reset_H() GPIOB->BSHR = GPIO_Pin_14
 
 
 /*  Init-Function    */

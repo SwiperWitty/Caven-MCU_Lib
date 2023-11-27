@@ -8,15 +8,7 @@
 
 
 
-Real_TIME_Type Real_TIME = {
-    .Watch.hour = 23,
-    .Watch.minutes = 59,
-    .Watch.second = 56,
-    
-    .Date.Days = 0,
-
-    .SYNC_Flag = 0,
-};
+Real_TIME_Type Real_TIME = {0};
 
 
 int MODE_TIME_Init(int SET)
@@ -104,8 +96,8 @@ Caven_Watch_Type  MODE_TIME_Get_differ_Fun(Caven_Watch_Type temp_a,Caven_Watch_T
 
 /* 
  * sync
- * SYNC_Flag = 0; TIME -> Watch Date
- * SYNC_Flag = 1; Watch Date -> TIME
+ * SYNC_Flag = 0; TIME -> Watch+Date
+ * SYNC_Flag = 1; Watch+Date -> TIME
  *
 */
 int SYNC_TIME_Fun (void)
@@ -116,11 +108,12 @@ int SYNC_TIME_Fun (void)
     if (Real_TIME.SYNC_Flag) 
     {
         i = API_Hourly_to_Seconds(Real_TIME.Watch);
-        j = Real_TIME.Date.Days * 86400;
+        j = Real_TIME.Date.Days;
+        j *= 86400;
         k = i + j;
         Real_TIME.TIME.SYS_Sec = k;
         Real_TIME.TIME.SYS_Us = Real_TIME.Watch.time_us;
-
+//        printf("SYNC_TIME : set i: %d,j: %d,sec：%d,us:%d \n",i,j,Real_TIME.TIME.SYS_Sec,Real_TIME.Watch.time_us);
         SYS_Time_Set(&Real_TIME.TIME);
     }
     else
@@ -143,7 +136,7 @@ int SYNC_TIME_Fun (void)
 
 // delay
 #if 1
-void Delay_Us(int num)
+void MODE_Delay_Us(int num)
 {
 #ifdef Exist_SYS_TIME
     SYS_Delay_us(num);
@@ -151,7 +144,7 @@ void Delay_Us(int num)
     while(1);
 #endif
 }
-void Delay_Ms(int num)
+void MODE_Delay_Ms(int num)
 {
 #ifdef Exist_SYS_TIME
     SYS_Delay_ms (num);
@@ -159,7 +152,7 @@ void Delay_Ms(int num)
     while(1);
 #endif
 }
-void Delay_S(int num)
+void MODE_Delay_S(int num)
 {
 #ifdef Exist_SYS_TIME
     for (int i = 0; i < num; i++)

@@ -58,10 +58,10 @@
 // 日期 8byte
 typedef struct
 {
-    int year;
+    U16 year;
     U8 month;
     U8 day;
-    U16 Days;
+    int Days;
 }Caven_Date_Type;
 
 // 时间 8byte
@@ -81,7 +81,7 @@ typedef struct
 }Caven_TIME_Type;
 
 // 颜色 4byte
-typedef struct Caven_Color
+typedef struct
 {
     U8 REG;
     U8 GREEN;

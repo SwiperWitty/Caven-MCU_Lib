@@ -1,16 +1,15 @@
-#include "LED.h"
+#include <MODE_LED.h>
 
 
 void MODE_LED_Init(int SET)
 {
 #ifdef Exist_LED
     LED_GPIO_Init(SET);
-    MODE_LED_SET(1,DISABLE);
     
 #endif
 }
 
-void MODE_LED_SET(char Channel,int SET)
+void MODE_LED_SET_Fun(char Channel,int SET)
 {
 #ifdef Exist_LED
     switch (Channel) {
@@ -22,9 +21,15 @@ void MODE_LED_SET(char Channel,int SET)
             break;
         case 2:
             if(SET)
-                LEDR_L();
+                LEDBLUE_L();
             else
-                LEDR_H();
+                LEDBLUE_H();
+            break;
+        case 3:
+            if(SET)
+                LEDWIFI_L();
+            else
+                LEDWIFI_H();
             break;
         default:
             break;
@@ -35,11 +40,7 @@ void MODE_LED_SET(char Channel,int SET)
 
 void WS2812_Delay(int time)
 {
-    volatile int var;
-    for (var = time;var > 0;var--)
-    {
-
-    }
+    SYS_Delay_Base(time, 10);
 }
 
 void WS2812_Reset (void)
@@ -76,7 +77,7 @@ void WS2812_write_byte(char data)
 #endif
 }
 
-void MODE_LED_REG(struct Caven_Color Color,int SET)
+void MODE_LED_RGB_Fun(Caven_Color_Type Color,int SET)
 {
 //    NVIC_SETPRIMASK();
 	if(SET)

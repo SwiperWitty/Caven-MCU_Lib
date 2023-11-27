@@ -12,6 +12,7 @@
 static uint64_t s_Tick_cnt;
 static uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
 static uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
+static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
 
 static uint32_t SysTick_Config(u64 ticks)
 {
@@ -27,11 +28,10 @@ static uint32_t SysTick_Config(u64 ticks)
     //    SysTick->CTLR |= (u32)(0x01 << 31);       // 中断触发使能
 
     s_Frequency = TICK_FREQUENCY;
-    s_Frequency_us = TICK_FREQUENCY / 1000000;
+    s_Frequency_us = s_Frequency / 1000000;
+    s_Frequency_ms = s_Frequency / 1000;
     return (0);
 }
-
-#define SYSTICK_NUM (SysTick->CNT)
 
 #endif
 
@@ -56,8 +56,8 @@ void SYS_Time_Set(Caven_TIME_Type *time)
 #ifdef Exist_SYS_TIME
     int temp;
 
-    temp = time->SYS_Sec;
-    s_Tick_cnt = temp * s_Frequency;
+    s_Tick_cnt = time->SYS_Sec;
+    s_Tick_cnt *= s_Frequency;
 
     temp = time->SYS_Us;
     s_Tick_cnt += (temp * s_Frequency_us);
@@ -97,13 +97,13 @@ void SYS_Feed_Watchdog(void)
 }
 
 // delay
-void SYS_Base_Delay(int time, int Speed)
+void SYS_Delay_Base(int time, int speed)
 {
 #ifdef NOP
     volatile int temp;
     for (int i = 0; i < time; ++i)
     {
-        temp = Speed; // SET
+        temp = speed; // SET
         do
         {
             NOP();
@@ -115,22 +115,20 @@ void SYS_Base_Delay(int time, int Speed)
 void SYS_Delay_us(int n)
 {
 #ifdef Exist_SYS_TIME
-    u64 start_ticks, end_ticks;
-    int set_time = n * (SystemCoreClock / 1000000);
-    start_ticks = SYSTICK_NUM;
-
+    n = MIN(5000,n);
+    u32 set_time = n * s_Frequency_us;
+    s_Tick_cnt = SYSTICK_NUM;
     while (1)
     {
-        end_ticks = SYSTICK_NUM;
-        if (end_ticks > start_ticks)
+        if (SYSTICK_NUM > s_Tick_cnt)
         {
-            if ((end_ticks - start_ticks) >= set_time)
+            if ((SYSTICK_NUM - s_Tick_cnt) >= set_time)
                 break;
         }
         else
         {
-            SysTick->SR = 0; // 溢出了
-            if ((end_ticks + ((~((u64)0x00)) - start_ticks)) >= set_time)
+            SysTick->SR = 0;    // 溢出了
+            if ((SYSTICK_NUM + ((~((u64)0x00)) - s_Tick_cnt)) >= set_time)
                 break;
         }
     }
@@ -140,22 +138,20 @@ void SYS_Delay_us(int n)
 void SYS_Delay_ms(int n)
 {
 #ifdef Exist_SYS_TIME
-    u64 start_ticks, end_ticks;
-    int set_time = n * (SystemCoreClock / 1000);
-    start_ticks = SYSTICK_NUM;
-
+    n = MIN(5000,n);
+    u32 set_time = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
+    s_Tick_cnt = SYSTICK_NUM;
     while (1)
     {
-        end_ticks = SYSTICK_NUM;
-        if (end_ticks > start_ticks)
+        if (SYSTICK_NUM > s_Tick_cnt)
         {
-            if ((end_ticks - start_ticks) >= set_time)
+            if ((SYSTICK_NUM - s_Tick_cnt) >= set_time)
                 break;
         }
         else
         {
-            SysTick->SR = 0; // 溢出了
-            if ((end_ticks + ((~((u64)0x00)) - start_ticks)) >= set_time)
+            SysTick->SR = 0;    // 溢出了
+            if ((SYSTICK_NUM + ((~((u64)0x00)) - s_Tick_cnt)) >= set_time)
                 break;
         }
     }

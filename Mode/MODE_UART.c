@@ -10,12 +10,6 @@ int MODE_UART_Init(UART_mType Channel,int Baud,int SET)
     return retavl;
 }
 
-#ifdef Exist_UART
-
-#endif
-
-
-
 
 void MODE_UART_Send_Data_Fun(UART_mType Channel, const U8 *Data, int Length)
 {
