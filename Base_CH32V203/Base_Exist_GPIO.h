@@ -13,7 +13,6 @@
          其他功能的初始化（例如UART、IIC），除了先初始化【GPIO外设】还要【功能外设】，这种功能的初始化GPIO并不在本文件范围内。
          IIC有软件版本和硬件版本，所以它的GPIO跟本文件无关。
          但是LCD的驱动由SPI协议和DC（IO）接口组成，那么这个IO接口由本文件提供。
-
                                                                      ————202207.14
  */
 
@@ -42,14 +41,22 @@
     #define LEDWIFI_H() GPIO_SetBits(GPIOB, GPIO_Pin_1)     //PB01
 #endif
 #ifdef Exist_BZZ
-    #define BZZ_L() GPIO_ResetBits(GPIOB, GPIO_Pin_7)   //LED
-    #define BZZ_H() GPIO_SetBits(GPIOB, GPIO_Pin_7)     //PB07
+    #define BZZ_L() GPIO_ResetBits(GPIOB, GPIO_Pin_7)       //LED
+    #define BZZ_H() GPIO_SetBits(GPIOB, GPIO_Pin_7)         //PB07
 #endif
 
 #ifdef Exist_BUTTON
     #define BUTTON_STATE() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     // Button
 #endif
 
+#ifdef Exist_CustomIO
+    #define RSTIC_L()   GPIO_ResetBits(GPIOA, GPIO_Pin_8)   //RST
+    #define RSTIC_H()   GPIO_SetBits(GPIOA, GPIO_Pin_8)     //PA08
+    #define WIG0_L()    GPIO_ResetBits(GPIOB, GPIO_Pin_3)   //WIG0
+    #define WIG0_H()    GPIO_SetBits(GPIOB, GPIO_Pin_3)     //PB03
+    #define WIG1_L()    GPIO_ResetBits(GPIOA, GPIO_Pin_15)  //WIG1
+    #define WIG1_H()    GPIO_SetBits(GPIOA, GPIO_Pin_15)    //PA15
+#endif
 
 /*  Init-Function    */
 
@@ -58,6 +65,8 @@ void LCD_GPIO_Init(int SET);
 void LED_GPIO_Init(int SET);
 void BZZ_GPIO_Init(int SET);
 
-void KEY_GPIO_Init(int SET);
+void Button_GPIO_Init(int SET);
+
+void Custom_GPIO_Init(int SET);
 
 #endif

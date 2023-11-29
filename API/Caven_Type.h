@@ -11,6 +11,7 @@
 #include "string.h"
 #include "stdint.h"
 
+
 /*
  *          SDK->Items
  *                      \\
@@ -49,7 +50,7 @@
     #define MIN(a,b)    ((a)<(b))?(a):(b)               // 比较函数返回最小值，防止过大
 #endif
 
-#define DESTROY(X,N) memset((X),0,(N))                  // 销毁 的地址 (X)  长度 (N)
+#define DESTROY_DATA(X,N) memset((X),0,(N))             // 销毁 的地址 (X)  长度 (N)
 
 
 #define BUFF_MAX 300

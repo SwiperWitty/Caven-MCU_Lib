@@ -29,12 +29,14 @@ typedef struct
     unsigned char Cmd;      //1byte 6
     unsigned char Cmd_sub;  //1byte 7
 
-    unsigned short Size;    //2byte 9
+    unsigned short dSize;   //2byte 9
     unsigned char *p_Data;  // 
 
     unsigned char Result;   //1byte 
 
     unsigned short End_crc; //2byte 
+
+    unsigned char comm_way;
 }Caven_info_packet_Type; 
 
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);

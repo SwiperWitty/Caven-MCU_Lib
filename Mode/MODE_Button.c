@@ -7,7 +7,7 @@ void MODE_Button_Init (char Channel,int Set)
         case 0:
             break;
         case 1:
-            KEY_GPIO_Init(Set);
+            Button_GPIO_Init(Set);
             break;
         case 2:
 
