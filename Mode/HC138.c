@@ -38,6 +38,6 @@ void HC138_Set_Data (int Data)
     {
         HC138_D3_L();
     }
-    printf("asd %d \r\n",Data);
+//    printf("asd %d \r\n",Data);
 #endif
 }

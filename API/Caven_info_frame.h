@@ -39,6 +39,8 @@ typedef struct
     unsigned char comm_way;
 }Caven_info_packet_Type; 
 
+#define RESULT_DEFAULT  10
+
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);
 

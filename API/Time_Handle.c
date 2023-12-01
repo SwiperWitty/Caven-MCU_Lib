@@ -31,71 +31,118 @@ Caven_Watch_Type API_Seconds_to_Hourly(int Seconds)
     
     return temp;
 }
-/*
- *Over_Time函数需要时分秒、微秒
- *
- */
-char API_Over_Time(struct _Over_time *Item)
-{
-    if (Item->last_data != *(int *)Item->Now_data) // 数据在跳动
-    {
-        Item->last_data = *(int *)Item->Now_data;
-        Item->load = 0;
-        Item->Flag = 0;
-    }
-    else // 没有跳动
-    {
-        if (Item->load == 0) // 开始载入超时,如果数据未跳动或者未超时，那么他只载入一次
-        {
-            Item->load = 1;
-            Item->Flag = 0;
-            Item->last_Time = *Item->Now_Time;
-        }
-        else // 超时判定
-        {
-            int temp_num[2] = {0};
-            int temp_us = 0;
-            temp_num[0] = API_Hourly_to_Seconds(Item->last_Time);
-            temp_num[1] = API_Hourly_to_Seconds(*Item->Now_Time);//早算早舒服
-            
-            if(temp_num[0] > temp_num[1])
-            {
-                temp_num[1] += 24 * 3600;
-            }
-            
-            temp_num[0] = temp_num[1] - temp_num[0];        // 计算秒的差值
-            temp_num[1] = API_Hourly_to_Seconds(Item->Set_Time);// 计算设置的秒
-            
-            if(Item->Now_Time->time_us < Item->last_Time.time_us)
-            {
-                temp_num[0]--;
-                temp_us = (1000000 - Item->last_Time.time_us) + Item->Now_Time->time_us;    // 计算微秒差值
-            }
-            else
-            {
-                temp_us = Item->Now_Time->time_us - Item->last_Time.time_us;
-            }
-            
-            if(temp_us < Item->Set_Time.time_us)
-            {
-                temp_num[0]--;
-            }
-            
-            if ((temp_num[0] - temp_num[1]) >= 0) // 超时
-            {
-                Item->Flag = 'p';                   // 为 0 是常态，为 'p' 是瞬态
-                Item->Flip = !(Item->Flip);         // 为了让程序捕捉这个瞬态，引入一个翻转态
-                Item->load = 0;                     // 允许重装载
-            }
-            else                                    // 没有超时
-            {
-                Item->Flag = 0; // 为 0 是常态，为 'p' 是瞬态
-            }
-            
-//            printf("time dif :%d s, %d us\r\n",temp_num[0],temp_us);
-//            printf("time set :%d s, %d us\r\n",temp_num[1],Item->Set_Time.time_us);
 
+/*
+ * temp_a < temp_b  :   retval = 1
+ * temp_a = temp_b  :   retval = 0
+ * temp_a > temp_b  :   retval = -1
+ */
+int API_TIME_Compare (Caven_Watch_Type temp_a,Caven_Watch_Type temp_b)
+{
+    int retval = 0;
+    if (temp_b.hour < temp_a.hour)      // hour
+    {
+        retval = (-1);
+    }
+    else if (temp_b.hour > temp_a.hour)
+    {
+        retval = 1;
+    }
+    else if (temp_b.minutes < temp_a.minutes)   // minutes
+    {
+        retval = (-1);
+    }
+    else if (temp_b.minutes > temp_a.minutes)
+    {
+        retval = 1;
+    }
+    else if (temp_b.second < temp_a.second)     // second
+    {
+        retval = (-1);
+    }
+    else if (temp_b.second > temp_a.second)
+    {
+        retval = 1;
+    }
+    else if (temp_b.time_us < temp_a.time_us)   // time_us
+    {
+        retval = (-1);
+    }
+    else if (temp_b.time_us > temp_a.time_us)
+    {
+        retval = 1;
+    }
+    else if (temp_b.time_us == temp_a.time_us)
+    {
+        retval = 0;
+    }
+    else {
+        retval = (-1);
+    }
+    return retval;
+}
+
+Caven_Watch_Type API_TIME_Get_differ (Caven_Watch_Type temp_a,Caven_Watch_Type temp_b)
+{
+    Caven_Watch_Type retval = {0};
+
+    int i,j,k;
+    i = API_Hourly_to_Seconds(temp_a);
+    j = API_Hourly_to_Seconds(temp_b);
+    if (i > j)
+    {
+        j += 86400;
+    }
+    k = j - i;
+
+    i = temp_a.time_us;
+    j = temp_b.time_us;
+    if (i > j)
+    {
+        j += 1000000;
+        k--;
+    }
+    retval = API_Seconds_to_Hourly (k);
+
+    k = j - i;
+    // MIN(k,1000000);
+    retval.time_us = k;
+
+    return retval;
+}
+
+
+int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time)
+{
+    int retval = 0;
+    int temp;
+//    Task_Overtime_Type temp_tack;
+//    temp_tack = *task;
+    Caven_Watch_Type diff_time;
+
+    temp = API_Hourly_to_Seconds(task->Set_time);
+    if (temp == 0 && task->Set_time.time_us == 0)
+    {
+        return retval;
+    }
+    if (task->Switch == 1)
+    {
+        diff_time = API_TIME_Get_differ(task->Begin_time,time);
+        temp = API_TIME_Compare (task->Set_time,diff_time);
+        if (temp >= 0)
+        {
+            task->Flip_falg = !task->Flip_falg;
+            task->Trigger_Flag = 1;
+            task->Begin_time = time;
+            retval = 1;
+        }
+        else
+        {
+            task->Trigger_Flag = 0;
         }
     }
-    return Item->Flag;
+
+//    *task = temp_tack;
+    return retval;
 }
+

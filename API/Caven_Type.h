@@ -107,7 +107,7 @@ typedef struct Caven_Data           //这个数据是动态的
 
 
 // Function
-typedef void (*D_pFun) (u8 data);
+typedef void (*D_pFun) (void *data);
 typedef void (*V_pFun) (void);
 
 #endif

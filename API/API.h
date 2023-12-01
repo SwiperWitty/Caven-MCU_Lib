@@ -31,7 +31,6 @@ struct API_Data_
 {
     unsigned short (*Get_CRC16)(unsigned char *ptr, int len);
     
-    struct Time_Handle_ Time;
     struct Data_Handle_ Data;
     
 };

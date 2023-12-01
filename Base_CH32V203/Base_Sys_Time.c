@@ -163,7 +163,7 @@ void SYS_Delay_S(int n)
     for (int var = 0; var < n; ++var)
     {
         SYS_Delay_ms(1000);
-        printf("1S \r\n");
+//        printf("1S \r\n");
     }
 }
 

@@ -58,6 +58,6 @@ char Data_Chang_NUM (struct _Chang_Num *Item)
         Item->NUM[i] = atof(Data_Array);
         Item->flag = i;
     }
-    // printf(" \n");
+
     return Item->flag;
 }

@@ -83,6 +83,29 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
     return res;
 }
 
+void Base_UART_Send_Byte_Fast(UART_mType Channel,uint16_t DATA)
+{
+    USART_TypeDef * Temp;
+    switch (Channel)
+    {
+    case 0:
+        return;
+    case 1:
+        Temp = USART1;
+        break;
+    case 2:
+        Temp = USART2;
+        break;
+    case 3:
+        Temp = USART3;
+        break;
+    default:
+        return;
+    }
+    USART_ClearFlag(Temp, TXD_Falg);
+    USART_SendData(Temp, DATA);
+}
+
 void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
 {
     USART_TypeDef * Temp;
@@ -176,7 +199,7 @@ void UART1_HANDLERIT()
     {
         temp = UART_RXD_Receive(UART_CH);
         if (State_Machine_UART1_pFun != NULL) {
-            State_Machine_UART1_pFun(temp);
+            State_Machine_UART1_pFun(&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -243,7 +266,7 @@ void UART2_HANDLERIT()
     {
         temp = UART_RXD_Receive(UART_CH);
         if (State_Machine_UART2_pFun != NULL) {
-            State_Machine_UART2_pFun(temp);
+            State_Machine_UART2_pFun(&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -310,7 +333,7 @@ void UART3_HANDLERIT()
     {
         temp = UART_RXD_Receive(UART_CH);
         if (State_Machine_UART3_pFun != NULL) {
-            State_Machine_UART3_pFun(temp);
+            State_Machine_UART3_pFun(&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }

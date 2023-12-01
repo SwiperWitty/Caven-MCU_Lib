@@ -167,7 +167,9 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
         temp =  7 + 2;
         s_temp_packet.p_Data = target->p_Data;  /*  提取目标的数据指针   */
-        memcpy(s_temp_packet.p_Data, &s_array_buff[temp], s_temp_packet.dSize);
+        if (s_temp_packet.dSize > 0) {
+            memcpy(s_temp_packet.p_Data, &s_array_buff[temp], s_temp_packet.dSize);
+        }
         *target = s_temp_packet;
 
         memset(&s_temp_packet, 0, sizeof(Caven_info_packet_Type));
