@@ -21,133 +21,135 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
 {
     int retval = 0;
     int temp = 0;
-    static int s_status = 0;
-    static int s_getnum = 0;
-    static uint8_t s_array_buff[300];               /* 可以不清除 */
-    static Caven_info_packet_Type s_temp_packet = {0};
+#ifdef BUFF_MAX
+    unsigned char array[BUFF_MAX];
+#elif
+    unsigned char array[300];
+#endif
 
-    if (target->Result & 0x80) /* 目标有数据没处理 */
+    Caven_info_packet_Type temp_packet = *target;
+    unsigned char * tepm_pData = temp_packet.p_Data;
+
+    if (temp_packet.Result & 0x80) /* 目标有数据没处理 */
     {
         return (-0x80);       
     }
-    if (target == NULL || target->p_Data == NULL)
+    if (target == NULL || temp_packet.p_Data == NULL)
     {
         return (-0x8F);
     }
 
-    switch (s_status)
+    switch (temp_packet.Run_status)
     {
     case 0: /* Head */
-        s_temp_packet.comm_way = target->comm_way;
-        s_temp_packet.Head = (s_temp_packet.Head << 8) + data;
-        if (s_temp_packet.Head == standard.Head)
+        temp_packet.Head = (temp_packet.Head << 8) + data;
+        if (temp_packet.Head == standard.Head)
         {
-            s_getnum = 0;
-            s_array_buff[s_getnum++] = (s_temp_packet.Head >> 8) & 0x00ff;
-            s_array_buff[s_getnum++] = (s_temp_packet.Head) & 0x00ff;
-            s_status++;
+            temp_packet.Get_num = 0;
+            tepm_pData[temp_packet.Get_num++] = (temp_packet.Head >> 8) & 0x00ff;
+            tepm_pData[temp_packet.Get_num++] = (temp_packet.Head) & 0x00ff;
+            temp_packet.Run_status++;
         }
         break;
     case 1: /* agreement Versions */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.Versions = data;
-        if (s_temp_packet.Versions <= standard.Versions)
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.Versions = data;
+        if (temp_packet.Versions <= standard.Versions)
         {
-            s_status++;
+            temp_packet.Run_status++;
         }
         else
         {
-            s_status = -s_status;
+            temp_packet.Run_status = - temp_packet.Run_status;
         }
         break;
     case 2: /* Type */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.Type = data;
-        if (s_temp_packet.Type == standard.Type || s_temp_packet.Type == 0)
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.Type = data;
+        if (temp_packet.Type == standard.Type || temp_packet.Type == 0)
         {
-            s_status++;
+            temp_packet.Run_status++;
         }
         else
         {
-            s_status = -s_status;
+            temp_packet.Run_status = - temp_packet.Run_status;
         }
         break;
     case 3: /* Addr */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.Addr = data;
-        if (s_temp_packet.Addr == standard.Addr || s_temp_packet.Addr == 0 || s_temp_packet.Addr == 0xff)
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.Addr = data;
+        if (temp_packet.Addr == standard.Addr || temp_packet.Addr == 0 || temp_packet.Addr == 0xff)
         {
-            s_status++;
+            temp_packet.Run_status++;
         }
         else
         {
-            s_status = -s_status;
+            temp_packet.Run_status = - temp_packet.Run_status;
         }
         break;
     case 4: /* Cmd */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.Cmd = data;
-        s_status++;
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.Cmd = data;
+        temp_packet.Run_status++;
 
         break;
     case 5: /* Cmd_sub */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.Cmd_sub = data;
-        s_status++;
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.Cmd_sub = data;
+        temp_packet.Run_status++;
 
         break;
     case 6: /* Size */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.dSize = (s_temp_packet.dSize << 8) + data;
-        temp =  7 + 2;
-        if (s_getnum >= temp)
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.dSize = (temp_packet.dSize << 8) + data;
+        temp = 2 + 5 + 2;
+        if (temp_packet.Get_num >= temp)
         {
-            if (s_temp_packet.dSize > standard.dSize)
+            if (temp_packet.dSize > standard.dSize)
             {
-                s_status = -s_status;
+                temp_packet.Run_status = - temp_packet.Run_status;
             }
-            else if (s_temp_packet.dSize == 0)
+            else if (temp_packet.dSize == 0)
             {
-                s_status+= 2;         /* 0个 p_Data ，直接去 End_crc */
+                temp_packet.Run_status+= 2;         /* 0个 p_Data ，直接去 End_crc */
             }
             else
             {
-                s_status++;
+                temp_packet.Run_status++;
             }
         }
         break;
     case 7: /* p_Data */
-        s_array_buff[s_getnum++] = data;
-        temp =  7 + 2 + s_temp_packet.dSize;
-        if (s_getnum >= temp)
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp = 2 + 5 + 2 + temp_packet.dSize;
+        if (temp_packet.Get_num >= temp)
         {
-            s_status++;
+            temp_packet.Run_status++;
         }
         break;
     case 8: /* Result */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.Result = data;
-        s_temp_packet.Result &= (~0x80);
-        s_status++;
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.Result = data;
+        temp_packet.Result &= (~0x80);
+        temp_packet.Run_status++;
         break;
     case 9: /* End_crc */
-        s_array_buff[s_getnum++] = data;
-        s_temp_packet.End_crc = (s_temp_packet.End_crc << 8) + data;
-        temp =  7 + 2 + s_temp_packet.dSize + 3;
-        if (s_getnum >= temp)
+        tepm_pData[temp_packet.Get_num++] = data;
+        temp_packet.End_crc = (temp_packet.End_crc << 8) + data;
+        temp =  7 + 2 + temp_packet.dSize + 3;
+        if (temp_packet.Get_num >= temp)
         {
-            // temp = CRC16_CCITT_CalculateBuf(&s_array_buff[2], (s_getnum - 2));
-            temp = (s_getnum - 2) - 2;              /* 减尾 减头 */
-            temp = ModBusCRC16(&s_array_buff[2],temp);
-            if(s_temp_packet.End_crc == temp)       
+            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc);    /* 减尾 减头 */
+            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)),temp);
+            if(temp_packet.End_crc == temp)
             {
-                s_temp_packet.Result |= 0x80;       // crc successful
-                s_status = 0xff;
+                temp_packet.Result |= 0x80;       // crc successful
+                temp_packet.Run_status = 0xff;
             }
             else
             {
 //                 printf("crc is %04x \n",temp);
-                s_status = -7;
+                temp_packet.Run_status = - temp_packet.Run_status;
             }
         }
         break;
@@ -155,33 +157,38 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         break;
     }
     /*  结果    */
-    if (s_status < 0) // error
+    if (temp_packet.Run_status < 0) // error
     {
-        memset(&s_temp_packet, 0, sizeof(Caven_info_packet_Type));
-        retval = s_status;
+        retval = temp_packet.Run_status;
+        Caven_info_packet_clean_Fun(target);
 //        printf("error %x \n",retval);
-        s_status = 0;
-        s_getnum = 0;
     }
-    else if (s_status == 0xff) // Successful
+    else if (temp_packet.Run_status == 0xff) // Successful
     {
-        temp =  7 + 2;
-        s_temp_packet.p_Data = target->p_Data;  /*  提取目标的数据指针   */
-        if (s_temp_packet.dSize > 0) {
-            memcpy(s_temp_packet.p_Data, &s_array_buff[temp], s_temp_packet.dSize);
+#if 1
+        // 切割数据
+        temp =  7 + sizeof(temp_packet.Head);           //
+        if (temp_packet.dSize > 0)
+        {
+            memcpy(array,temp_packet.p_Data + temp,temp_packet.dSize);
+            memcpy(temp_packet.p_Data,array,temp_packet.dSize);
         }
-        *target = s_temp_packet;
-
-        memset(&s_temp_packet, 0, sizeof(Caven_info_packet_Type));
+        else
+        {
+            memset(temp_packet.p_Data,0,10);
+        }
+#else
+        // 原始数据
+#endif
+        *target = temp_packet;
         retval = 0x80;
 //        printf("succ %x \n",retval);
-        s_status = 0;
-        s_getnum = 0;
     }
     else // doing
     {
+        *target = temp_packet;
         target->Result = 0;
-        retval = s_status;
+        retval = temp_packet.Run_status;
     }
     return retval;
 }
@@ -201,7 +208,11 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const soure, unsigned cha
     int retval;
     int temp = 0;
     int getnum = 0;
-    uint8_t array_buff[300];
+#ifdef BUFF_MAX
+    unsigned char array[BUFF_MAX];
+#elif
+    unsigned char array[300];
+#endif
 
     if (data == NULL || soure.p_Data == NULL)
     {
@@ -210,29 +221,29 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const soure, unsigned cha
     else
     {
         
-        array_buff[getnum ++] = (soure.Head >> 8) & 0xff;
-        array_buff[getnum ++] = soure.Head & 0xff;
+        array[getnum ++] = (soure.Head >> 8) & 0xff;
+        array[getnum ++] = soure.Head & 0xff;
 
-        array_buff[getnum ++] = soure.Versions;
-        array_buff[getnum ++] = soure.Type;
-        array_buff[getnum ++] = soure.Addr;
-        array_buff[getnum ++] = soure.Cmd;
-        array_buff[getnum ++] = soure.Cmd_sub;
+        array[getnum ++] = soure.Versions;
+        array[getnum ++] = soure.Type;
+        array[getnum ++] = soure.Addr;
+        array[getnum ++] = soure.Cmd;
+        array[getnum ++] = soure.Cmd_sub;
 
-        array_buff[getnum ++] = (soure.dSize >> 8) & 0xff;
-        array_buff[getnum ++] = soure.dSize & 0xff;
+        array[getnum ++] = (soure.dSize >> 8) & 0xff;
+        array[getnum ++] = soure.dSize & 0xff;
 
-        memcpy(&array_buff[getnum],soure.p_Data,soure.dSize);
+        memcpy(&array[getnum],soure.p_Data,soure.dSize);
         getnum += soure.dSize;
 
-        array_buff[getnum ++] = (soure.Result & ~0x80);
+        array[getnum ++] = (soure.Result & ~0x80);
         temp = getnum - 2;
-        temp = ModBusCRC16(&array_buff[2], temp);
+        temp = ModBusCRC16(&array[2], temp);
 //        soure.End_crc = temp;
-        array_buff[getnum ++] = (temp >> 8) & 0xff;
-        array_buff[getnum ++] = temp & 0xff;
+        array[getnum ++] = (temp >> 8) & 0xff;
+        array[getnum ++] = temp & 0xff;
         
-        memcpy(data,array_buff,getnum);
+        memcpy(data,array,getnum);
         retval = getnum;
     }
     return retval;
@@ -273,7 +284,10 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
     int retval = 0;
     unsigned char *p_data;
     p_data = target->p_Data;
-
+    if (p_data != NULL && target->dSize > 0)
+    {
+        memset(p_data,0,target->dSize);
+    }
     memset(target,0,sizeof(Caven_info_packet_Type));
     target->p_Data = p_data;
     return retval;

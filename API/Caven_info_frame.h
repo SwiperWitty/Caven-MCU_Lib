@@ -30,13 +30,16 @@ typedef struct
     unsigned char Cmd_sub;  //1byte 7
 
     unsigned short dSize;   //2byte 9
-    unsigned char *p_Data;  // 
+    unsigned char *p_Data;  // min 12byte buff
 
     unsigned char Result;   //1byte 
 
     unsigned short End_crc; //2byte 
 
-    unsigned char comm_way;
+    int Run_status;
+    unsigned short Get_num;
+
+    unsigned char Comm_way;
 }Caven_info_packet_Type; 
 
 #define RESULT_DEFAULT  10
