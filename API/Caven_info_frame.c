@@ -1,16 +1,16 @@
 #include "Caven_info_frame.h"
 
-#include "Check_CRC.h" 
+#include "Check_CRC.h"
 
 /*
-Caven_info_Make_packet_Fun 
-** make packet 
+Caven_info_Make_packet_Fun
+** make packet
 ** 将[data]数据转化成[packet]
 传参
 ** standard ：标准要求(不需要指针索引)
 ** target   : 目标包(指针，这个包内的指针必须要有索引)
 ** data     ：数据来源（填入）
-return   : retval 
+return   : retval
 ** 1.(-0x80 < retval < 0) 协议消息解析错误
 ** 2.retval = -0x80 包里存在协议消息没处理
 ** 3.retval = -0x8F 目标包的指针没有索引
@@ -23,16 +23,16 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     int temp = 0;
 #ifdef BUFF_MAX
     unsigned char array[BUFF_MAX];
-#elif
+#else
     unsigned char array[300];
 #endif
 
     Caven_info_packet_Type temp_packet = *target;
-    unsigned char * tepm_pData = temp_packet.p_Data;
+    unsigned char *tepm_pData = temp_packet.p_Data;
 
     if (temp_packet.Result & 0x80) /* 目标有数据没处理 */
     {
-        return (-0x80);       
+        return (-0x80);
     }
     if (target == NULL || temp_packet.p_Data == NULL)
     {
@@ -60,7 +60,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         }
         else
         {
-            temp_packet.Run_status = - temp_packet.Run_status;
+            temp_packet.Run_status = -temp_packet.Run_status;
         }
         break;
     case 2: /* Type */
@@ -72,7 +72,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         }
         else
         {
-            temp_packet.Run_status = - temp_packet.Run_status;
+            temp_packet.Run_status = -temp_packet.Run_status;
         }
         break;
     case 3: /* Addr */
@@ -84,7 +84,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         }
         else
         {
-            temp_packet.Run_status = - temp_packet.Run_status;
+            temp_packet.Run_status = -temp_packet.Run_status;
         }
         break;
     case 4: /* Cmd */
@@ -107,11 +107,11 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         {
             if (temp_packet.dSize > standard.dSize)
             {
-                temp_packet.Run_status = - temp_packet.Run_status;
+                temp_packet.Run_status = -temp_packet.Run_status;
             }
             else if (temp_packet.dSize == 0)
             {
-                temp_packet.Run_status+= 2;         /* 0个 p_Data ，直接去 End_crc */
+                temp_packet.Run_status += 2; /* 0个 p_Data ，直接去 End_crc */
             }
             else
             {
@@ -136,20 +136,20 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     case 9: /* End_crc */
         tepm_pData[temp_packet.Get_num++] = data;
         temp_packet.End_crc = (temp_packet.End_crc << 8) + data;
-        temp =  7 + 2 + temp_packet.dSize + 3;
+        temp = 7 + 2 + temp_packet.dSize + 3;
         if (temp_packet.Get_num >= temp)
         {
-            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc);    /* 减尾 减头 */
-            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)),temp);
-            if(temp_packet.End_crc == temp)
+            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
+            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)), temp);
+            if (temp_packet.End_crc == temp)
             {
-                temp_packet.Result |= 0x80;       // crc successful
+                temp_packet.Result |= 0x80; // crc successful
                 temp_packet.Run_status = 0xff;
             }
             else
             {
-//                 printf("crc is %04x \n",temp);
-                temp_packet.Run_status = - temp_packet.Run_status;
+                //                 printf("crc is %04x \n",temp);
+                temp_packet.Run_status = -temp_packet.Run_status;
             }
         }
         break;
@@ -161,28 +161,28 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
         retval = temp_packet.Run_status;
         Caven_info_packet_clean_Fun(target);
-//        printf("error %x \n",retval);
+        //        printf("error %x \n",retval);
     }
     else if (temp_packet.Run_status == 0xff) // Successful
     {
 #if 1
         // 切割数据
-        temp =  7 + sizeof(temp_packet.Head);           //
+        temp = 7 + sizeof(temp_packet.Head); //
         if (temp_packet.dSize > 0)
         {
-            memcpy(array,temp_packet.p_Data + temp,temp_packet.dSize);
-            memcpy(temp_packet.p_Data,array,temp_packet.dSize);
+            memcpy(array, temp_packet.p_Data + temp, temp_packet.dSize);
+            memcpy(temp_packet.p_Data, array, temp_packet.dSize);
         }
         else
         {
-            memset(temp_packet.p_Data,0,10);
+            memset(temp_packet.p_Data, 0, 10);
         }
 #else
         // 原始数据
 #endif
         *target = temp_packet;
         retval = 0x80;
-//        printf("succ %x \n",retval);
+        //        printf("succ %x \n",retval);
     }
     else // doing
     {
@@ -194,69 +194,70 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
 }
 
 /*
-Caven_info_Split_packet_Fun 
-** split packet 
+Caven_info_Split_packet_Fun
+** split packet
 ** 将[packet]数据转化成[data]
 传参
-** source ：数据来源包(指针，这个包内的指针必须要有索引)
+** source ：数据来源包(指针必须要有索引,如果里面的dSize == 0,p_Data可以为NULL)
 ** data     ：数据目标
-return   : retval 
+return   : retval
 ** retval = 返回数据目标split出的长度
 */
-int Caven_info_Split_packet_Fun(Caven_info_packet_Type const soure, unsigned char *data)
+int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned char *data)
 {
     int retval;
     int temp = 0;
     int getnum = 0;
 #ifdef BUFF_MAX
     unsigned char array[BUFF_MAX];
-#elif
+#else
     unsigned char array[300];
 #endif
 
-    if (data == NULL || soure.p_Data == NULL)
+    if (data == NULL || ((source.p_Data == NULL) && (source.dSize != 0)))
     {
         retval = (-1);
     }
     else
     {
-        
-        array[getnum ++] = (soure.Head >> 8) & 0xff;
-        array[getnum ++] = soure.Head & 0xff;
 
-        array[getnum ++] = soure.Versions;
-        array[getnum ++] = soure.Type;
-        array[getnum ++] = soure.Addr;
-        array[getnum ++] = soure.Cmd;
-        array[getnum ++] = soure.Cmd_sub;
+        array[getnum++] = (source.Head >> 8) & 0xff;
+        array[getnum++] = source.Head & 0xff;
 
-        array[getnum ++] = (soure.dSize >> 8) & 0xff;
-        array[getnum ++] = soure.dSize & 0xff;
+        array[getnum++] = source.Versions;
+        array[getnum++] = source.Type;
+        array[getnum++] = source.Addr;
+        array[getnum++] = source.Cmd;
+        array[getnum++] = source.Cmd_sub;
 
-        memcpy(&array[getnum],soure.p_Data,soure.dSize);
-        getnum += soure.dSize;
-
-        array[getnum ++] = (soure.Result & ~0x80);
+        array[getnum++] = (source.dSize >> 8) & 0xff;
+        array[getnum++] = source.dSize & 0xff;
+        if (source.dSize > 0)
+        {
+            memcpy(&array[getnum], source.p_Data, source.dSize);
+            getnum += source.dSize;
+        }
+        array[getnum++] = (source.Result & ~0x80);
         temp = getnum - 2;
         temp = ModBusCRC16(&array[2], temp);
-//        soure.End_crc = temp;
-        array[getnum ++] = (temp >> 8) & 0xff;
-        array[getnum ++] = temp & 0xff;
-        
-        memcpy(data,array,getnum);
+        //        source.End_crc = temp;
+        array[getnum++] = (temp >> 8) & 0xff;
+        array[getnum++] = temp & 0xff;
+
+        memcpy(data, array, getnum);
         retval = getnum;
     }
     return retval;
 }
 
 /*
-Caven_info_packet_index_Fun 
+Caven_info_packet_index_Fun
 ** index 索引
 ** 将数据[data]绑定到[packet]的指针变量
 传参
 ** target ：数据源包(这个包内有指针变量)
 ** data     ：要绑定的数据目标
-return   : retval 
+return   : retval
 ** retval < 0 索引错误
 ** retval = 0 索引成功
 */
@@ -271,12 +272,12 @@ int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *d
 }
 
 /*
-Caven_info_packet_clean_Fun 
+Caven_info_packet_clean_Fun
 ** clean function
 ** 将数据[target]清除，但不解除指针绑定的数据
 传参
 ** target ：数据源包(这个包内有指针变量)
-return   : retval 
+return   : retval
 ** retval = 0 索引成功
 */
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
@@ -286,9 +287,9 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
     p_data = target->p_Data;
     if (p_data != NULL && target->dSize > 0)
     {
-        memset(p_data,0,target->dSize);
+        memset(p_data, 0, target->dSize);
     }
-    memset(target,0,sizeof(Caven_info_packet_Type));
+    memset(target, 0, sizeof(Caven_info_packet_Type));
     target->p_Data = p_data;
     return retval;
 }

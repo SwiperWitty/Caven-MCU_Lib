@@ -1,7 +1,7 @@
 #include "Time_Handle.h"
 
 /*
- *这个是秒级的转换，基于Caven_Watch
+ * 这个是秒级的转换，基于Caven_Watch
  *
  */
 int API_Hourly_to_Seconds(Caven_Watch_Type time)
@@ -13,7 +13,7 @@ int API_Hourly_to_Seconds(Caven_Watch_Type time)
 }
 
 /*
- *这个是 秒 级的转换
+ * 这个是 秒 级的转换
  *
  */
 Caven_Watch_Type API_Seconds_to_Hourly(int Seconds)
@@ -116,12 +116,11 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time)
 {
     int retval = 0;
     int temp;
-//    Task_Overtime_Type temp_tack;
-//    temp_tack = *task;
+
     Caven_Watch_Type diff_time;
 
     temp = API_Hourly_to_Seconds(task->Set_time);
-    if (temp == 0 && task->Set_time.time_us == 0)
+    if (temp == 0 && task->Set_time.time_us == 0)   // time empty
     {
         return retval;
     }
@@ -142,7 +141,6 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time)
         }
     }
 
-//    *task = temp_tack;
     return retval;
 }
 
