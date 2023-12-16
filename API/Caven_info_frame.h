@@ -48,7 +48,7 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);
 
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data);
-int Caven_info_Split_packet_Fun(Caven_info_packet_Type const soure, unsigned char *data); 
+int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned char *data);
 
 
 

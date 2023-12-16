@@ -206,8 +206,8 @@ return   : retval
 int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned char *data)
 {
     int retval;
-    int temp = 0;
-    int getnum = 0;
+    int temp;
+    int getnum;
 #ifdef BUFF_MAX
     unsigned char array[BUFF_MAX];
 #else
@@ -220,7 +220,7 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
     }
     else
     {
-
+        getnum = 0;
         array[getnum++] = (source.Head >> 8) & 0xff;
         array[getnum++] = source.Head & 0xff;
 
