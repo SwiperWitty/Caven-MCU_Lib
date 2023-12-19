@@ -285,7 +285,7 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
     int retval = 0;
     unsigned char *p_data;
     p_data = target->p_Data;
-    if (p_data != NULL && target->dSize > 0)
+    if (p_data != NULL && (target->Get_num > 0 && target->Get_num < 300))
     {
         memset(p_data, 0, target->dSize);
     }
