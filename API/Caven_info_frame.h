@@ -46,6 +46,10 @@ typedef struct
 
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);
+int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type *target);
+
+int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num);
+int Caven_Circular_queue_output(Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num);
 
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data);
 int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned char *data);
