@@ -53,7 +53,7 @@
 #define DESTROY_DATA(X,N) memset((X),0,(N))             // 销毁 的地址 (X)  长度 (N)
 
 
-#define BUFF_MAX 300
+#define BUFF_MAX 500
 
 
 // 日期 8byte

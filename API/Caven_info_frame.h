@@ -32,17 +32,20 @@ typedef struct
     unsigned short dSize;   //2byte 9
     unsigned char *p_Data;  // min 12byte buff
 
-    unsigned char Result;   //1byte 
+    unsigned char Result;   //1byte
 
-    unsigned short End_crc; //2byte 
+    unsigned short End_crc; //2byte
 
     int Run_status;
     unsigned short Get_num;
 
     unsigned char Comm_way;
-}Caven_info_packet_Type; 
+}Caven_info_packet_Type;
 
 #define RESULT_DEFAULT  10
+#ifndef BUFF_MAX
+    #define BUFF_MAX  500
+#endif // !BUFF_MAX
 
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);

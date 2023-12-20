@@ -262,11 +262,11 @@ int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_T
         temp_packet = Buff_data[i];
         if (temp_packet.Result & 0x50)
         {
-            retval = (-1);
+            retval = (-1);                                  // 队列满载，拒绝载入
         }
         else
         {
-            Caven_packet_data_copy_Fun(&Buff_data[i],data);    // 载入数据到队列
+            Caven_packet_data_copy_Fun(&Buff_data[i],data); // 载入数据到队列
             Caven_info_packet_clean_Fun(data);
             retval = i;
             break;
@@ -354,9 +354,15 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
     int retval = 0;
     unsigned char *p_data;
     p_data = target->p_Data;
-    if (p_data != NULL && (target->dSize > 0 && target->dSize <= BUFF_MAX))
+    if (p_data != NULL)
     {
-        memset(p_data, 0, target->dSize);
+#ifdef BUFF_MAX
+        if(target->dSize > 0 && target->dSize <= BUFF_MAX)
+        {
+            memset(p_data, 0, target->dSize);
+        }
+#else
+#endif
     }
     memset(target, 0, sizeof(Caven_info_packet_Type));
     target->p_Data = p_data;
