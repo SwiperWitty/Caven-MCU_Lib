@@ -267,11 +267,12 @@ int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_T
         else
         {
             Caven_packet_data_copy_Fun(&Buff_data[i],data); // 载入数据到队列
-            Caven_info_packet_clean_Fun(data);
+//            Caven_info_packet_clean_Fun(data);
             retval = i;
             break;
         }
     }
+    Caven_info_packet_clean_Fun(data);      // 无论是否能载入，都要清，否则影响下一帧接收
     return retval;
 }
 
