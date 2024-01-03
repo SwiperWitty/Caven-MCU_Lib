@@ -17,6 +17,9 @@ return   : retval
 ** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
 ** 5.retval = 其他   获取中(包含没开始retval = 0)
 */
+
+static int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target);
+
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data)
 {
     int retval = 0;
@@ -160,7 +163,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     if (temp_packet.Run_status < 0) // error
     {
         retval = temp_packet.Run_status;
-        Caven_info_packet_clean_Fun(target);
+        Caven_info_packet_fast_clean_Fun(target);
         //        printf("error %x \n",retval);
     }
     else if (temp_packet.Run_status == 0xff) // Successful
@@ -272,7 +275,7 @@ int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_T
             break;
         }
     }
-    Caven_info_packet_clean_Fun(data);      // 无论是否能载入，都要清，否则影响下一帧接收
+    Caven_info_packet_fast_clean_Fun(data);      // 无论是否能载入，都要清，否则影响下一帧接收
     return retval;
 }
 
@@ -292,7 +295,7 @@ int Caven_Circular_queue_output (Caven_info_packet_Type *data,Caven_info_packet_
         if (temp_packet.Result & 0x50)
         {
             Caven_packet_data_copy_Fun(data,&temp_packet);    // 从队列提取数据
-            Caven_info_packet_clean_Fun(&Buff_data[i]);
+            Caven_info_packet_fast_clean_Fun(&Buff_data[i]);
             retval = i;
 
             break;
@@ -367,5 +370,16 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
     }
     memset(target, 0, sizeof(Caven_info_packet_Type));
     target->p_Data = p_data;
+    return retval;
+}
+
+/*
+ * fast 主要给中断，这样就不会循环套娃
+ */
+int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
+{
+    int retval = 0;
+    target->Result = 0;
+    target->Run_status = 0;
     return retval;
 }

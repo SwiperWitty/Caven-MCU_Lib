@@ -42,7 +42,24 @@ typedef struct
     unsigned char Comm_way;
 }Caven_info_packet_Type;
 
-#define RESULT_DEFAULT  10
+typedef enum
+{
+    m_Result_Back_Succ = 0,
+    m_Result_Back_Vers,
+    m_Result_Fail_Type,
+    m_Result_Fail_Addr,
+    m_Result_Back_CMD,
+    m_Result_Back_CMDS,
+    m_Result_Back_Leng,
+    m_Result_Fail_CRC,
+    m_Result_Fail_Spoil,
+    m_Result_Back_Other,
+    m_Result_Fail_Empty,
+
+}Caven_info_Result_mType;
+
+#define RESULT_DEFAULT  m_Result_Fail_Empty
+
 #ifndef BUFF_MAX
     #define BUFF_MAX  500
 #endif // !BUFF_MAX

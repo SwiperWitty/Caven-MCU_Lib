@@ -129,7 +129,92 @@ void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
     USART_ClearFlag(Temp, TXD_Falg);
     USART_SendData(Temp, DATA);
 }
+
+    #ifdef DMA_UART
+
+//int uart_dma_send(uint16_t data_size, uint32_t memory_addr)
+//{
+//  if(data_size == 0)
+//  {
+//    return -1;
+//  }
+//  UART_DMA_UNIT->CHENCLR |= (1ul << (UART_DMA_TX_CHANNEL)) & 0xffu;//Disable UART_DMA_TX_CHANNEL
+//  WRITE_REG32(DMA_CH_REG(UART_DMA_UNIT->SAR0, UART_DMA_TX_CHANNEL), (uint32_t)(memory_addr));
+//  MODIFY_REG32(DMA_CH_REG(UART_DMA_UNIT->DTCTL0, UART_DMA_TX_CHANNEL), DMA_DTCTL_CNT, ((uint32_t)(data_size) << DMA_DTCTL_CNT_POS));
+//  UART_DMA_UNIT->CHEN |= (1ul << (UART_DMA_TX_CHANNEL)) & 0xffu;//Enable UART_DMA_TX_CHANNEL
+//
+//  CLR_REG32_BIT(USART_CH->CR1, USART_TX); //Disable USART_CH->UsartTx
+//  SET_REG32_BIT(USART_CH->CR1, USART_TX); //Enable USART_CH->UsartTx
+//
+//  return 0;
+//}
+
+uint8_t DMA_UART_Buff[500];
+/*
+ *
+ */
+void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
+{
+    USART_TypeDef * Temp;
+    DMA_InitTypeDef DMA_InitStructure = {0};
+    static char dma_send_First = 0;
+
+    switch (Channel)
+    {
+    case 0:
+        return;
+    case 1:
+        return;
+    case 2:
+        return;
+    case 3:
+        Temp = USART3;
+        break;
+    default:
+        return;
+    }
+    if (DATA == NULL || Length > sizeof(DMA_UART_Buff) || (Length < 0)) {
+        return;
+    }
+
+    /*
+     * 等上一个DMA完成才开始下一个
+     */
+    if (dma_send_First == 0) {
+        dma_send_First = 1;
+        DMA_ClearFlag(DMA1_FLAG_TC2);
+    }
+    else {
+        while(DMA_GetFlagStatus(DMA1_FLAG_TC2) == RESET); /* Wait until USART3 TX DMA1 Transfer Complete */
+        DMA_ClearFlag(DMA1_FLAG_TC2);
+    }
+
+    memcpy(DMA_UART_Buff,DATA,Length);
+
+    DMA_DeInit(DMA1_Channel2);
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)(&USART3->DATAR);   /* USART3->DATAR: */
+    DMA_InitStructure.DMA_MemoryBaseAddr = (u32)DMA_UART_Buff;          //
+    DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;                  // DMA_DIR_PeripheralSRC(RX)
+    DMA_InitStructure.DMA_BufferSize = Length;                          //
+    DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;
+    DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
+    DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
+    DMA_Init(DMA1_Channel2, &DMA_InitStructure);
+
+    DMA_Cmd(DMA1_Channel2, ENABLE); /* USART3 Tx */
+
+    USART_DMACmd(Temp,USART_DMAReq_Tx, ENABLE);
+
+}
+    #endif
+
 #endif
+
+
 
 // 以下函数很重要，包括功能启动，功能中断处理
 
@@ -369,6 +454,7 @@ int Base_UART_Init(UART_mType Channel,int Baud,int SET)
 {
     int retval = -1;
 #ifdef Exist_UART
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     switch (Channel)
     {
     case 0:

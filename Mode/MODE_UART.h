@@ -34,6 +34,8 @@ int MODE_UART_Init(UART_mType Channel,int Baud,int SET);
 
 
 void MODE_UART_Send_Data_Fun(UART_mType Channel, const U8 *Data, int Length);
+void MODE_UART_DMA_Send_Data_Fun(UART_mType Channel, const U8 *Data, int Length);
+
 void MODE_UART_Send_String_Fun(UART_mType Channel, const char *String);
 
 void MODE_UART_Receive_Bind_Fun(UART_mType Channel, D_pFun UART_pFun);

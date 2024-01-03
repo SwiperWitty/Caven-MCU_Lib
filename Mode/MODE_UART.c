@@ -24,6 +24,17 @@ void MODE_UART_Send_Data_Fun(UART_mType Channel, const U8 *Data, int Length)
 #endif
 }
 
+void MODE_UART_DMA_Send_Data_Fun(UART_mType Channel, const U8 *Data, int Length)
+{
+#ifdef Exist_UART
+    int temp = MIN(Length,UART_Length_MAX);
+
+    Base_UART_DMA_Send_Data(Channel,Data,temp);
+
+#endif
+}
+
+
 void MODE_UART_Send_String_Fun(UART_mType Channel, const char *String)
 {
     int Length = strlen(String);
