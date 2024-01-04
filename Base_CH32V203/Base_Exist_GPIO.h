@@ -13,7 +13,7 @@
          其他功能的初始化（例如UART、IIC），除了先初始化【GPIO外设】还要【功能外设】，这种功能的初始化GPIO并不在本文件范围内。
          IIC有软件版本和硬件版本，所以它的GPIO跟本文件无关。
          但是LCD的驱动由SPI协议和DC（IO）接口组成，那么这个IO接口由本文件提供。
-                                                                     ————202207.14
+                                                                     ————2022.07.14
  */
 
 #ifdef Exist_LCD
@@ -22,6 +22,8 @@
 
     #define LCD_RES_L() GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //RES
     #define LCD_RES_H() GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB0
+
+    void LCD_GPIO_Init(int SET);
 #endif
 
 #ifdef Exist_OLED
@@ -30,43 +32,66 @@
 
     #define LCD_RES_L() GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //RES
     #define LCD_RES_H() GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB0
+
 #endif
 
 #ifdef Exist_LED
     #define LED_L()     GPIO_ResetBits(GPIOB, GPIO_Pin_4)   //LED
     #define LED_H()     GPIO_SetBits(GPIOB, GPIO_Pin_4)     //PB04
-    #define LEDBLUE_L()  GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //LED_bluetooth
-    #define LEDBLUE_H()  GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB00
+    #define LEDBLUE_L()  GPIO_ResetBits(GPIOB, GPIO_Pin_0)  //LED_bluetooth
+    #define LEDBLUE_H()  GPIO_SetBits(GPIOB, GPIO_Pin_0)    //PB00
     #define LEDWIFI_L() GPIO_ResetBits(GPIOB, GPIO_Pin_1)   //LED
     #define LEDWIFI_H() GPIO_SetBits(GPIOB, GPIO_Pin_1)     //PB01
+
+    void LED_GPIO_Init(int SET);
 #endif
 #ifdef Exist_BZZ
     #define BZZ_L() GPIO_ResetBits(GPIOB, GPIO_Pin_7)       //LED
     #define BZZ_H() GPIO_SetBits(GPIOB, GPIO_Pin_7)         //PB07
+
+    void BZZ_GPIO_Init(int SET);
 #endif
 
 #ifdef Exist_BUTTON
     #define BUTTON_STATE() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     // Button
+
+    void Button_GPIO_Init(int SET);
+#endif
+
+#ifdef Exist_HC595
+    #define HC595_SCK_L()    GPIO_ResetBits(GPIOA, GPIO_Pin_5)    //
+    #define HC595_SCK_H()    GPIO_SetBits(GPIOA, GPIO_Pin_5)      //PA5
+    #define HC595_Data_L()    GPIO_ResetBits(GPIOA, GPIO_Pin_6)    //
+    #define HC595_Data_H()    GPIO_SetBits(GPIOA, GPIO_Pin_6)      //PA6
+    #define HC595_RCK_L()    GPIO_ResetBits(GPIOA, GPIO_Pin_7)   //
+    #define HC595_RCK_H()    GPIO_SetBits(GPIOA, GPIO_Pin_7)     //PA7
+
+    void HC595_GPIO_Init(int SET);
 #endif
 
 #ifdef Exist_CustomIO
-    #define RSTIC_L()   GPIO_ResetBits(GPIOA, GPIO_Pin_8)   //RST
+    #define RSTIC_L()   GPIO_ResetBits(GPIOA, GPIO_Pin_8)   //RST (NPN)
     #define RSTIC_H()   GPIO_SetBits(GPIOA, GPIO_Pin_8)     //PA08
-    #define WIG0_L()    GPIO_ResetBits(GPIOB, GPIO_Pin_3)   //WIG0
+    #define WIG0_L()    GPIO_ResetBits(GPIOB, GPIO_Pin_3)   //WIG0 (NPN)
     #define WIG0_H()    GPIO_SetBits(GPIOB, GPIO_Pin_3)     //PB03
-    #define WIG1_L()    GPIO_ResetBits(GPIOA, GPIO_Pin_15)  //WIG1
+    #define WIG1_L()    GPIO_ResetBits(GPIOA, GPIO_Pin_15)  //WIG1 (NPN)
     #define WIG1_H()    GPIO_SetBits(GPIOA, GPIO_Pin_15)    //PA15
+
+// GPIO_OUT
+    #define GPO1_L()    GPIO_ResetBits(GPIOB, GPIO_Pin_8)   //GPO1 (NPN)
+    #define GPO1_H()    GPIO_SetBits(GPIOB, GPIO_Pin_8)     //PB8
+    #define GPO2_L()    GPIO_ResetBits(GPIOB, GPIO_Pin_9)   //GPO2 (NPN)
+    #define GPO2_H()    GPIO_SetBits(GPIOB, GPIO_Pin_9)     //PB9
+
+// GPIO_IN
+    #define GPI1_STATE() GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_5)     // PB05
+    #define GPI2_STATE() GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_6)     // PB06
+
+    void Custom_GPIO_Init(int SET);
 #endif
 
 /*  Init-Function    */
+//
 
-void LCD_GPIO_Init(int SET);
-
-void LED_GPIO_Init(int SET);
-void BZZ_GPIO_Init(int SET);
-
-void Button_GPIO_Init(int SET);
-
-void Custom_GPIO_Init(int SET);
 
 #endif

@@ -97,7 +97,7 @@ void SYS_Feed_Watchdog(void)
 }
 
 // delay
-void SYS_Delay_Base(int time, int speed)
+void Base_SYS_Delay(int time, int speed)
 {
 #ifdef NOP
     volatile int temp;

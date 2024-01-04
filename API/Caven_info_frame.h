@@ -14,6 +14,11 @@
     Caven_info_frame.h
     描述Caven的通信协议规范
     可能需要依赖外部的crc校验函数
+
+    tips:
+    1).中断里面调用的函数，其他地方不要调用，特别是带有memcpy的函数，固，你会发现同一个功能，但是名称多一个fast。
+    2).中断里面不要消耗算力的函数，即使它看起来很简单。例如CRC。
+    3).(clean) while -> send -> [do] ->while -> ... YYDS,其实就是将消耗算力的东西（CRC）放在要while之前，这样可以do and do
 */
 
 /*
@@ -51,7 +56,7 @@ typedef enum
     m_Result_Back_CMD,
     m_Result_Back_CMDS,
     m_Result_Back_Leng,
-    m_Result_Fail_CRC,
+    m_Result_Back_CRC,
     m_Result_Fail_Spoil,
     m_Result_Back_Other,
     m_Result_Fail_Empty,
@@ -67,6 +72,7 @@ typedef enum
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data);
 int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type *target);
+int Caven_packet_data_crc (Caven_info_packet_Type const source);
 
 int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num);
 int Caven_Circular_queue_output(Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num);

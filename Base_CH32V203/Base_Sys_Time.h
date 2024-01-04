@@ -73,7 +73,7 @@ void SYS_Time_Set(Caven_TIME_Type * time);
 void SYS_Time_Get(Caven_TIME_Type * time);
 
 // Delay
-void SYS_Delay_Base(int time, int speed);
+void Base_SYS_Delay(int time, int speed);
 
 void SYS_Delay_us(int n);
 void SYS_Delay_ms(int n);

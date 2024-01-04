@@ -40,7 +40,7 @@ void MODE_LED_SET_Fun(char Channel,int SET)
 
 void WS2812_Delay(int time)
 {
-    SYS_Delay_Base(time, 10);
+    Base_SYS_Delay(time, 10);
 }
 
 void WS2812_Reset (void)

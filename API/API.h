@@ -11,6 +11,8 @@
 /* 时间处理 */
 #include "Time_Handle.h"
 
+/* 事件处理 */
+#include "Caven_event_frame.h"
 
 /********************************/
 

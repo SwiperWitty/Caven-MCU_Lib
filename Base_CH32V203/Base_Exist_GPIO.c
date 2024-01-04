@@ -75,9 +75,31 @@ void BZZ_GPIO_Init(int SET)
 #endif
 }
 
+void HC595_GPIO_Init(int SET)
+{
+#ifdef Exist_HC595
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+    if (SET) {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7; //HC595
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+        HC595_SCK_L();
+        HC595_RCK_L();          // 上升沿有效
+    }
+    else {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        GPIO_Init(GPIOA, &GPIO_InitStructure);
+    }
+#endif
+}
+
 void Button_GPIO_Init(int SET)
 {
-#ifdef Exist_KEY
+#ifdef Exist_BUTTON
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     if (SET) {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
@@ -105,13 +127,37 @@ void Custom_GPIO_Init(int SET)
 #ifdef Exist_CustomIO
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     if (SET) {
+        // GPIO_Mode_Out_PP
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_15; //RSTIC & WIG
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOA, &GPIO_InitStructure);
 
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;               //WIG
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;  //GPIO_OUT
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+
         RSTIC_L();
+        WIG0_L();
+        WIG1_L();
+        GPO1_L();
+        GPO2_L();
+
+        // GPIO_Mode_IN_FLOATING
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;  // GPIO_IN
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+
     }
     else {
     }

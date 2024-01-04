@@ -142,18 +142,20 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         temp = 7 + 2 + temp_packet.dSize + 3;
         if (temp_packet.Get_num >= temp)
         {
-            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
-            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)), temp);
-            if (temp_packet.End_crc == temp)
-            {
-                temp_packet.Result |= 0x50; // crc successful
-                temp_packet.Run_status = 0xff;
-            }
-            else
-            {
-                //                 printf("crc is %04x \n",temp);
-                temp_packet.Run_status = -temp_packet.Run_status;
-            }
+//            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
+//            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)), temp);
+//            if (temp_packet.End_crc == temp)
+//            {
+//                temp_packet.Result |= 0x50; // crc successful
+//                temp_packet.Run_status = 0xff;
+//            }
+//            else
+//            {
+//                //                 printf("crc is %04x \n",temp);
+//                temp_packet.Run_status = -temp_packet.Run_status;
+//            }
+            temp_packet.Result |= 0x50; // crc successful,not crc
+            temp_packet.Run_status = 0xff;
         }
         break;
     default:
@@ -249,6 +251,33 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
 
         memcpy(data, array, getnum);
         retval = getnum;
+    }
+    return retval;
+}
+
+/*
+ * Caven_packet crc
+ * He's very time-consuming.
+ */
+int Caven_packet_data_crc (Caven_info_packet_Type const source)
+{
+    int retval = 0;
+
+    Caven_info_packet_Type temp_packet;
+    unsigned char array[BUFF_MAX];
+    if ((source.p_Data == NULL) && (source.dSize != 0))
+    {
+        return retval;
+    }
+    else if(source.Result & 0x50)
+    {
+        int temp = 0;
+        temp_packet = source;
+        temp_packet.Result &= 0x0F;
+        temp = Caven_info_Split_packet_Fun(temp_packet, array);
+        retval = array[temp - 2];
+        retval <<= 8;
+        retval += array[temp - 1];
     }
     return retval;
 }
@@ -383,3 +412,5 @@ int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
     target->Run_status = 0;
     return retval;
 }
+
+
