@@ -142,20 +142,23 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         temp = 7 + 2 + temp_packet.dSize + 3;
         if (temp_packet.Get_num >= temp)
         {
-//            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
-//            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)), temp);
-//            if (temp_packet.End_crc == temp)
-//            {
-//                temp_packet.Result |= 0x50; // crc successful
-//                temp_packet.Run_status = 0xff;
-//            }
-//            else
-//            {
-//                //                 printf("crc is %04x \n",temp);
-//                temp_packet.Run_status = -temp_packet.Run_status;
-//            }
+#if 0
+            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
+            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)), temp);
+            if (temp_packet.End_crc == temp)
+            {
+                temp_packet.Result |= 0x50; // crc successful
+                temp_packet.Run_status = 0xff;
+            }
+            else
+            {
+                //                 printf("crc is %04x \n",temp);
+                temp_packet.Run_status = -temp_packet.Run_status;
+            }
+#else
             temp_packet.Result |= 0x50; // crc successful,not crc
             temp_packet.Run_status = 0xff;
+#endif
         }
         break;
     default:
@@ -365,10 +368,13 @@ int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_
 
     if ((source != NULL) && (target != NULL))
     {
-        temp_packet = *target;                  // 抽离数据
-        temp_packet.p_Data = source->p_Data;    // 保留指针
-        memcpy(temp_packet.p_Data,target->p_Data,target->dSize);    // 复制指针内容,内容的长度依据是[dSize]
-        *source = temp_packet;                  // copy
+        if ((source->p_Data != NULL) && (target->p_Data != NULL))
+        {
+            temp_packet = *target;                  // 抽离数据
+            temp_packet.p_Data = source->p_Data;    // 保留指针
+            memcpy(temp_packet.p_Data,target->p_Data,target->dSize);    // 复制指针内容,内容的长度依据是[dSize]
+            *source = temp_packet;                  // copy(因为是指针，所以就直接腹值吧)
+        }
     }
     return retval;
 }

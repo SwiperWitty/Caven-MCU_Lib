@@ -58,11 +58,10 @@ typedef enum
     m_Result_Back_Leng,
     m_Result_Back_CRC,
     m_Result_Fail_Spoil,
-    m_Result_Back_Other,
-    m_Result_Fail_Empty,
-
+    m_Result_Back_Other,    // 执行失败了
+    m_Result_Back_Empty,    // 我可以发出去，但是你不可以返回
+    m_Result_Fail_Empty,    // 这条消息不返回
 }Caven_info_Result_mType;
-
 #define RESULT_DEFAULT  m_Result_Fail_Empty
 
 #ifndef BUFF_MAX
