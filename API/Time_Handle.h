@@ -16,7 +16,7 @@ typedef struct
 {
     volatile Caven_Watch_Type Set_time;
     volatile Caven_Watch_Type Begin_time;
-    volatile char Trigger_Flag;              //[000][1][000]     only Read
+    volatile char Trigger_Flag;              //[000][1][000]
     volatile char Flip_falg;                 //[000][111][000]   only Read
     int Switch;
 }Task_Overtime_Type;

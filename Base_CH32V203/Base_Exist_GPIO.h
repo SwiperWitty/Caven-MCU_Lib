@@ -40,7 +40,7 @@
     #define LED_H()     GPIO_SetBits(GPIOB, GPIO_Pin_4)     //PB04
     #define LEDBLUE_L()  GPIO_ResetBits(GPIOB, GPIO_Pin_0)  //LED_bluetooth
     #define LEDBLUE_H()  GPIO_SetBits(GPIOB, GPIO_Pin_0)    //PB00
-    #define LEDWIFI_L() GPIO_ResetBits(GPIOB, GPIO_Pin_1)   //LED
+    #define LEDWIFI_L() GPIO_ResetBits(GPIOB, GPIO_Pin_1)   //LED_WiFi
     #define LEDWIFI_H() GPIO_SetBits(GPIOB, GPIO_Pin_1)     //PB01
 
     void LED_GPIO_Init(int SET);

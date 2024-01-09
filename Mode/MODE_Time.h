@@ -31,6 +31,7 @@ typedef struct
     volatile int SYNC_Flag;
 }Real_TIME_Type;
 
+extern Real_TIME_Type Real_TIME;
 
 typedef struct
 {

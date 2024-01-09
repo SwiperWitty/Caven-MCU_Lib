@@ -95,6 +95,13 @@ int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
     return retval;
 }
 
+/*
+ * Caven_handle_event_Fun
+ * 1.使用前需要先调用Caven_new_event_Fun
+ * 2.Caven_handle_event_Fun函数应该放在状态机里面轮番调用
+ * 3.events里面的events_pFun，必须无阻塞。
+ * 4.通过Caven_trigger_event_Fun激活，data会将参数给events保存，events_pFun里面需要将data置0，结束当前触发。
+ */
 int Caven_handle_event_Fun(Caven_event_Type *events)
 {
     int retval = 0;
@@ -124,7 +131,10 @@ int Caven_handle_event_Fun(Caven_event_Type *events)
                 {
                     events->events_pFun[i](&temp);          /* 执行指针函数  */
                 }
-                events->events[i] &= 0x80;                  /* 清除触发标记  */
+                if (temp == 0)
+                {
+                    events->events[i] &= 0x80;              /* 清除触发标记  */
+                }
             }
         }
     }

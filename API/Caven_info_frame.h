@@ -47,6 +47,30 @@ typedef struct
     unsigned char Comm_way;
 }Caven_info_packet_Type;
 
+/*
+ * CAVEN_CMD
+ */
+enum CAVEN_CMD
+{
+    m_CAVEN_TEST_Order = 0x00,
+    m_CAVEN_SYS_Order,
+    m_CAVEN_BOOT_Order,
+    m_CAVEN_FEATURE_Order,
+};
+
+/*
+ * CAVEN_Status and event
+ */
+enum CAVEN_STATUS
+{
+    m_CAVEN_IDLE_Stat = 0,
+    m_CAVEN_CHAOS_Stat,
+    m_CAVEN_COMM_Stat,
+    m_CAVEN_BUSY_Stat,
+    m_CAVEN_CHOKE_Stat,
+    m_CAVEN_DOWN_Stat,
+};
+
 typedef enum
 {
     m_Result_Back_Succ = 0,
