@@ -7,9 +7,11 @@
 #define RXD_Falg    USART_IT_RXNE       //  接收标志
 #define TXD_Falg    USART_FLAG_TC       //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
+static D_pFun State_Machine_UART0_pFun = NULL;
 static D_pFun State_Machine_UART1_pFun = NULL;
 static D_pFun State_Machine_UART2_pFun = NULL;
 static D_pFun State_Machine_UART3_pFun = NULL;
+static D_pFun State_Machine_UART4_pFun = NULL;
 
 // 以下函数单纯方便MCU移植
 
@@ -83,29 +85,6 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
     return res;
 }
 
-void Base_UART_Send_Byte_Fast(UART_mType Channel,uint16_t DATA)
-{
-    USART_TypeDef * Temp;
-    switch (Channel)
-    {
-    case 0:
-        return;
-    case 1:
-        Temp = USART1;
-        break;
-    case 2:
-        Temp = USART2;
-        break;
-    case 3:
-        Temp = USART3;
-        break;
-    default:
-        return;
-    }
-    USART_ClearFlag(Temp, TXD_Falg);
-    USART_SendData(Temp, DATA);
-}
-
 void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
 {
     USART_TypeDef * Temp;
@@ -132,22 +111,6 @@ void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
 
     #ifdef DMA_UART
 
-//int uart_dma_send(uint16_t data_size, uint32_t memory_addr)
-//{
-//  if(data_size == 0)
-//  {
-//    return -1;
-//  }
-//  UART_DMA_UNIT->CHENCLR |= (1ul << (UART_DMA_TX_CHANNEL)) & 0xffu;//Disable UART_DMA_TX_CHANNEL
-//  WRITE_REG32(DMA_CH_REG(UART_DMA_UNIT->SAR0, UART_DMA_TX_CHANNEL), (uint32_t)(memory_addr));
-//  MODIFY_REG32(DMA_CH_REG(UART_DMA_UNIT->DTCTL0, UART_DMA_TX_CHANNEL), DMA_DTCTL_CNT, ((uint32_t)(data_size) << DMA_DTCTL_CNT_POS));
-//  UART_DMA_UNIT->CHEN |= (1ul << (UART_DMA_TX_CHANNEL)) & 0xffu;//Enable UART_DMA_TX_CHANNEL
-//
-//  CLR_REG32_BIT(USART_CH->CR1, USART_TX); //Disable USART_CH->UsartTx
-//  SET_REG32_BIT(USART_CH->CR1, USART_TX); //Enable USART_CH->UsartTx
-//
-//  return 0;
-//}
 
 uint8_t DMA_UART_Buff[500];
 /*
@@ -164,8 +127,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
     case 0:
         return;
     case 1:
+        Temp = USART1;
         return;
     case 2:
+        Temp = USART2;
         return;
     case 3:
         Temp = USART3;
@@ -419,6 +384,29 @@ void UART3_HANDLERIT()
         temp = UART_RXD_Receive(UART_CH);
         if (State_Machine_UART3_pFun != NULL) {
             State_Machine_UART3_pFun(&temp);
+        }
+        UART_RXD_Flag_Clear(UART_CH);
+    }
+}
+
+#endif
+
+#if (Exist_UART & OPEN_10000)
+void Uart4_Init(int Baud,int SET)
+{
+
+
+}
+
+void UART4_HANDLERIT()
+{
+    u8 temp;
+    UART_mType UART_CH = m_UART_CH4;
+    if (UART_RXD_Flag(UART_CH))
+    {
+        temp = UART_RXD_Receive(UART_CH);
+        if (State_Machine_UART4_pFun != NULL) {
+            State_Machine_UART4_pFun(&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }

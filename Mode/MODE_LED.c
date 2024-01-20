@@ -19,18 +19,7 @@ void MODE_LED_SET_Fun(char Channel,int SET)
             else
                 LED_H();
             break;
-        case 2:
-            if(SET)
-                LEDBLUE_L();
-            else
-                LEDBLUE_H();
-            break;
-        case 3:
-            if(SET)
-                LEDWIFI_L();
-            else
-                LEDWIFI_H();
-            break;
+
         default:
             break;
     }

@@ -27,9 +27,9 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.TIME.Delay_Ms = MODE_Delay_Ms;
     Mode_Use.TIME.Delay_S = MODE_Delay_S;
 	
+    Mode_Use.TIME.Get_Base_pFun = MODE_TIME_Get_Base_Fun;
     Mode_Use.TIME.Get_Watch_pFun = MODE_TIME_Get_Watch_Fun;
     Mode_Use.TIME.Get_Date_pFun = MODE_TIME_Get_Date_Fun;
-    Mode_Use.TIME.Get_differ_pFun = MODE_TIME_Get_differ_Fun;
     Mode_Use.TIME.SYNC_TIME_pFun = SYNC_TIME_Fun;
 
     Mode_Use.TIME.Set_Date_pFun = MODE_TIME_Set_Date_Fun;

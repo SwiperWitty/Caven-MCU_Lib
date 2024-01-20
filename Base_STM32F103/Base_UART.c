@@ -3,11 +3,126 @@
 #ifdef Exist_UART
 static USART_TypeDef * Temp;
 
+#define RXD_Falg    USART_IT_RXNE     //  接收标志
+#define TXD_Falg    USART_FLAG_TC		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
+
+static D_pFun State_Machine_UART0_pFun = NULL;
+static D_pFun State_Machine_UART1_pFun = NULL;
+static D_pFun State_Machine_UART2_pFun = NULL;
+static D_pFun State_Machine_UART3_pFun = NULL;
+static D_pFun State_Machine_UART4_pFun = NULL;
+
+static char UART_RXD_Flag(UART_mType Channel)
+{
+    char res;
+    switch (Channel)
+    {
+    case 0:
+        return 0;
+    case 1:
+        Temp = USART1;
+        break;
+    case 2:
+        Temp = USART2;
+        break;
+    case 3:
+        Temp = USART3;
+        break;
+    default:
+        return 0;
+    }
+    res = USART_GetITStatus(Temp,RXD_Falg);
+    return res;
+}
+
+static void UART_RXD_Flag_Clear(UART_mType Channel)
+{
+    switch (Channel)
+    {
+    case 0:
+        return;
+    case 1:
+        Temp = USART1;
+        break;
+    case 2:
+        Temp = USART2;
+        break;
+    case 3:
+        Temp = USART3;
+        break;
+    default:
+        return;
+    }
+    USART_ClearFlag(Temp, RXD_Falg);
+}
+
+/*  发送 接收    */
+
+// 接收
+static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
+{
+    uint16_t res;
+    switch (Channel)
+    {
+    case 0:
+        return 0;
+    case 1:
+        Temp = USART1;
+        break;
+    case 2:
+        Temp = USART2;
+        break;
+    case 3:
+        Temp = USART3;
+        break;
+    default:
+        return 0;
+    }
+    res = USART_ReceiveData(Temp);
+    return res;
+}
+
+// 发送
+void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
+{
+    switch (Channel)
+    {
+    case 0:
+        return;
+    case 1:
+        Temp = USART1;
+        break;
+    case 2:
+        Temp = USART2;
+        break;
+    case 3:
+        Temp = USART3;
+        break;
+    default:
+        return;
+    }
+    while (USART_GetFlagStatus(Temp, TXD_Falg) == 0);
+    USART_ClearFlag(Temp, TXD_Falg);
+    USART_SendData(Temp, DATA);
+}
+
+void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
+{
+    
+}
+
 #endif
 
+#if (Exist_UART & OPEN_0001)
+void Uart0_Init(int Baud,int SET)
+{
+
+}
+#endif
+
+#if (Exist_UART & OPEN_0010)
 void Uart1_Init(int Baud,int Set)
 {
-#ifdef UART1_EXIST
     FunctionalState set = DISABLE;
     Temp = USART1;
     USART_DeInit(Temp);
@@ -48,12 +163,27 @@ void Uart1_Init(int Baud,int Set)
     
     USART_ITConfig(Temp, USART_IT_RXNE, set);   //
     USART_Cmd(Temp, set);					    //
-#endif
 }
 
+void UART1_HANDLERIT()
+{
+    u8 temp;
+    UART_mType UART_CH = m_UART_CH1;
+    if (UART_RXD_Flag(UART_CH))
+    {
+        temp = UART_RXD_Receive(UART_CH);
+        if (State_Machine_UART1_pFun != NULL) {
+            State_Machine_UART1_pFun(&temp);
+        }
+        UART_RXD_Flag_Clear(UART_CH);
+    }
+}
+
+#endif
+
+#if (Exist_UART & OPEN_0100)
 void Uart2_Init(int Baud,int Set)
-{    
-#ifdef UART2_EXIST
+{
     FunctionalState set = DISABLE;
     Temp = USART2;
     USART_DeInit(Temp);
@@ -93,12 +223,27 @@ void Uart2_Init(int Baud,int Set)
     
     USART_ITConfig(Temp, USART_IT_RXNE, set);   //
     USART_Cmd(Temp, set);					    //
-#endif
 }
 
+void UART2_HANDLERIT()
+{
+    u8 temp;
+    UART_mType UART_CH = m_UART_CH2;
+    if (UART_RXD_Flag(UART_CH))
+    {
+        temp = UART_RXD_Receive(UART_CH);
+        if (State_Machine_UART2_pFun != NULL) {
+            State_Machine_UART2_pFun(&temp);
+        }
+        UART_RXD_Flag_Clear(UART_CH);
+    }
+}
+
+#endif
+
+#if (Exist_UART & OPEN_1000)
 void Uart3_Init(int Baud,int Set)
 {
-#ifdef UART3_EXIST
     FunctionalState set = DISABLE;
     Temp = USART3;
     USART_DeInit(Temp);
@@ -139,205 +284,116 @@ void Uart3_Init(int Baud,int Set)
     
     USART_ITConfig(Temp, USART_IT_RXNE, set);   //
     USART_Cmd(Temp, set);					    //
-#endif
 }
 
-void Uart4_Init(int Baud,int Set)
+void UART3_HANDLERIT()
 {
-#ifdef UART4_EXIST
-
-#endif
-}
-
-void Uart5_Init(int Baud,int Set)
-{
-#ifdef UART5_EXIST
-    confirm_state set = FALSE;
-    Temp = UART4;
-    usart_reset(Temp);
-    if (Set)
-        set = TRUE;
-    crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, set);
-    crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
-    crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
-
-    gpio_pin_remap_config(SWJTAG_GMUX_010,TRUE);                //支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
-#endif
-}
-
-char UART_RXD_Flag(char Channel)
-{
-    char res;
-    switch (Channel)
+    u8 temp;
+    UART_mType UART_CH = m_UART_CH3;
+    if (UART_RXD_Flag(UART_CH))
     {
-    case 1:
-#ifdef UART1_EXIST
-        Temp = USART1;
-#endif
-        break;
-    case 2:
-#ifdef UART2_EXIST
-        Temp = USART2;
-#endif
-        break;
-    case 3:
-#ifdef UART3_EXIST
-        Temp = USART3;
-#endif
-        break;
-    case 4:
-#ifdef UART4_EXIST
-        Temp = UART4;
-#endif
-        break;
-    case 5:
-#ifdef UART5_EXIST
-        Temp = UART5;
-#endif
-        break;
-    default:
-        return (0);
+        temp = UART_RXD_Receive(UART_CH);
+        if (State_Machine_UART3_pFun != NULL) {
+            State_Machine_UART3_pFun(&temp);
+        }
+        UART_RXD_Flag_Clear(UART_CH);
     }
+}
+
+#endif
+
+#if (Exist_UART & OPEN_10000)
+void Uart4_Init(int Baud,int SET)
+{
+
+
+}
+
+void UART4_HANDLERIT()
+{
+    u8 temp;
+    UART_mType UART_CH = m_UART_CH4;
+    if (UART_RXD_Flag(UART_CH))
+    {
+        temp = UART_RXD_Receive(UART_CH);
+        if (State_Machine_UART4_pFun != NULL) {
+            State_Machine_UART4_pFun(&temp);
+        }
+        UART_RXD_Flag_Clear(UART_CH);
+    }
+}
+
+#endif
+
+int Base_UART_Init(UART_mType Channel,int Baud,int SET)
+{
+    int retval = -1;
 #ifdef Exist_UART
-    res = USART_GetITStatus(Temp,RXD_Falg);
-#endif
-    return res;
-}
-
-void UART_RXD_Flag_Clear(char Channel)
-{
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     switch (Channel)
     {
+    case 0:
+        break;
     case 1:
-#ifdef UART1_EXIST
-        Temp = USART1;
-#endif
+        Uart1_Init(Baud,SET);
+        retval = 0;
         break;
     case 2:
-#ifdef UART1_EXIST
-        Temp = USART2;
-#endif
+        Uart2_Init(Baud,SET);
+        retval = 0;
         break;
     case 3:
-#ifdef UART3_EXIST
-        Temp = USART3;
-#endif
-        break;
-    case 4:
-#ifdef UART4_EXIST
-        Temp = UART4;
-#endif
-        break;
-    case 5:
-#ifdef UART5_EXIST
-        Temp = UART5;
-#endif
+        Uart3_Init(Baud,SET);
+        retval = 0;
         break;
     default:
-        return;
+        break;
     }
+#endif
+    return retval;
+}
+
+/*
+ *  Successful : return 0
+ *
+ */
+int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun)
+{
+    int retval = -1;
 #ifdef Exist_UART
-    USART_ClearFlag(Temp, RXD_Falg);
-#endif
-    return;
-}
-
-/*  发送 接收    */
-
-// 接收
-uint16_t UART_RXD_Receive(char Channel)     //RXD 读取值
-{
-    uint16_t res;
+    if (UART_pFun == NULL)
+    {
+        return retval;
+    }
     switch (Channel)
     {
+    case 0:
+//        State_Machine_UART0_pFun = UART_pFun;
+        break;
     case 1:
-#ifdef UART1_EXIST
-        Temp = USART1;
-#endif
+        State_Machine_UART1_pFun = UART_pFun;
+        retval = 0;
         break;
     case 2:
-#ifdef UART1_EXIST
-        Temp = USART2;
-#endif
+        State_Machine_UART2_pFun = UART_pFun;
+        retval = 0;
         break;
     case 3:
-#ifdef UART3_EXIST
-        Temp = USART3;
-#endif
-        break;
-    case 4:
-#ifdef UART4_EXIST
-        Temp = UART4;
-#endif
-        break;
-    case 5:
-#ifdef UART5_EXIST
-        Temp = UART5;
-#endif
+        State_Machine_UART3_pFun = UART_pFun;
+        retval = 0;
         break;
     default:
         break;
     }
-    #ifdef Exist_UART
-    res = USART_ReceiveData(Temp);
-    #endif
-    return res;
-    
-}
-
-// 发送
-void UART_TXD_Send(char Channel,uint16_t DATA)
-{
-    switch (Channel)
-    {
-    case 1:
-#ifdef UART1_EXIST
-        Temp = USART1;
 #endif
-        break;
-//USART1
-    case 2:
-#ifdef UART2_EXIST
-        Temp = USART2;
-#endif
-        break;
-//USART2
-    case 3:
-#ifdef UART3_EXIST
-        Temp = USART3;
-#endif
-        break;
-//USART3
-    case 4:
-#ifdef UART4_EXIST
-        Temp = UART4;
-#endif
-        break;
-//UART4
-    case 5:
-#ifdef UART5_EXIST
-        Temp = UART5;
-#endif
-        break;
-//UART5
-    default:
-        return;
-//error,直接返回
-    }
-#ifdef Exist_UART
-    while (USART_GetFlagStatus(Temp, TXD_Falg) == RESET);  
-    USART_SendData(Temp, DATA);
-    // usart_flag_clear(Temp, TXD_Falg);        //可以不要
-#endif
+    return retval;
 }
 
 int fputc(int ch, FILE *f)      //printf
 {
 #ifdef DEBUG_OUT
     #ifdef Exist_UART
-//    USART_SendData(USART1,(uint8_t)ch);
-//    while (!USART_GetFlagStatus(USART1, TXD_Falg));
-    UART_TXD_Send(DEBUG_OUT,(uint8_t)ch);
+    Base_UART_Send_Byte(DEBUG_OUT,(uint8_t)ch);
     #endif
 #endif // DEBUG
     return (ch);

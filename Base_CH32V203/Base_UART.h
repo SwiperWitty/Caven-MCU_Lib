@@ -28,7 +28,7 @@ typedef enum
     m_UART_CH1 = 1,
     m_UART_CH2,
     m_UART_CH3,
-//    m_UART_CH4,
+    m_UART_CH4,
 //    m_UART_CH5,
 }UART_mType;
 
@@ -61,7 +61,6 @@ void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 // fun
 int Base_UART_Init(UART_mType Channel,int Baud,int SET);
 void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA);
-void Base_UART_Send_Byte_Fast(UART_mType Channel,uint16_t DATA);
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length);
 
 /*

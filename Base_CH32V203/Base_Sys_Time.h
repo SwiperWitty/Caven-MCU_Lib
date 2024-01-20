@@ -8,8 +8,8 @@
 为了方便上层统一调用，本文件需要提供以下函数
 void SYS_Time_Init (int Set);
 
-void SYS_Set_Tick (Caven_TIME_Type * time);
-void SYS_Get_Tick (Caven_TIME_Type * time);
+void SYS_Set_Tick (Caven_BaseTIME_Type * time);
+void SYS_Get_Tick (Caven_BaseTIME_Type * time);
 
 // Delay
 void SYS_Base_Delay (int time,int Speed);
@@ -69,8 +69,8 @@ typedef struct
 void SYS_Time_Init(int Set);
 
 //
-void SYS_Time_Set(Caven_TIME_Type * time);
-void SYS_Time_Get(Caven_TIME_Type * time);
+void SYS_Time_Set(Caven_BaseTIME_Type * time);
+void SYS_Time_Get(Caven_BaseTIME_Type * time);
 
 // Delay
 void Base_SYS_Delay(int time, int speed);

@@ -9,9 +9,7 @@
     一般依赖于 SysTick & SysTick_Handler，缺一不可
     如果没有，即可使用普通定时器（16位及以上）
     
-    我做了一件及其愚蠢的事情（耗时2天），以后所有的栈都必须加括号！！！！！
-                                                                        ————2022.10.21
-    
+
 */
 
 #include "Base.h"
@@ -21,17 +19,19 @@
 
 /*
  * (Date.Days + Watch) -> TIME -> Tick
- *
+ * 1.BaseTIME是所有TIME的基础，他的设置逻辑是 Days + Watch所有秒数+Watch.time_us
+ * 2.BaseTIME是与BASE文件沟通的数据交互载体
+ * 3.SYNC_Flag是写保护
  */
 typedef struct
 {
     Caven_Date_Type Date;
     Caven_Watch_Type Watch;
-    Caven_TIME_Type TIME;
+    Caven_BaseTIME_Type BaseTIME;
     volatile int SYNC_Flag;
 }Real_TIME_Type;
 
-extern Real_TIME_Type Real_TIME;
+//extern Real_TIME_Type Real_TIME;
 
 typedef struct
 {
@@ -40,8 +40,8 @@ typedef struct
 
     Caven_Date_Type (*Get_Date_pFun)(void);
     Caven_Watch_Type (*Get_Watch_pFun)(void);
-    Caven_Watch_Type (*Get_differ_pFun)(Caven_Watch_Type temp_a,
-                                       Caven_Watch_Type temp_b);
+    Caven_BaseTIME_Type (*Get_Base_pFun)(void);
+
     int (*SYNC_TIME_pFun)(void);
 
     void (*Delay_Us)(int num);
@@ -57,8 +57,8 @@ void MODE_TIME_Set_Watch_Fun(Caven_Watch_Type time);
 
 Caven_Date_Type MODE_TIME_Get_Date_Fun(void);
 Caven_Watch_Type MODE_TIME_Get_Watch_Fun(void);
-Caven_Watch_Type  MODE_TIME_Get_differ_Fun(Caven_Watch_Type temp_a,
-                                            Caven_Watch_Type temp_b);
+Caven_BaseTIME_Type MODE_TIME_Get_Base_Fun(void);
+
 int SYNC_TIME_Fun(void);
 
 void MODE_Delay_Us(int num);

@@ -51,7 +51,7 @@ void SYS_Time_Init(int Set)
 }
 
 // Tick Controls
-void SYS_Time_Set(Caven_TIME_Type *time)
+void SYS_Time_Set(Caven_BaseTIME_Type *time)
 {
 #ifdef Exist_SYS_TIME
     int temp;
@@ -66,7 +66,7 @@ void SYS_Time_Set(Caven_TIME_Type *time)
 #endif
 }
 
-void SYS_Time_Get(Caven_TIME_Type *time)
+void SYS_Time_Get(Caven_BaseTIME_Type *time)
 {
 #ifdef Exist_SYS_TIME
     int temp;

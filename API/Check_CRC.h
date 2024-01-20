@@ -3,7 +3,7 @@
 
 #define CRC_16_CCITT            0x1021
 
-#ifdef CAVEN    /* 预编译 */
+#ifdef CAVEN
 #include "Caven_Type.h"
 #else
 #include "stdint.h"

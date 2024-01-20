@@ -7,8 +7,7 @@
 */
 
 
-
-Real_TIME_Type Real_TIME = {0};
+static Real_TIME_Type Real_TIME = {0};
 
 
 int MODE_TIME_Init(int SET)
@@ -16,8 +15,10 @@ int MODE_TIME_Init(int SET)
 #ifdef Exist_SYS_TIME
     SYS_Time_Init(SET);
     return 0;
-#endif
+#else
     return 1;
+#endif
+    
 }
 
 // set 
@@ -65,39 +66,22 @@ Caven_Watch_Type MODE_TIME_Get_Watch_Fun(void)
     return retval;
 }
 
-Caven_Watch_Type  MODE_TIME_Get_differ_Fun(Caven_Watch_Type temp_a,Caven_Watch_Type temp_b)
+Caven_BaseTIME_Type MODE_TIME_Get_Base_Fun(void)
 {
-    Caven_Watch_Type retval = {0};
+    Caven_BaseTIME_Type retval = {0};
 #ifdef Exist_SYS_TIME
-    int i,j,k;
-    i = API_Hourly_to_Seconds(temp_a);
-    j = API_Hourly_to_Seconds(temp_b);
-    if (i > j)
-    {
-        j += 86400;
-    }
-    k = j - i;
-    
-    i = temp_a.time_us;
-    j = temp_b.time_us;
-    if (i > j)
-    {
-        j += 1000000;
-        k--;
-    }
-    retval = API_Seconds_to_Hourly (k);
-
-    k = j - i;
-    // MIN(k,1000000);
-    retval.time_us = k;
+    while (Real_TIME.SYNC_Flag);
+    Real_TIME.SYNC_Flag = 0;
+    SYNC_TIME_Fun ();
+    retval = Real_TIME.BaseTIME;
 #endif
     return retval;
 }
 
 /* 
  * sync
- * SYNC_Flag = 0; TIME -> Watch+Date
- * SYNC_Flag = 1; Watch+Date -> TIME
+ * SYNC_Flag = 0; BaseTIME -> Watch+Date
+ * SYNC_Flag = 1; Watch+Date -> BaseTIME
  *
 */
 int SYNC_TIME_Fun (void)
@@ -111,20 +95,20 @@ int SYNC_TIME_Fun (void)
         j = Real_TIME.Date.Days;
         j *= 86400;
         k = i + j;
-        Real_TIME.TIME.SYS_Sec = k;
-        Real_TIME.TIME.SYS_Us = Real_TIME.Watch.time_us;
+        Real_TIME.BaseTIME.SYS_Sec = k;
+        Real_TIME.BaseTIME.SYS_Us = Real_TIME.Watch.time_us;
 //        printf("SYNC_TIME : set i: %d,j: %d,sec：%d,us:%d \n",i,j,Real_TIME.TIME.SYS_Sec,Real_TIME.Watch.time_us);
-        SYS_Time_Set(&Real_TIME.TIME);
+        SYS_Time_Set(&Real_TIME.BaseTIME);
     }
     else
     {
-        SYS_Time_Get(&Real_TIME.TIME);
+        SYS_Time_Get(&Real_TIME.BaseTIME);
 
-        i = Real_TIME.TIME.SYS_Sec % 86400;
+        i = Real_TIME.BaseTIME.SYS_Sec % 86400;
         Real_TIME.Watch = API_Seconds_to_Hourly (i);
-        Real_TIME.Watch.time_us = Real_TIME.TIME.SYS_Us;
+        Real_TIME.Watch.time_us = Real_TIME.BaseTIME.SYS_Us;
 
-        Real_TIME.Date.Days = Real_TIME.TIME.SYS_Sec / 86400;
+        Real_TIME.Date.Days = Real_TIME.BaseTIME.SYS_Sec / 86400;
         
     }
     Real_TIME.SYNC_Flag = 0;
@@ -140,7 +124,7 @@ void MODE_Delay_Us(int num)
 {
 #ifdef Exist_SYS_TIME
     SYS_Delay_us(num);
-#elif
+#else
     while(1);
 #endif
 }
@@ -148,7 +132,7 @@ void MODE_Delay_Ms(int num)
 {
 #ifdef Exist_SYS_TIME
     SYS_Delay_ms (num);
-#elif
+#else
     while(1);
 #endif
 }
@@ -159,7 +143,7 @@ void MODE_Delay_S(int num)
     {
         SYS_Delay_ms (1000);
     }
-#elif
+#else
     while(1);
 #endif
 }

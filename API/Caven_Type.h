@@ -53,7 +53,7 @@
 #define DESTROY_DATA(X,N) memset((X),0,(N))             // 销毁 的地址 (X)  长度 (N)
 
 
-#define BUFF_MAX 400
+#define BUFF_MAX 360
 
 
 // 日期 8byte
@@ -71,15 +71,15 @@ typedef struct
     U8 hour;
     U8 minutes;
     U8 second;
-    U32 time_us;          // 这里最大 1000 000
+    U32 time_us;            // 这里最大 1000 000
 }Caven_Watch_Type;
 
 // 系统运行总时长 8byte
 typedef struct
 {
     U32 SYS_Sec;
-    U32 SYS_Us;
-}Caven_TIME_Type;
+    U32 SYS_Us;             // 这里最大 1000 000
+}Caven_BaseTIME_Type;
 
 // 颜色 4byte
 typedef struct

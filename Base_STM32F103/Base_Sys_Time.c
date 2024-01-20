@@ -5,16 +5,48 @@ int Tick_Full;       //提取宏，很多宏都是以运输的形式存在的，
 int Freq_ms;
 int Freq_us;
 
+#ifdef Exist_SYS_TIME
+static uint64_t s_Tick_cnt;
+static uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
+static uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
+static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
+
+#endif
+
+void SYS_Time_Init(int Set)
+{
+#ifdef Exist_SYS_TIME
+    if (Set)
+    {
+        if (SysTick_Config(TICK_SET_CMP)) // 系统使用滴答定时器
+        {while (1);}
+    }
+    else
+    {
+        SYS_RESET();
+    }
+#endif
+}
+
+void SYS_Time_Set(Caven_BaseTIME_Type * time)
+{
+    
+}
+
+void SYS_Time_Get(Caven_BaseTIME_Type * time)
+{
+}
+
 void Sys_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
-    Tick_Full = Tick_Set_CMP;
-    Freq_ms = (Tick_Frequency / 1000);
-    Freq_us = (Tick_Frequency / 1000000);
+    Tick_Full = TICK_SET_CMP;
+    Freq_ms = (TICK_FREQUENCY / 1000);
+    Freq_us = (TICK_FREQUENCY / 1000000);
     
     if (Set)
     {
-        while(SysTick_Config(Tick_Set_CMP));
+        while(SysTick_Config(TICK_SET_CMP));
     }
     else
         NVIC_SystemReset();
@@ -22,12 +54,12 @@ void Sys_Time_Init(int Set)
 #endif
 }
 
-struct _SYS_Ticktime SYS_Ticktime = {0};
+SYS_Time_Type SYS_Ticktime = {0};
 
 #ifdef Exist_SYS_TIME
 void SysTick_Handler(void)
 {
-    SYS_Ticktime.SYS_Tick_H++;
+    SYS_Ticktime.SYS_Time_H++;
 }
 #endif
 
@@ -35,14 +67,14 @@ void SysTick_Handler(void)
 //这个返回的是，总系统滴答数，这个数是U64的，巨大
 
 
-uint64_t GET_SysTick (SYS_Tick_type *stamp)
+uint64_t GET_SysTick (SYS_Time_Type *stamp)
 {
     uint64_t temp = 0;
 #ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Tick_L = (Tick_Full - Sys_Time_VAL); //滴答当前值
-    temp = SYS_Ticktime.SYS_Tick_H;
+    SYS_Ticktime.SYS_Time_L = (Tick_Full - Sys_Time_VAL); //滴答当前值
+    temp = SYS_Ticktime.SYS_Time_H;
     temp *= Tick_Full;                                             //乘法一定放后面，尤其是中断的东西
-    temp += SYS_Ticktime.SYS_Tick_L;
+    temp += SYS_Ticktime.SYS_Time_L;
 #endif
     return (temp);
 }
@@ -50,9 +82,9 @@ uint64_t GET_SysTick (SYS_Tick_type *stamp)
 void SET_SysTick(uint64_t time)
 {
 #ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Tick_H = time / Tick_Full;         //高位设置
-    SYS_Ticktime.SYS_Tick_L = (time % Tick_Full);       //低位设置(不设也行)
-    Sys_Time_VAL = Tick_Full - SYS_Ticktime.SYS_Tick_L; //载入低位
+    SYS_Ticktime.SYS_Time_H = time / Tick_Full;         //高位设置
+    SYS_Ticktime.SYS_Time_L = (time % Tick_Full);       //低位设置(不设也行)
+    Sys_Time_VAL = Tick_Full - SYS_Ticktime.SYS_Time_L; //载入低位
 #endif
 }
 
@@ -63,7 +95,7 @@ void SYS_Delay_us(int n)
     uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
     uint64_t temp;
     int set_time = n * Freq_us;
-    SYS_Tick_type stamp;
+    SYS_Time_Type stamp;
     start_ticks = GET_SysTick(&stamp);
 #ifdef Exist_SYS_TIME
     while (1)
@@ -76,7 +108,7 @@ void SYS_Delay_us(int n)
         }
         else
         {
-            temp = 86400 * Tick_Frequency; //一天时间 * 滴答频率
+            temp = 86400 * TICK_FREQUENCY; //一天时间 * 滴答频率
             temp -= start_ticks;
             temp += end_ticks;
         }
@@ -93,7 +125,7 @@ void SYS_Delay_ms(int n)
     uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
     uint64_t temp;
     int set_time = n * Freq_ms;
-    SYS_Tick_type stamp;
+    SYS_Time_Type stamp;
     start_ticks = GET_SysTick(&stamp);
 #ifdef Exist_SYS_TIME
     while (1)
@@ -106,7 +138,7 @@ void SYS_Delay_ms(int n)
         }
         else
         {
-            temp = 86400 * Tick_Frequency; //一天时间 * 滴答频率
+            temp = 86400 * TICK_FREQUENCY; //一天时间 * 滴答频率
             temp -= start_ticks;
             temp += end_ticks;
         }
@@ -118,10 +150,18 @@ void SYS_Delay_ms(int n)
 #endif
 }
 
-void SYS_Delay_S(int n)
+// delay
+void Base_SYS_Delay(int time, int speed)
 {
-    for (int var = 0; var < n; ++var)
+#ifdef NOP
+    volatile int temp;
+    for (int i = 0; i < time; ++i)
     {
-        SYS_Delay_ms(1000);
+        temp = speed; // SET
+        do
+        {
+            NOP();
+        } while ((temp--) > 0);
     }
+#endif
 }

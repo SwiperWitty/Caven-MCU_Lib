@@ -58,8 +58,8 @@
     #define BZZ_H() GPIOB->BSRR = GPIO_Pin_5   //PB05
 #endif
 
-#ifdef Exist_KEY
-    #define KEY_R() gpio_input_data_bit_read(GPIOC,GPIO_Pin_13)     //KEY,读
+#ifdef Exist_BUTTON
+    #define BUTTON_STATE() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,读
 #endif
 
 #ifdef Exist_HC595
@@ -97,7 +97,7 @@
     #define DS18B20_IO_H() DS18B20_Clock->BSRR = DS18B20_IO
     #define DS18B20_IO_L() DS18B20_Clock->BRR = DS18B20_IO
 
-    #define DS18B20_IO_R() gpio_input_data_bit_read(DS18B20_Clock,DS18B20_IO)     // 读
+    #define DS18B20_IO_R() GPIO_ReadInputDataBit(DS18B20_Clock,DS18B20_IO)     // 读
 #endif
 
 
@@ -113,7 +113,7 @@ void HC595_GPIO_Init(int Set);
 
 void DS18B20_GPIO_Init(int Set);
 
-void KEY_GPIO_Init(int Set);
+void Button_GPIO_Init(int Set);
 
 /*  other    */
 void DS18B20_IO_Config(int Set);
