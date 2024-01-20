@@ -6,7 +6,7 @@ struct _Mode_Use Mode_Use;    //结构体实体
 
 static void Mode_Use_index(void)		//索引 功能函数 本体
 {
-    Mode_Use.Debug_Out = NULL;
+    Mode_Use.Debug_Out_Way = NULL;
 #ifdef Exist_LCD
     Mode_Use.LCD.Fill_pFun = LCD_Fill;
 
@@ -105,7 +105,7 @@ void Mode_Index(void)
     Mode_Init.UART = MODE_UART_Init;
 #endif
 #ifdef Exist_USB
-    Mode_Init.USB = USB_User_init;
+    Mode_Init.USB = MODE_USB_init;
 #endif
     
 #ifdef Exist_LED
@@ -119,27 +119,27 @@ void Mode_Index(void)
 #endif
 
 #ifdef Exist_HC595
-    Mode_Init.HC_595 = HC595_Init;
+    Mode_Init.HC_595 = MODE_HC595_Init;
 #endif
 #ifdef Exist_HC138
-    Mode_Init.HC_138 = HC138_Init;
+    Mode_Init.HC_138 = MODE_HC138_Init;
 #endif
 #ifdef Exist_DS18B20
-    Mode_Init.DS18B20 = DS18B20_Init;
+    Mode_Init.DS18B20 = MODE_DS18B20_Init;
 #endif
 
-#ifdef Exist_KEY
-    Mode_Init.KEY = KEY_Init;
+#ifdef Exist_BUTTON
+    Mode_Init.BUTTON = MODE_Button_Init;
 #endif
 #ifdef Exist_Ultrasonic
-    Mode_Init.Ultrasonic = Ultrasonic_Init;
+    Mode_Init.Ultrasonic = MODE_Ultrasonic_Init;
 #endif
 
 #ifdef Exist_Voice
-    Mode_Init.Voice = Voice_Init;
+    Mode_Init.Voice = MODE_Voice_Init;
 #endif
 #ifdef Exist_Steering_Engine
-    Mode_Init.Steering_Engine = Steering_Engine_Init;
+    Mode_Init.Steering_Engine = MODE_Steering_Engine_Init;
 #endif  
 
 #ifdef Exist_ADC

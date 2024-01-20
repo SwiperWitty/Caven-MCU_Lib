@@ -12,14 +12,14 @@
     #include "MODE_LCD.h"            //显示输出
 #endif
 #ifdef Exist_OLED
-    #include "OLED.h"            //显示输出
+    #include "OLED.h"            	//显示输出
 #endif
 
 #ifdef Exist_BZZ
-    #include <MODE_BZZ.h>            //BZZ输出
+    #include "MODE_BZZ.h"            //BZZ输出
 #endif
 #ifdef Exist_LED
-    #include <MODE_LED.h>            //LED输出
+    #include "MODE_LED.h"            //LED输出
 #endif
 
 #ifdef Exist_UART
@@ -44,14 +44,14 @@
 #ifdef Exist_Voice
     #include "MODE_MP3.h"
 #endif
-#ifdef Exist_Steering_Engine    //动力输出
+#ifdef Exist_Steering_Engine    		//动力输出
     #include "Steering_engine.h"
 #endif
 #ifdef Exist_Motor
     #include "MODE_motor.h"
 #endif
 
-#ifdef EXIST_BUTTON
+#ifdef Exist_BUTTON
     #include "MODE_Button.h"            //按键输入
 #endif
 
@@ -117,8 +117,8 @@ struct _Mode_Init
 	int (*DS18B20)(int SET);
 #endif
 
-#ifdef Exist_KEY
-	void (*KEY)(char Channel,int SET);
+#ifdef Exist_BUTTON
+	void (*BUTTON)(char Channel,int SET);
 #endif
 #ifdef Exist_Ultrasonic
 	int (*Ultrasonic)(int SET);
@@ -140,7 +140,7 @@ struct _Mode_Init
 
 struct _Mode_Use
 {
-    void (*Debug_Out)(const char *String);          //提倡写一个Debug
+    void (*Debug_Out_Way)(const char *String);          //提倡写一个Debug
 
 #ifdef Exist_SYS_TIME
     MODE_TIME_Way TIME;
@@ -149,49 +149,47 @@ struct _Mode_Use
     MODE_UART_Way UART;                             //面向对象
 #endif
 #ifdef Exist_USB
-    struct USB_ USB_HID;
+    MODE_USB_HID_Way USB_HID;
 #endif 
 #ifdef Exist_LCD
-    struct LCD_ LCD;
+    MODE_LCD_Way LCD;
 #endif
 #ifdef Exist_LED
     MODE_LED_Way LED;
 #endif
-    #ifdef Exist_BZZ
+#ifdef Exist_BZZ
     MODE_BZZ_Way BZZ;
 #endif
 #ifdef Exist_HC595
-    struct HC595_ HC595;
+    MODE_HC595_Way HC595;
 #endif
 #ifdef Exist_HC138
-    struct HC138_ HC138;
+	MODE_HC138_Way HC138;
 #endif
 #ifdef Exist_DS18B20
-    struct DS18B20_ DS18B20;
+	MODE_DS18B20_Way DS18B20;
 #endif
-
-#ifdef Exist_KEY
-    struct KEY_ KEY;
+#ifdef Exist_BUTTON
+    MODE_Button_Way BUTTON;
 #endif
 #ifdef Exist_Ultrasonic
-    struct Ultrasonic_ Ultrasonic;
+	MODE_Ultrasonic_Way Ultrasonic;
 #endif
 
 #ifdef Exist_Voice
-    struct MP3_ MP3;
+	MODE_MP3_Way MP3;
 #endif
 #ifdef Exist_Steering_Engine
-    struct Steering_Engine_ Steering_Engine;
+	MODE_Steering_Engine_Way Steering_Engine;
 #endif
 
 #ifdef Exist_ADC
-    struct _USER_ADC_ USER_ADC;
+	MODE_USER_ADC_Way USER_ADC;
 #endif
 };
 
 void Mode_Index(void); //初始化Mode函数索引,真正功能的初始化请调用结构体中函数指针(Mode_Init)
 void Debug_Out(const char *String);
-
 
 
 #endif

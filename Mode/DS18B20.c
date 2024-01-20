@@ -11,14 +11,7 @@ static void Write_Byte (char Data);
 static void DS18B20_Delay (int Num)
 {
 #ifdef Exist_DS18B20
-    for (Num *= 5; Num > 0; Num--)
-    {
-        NOP();NOP();NOP();NOP();NOP();
-		NOP();NOP();NOP();NOP();NOP();
-		NOP();NOP();NOP();NOP();NOP();
-		NOP();NOP();NOP();NOP();NOP();
-		NOP();NOP();NOP();
-    }
+    SYS_Base_Delay(Num,1);
 #endif
 }
 
@@ -58,7 +51,7 @@ char DS18B20_Init (int Set)
 #ifdef Exist_DS18B20
     DS18B20_IO_Config(WRITE_Config);
     DS18B20_Delay (1);
-    DS18B20_Time = (MCU_SYS_Freq/6000000);
+    DS18B20_Time = (MCU_SYS_FREQ/6000000);
 	DS18B20_Delay (500);
 	if(DS18B20_Start () == 1)
 	{

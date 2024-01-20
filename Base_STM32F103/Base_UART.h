@@ -32,6 +32,7 @@ typedef enum
 //    m_UART_CH5,
 }UART_mType;
 
+#define UART_pf
 
 #if (Exist_UART & OPEN_0001)
 

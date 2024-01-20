@@ -3,16 +3,18 @@
 #define Angle_coefficient	1.11
 
 
-void Steering_Engine_Init (int Set)
+int MODE_Steering_Engine_Init (int Set)
 {
+	int retval = 1;
 #ifdef Exist_Steering_Engine
     TIM4_PWM_Start_Init(Arr_T4,Por_T4,Set);
     Steering_Engine_Angle(1,0);
     Steering_Engine_Angle(2,0);
     Steering_Engine_Angle(3,0);
     Steering_Engine_Angle(4,0);     //默认0°
+	retval = 0;
 #endif
-
+	return retval;
 }
 
 /*

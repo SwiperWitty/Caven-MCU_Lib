@@ -544,17 +544,11 @@ void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 #ifdef Exist_LCD
 static void LCD_Delay(int time)
 {
-	int temp;
-	for (int i = 0; i < time; ++i)
-	{
-		temp = 10000; // SET
-		while ((--temp) > 0)
-			;
-	}
+	SYS_Base_Delay(time,10000);
 }
 #endif
 
-void LCD_Init(int Set)
+void MODE_LCD_Init(int Set)
 {
 #ifdef Exist_LCD
 	LCD_GPIO_Init(Set);

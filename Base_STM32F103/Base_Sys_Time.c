@@ -16,6 +16,9 @@ static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
 void SYS_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME
+    Tick_Full = TICK_SET_CMP;
+    Freq_ms = (TICK_FREQUENCY / 1000);
+    Freq_us = (TICK_FREQUENCY / 1000000);
     if (Set)
     {
         if (SysTick_Config(TICK_SET_CMP)) // 系统使用滴答定时器
@@ -35,23 +38,6 @@ void SYS_Time_Set(Caven_BaseTIME_Type * time)
 
 void SYS_Time_Get(Caven_BaseTIME_Type * time)
 {
-}
-
-void Sys_Time_Init(int Set)
-{
-#ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
-    Tick_Full = TICK_SET_CMP;
-    Freq_ms = (TICK_FREQUENCY / 1000);
-    Freq_us = (TICK_FREQUENCY / 1000000);
-    
-    if (Set)
-    {
-        while(SysTick_Config(TICK_SET_CMP));
-    }
-    else
-        NVIC_SystemReset();
-
-#endif
 }
 
 SYS_Time_Type SYS_Ticktime = {0};

@@ -5,29 +5,36 @@ void User_GPIO_Init(int Set)
 	
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
+	crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK,TRUE);
+	crm_periph_clock_enable(CRM_GPIOD_PERIPH_CLOCK,TRUE);
     if (Set) 
     {
-//		crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK,TRUE);
-        
-//        gpio_init_struct.gpio_pins = GPIO_PINS_6;
-//        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-//        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-//        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
-//        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-//        gpio_init(GPIOB, &gpio_init_struct);
-//		
-//		gpio_init_struct.gpio_pins = GPIO_PINS_1;
-//		gpio_init(GPIOA, &gpio_init_struct);
-        
+        gpio_init_struct.gpio_pins = GPIO_PINS_2;	// PD_CGF_A
+        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
+        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+        gpio_init(GPIOD, &gpio_init_struct);
+		
+		gpio_init_struct.gpio_pins = GPIO_PINS_12;	// PD_CGF_B
+		gpio_init(GPIOC, &gpio_init_struct);
+		
+		PD_CGF_A_L();
+		PD_CGF_B_L();
+		
+		gpio_init_struct.gpio_pins = GPIO_PINS_0;	// DC_5V
+		gpio_init(GPIOC, &gpio_init_struct);
+		
+		gpio_init_struct.gpio_pins = GPIO_PINS_1;	// DC_OUT
+		gpio_init(GPIOC, &gpio_init_struct);
+		
+		DC_5V_ON();
+		DC_OUT_ON();
     }
     else                                                    //标志取消GPIO
     {
-//        gpio_init_struct.gpio_pins = GPIO_PINS_4;
-//        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-//        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-//        gpio_init(GPIOA, &gpio_init_struct);
+
     }
-	
 }
 
 void STEP_Motor (int Set)
@@ -144,9 +151,9 @@ void BZZ_GPIO_Init(int Set)
 #endif
 }
 
-void KEY_GPIO_Init(int Set)
+void Button_GPIO_Init(int Set)
 {
-#ifdef Exist_KEY
+#ifdef Exist_BUTTON
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
     if (Set) {

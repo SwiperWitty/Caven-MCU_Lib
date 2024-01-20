@@ -92,22 +92,22 @@ void SPI_Send_String(const void * DATA,int num);
 
 
 #if (SPIx == 1)
-#define SPI_NSS_H()  GPIO_SPI1->Reg_IO_H = SPI1_NSS     //置高电平
-#define SPI_NSS_L()  GPIO_SPI1->Reg_IO_L = SPI1_NSS     //置低电平
-#define SPI_SCK_H()  GPIO_SPI1->Reg_IO_H = SPI1_SCK
-#define SPI_SCK_L()  GPIO_SPI1->Reg_IO_L = SPI1_SCK 
-#define SPI_MOSI_H() GPIO_SPI1->Reg_IO_H = SPI1_MOSI
-#define SPI_MOSI_L() GPIO_SPI1->Reg_IO_L = SPI1_MOSI
+#define SPI_NSS_H()  GPIO_SPI1->REG_IO_H = SPI1_NSS     //置高电平
+#define SPI_NSS_L()  GPIO_SPI1->REG_IO_L = SPI1_NSS     //置低电平
+#define SPI_SCK_H()  GPIO_SPI1->REG_IO_H = SPI1_SCK
+#define SPI_SCK_L()  GPIO_SPI1->REG_IO_L = SPI1_SCK 
+#define SPI_MOSI_H() GPIO_SPI1->REG_IO_H = SPI1_MOSI
+#define SPI_MOSI_L() GPIO_SPI1->REG_IO_L = SPI1_MOSI
 
 #define SPI_MISO_R() gpio_input_data_bit_read(GPIO_SPI1,SPI1_MISO)      //读取引脚电平
 
 #elif (SPIx == 2)
-#define SPI_NSS_H()  GPIO_SPI2->Reg_IO_H = SPI2_NSS     //置高电平
-#define SPI_NSS_L()  GPIO_SPI2->Reg_IO_L = SPI2_NSS     //置低电平
-#define SPI_SCK_H()  GPIO_SPI2->Reg_IO_H = SPI2_SCK
-#define SPI_SCK_L()  GPIO_SPI2->Reg_IO_L = SPI2_SCK 
-#define SPI_MOSI_H() GPIO_SPI2->Reg_IO_H = SPI2_MOSI
-#define SPI_MOSI_L() GPIO_SPI2->Reg_IO_L = SPI2_MOSI
+#define SPI_NSS_H()  GPIO_SPI2->REG_IO_H = SPI2_NSS     //置高电平
+#define SPI_NSS_L()  GPIO_SPI2->REG_IO_L = SPI2_NSS     //置低电平
+#define SPI_SCK_H()  GPIO_SPI2->REG_IO_H = SPI2_SCK
+#define SPI_SCK_L()  GPIO_SPI2->REG_IO_L = SPI2_SCK 
+#define SPI_MOSI_H() GPIO_SPI2->REG_IO_H = SPI2_MOSI
+#define SPI_MOSI_L() GPIO_SPI2->REG_IO_L = SPI2_MOSI
 
 #define SPI_MISO_R() gpio_input_data_bit_read(GPIO_SPI2,SPI2_MISO)      //读取引脚电平
 

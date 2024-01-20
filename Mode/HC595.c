@@ -13,7 +13,7 @@ void HC595_Init (int Set)
 #ifdef Exist_HC595
 static void HC595_Delay (int time)
 {
-    Base_SYS_Delay (time,5);
+    SYS_Base_Delay (time,5);
 }
 #endif
 

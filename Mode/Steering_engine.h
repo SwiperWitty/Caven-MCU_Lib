@@ -10,15 +10,16 @@
 #define	Arr_T4	25
 #define Por_T4	SystemCoreClock / 1000000      //144 000 000 / 100000 = 1440
 
-//	T = (arr + 1 * por + 1) / 144MHz = 20MS
+//	T = ((arr + 1) * (por + 1)) / 144MHz = 20MS
 
-struct Steering_Engine_
+typedef struct
 {
     void (*Set_Angle)(char Channel,float Angle);
     void (*Set_360_Sport)(char Channel,char Rotation,char Speed,int Time);
-};
+}MODE_Steering_Engine_Way;
 
-void Steering_Engine_Init (int Set);
+int MODE_Steering_Engine_Init (int Set);
+
 void Steering_Engine_Angle(char Channel,float Angle);
 void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time);
 

@@ -263,8 +263,9 @@ int Flash_Save_Data (int Addr,void *Data,int size)
 int Flash_Read_Data (int Addr,void *Data,int size)
 {
 	int retval = SUCCESS;
-    char temp;
+	
 #ifdef Exist_FLASH 
+	char temp;
     int StartSector, EndSector;
     StartSector = Addr_Get_Area(Addr);
     EndSector = Addr_Get_Area(Addr + size);

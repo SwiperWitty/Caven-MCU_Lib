@@ -92,8 +92,9 @@ void ADC1_DMA_Config (void *DMA_Buffer,int BufferSize)
 #endif
 }
 
-void ADC_Start_Init(int Set)
+int ADC_Start_Init(int Set)
 {
+	int retval = -1;
 #ifdef Exist_ADC
     adc_base_config_type adc_base_struct;
     crm_periph_clock_enable(CRM_ADC1_PERIPH_CLOCK, TRUE);
@@ -153,7 +154,9 @@ void ADC_Start_Init(int Set)
     while(adc_calibration_init_status_get(ADC1));       //等待复位校准结束
     adc_calibration_start(ADC1);                        //开启AD校准
     while(adc_calibration_status_get(ADC1));
+	retval = 0;
 #endif
+	return retval;
 }
 
 

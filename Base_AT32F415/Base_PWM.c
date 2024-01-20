@@ -83,7 +83,7 @@ void TIM8_PWM_GPIO_Init(int Set)
 }
 
 
-//溢出时间T = (arr+1)*(psc+1)
+//溢出 T = (arr+1)*(psc+1)
 void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 {
 #ifdef Exist_PWM

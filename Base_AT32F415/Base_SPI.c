@@ -187,9 +187,9 @@ void SPI_Start_Init(int Set)
 #ifdef Exist_SPI
 static void SPI_Delay (int time)
 {
-    if (MCU_SYS_Freq >= 72000000)
+    if (MCU_SYS_FREQ >= 72000000)
     {
-        volatile int temp;
+        int temp;
         for (int i = 0; i < time; ++i)
         {
             temp = 100;            //SET
