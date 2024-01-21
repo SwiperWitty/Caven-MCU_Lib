@@ -27,40 +27,25 @@ void ADC_GPIO_Init(int Set)
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init_struct.gpio_pins = 0;                 //清除
 
-    #ifdef ADC_IO_PA0
+    #if (Exist_ADC & OPEN_0001)
     gpio_init_struct.gpio_pins |= GPIO_PINS_0;
     #endif
-    #ifdef ADC_IO_PA1
+    #if (Exist_ADC & OPEN_0010)
     gpio_init_struct.gpio_pins |= GPIO_PINS_1;
     #endif
-    #ifdef ADC_IO_PA2
+    #if (Exist_ADC & OPEN_0100)
     gpio_init_struct.gpio_pins |= GPIO_PINS_2;
     #endif
-    #ifdef ADC_IO_PA3
+    #if (Exist_ADC & OPEN_1000)
     gpio_init_struct.gpio_pins |= GPIO_PINS_3;
     #endif
-    #ifdef ADC_IO_PA4
+    #if (Exist_ADC & OPEN_10000)
     gpio_init_struct.gpio_pins |= GPIO_PINS_4;
     #endif
-    #ifdef ADC_IO_PA5
-    gpio_init_struct.gpio_pins |= GPIO_PINS_5;
-    #endif
-    #ifdef ADC_IO_PA6
-    gpio_init_struct.gpio_pins |= GPIO_PINS_6;
-    #endif
-    #ifdef ADC_IO_PA7
-    gpio_init_struct.gpio_pins |= GPIO_PINS_7;
-    #endif
+
     gpio_init(GPIOA, &gpio_init_struct);
 
     gpio_init_struct.gpio_pins = 0;                 //清除
-    #ifdef ADC_IO_PB0
-    gpio_init_struct.gpio_pins |= GPIO_PINS_0;
-    #endif
-    #ifdef ADC_IO_PB1
-    gpio_init_struct.gpio_pins |= GPIO_PINS_1;
-    #endif
-    gpio_init(GPIOB, &gpio_init_struct);
 
 #endif
 }

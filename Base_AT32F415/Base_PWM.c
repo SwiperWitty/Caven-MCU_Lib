@@ -83,7 +83,10 @@ void TIM8_PWM_GPIO_Init(int Set)
 }
 
 
-//溢出 T = (arr+1)*(psc+1)
+/*
+溢出 T = (arr+1)*(psc+1)
+arr是run_cnt溢出值，psc是对时钟源的分频
+*/
 void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 {
 #ifdef Exist_PWM

@@ -22,6 +22,7 @@
 //    #define TIM8_PWM
 #endif
 
+// arr是run_cnt溢出值，psc是对时钟源的分频
 void TIM3_PWM_Start_Init(int arr,int psc,int Set);
 void TIM4_PWM_Start_Init(int arr,int psc,int Set);
 //void TIM8_PWM_Start_Init(int arr,int psc,int Set);
