@@ -60,8 +60,8 @@ void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 // fun
 int Base_UART_Init(UART_mType Channel,int Baud,int SET);
-void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA);
-void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length);
+void Base_UART_Send_Byte(UART_mType Channel,uint16_t Data);
+void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length);
 
 /*
  * 接收入口的状态机，这个很重要
