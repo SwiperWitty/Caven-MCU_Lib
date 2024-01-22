@@ -6,11 +6,7 @@ static usart_type *Temp;
 #define RXD_Falg USART_RDBF_FLAG //  接收标志
 #define TXD_Falg USART_TDC_FLAG  //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
-static D_pFun State_Machine_UART0_pFun = NULL;
-static D_pFun State_Machine_UART1_pFun = NULL;
-static D_pFun State_Machine_UART2_pFun = NULL;
-static D_pFun State_Machine_UART3_pFun = NULL;
-static D_pFun State_Machine_UART4_pFun = NULL;
+static D_pFun State_Machine_UART_pFun[5];
 
 static char UART_RXD_Flag(UART_mType Channel)
 {
@@ -158,9 +154,9 @@ void UART0_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART0_pFun != NULL)
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
         {
-            State_Machine_UART0_pFun(&temp);
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -213,9 +209,9 @@ void UART1_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART1_pFun != NULL)
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
         {
-            State_Machine_UART1_pFun(&temp);
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -268,9 +264,9 @@ void UART2_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART2_pFun != NULL)
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
         {
-            State_Machine_UART2_pFun(&temp);
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -325,9 +321,9 @@ void UART3_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART3_pFun != NULL)
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
         {
-            State_Machine_UART3_pFun(&temp);
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -380,9 +376,9 @@ void UART4_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART4_pFun != NULL)
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
         {
-            State_Machine_UART4_pFun(&temp);
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -436,30 +432,7 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
     {
         return retval;
     }
-    switch (Channel)
-    {
-    case 0:
-        State_Machine_UART0_pFun = UART_pFun;
-        break;
-    case 1:
-        State_Machine_UART1_pFun = UART_pFun;
-        retval = 0;
-        break;
-    case 2:
-        State_Machine_UART2_pFun = UART_pFun;
-        retval = 0;
-        break;
-    case 3:
-        State_Machine_UART3_pFun = UART_pFun;
-        retval = 0;
-        break;
-    case 4:
-        State_Machine_UART4_pFun = UART_pFun;
-        retval = 0;
-        break;
-    default:
-        break;
-    }
+    State_Machine_UART_pFun[Channel] = UART_pFun;
 #endif
     return retval;
 }
