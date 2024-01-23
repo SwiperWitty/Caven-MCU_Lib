@@ -7,7 +7,7 @@
 #define RXD_Falg    USART_IT_RXNE       //  接收标志
 #define TXD_Falg    USART_FLAG_TC       //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
-static D_pFun State_Machine_UART_pFun[5];
+static D_pFun State_Machine_UART_pFun[5]; //[0-4]
 
 // 以下函数单纯方便MCU移植
 
@@ -51,6 +51,9 @@ static void UART_RXD_Flag_Clear(UART_mType Channel)
     case 3:
         Temp = USART3;
         break;
+    case 4:
+        Temp = UART4;
+        break;
     default:
         return;
     }
@@ -74,6 +77,9 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
     case 3:
         Temp = USART3;
         break;
+    case 4:
+        Temp = UART4;
+        break;
     default:
         return 0;
     }
@@ -96,6 +102,9 @@ void Base_UART_Send_Byte(UART_mType Channel,uint16_t Data)
         break;
     case 3:
         Temp = USART3;
+        break;
+    case 4:
+        Temp = UART4;
         break;
     default:
         return;
@@ -166,7 +175,6 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
     if (Data == NULL || p_DMA_BUFF == NULL || (Length < 0)) {
         return;
     }
-    memcpy(p_DMA_BUFF,Data,Length);
 
     if ((dma_send_First & (0x01 << Channel)) == 0)            // 当前通道首次DMA，不等
     {
@@ -178,6 +186,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         while(DMA_GetFlagStatus(DMAy_FLAG) == RESET);   /* Wait until USART TX DMA1 Transfer Complete */
         DMA_ClearFlag(DMAy_FLAG);
     }
+    memcpy(p_DMA_BUFF,Data,Length);                     // 一定等上一个发送完成才能修改
 
     DMA_DeInit(Temp_DMA_Channel);
     DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)(&Temp_USART->DATAR);   /* USARTx->DATAR: */
