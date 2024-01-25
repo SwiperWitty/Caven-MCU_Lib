@@ -6,7 +6,7 @@ struct _Mode_Use Mode_Use;    //结构体实体
 
 static void Mode_Use_index(void)		//索引 功能函数 本体
 {
-    Mode_Use.Debug_Out_Way = NULL;
+    Mode_Use.Debug_Out_Way = Debug_Out;
 #ifdef Exist_LCD
     Mode_Use.LCD.Fill_pFun = LCD_Fill;
 
@@ -150,12 +150,12 @@ void Mode_Index(void)
 
 //--------------------------------//
 
-void Debug_Out(const char *String)              //选一个通信接口为Debug
+void Debug_Out(uint8_t *data,int Length)        //选一个通信接口为Debug
 {
 #ifdef Exist_UART
     if (DEBUG_OUT == m_UART_CH1)
     {
-        MODE_UART_Send_String_Fun(m_UART_CH1,String);
+        MODE_UART_Send_Data_Fun(DEBUG_OUT, data, Length);
     }
 
 #endif

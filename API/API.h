@@ -14,6 +14,9 @@
 /* 事件处理 */
 #include "Caven_event_frame.h"
 
+/* 外部组件 */
+#include "Vofa_info.h"
+
 /********************************/
 
 /*
