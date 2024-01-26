@@ -9,54 +9,48 @@
 #include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
 #endif
 
+#include "Caven_Type.h"
+
 /****************/
 
 #ifdef Exist_ADC
-	extern float VDDA;
-	extern float VCC_Cfc;
-	extern u16 ADC1_valuetab_list[20];
+    extern float VDDA_num;
     
     #define ADC_MAX                          4096   
-    #define ADC_VREF                         VDDA
+    #define ADC_VREF                         VDDA_num
     #define ADC_TEMP_BASE                    (1.26)
     #define ADC_TEMP_SLOPE                   (-0.00423)
 
-//面向对象编程
+    #define ADC_Speed ADC_SAMPLETIME_239_5
+
+    #define ADC_IO_PA0  ADC_CHANNEL_0   // tim5
+    #define ADC_IO_PA1  ADC_CHANNEL_1   // tim5 OPEN_0001
+    #define ADC_IO_PA2  ADC_CHANNEL_2   // tx2
+    #define ADC_IO_PA3  ADC_CHANNEL_3   // rx2  OPEN_0010
+    #define ADC_IO_PA4  ADC_CHANNEL_4   // ADC1
+    #define ADC_IO_PA5  ADC_CHANNEL_5   // ADC2 OPEN_0100
+    #define ADC_IO_PA6  ADC_CHANNEL_6   // tim3
+    #define ADC_IO_PA7  ADC_CHANNEL_7   // tim3 OPEN_1000
+
+    #define ADC_Temp    ADC_CHANNEL_16  // 温传
+    
+    #define ADC_FINISH_HANDLERIT() DMA1_Channel1_IRQHandler()
+#endif
+
+// 面向对象编程
 
 typedef struct
 {
-    void (*WAY_Get_List) (void);            //这是方法,获取ADC原始值
-    float (*WAY_Get_Temperature) (void);    //这是方法,获取MCU温度
-    float (*WAY_Conversion_Vol) (int NUM);  //这是方法,将ADC转换为电压
+    float (*Get_Temperature_pFun)(void);
+    float (*Conversion_Vol_pFun)(int Num);
     
-    u16 * DATA_List;       //这是数据，初始化记得绑定         
+    void (*Receive_Bind_pFun)(D_pFun ADC_pFun);
 }MODE_USER_ADC_Way;
 
-/*
-    使用DMA来读ADC的好处是一次可以获取所有的数据。
-    而且快速
-*/
+int Base_ADC_Init (int Set);
 
-#define ADC_Speed ADC_SAMPLETIME_239_5
-
-#define ADC_IO_PA0  ADC_CHANNEL_0
-#define ADC_IO_PA1  ADC_CHANNEL_1
-#define ADC_IO_PA2  ADC_CHANNEL_2
-// #define ADC_IO_PA3  ADC_CHANNEL_3
-// #define ADC_IO_PA4  ADC_CHANNEL_4
-// #define ADC_IO_PA5  ADC_CHANNEL_5
-// #define ADC_IO_PA6  ADC_CHANNEL_6
-// #define ADC_IO_PA7  ADC_CHANNEL_7
-#define ADC_IO_PB0  ADC_CHANNEL_8
-#define ADC_IO_PB1  ADC_CHANNEL_9
-#define ADC_Temp    ADC_CHANNEL_16      //温传
-
-#endif
-
-int ADC_Start_Init(int Set);
-
-void ADC_Get_List(void);
-float ADC_Get_Temperature(void);
-float ADC_Conversion_Vol(int NUM);
+float ADC_Get_Temperature_Fun (void);
+float ADC_Conversion_Vol_Fun (int Num);
+void ADC_Quick_Get_Bind_Fun (D_pFun ADC_pFun);
 
 #endif 

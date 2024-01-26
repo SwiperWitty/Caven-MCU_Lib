@@ -84,11 +84,9 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 #endif  
 
 #ifdef Exist_ADC
-    Mode_Use.USER_ADC.WAY_Get_Temperature = ADC_Get_Temperature;   //方法
-    Mode_Use.USER_ADC.WAY_Conversion_Vol = ADC_Conversion_Vol; 
-    Mode_Use.USER_ADC.WAY_Get_List = ADC_Get_List;
-    
-    Mode_Use.USER_ADC.DATA_List = ADC1_valuetab_list;      //数据
+    Mode_Use.USER_ADC.Get_Temperature_pFun = ADC_Get_Temperature_Fun;
+    Mode_Use.USER_ADC.Conversion_Vol_pFun = ADC_Conversion_Vol_Fun; 
+    Mode_Use.USER_ADC.Receive_Bind_pFun = ADC_Quick_Get_Bind_Fun;
 #endif
 
 }   //  Mode_Use 
@@ -143,7 +141,7 @@ void Mode_Index(void)
 #endif  
 
 #ifdef Exist_ADC
-    Mode_Init.User_ADC = ADC_Start_Init;
+    Mode_Init.User_ADC = Base_ADC_Init;
 #endif
 
 }   //  Mode_Index
@@ -153,10 +151,9 @@ void Mode_Index(void)
 void Debug_Out(uint8_t *data,int Length)        //选一个通信接口为Debug
 {
 #ifdef Exist_UART
-    if (DEBUG_OUT == m_UART_CH1)
-    {
-        MODE_UART_Send_Data_Fun(DEBUG_OUT, data, Length);
-    }
+    #ifdef DEBUG_OUT
+    MODE_UART_Send_Data_Fun(DEBUG_OUT, data, Length);
+    #endif
 
 #endif
 }
