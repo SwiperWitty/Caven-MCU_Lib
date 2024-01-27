@@ -84,7 +84,7 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 #endif  
 
 #ifdef Exist_ADC
-    Mode_Use.USER_ADC.Get_Temperature_pFun = ADC_Get_Temperature_Fun;
+    Mode_Use.USER_ADC.Get_MCU_Temperature_pFun = ADC_Get_MCU_Temperature_Fun;
     Mode_Use.USER_ADC.Conversion_Vol_pFun = ADC_Conversion_Vol_Fun; 
     Mode_Use.USER_ADC.Receive_Bind_pFun = ADC_Quick_Get_Bind_Fun;
 #endif

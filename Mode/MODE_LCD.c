@@ -1,7 +1,7 @@
 #include "MODE_LCD.h"
-#include "lcdfont.h" //字库
+#include "lcdfont.h"        //字库
 
-U16 BACK_COLOR = WHITE; //背景色
+U16 BACK_COLOR = LCD_WHITE; //背景色
 U8 	LCD_HORIZONTAL = USE_HORIZONTAL;
 
 #ifdef Exist_LCD

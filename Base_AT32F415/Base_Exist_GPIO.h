@@ -43,7 +43,7 @@
 #define DC_5V_OFF()  GPIOC->REG_IO_L = GPIO_PINS_0
 #define DC_OUT_ON()  GPIOC->REG_IO_H = GPIO_PINS_1
 #define DC_OUT_OFF() GPIOC->REG_IO_L = GPIO_PINS_1
-
+#define YG_KEY_STATE()  gpio_input_data_bit_read(GPIOC,GPIO_Pin_3)
 //---User MODE---
 
 #ifdef Exist_LCD
@@ -74,13 +74,13 @@
 #endif
 
 #ifdef Exist_BUTTON
-    #define BUTTON_STATE() gpio_input_data_bit_read(GPIOC,GPIO_Pin_13)     //KEY,读
+    #define BUTTON_STATE() gpio_input_data_bit_read(GPIOC,GPIO_Pin_13)     // KEY,读
 #endif
 
 #ifdef Exist_HC595
-    #define LATCH_CLOCK     GPIO_PINS_1         //门阀时钟
-    #define SHIFT_CLOCK     GPIO_PINS_2         //移动时钟
-    #define HC595_Data      GPIO_PINS_3         //数据
+    #define LATCH_CLOCK     GPIO_PINS_1         // 门阀时钟
+    #define SHIFT_CLOCK     GPIO_PINS_2         // 移动时钟
+    #define HC595_Data      GPIO_PINS_3         // 数据
     
     #define LATCH_CLOCK_L() GPIOC->REG_IO_L = LATCH_CLOCK
     #define LATCH_CLOCK_H() GPIOC->REG_IO_H = LATCH_CLOCK

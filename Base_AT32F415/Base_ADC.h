@@ -41,7 +41,7 @@
 
 typedef struct
 {
-    float (*Get_Temperature_pFun)(void);
+    float (*Get_MCU_Temperature_pFun)(void);
     float (*Conversion_Vol_pFun)(int Num);
     
     void (*Receive_Bind_pFun)(D_pFun ADC_pFun);
@@ -49,8 +49,8 @@ typedef struct
 
 int Base_ADC_Init (int Set);
 
-float ADC_Get_Temperature_Fun (void);
 float ADC_Conversion_Vol_Fun (int Num);
+float ADC_Get_MCU_Temperature_Fun (void);
 void ADC_Quick_Get_Bind_Fun (D_pFun ADC_pFun);
 
 #endif 
