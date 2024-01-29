@@ -62,7 +62,7 @@ typedef struct
     int (*Set_Direction_pFun)(char set);
 }MODE_LCD_Way;
 
-void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //指定区域填充颜色
+void LCD_Fill_Fun (U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //指定区域填充颜色
 void LCD_Draw_Point(U16 x, U16 y, U16 color);                         //在指定位置画一个点
 void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);        //在指定位置画一条线
 void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color);              //在指定位置画一个圆

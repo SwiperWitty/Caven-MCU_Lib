@@ -211,7 +211,7 @@ void HC595_GPIO_Init(int Set)
     {
         crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);       //时钟
 
-        gpio_init_struct.gpio_pins = LATCH_CLOCK | SHIFT_CLOCK | HC595_Data;
+        gpio_init_struct.gpio_pins = HC595_RCK | HC595_SCK | HC595_Data;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
@@ -220,7 +220,7 @@ void HC595_GPIO_Init(int Set)
     }
     else                                                    //标志取消GPIO
     {
-        gpio_init_struct.gpio_pins = LATCH_CLOCK | SHIFT_CLOCK | HC595_Data;
+        gpio_init_struct.gpio_pins = HC595_RCK | HC595_SCK | HC595_Data;
         gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOC, &gpio_init_struct);

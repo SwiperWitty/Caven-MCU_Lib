@@ -10,7 +10,8 @@ typedef struct
 }MODE_Button_Way;
 
 void MODE_Button_Init (char Channel,int Set);
-u32 MODE_Get_Button_State (char Channel);
+
+u32 MODE_Get_Button_State_Fun (char Channel);
 
 
 #endif

@@ -9,12 +9,12 @@
     管脚定义在 Base_Exist_GPIO 文件
 */
 
-struct HC138_
+typedef struct
 {
     void (*Set_DATA) (int Data);
-};
+}MODE_HC138_Way;
 
-void HC138_Init (int SET);
-void HC138_Set_Data (int Data);
+void MODE_HC138_Init (int SET);
+void HC138_Set_Data_Fun (int Data);
 
 #endif

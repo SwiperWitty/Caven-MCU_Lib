@@ -44,10 +44,11 @@ char DS18B20_Start (void)
 	return temp;
 }
 
-char DS18B20_Init (int Set)
+int MODE_DS18B20_Init (int Set)
 {
-	char temp = 0;
+	int temp = 0;
     DS18B20_Delay (1);
+    
 #ifdef Exist_DS18B20
     DS18B20_IO_Config(WRITE_Config);
     DS18B20_Delay (1);
@@ -58,10 +59,9 @@ char DS18B20_Init (int Set)
 		DS18B20_Exist_Flag = 1;             //成功
 		temp = 1;
         DS18B20_Delay (50);
-        DS18B20_Get_Temp();
+        DS18B20_Get_Temp_Fun();
 	}
 #endif
-    
 	return temp; 
 }
 
@@ -123,7 +123,7 @@ static char Read_Byte (void)
     return Data;
 }
 
-float DS18B20_Get_Temp(void)
+float DS18B20_Get_Temp_Fun (void)
 {
     float Temp = 0;
 	if(DS18B20_Start () == 0)

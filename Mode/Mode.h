@@ -118,7 +118,7 @@ struct _Mode_Init
 #endif
 
 #ifdef Exist_BUTTON
-	void (*BUTTON)(char Channel,int SET);
+	void (*Button)(char Channel,int SET);
 #endif
 #ifdef Exist_Ultrasonic
 	int (*Ultrasonic)(int SET);
@@ -170,7 +170,7 @@ struct _Mode_Use
 	MODE_DS18B20_Way DS18B20;
 #endif
 #ifdef Exist_BUTTON
-    MODE_Button_Way BUTTON;
+    MODE_Button_Way Button;
 #endif
 #ifdef Exist_Ultrasonic
 	MODE_Ultrasonic_Way Ultrasonic;

@@ -18,7 +18,7 @@ typedef struct
 
 int MODE_Steering_Engine_Init (int Set);
 
-void Steering_Engine_Angle(char Channel,float Angle);
-void Steering_Engine_360_Sport(char Channel,char Rotation,char Speed,int Time);
+void MODE_Steering_Engine_Angle_Fun (char Channel,float Angle);
+void MODE_Steering_Engine_360_Sport_Fun (char Channel,char Rotation,char Speed,int Time);
 
 #endif

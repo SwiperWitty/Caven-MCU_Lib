@@ -54,7 +54,7 @@
 #ifdef Exist_OLED
     #define OLED_DC_L() GPIOA->REG_IO_L = GPIO_PINS_10    //DC_GPIO
     #define OLED_DC_H() GPIOA->REG_IO_H = GPIO_PINS_10   //PA10
-//    #define LCD_RES_L()                                     //RES               //Caven 使用硬件复位
+//    #define LCD_RES_L()                                     // RES 使用硬件复位
 //    #define LCD_RES_H()
 #endif
 
@@ -78,14 +78,14 @@
 #endif
 
 #ifdef Exist_HC595
-    #define LATCH_CLOCK     GPIO_PINS_1         // 门阀时钟
-    #define SHIFT_CLOCK     GPIO_PINS_2         // 移动时钟
+    #define HC595_RCK       GPIO_PINS_1         // 门阀时钟
+    #define HC595_SCK       GPIO_PINS_2         // 移动时钟
     #define HC595_Data      GPIO_PINS_3         // 数据
     
-    #define LATCH_CLOCK_L() GPIOC->REG_IO_L = LATCH_CLOCK
-    #define LATCH_CLOCK_H() GPIOC->REG_IO_H = LATCH_CLOCK
-    #define SHIFT_CLOCK_L() GPIOC->REG_IO_L = SHIFT_CLOCK
-    #define SHIFT_CLOCK_H() GPIOC->REG_IO_H = SHIFT_CLOCK
+    #define HC595_RCK_L() GPIOC->REG_IO_L = HC595_RCK
+    #define HC595_RCK_H() GPIOC->REG_IO_H = HC595_RCK
+    #define HC595_SCK_L() GPIOC->REG_IO_L = HC595_SCK
+    #define HC595_SCK_H() GPIOC->REG_IO_H = HC595_SCK
     #define HC595_Data_L() GPIOC->REG_IO_L = HC595_Data
     #define HC595_Data_H() GPIOC->REG_IO_H = HC595_Data
     

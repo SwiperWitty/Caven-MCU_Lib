@@ -17,6 +17,8 @@
 /* 外部组件 */
 #include "Vofa_info.h"
 
+#include "Caven_Type.h"
+
 /********************************/
 
 /*

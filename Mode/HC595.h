@@ -9,13 +9,13 @@
     管脚定义在 Base_Exist_GPIO 文件
 */
 
-struct HC595_
+typedef struct
 {
     void (*Set_DATA) (const unsigned char *Dat,char num);
-};
+}MODE_HC595_Way;
 
-void HC595_Init (int SET);
-void HC595_Set_DATA (const unsigned char *Dat,char num);
+void MODE_HC595_Init (int SET);
+void HC595_Set_DATA_Fun (const unsigned char *Dat,char num);
 
 
 #endif

@@ -10,7 +10,7 @@
 #include "stdlib.h"
 #include "string.h"
 #include "stdint.h"
-
+#include "math.h"
 
 /*
  *          SDK->Items
@@ -92,7 +92,7 @@ typedef struct
 /*
 **DATA
 **让 Run_num 去追 Length，如果 (Length - Run_num)为0，且过了很长的时间，那么这个数据就该结束了
-**将不在这个DATA存放数据，因为MCU内存不一样，规划的空间也不同，所以空间占用大小应该由MCU文件决定，而不是Caven文件。
+**将不在这个DATA存放数据，因为MCU内存不一样，规划的空间也不同，所以空间占用大小应该由MCU文件决定，而不是type文件。
 */
 typedef struct Caven_Data           //这个数据是动态的
 {

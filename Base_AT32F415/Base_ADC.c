@@ -151,8 +151,8 @@ int Base_ADC_Init(int Set)
 float ADC_Get_MCU_Temperature_Fun(void)
 {
     float retval;
-    float Temp = 0;
 #ifdef ADC_Temp
+    float Temp = 0;
 	// adc_ordinary_software_trigger_enable(ADC1, TRUE);
     // while(dma_trans_complete_flag == 0);
     // dma_trans_complete_flag = 0;
@@ -166,19 +166,17 @@ float ADC_Get_MCU_Temperature_Fun(void)
 float ADC_Conversion_Vol_Fun(int NUM)
 {
     float Temp = NUM;
-    
 #ifdef Exist_ADC
     Temp /= ADC_MAX;
     Temp *= ADC_VREF;
 #endif
-    
     return Temp;
 }
 
 /*
 回调函数
 */
-static D_pFun ADC_Quick_Get_pFun = NULL;
+D_pFun ADC_Quick_Get_pFun = NULL;
 void ADC_Quick_Get_Bind_Fun(D_pFun ADC_pFun)
 {
     if (ADC_pFun != NULL)
