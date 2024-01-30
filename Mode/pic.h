@@ -1,5 +1,4 @@
 //
-#define  PICTURE
 #ifdef PICTURE
 
 const unsigned char gImage_pai[115208] = { 0X10,0X10,0X00,0XF0,0X00,0XF0,0X01,0X1B,
