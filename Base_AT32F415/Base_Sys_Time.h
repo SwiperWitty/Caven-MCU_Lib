@@ -54,10 +54,10 @@ Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
 #endif
 
 
-//很长的时间戳（一天）
+// 很长的时间戳（一天）
 typedef struct
 {
-    u32 SYS_Time_H; //每Frequency进1
+    u32 SYS_Time_H; // 每Frequency进1
     u32 SYS_Time_L; // 24bit 的
 }SYS_Time_Type;
 

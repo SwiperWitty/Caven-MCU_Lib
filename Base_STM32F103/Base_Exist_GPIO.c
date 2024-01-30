@@ -1,5 +1,30 @@
 #include "Base_Exist_GPIO.h"
 
+void User_GPIO_Init(int Set)
+{
+    GPIO_InitTypeDef  gpio_init_struct;
+    GPIO_StructInit(&gpio_init_struct);
+	RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOC, ENABLE);
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOD, ENABLE);
+    if (Set) 
+    {
+        gpio_init_struct.GPIO_Pin  = GPIO_Pin_2;	// PD_CGF_A
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_Init(GPIOA, &gpio_init_struct);
+		
+		gpio_init_struct.GPIO_Pin = GPIO_Pin_12;   // PD_CGF_B
+		GPIO_Init(GPIOA, &gpio_init_struct);
+		
+		PD_CGF_A_L();
+		PD_CGF_B_L();
+    }
+    else            //标志取消GPIO
+    {
+
+    }
+}
+
 void LCD_GPIO_Init(int Set)
 {
 #ifdef Exist_LCD
@@ -8,11 +33,15 @@ void LCD_GPIO_Init(int Set)
     if (Set)
     {
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOA, ENABLE);       //时钟
-
+        RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOB, ENABLE);
         gpio_init_struct.GPIO_Pin  = GPIO_Pin_10;
         gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
         gpio_init_struct.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_Init(GPIOA, &gpio_init_struct);
+        #ifdef LCD_RES_H
+        gpio_init_struct.GPIO_Pin  = GPIO_Pin_0;
+        GPIO_Init(GPIOB, &gpio_init_struct);
+        #endif 
     }
     else
     {
@@ -20,6 +49,10 @@ void LCD_GPIO_Init(int Set)
         gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
         gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_Init(GPIOA, &gpio_init_struct);
+    #ifdef LCD_RES_H
+        gpio_init_struct.GPIO_Pin  = GPIO_Pin_0;
+        GPIO_Init(GPIOB, &gpio_init_struct);
+    #endif 
     }
 #endif
 }
@@ -146,32 +179,6 @@ void HC595_GPIO_Init(int Set)
         gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         GPIO_Init(GPIOC, &gpio_init_struct);
-    }
-#endif
-}
-
-void DS18B20_GPIO_Init(int Set)
-{
-#ifdef Exist_DS18B20
-    GPIO_InitTypeDef gpio_init_struct;
-    GPIO_StructInit(&gpio_init_struct);
-    if (Set) 
-    {
-        crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);       //时钟(切换GPIO记得看一眼)
-
-        gpio_init_struct.GPIO_Pin = DS18B20_IO;
-        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        GPIO_Init(DS18B20_Clock, &gpio_init_struct);
-    }
-    else                                                    //标志取消GPIO
-    {
-        gpio_init_struct.GPIO_Pin = DS18B20_IO;
-        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        GPIO_Init(DS18B20_Clock, &gpio_init_struct);
     }
 #endif
 }

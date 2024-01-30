@@ -1,6 +1,6 @@
 #include "HC138.h"
 
-void HC138_Init (int SET)
+void MODE_HC138_Init (int SET)
 {
 #ifdef Exist_HC138
     HC138_GPIO_Init(SET);
@@ -8,7 +8,7 @@ void HC138_Init (int SET)
 }
 
 //结果（构想）--动作--结果（实现）
-void HC138_Set_Data (int Data)
+void HC138_Set_Data_Fun (int Data)
 {
 #ifdef Exist_HC138
     if(Data < 1 || Data > 8)

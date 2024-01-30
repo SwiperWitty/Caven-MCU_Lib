@@ -121,7 +121,7 @@ void LCD_Address_Set(U16 x1, U16 y1, U16 x2, U16 y2)
 								color       要填充的颜色
 	  返回值：  无
 ******************************************************************************/
-void LCD_Fill(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
+void LCD_Fill_Fun(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 {
 #ifdef Exist_LCD
     int i = (x_end - x_sta) * (y_end - y_sta);
@@ -654,6 +654,6 @@ void MODE_LCD_Init(int Set)
 	LCD_WR_CMD(0x11);
 	LCD_WR_CMD(0x29);
 	LCD_Delay(100);
-	LCD_Fill(0, 0, LCD_W, LCD_H, BACK_COLOR);
+	LCD_Fill_Fun (0, 0, LCD_W, LCD_H, BACK_COLOR);
 #endif
 }

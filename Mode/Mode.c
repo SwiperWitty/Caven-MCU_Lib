@@ -3,12 +3,12 @@
 struct _Mode_Init Mode_Init;
 struct _Mode_Use Mode_Use;    //结构体实体
 
-
+extern u32 MODE_Get_Button_STATE (char Channel);
 static void Mode_Use_index(void)		//索引 功能函数 本体
 {
     Mode_Use.Debug_Out_Way = Debug_Out;
 #ifdef Exist_LCD
-    Mode_Use.LCD.Fill_pFun = LCD_Fill;
+    Mode_Use.LCD.Fill_pFun = LCD_Fill_Fun;
 
     Mode_Use.LCD.Draw_Point_pFun = LCD_Draw_Point;
     Mode_Use.LCD.Draw_Line_pFun = LCD_Draw_Line;
@@ -46,13 +46,13 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.BZZ.SET_pFun = MODE_BZZ_SET_Fun;
 #endif
 #ifdef Exist_HC595
-    Mode_Use.HC595.Set_DATA = HC595_Set_DATA;
+    Mode_Use.HC595.Set_DATA = HC595_Set_DATA_Fun;
 #endif
 #ifdef Exist_HC138
-    Mode_Use.HC138.Set_DATA = HC138_Set_Data;
+    Mode_Use.HC138.Set_DATA = HC138_Set_Data_Fun;
 #endif
 #ifdef Exist_DS18B20
-    Mode_Use.DS18B20.Get_Temp = DS18B20_Get_Temp;
+    Mode_Use.DS18B20.Get_Temp = DS18B20_Get_Temp_Fun;
 #endif
 
 #ifdef Exist_UART
@@ -68,8 +68,8 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.USB_HID.Custom_Receive = USB_Buffer_Receive;
 #endif
 
-#ifdef Exist_KEY
-    Mode_Use.KEY.K_State = KEY_State;
+#ifdef Exist_BUTTON
+    Mode_Use.Button.State_pFun = MODE_Get_Button_State_Fun;
 #endif
 #ifdef Exist_Ultrasonic
     Mode_Use.Ultrasonic.Distance = Distance;
@@ -79,8 +79,8 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.MP3.Voice = Voice;
 #endif
 #ifdef Exist_Steering_Engine
-    Mode_Use.Steering_Engine.Set_Angle = Steering_Engine_Angle;
-    Mode_Use.Steering_Engine.Set_360_Sport = Steering_Engine_360_Sport;
+    Mode_Use.Steering_Engine.Set_Angle = MODE_Steering_Engine_Angle_Fun;
+    Mode_Use.Steering_Engine.Set_360_Sport = MODE_Steering_Engine_360_Sport_Fun;
 #endif  
 
 #ifdef Exist_ADC
@@ -127,7 +127,7 @@ void Mode_Index(void)
 #endif
 
 #ifdef Exist_BUTTON
-    Mode_Init.BUTTON = MODE_Button_Init;
+    Mode_Init.Button = MODE_Button_Init;
 #endif
 #ifdef Exist_Ultrasonic
     Mode_Init.Ultrasonic = MODE_Ultrasonic_Init;

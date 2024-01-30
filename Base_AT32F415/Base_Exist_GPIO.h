@@ -34,27 +34,29 @@
 #define WRITE_Config	1
 
 //  User io
-#define PD_CGF_A_L() GPIOD->REG_IO_L = GPIO_PINS_2
-#define PD_CGF_A_H() GPIOD->REG_IO_H = GPIO_PINS_2
-#define PD_CGF_B_L() GPIOC->REG_IO_L = GPIO_PINS_12
-#define PD_CGF_B_H() GPIOC->REG_IO_H = GPIO_PINS_12
+#define PD_CGF_A_L() GPIOD->REG_IO_L = GPIO_Pin_2
+#define PD_CGF_A_H() GPIOD->REG_IO_H = GPIO_Pin_2
+#define PD_CGF_B_L() GPIOC->REG_IO_L = GPIO_Pin_12
+#define PD_CGF_B_H() GPIOC->REG_IO_H = GPIO_Pin_12
 
-#define DC_5V_ON()	 GPIOC->REG_IO_H = GPIO_PINS_0
-#define DC_5V_OFF()  GPIOC->REG_IO_L = GPIO_PINS_0
-#define DC_OUT_ON()  GPIOC->REG_IO_H = GPIO_PINS_1
-#define DC_OUT_OFF() GPIOC->REG_IO_L = GPIO_PINS_1
+#define DC_5V_ON()	 GPIOC->REG_IO_H = GPIO_Pin_0
+#define DC_5V_OFF()  GPIOC->REG_IO_L = GPIO_Pin_0
+#define DC_OUT_ON()  GPIOC->REG_IO_H = GPIO_Pin_1
+#define DC_OUT_OFF() GPIOC->REG_IO_L = GPIO_Pin_1
 #define YG_KEY_STATE()  gpio_input_data_bit_read(GPIOC,GPIO_Pin_3)
 //---User MODE---
 
 #ifdef Exist_LCD
-    #define LCD_DC_L() GPIOA->REG_IO_L = GPIO_PINS_10    //DC_GPIO
-    #define LCD_DC_H() GPIOA->REG_IO_H = GPIO_PINS_10   //PA10
+    #define LCD_DC_L()  GPIOA->REG_IO_L = GPIO_Pin_10  //DC_GPIO
+    #define LCD_DC_H()  GPIOA->REG_IO_H = GPIO_Pin_10  //PA10
+    #define LCD_RES_L() GPIOB->REG_IO_L = GPIO_Pin_0   // RES 使用硬件复位
+    #define LCD_RES_H() GPIOB->REG_IO_H = GPIO_Pin_0
 #endif
 
 #ifdef Exist_OLED
-    #define OLED_DC_L() GPIOA->REG_IO_L = GPIO_PINS_10    //DC_GPIO
-    #define OLED_DC_H() GPIOA->REG_IO_H = GPIO_PINS_10   //PA10
-//    #define LCD_RES_L()                                     //RES               //Caven 使用硬件复位
+    #define OLED_DC_L() GPIOA->REG_IO_L = GPIO_Pin_10    //DC_GPIO
+    #define OLED_DC_H() GPIOA->REG_IO_H = GPIO_Pin_10   //PA10
+//    #define LCD_RES_L()                                     // RES 使用硬件复位
 //    #define LCD_RES_H()
 #endif
 
@@ -78,14 +80,14 @@
 #endif
 
 #ifdef Exist_HC595
-    #define LATCH_CLOCK     GPIO_PINS_1         // 门阀时钟
-    #define SHIFT_CLOCK     GPIO_PINS_2         // 移动时钟
-    #define HC595_Data      GPIO_PINS_3         // 数据
+    #define HC595_RCK       GPIO_Pin_1         // 门阀时钟
+    #define HC595_SCK       GPIO_Pin_2         // 移动时钟
+    #define HC595_Data      GPIO_Pin_3         // 数据
     
-    #define LATCH_CLOCK_L() GPIOC->REG_IO_L = LATCH_CLOCK
-    #define LATCH_CLOCK_H() GPIOC->REG_IO_H = LATCH_CLOCK
-    #define SHIFT_CLOCK_L() GPIOC->REG_IO_L = SHIFT_CLOCK
-    #define SHIFT_CLOCK_H() GPIOC->REG_IO_H = SHIFT_CLOCK
+    #define HC595_RCK_L() GPIOC->REG_IO_L = HC595_RCK
+    #define HC595_RCK_H() GPIOC->REG_IO_H = HC595_RCK
+    #define HC595_SCK_L() GPIOC->REG_IO_L = HC595_SCK
+    #define HC595_SCK_H() GPIOC->REG_IO_H = HC595_SCK
     #define HC595_Data_L() GPIOC->REG_IO_L = HC595_Data
     #define HC595_Data_H() GPIOC->REG_IO_H = HC595_Data
     
@@ -106,8 +108,8 @@
 #endif
 
 #ifdef Exist_DS18B20
-    #define DS18B20_IO    GPIO_PINS_8
-    #define DS18B20_Clock    GPIOC
+    #define DS18B20_IO      GPIO_Pin_8
+    #define DS18B20_Clock   GPIOC
 
     #define DS18B20_IO_H() DS18B20_Clock->REG_IO_H = DS18B20_IO
     #define DS18B20_IO_L() DS18B20_Clock->REG_IO_L = DS18B20_IO

@@ -12,7 +12,7 @@
 
 /*
     Caven_info_frame.h
-    描述Caven的通信协议规范
+    描述info的通信协议规范
     可能需要依赖外部的crc校验函数
 
     tips:

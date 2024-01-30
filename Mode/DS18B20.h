@@ -9,15 +9,14 @@
   本文件只提供方法-WAY  
 */
 
-struct DS18B20_
+typedef struct
 {
     float (*Get_Temp) (void);
-};
+}MODE_DS18B20_Way;
 
+int MODE_DS18B20_Init (int Set);
 
-char DS18B20_Init (int Set);
-
-float DS18B20_Get_Temp(void);
+float DS18B20_Get_Temp_Fun (void);
 
 
 #endif
