@@ -1,106 +1,119 @@
 #include "Base_Sys_time.h"
 
-#define Sys_Time_VAL SysTick->VAL
-int Tick_Full;       //提取宏，很多宏都是以运输的形式存在的，每次调用都会算一遍
-int Freq_ms;
-int Freq_us;
+
+#define LLTIMER_REG     (s_Frequency_CMP - SYSTICK_NUM)
 
 #ifdef Exist_SYS_TIME
 static uint64_t s_Tick_cnt;
-static uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
-static uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
-static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
+static uint32_t s_Frequency;        // 1s s_Tick_cnt 跑的数量,也就是 tick的频率
+static uint32_t s_Frequency_CMP;    // 中断溢出需要的滴答值
+static uint32_t s_Frequency_us;     // 1us s_Tick_cnt 跑的数量
+static uint32_t s_Frequency_ms;     // 1ms s_Tick_cnt 跑的数量
+
+static SYS_Time_Type s_SYS_Time = {0};
 
 #endif
 
 void SYS_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME
-    Tick_Full = TICK_SET_CMP;
-    Freq_ms = (TICK_FREQUENCY / 1000);
-    Freq_us = (TICK_FREQUENCY / 1000000);
+    s_Frequency = TICK_FREQUENCY;
+    s_Frequency_CMP = TICK_SET_CMP;
+    s_Frequency_ms = (s_Frequency / 1000);
+    s_Frequency_us = (s_Frequency / 1000000);
     if (Set)
     {
         if (SysTick_Config(TICK_SET_CMP)) // 系统使用滴答定时器
         {while (1);}
     }
     else
-    {
         SYS_RESET();
-    }
+
 #endif
 }
 
 void SYS_Time_Set(Caven_BaseTIME_Type * time)
 {
-    
+#ifdef Exist_SYS_TIME
+    int temp = 0;
+
+    s_Tick_cnt = time->SYS_Sec;
+    s_Tick_cnt *= s_Frequency;
+
+    temp += time->SYS_Us;
+    s_Tick_cnt += (u64)(temp * s_Frequency_us);
+	
+	temp = (s_Tick_cnt % s_Frequency_CMP);
+	SYSTICK_NUM = s_Frequency_CMP - temp;						// 载入寄存器
+	
+    s_SYS_Time.SYS_Time_H = s_Tick_cnt / s_Frequency_CMP;		// 高位设置
+    s_SYS_Time.SYS_Time_L = temp;       						// 低位设置
+#endif
 }
 
 void SYS_Time_Get(Caven_BaseTIME_Type * time)
 {
-}
-
-SYS_Time_Type SYS_Ticktime = {0};
-
 #ifdef Exist_SYS_TIME
-void SysTick_Handler(void)
-{
-    SYS_Ticktime.SYS_Time_H++;
-}
-#endif
+    int temp = 0;
 
-// Tick_Set_CMP 是起点值（设置的），因为是24位自减寄存器
-//这个返回的是，总系统滴答数，这个数是U64的，巨大
+    s_SYS_Time.SYS_Time_L = LLTIMER_REG;
+    if (s_SYS_Time.SYS_Time_H % 2)
+    {
+        temp += s_Frequency_CMP;
+    }
+    temp += s_SYS_Time.SYS_Time_L;
 
-
-uint64_t GET_SysTick (SYS_Time_Type *stamp)
-{
-    uint64_t temp = 0;
-#ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Time_L = (Tick_Full - Sys_Time_VAL); //滴答当前值
-    temp = SYS_Ticktime.SYS_Time_H;
-    temp *= Tick_Full;                                             //乘法一定放后面，尤其是中断的东西
-    temp += SYS_Ticktime.SYS_Time_L;
-#endif
-    return (temp);
-}
-
-void SET_SysTick(uint64_t time)
-{
-#ifdef Exist_SYS_TIME
-    SYS_Ticktime.SYS_Time_H = time / Tick_Full;         //高位设置
-    SYS_Ticktime.SYS_Time_L = (time % Tick_Full);       //低位设置(不设也行)
-    Sys_Time_VAL = Tick_Full - SYS_Ticktime.SYS_Time_L; //载入低位
+    time->SYS_Us = temp / s_Frequency_us;
+    time->SYS_Sec = s_SYS_Time.SYS_Time_H * TICK_OVER_IT;   // x/2,优化变成 x >> 1;
 #endif
 }
 
-// Delay
-//
+#ifdef Exist_SYS_TIME
+void SYS_TIME_HANDLER()
+{
+    s_SYS_Time.SYS_Time_H ++;
+}
+#endif
+
+
+void SYS_IWDG_Configuration (void)
+{
+#ifdef Exist_SYS_TIME
+
+#endif
+}
+
+void SYS_Feed_Watchdog (void)
+{
+#ifdef Exist_SYS_TIME
+
+#endif
+} 
+
+
+
 void SYS_Delay_us(int n)
 {
-    uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
-    uint64_t temp;
-    int set_time = n * Freq_us;
-    SYS_Time_Type stamp;
-    start_ticks = GET_SysTick(&stamp);
 #ifdef Exist_SYS_TIME
+    n = MIN(5000,n);
+    u32 set_Tick_cnt = n * s_Frequency_us;
+    u64 start_Tick_cnt;
+    s_Tick_cnt = s_SYS_Time.SYS_Time_H;
+    s_Tick_cnt *= s_Frequency_CMP;
+    s_Tick_cnt += LLTIMER_REG;
+    start_Tick_cnt = s_Tick_cnt;
     while (1)
     {
-        end_ticks = GET_SysTick(&stamp);
-
-        if (end_ticks > start_ticks)
+        s_Tick_cnt = s_SYS_Time.SYS_Time_H;
+        s_Tick_cnt *= s_Frequency_CMP;
+        s_Tick_cnt += LLTIMER_REG;
+        if ((s_Tick_cnt - start_Tick_cnt) > set_Tick_cnt)
         {
-            temp = end_ticks - start_ticks;
+            break;
         }
         else
         {
-            temp = 86400 * TICK_FREQUENCY; //一天时间 * 滴答频率
-            temp -= start_ticks;
-            temp += end_ticks;
-        }
-        if (temp >= set_time)
-        {
-            break;
+
         }
     }
 #endif
@@ -108,46 +121,45 @@ void SYS_Delay_us(int n)
 
 void SYS_Delay_ms(int n)
 {
-    uint64_t start_ticks, end_ticks; //都是滴答数，而非具体标准时间
-    uint64_t temp;
-    int set_time = n * Freq_ms;
-    SYS_Time_Type stamp;
-    start_ticks = GET_SysTick(&stamp);
 #ifdef Exist_SYS_TIME
+    n = MIN(5000,n);
+    u32 set_Tick_cnt = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
+    u64 start_Tick_cnt;
+    s_Tick_cnt = s_SYS_Time.SYS_Time_H;
+    s_Tick_cnt *= s_Frequency_CMP;
+    s_Tick_cnt += LLTIMER_REG;
+    start_Tick_cnt = s_Tick_cnt;
     while (1)
     {
-        end_ticks = GET_SysTick(&stamp);
-
-        if (end_ticks > start_ticks)
+        s_Tick_cnt = s_SYS_Time.SYS_Time_H;
+        s_Tick_cnt *= s_Frequency_CMP;
+        s_Tick_cnt += LLTIMER_REG;
+        if ((s_Tick_cnt - start_Tick_cnt) > set_Tick_cnt)
         {
-            temp = end_ticks - start_ticks;
+            break;
         }
         else
         {
-            temp = 86400 * TICK_FREQUENCY; //一天时间 * 滴答频率
-            temp -= start_ticks;
-            temp += end_ticks;
-        }
-        if (temp >= set_time)
-        {
-            break;
+            
         }
     }
 #endif
 }
 
-// delay
-void Base_SYS_Delay(int time, int speed)
+// Delay
+/*
+    a * b 个 NOP
+*/
+void SYS_Base_Delay (int time,int Speed)
 {
 #ifdef NOP
     volatile int temp;
     for (int i = 0; i < time; ++i)
     {
-        temp = speed; // SET
-        do
-        {
+        temp = Speed;            //SET
+        do{
             NOP();
-        } while ((temp--) > 0);
+        }while((temp--) > 0);
     }
 #endif
 }

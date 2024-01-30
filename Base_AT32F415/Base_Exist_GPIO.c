@@ -9,23 +9,23 @@ void User_GPIO_Init(int Set)
 	crm_periph_clock_enable(CRM_GPIOD_PERIPH_CLOCK,TRUE);
     if (Set) 
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_2;	// PD_CGF_A
+        gpio_init_struct.gpio_pins = GPIO_Pin_2;	// PD_CGF_A
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOD, &gpio_init_struct);
 		
-		gpio_init_struct.gpio_pins = GPIO_PINS_12;	// PD_CGF_B
+		gpio_init_struct.gpio_pins = GPIO_Pin_12;	// PD_CGF_B
 		gpio_init(GPIOC, &gpio_init_struct);
 		
 		PD_CGF_A_L();
 		PD_CGF_B_L();
 		
-		gpio_init_struct.gpio_pins = GPIO_PINS_0;	// DC_5V
+		gpio_init_struct.gpio_pins = GPIO_Pin_0;	// DC_5V
 		gpio_init(GPIOC, &gpio_init_struct);
 		
-		gpio_init_struct.gpio_pins = GPIO_PINS_1;	// DC_OUT
+		gpio_init_struct.gpio_pins = GPIO_Pin_1;	// DC_OUT
 		gpio_init(GPIOC, &gpio_init_struct);
 		
 		DC_5V_ON();
@@ -73,20 +73,28 @@ void LCD_GPIO_Init(int Set)
     if (Set)
     {
         crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);       //时钟
-
-        gpio_init_struct.gpio_pins = GPIO_PINS_10;            //LCD_DC
+        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK, TRUE);
+        gpio_init_struct.gpio_pins = GPIO_Pin_10;            //LCD_DC
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOA, &gpio_init_struct);
+        #ifdef LCD_RES_H
+        gpio_init_struct.gpio_pins = GPIO_Pin_0;
+        gpio_init(GPIOB, &gpio_init_struct);
+        #endif 
     }
     else
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_10;
+        gpio_init_struct.gpio_pins = GPIO_Pin_10;
         gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOA, &gpio_init_struct);
+        #ifdef LCD_RES_H
+        gpio_init_struct.gpio_pins = GPIO_Pin_0;
+        gpio_init(GPIOB, &gpio_init_struct);
+        #endif 
     }
 #endif
 }
@@ -134,7 +142,7 @@ void BZZ_GPIO_Init(int Set)
     {
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
 
-        gpio_init_struct.gpio_pins = GPIO_PINS_5;
+        gpio_init_struct.gpio_pins = GPIO_Pin_5;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_OUTPUT;
@@ -143,7 +151,7 @@ void BZZ_GPIO_Init(int Set)
     }
     else                                                    //标志取消GPIO
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_5;
+        gpio_init_struct.gpio_pins = GPIO_Pin_5;
         gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOB, &gpio_init_struct);
@@ -159,7 +167,7 @@ void Button_GPIO_Init(int Set)
     if (Set) {
         crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK,TRUE);
 
-        gpio_init_struct.gpio_pins = GPIO_PINS_13;
+        gpio_init_struct.gpio_pins = GPIO_Pin_13;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
         gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
         gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;                       //输入
@@ -168,7 +176,7 @@ void Button_GPIO_Init(int Set)
     }
     else 
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_13;
+        gpio_init_struct.gpio_pins = GPIO_Pin_13;
         gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
         gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
         gpio_init(GPIOC, &gpio_init_struct);

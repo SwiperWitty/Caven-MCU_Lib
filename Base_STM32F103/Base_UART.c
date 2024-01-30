@@ -1,16 +1,12 @@
 #include "Base_UART.h" 
 
 #ifdef Exist_UART
-static USART_TypeDef * Temp;
 
 #define RXD_Falg    USART_IT_RXNE     //  接收标志
 #define TXD_Falg    USART_FLAG_TC		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
-static D_pFun State_Machine_UART0_pFun = NULL;
-static D_pFun State_Machine_UART1_pFun = NULL;
-static D_pFun State_Machine_UART2_pFun = NULL;
-static D_pFun State_Machine_UART3_pFun = NULL;
-static D_pFun State_Machine_UART4_pFun = NULL;
+static USART_TypeDef * Temp;
+static D_pFun State_Machine_UART_pFun[5];
 
 static char UART_RXD_Flag(UART_mType Channel)
 {
@@ -118,16 +114,32 @@ void Uart0_Init(int Baud,int SET)
 {
 
 }
+
+void UART0_HANDLERIT()
+{
+    u8 temp;
+    UART_mType UART_CH = m_UART_CH0;
+    if (UART_RXD_Flag(UART_CH))
+    {
+        temp = UART_RXD_Receive(UART_CH);
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
+        {
+            State_Machine_UART_pFun[UART_CH](&temp);
+        }
+        UART_RXD_Flag_Clear(UART_CH);
+    }
+}
 #endif
 
 #if (Exist_UART & OPEN_0010)
 void Uart1_Init(int Baud,int Set)
 {
-    FunctionalState set = DISABLE;
+    FunctionalState Cmd_set;
     Temp = USART1;
     USART_DeInit(Temp);
-    if (Set)
-        set = ENABLE;
+    if (Set) {Cmd_set = ENABLE;}
+    else {Cmd_set = DISABLE;}
+    
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure; //
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -161,8 +173,8 @@ void Uart1_Init(int Baud,int Set)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     
-    USART_ITConfig(Temp, USART_IT_RXNE, set);   //
-    USART_Cmd(Temp, set);					    //
+    USART_ITConfig(Temp, USART_IT_RXNE, Cmd_set);   //
+    USART_Cmd(Temp, Cmd_set);					    //
 }
 
 void UART1_HANDLERIT()
@@ -172,8 +184,9 @@ void UART1_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART1_pFun != NULL) {
-            State_Machine_UART1_pFun(&temp);
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
+        {
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -232,8 +245,9 @@ void UART2_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART2_pFun != NULL) {
-            State_Machine_UART2_pFun(&temp);
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
+        {
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -293,8 +307,9 @@ void UART3_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART3_pFun != NULL) {
-            State_Machine_UART3_pFun(&temp);
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
+        {
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -316,8 +331,9 @@ void UART4_HANDLERIT()
     if (UART_RXD_Flag(UART_CH))
     {
         temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART4_pFun != NULL) {
-            State_Machine_UART4_pFun(&temp);
+        if (State_Machine_UART_pFun[UART_CH] != NULL)
+        {
+            State_Machine_UART_pFun[UART_CH](&temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -325,25 +341,31 @@ void UART4_HANDLERIT()
 
 #endif
 
-int Base_UART_Init(UART_mType Channel,int Baud,int SET)
+int Base_UART_Init(UART_mType Channel, int Baud, int SET)
 {
     int retval = -1;
+	
 #ifdef Exist_UART
-    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+//    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     switch (Channel)
     {
     case 0:
+		
         break;
     case 1:
-        Uart1_Init(Baud,SET);
+        Uart1_Init(Baud, SET);
         retval = 0;
         break;
     case 2:
-        Uart2_Init(Baud,SET);
+        Uart2_Init(Baud, SET);
         retval = 0;
         break;
     case 3:
-        Uart3_Init(Baud,SET);
+        Uart3_Init(Baud, SET);
+        retval = 0;
+        break;
+    case 4:
+        Uart4_Init(Baud, SET);
         retval = 0;
         break;
     default:
@@ -357,7 +379,7 @@ int Base_UART_Init(UART_mType Channel,int Baud,int SET)
  *  Successful : return 0
  *
  */
-int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun)
+int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
 {
     int retval = -1;
 #ifdef Exist_UART
@@ -365,26 +387,7 @@ int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun)
     {
         return retval;
     }
-    switch (Channel)
-    {
-    case 0:
-//        State_Machine_UART0_pFun = UART_pFun;
-        break;
-    case 1:
-        State_Machine_UART1_pFun = UART_pFun;
-        retval = 0;
-        break;
-    case 2:
-        State_Machine_UART2_pFun = UART_pFun;
-        retval = 0;
-        break;
-    case 3:
-        State_Machine_UART3_pFun = UART_pFun;
-        retval = 0;
-        break;
-    default:
-        break;
-    }
+    State_Machine_UART_pFun[Channel] = UART_pFun;
 #endif
     return retval;
 }
@@ -399,3 +402,4 @@ int fputc(int ch, FILE *f)      //printf
     return (ch);
 }
 
+// 你找中断？UART的中断通过函数回调给MODE了！ 

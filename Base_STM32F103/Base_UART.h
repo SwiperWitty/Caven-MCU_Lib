@@ -61,7 +61,7 @@ typedef enum
 
 #ifdef Exist_UART
     #define DMA_UART
-
+	#define DEBUG_OUT	m_UART_CH3   // Debug 通道(Caved 3.14是串口3)
 #endif
 
 // fun
