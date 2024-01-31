@@ -17,11 +17,12 @@
 #define LCD_W 240        // X MAX 240
 #define LCD_H 240        // Y MAX 240
 
-#define LCD_CMD 0  //写命令
-#define LCD_DATA 1 //写数据
+#define LCD_CMD 0	// 写命令
+#define LCD_DATA 1	// 写数据
 
-extern U16  BACK_COLOR; //背景色
-extern U8   LCD_HORIZONTAL; //设置横屏或者竖屏
+extern U16  LCD_Back_Color; // 背景色
+extern U16  LCD_Word_Color; // 字体色
+extern U8   LCD_HORIZONTAL; // 设置横屏或者竖屏
 
 //画笔颜色
 #define LCD_WHITE            0xFFFF

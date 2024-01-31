@@ -1,7 +1,8 @@
 #include "MODE_LCD.h"
 #include "lcdfont.h"        // 字库
 
-U16 BACK_COLOR = 0xFFFB; 	// 背景色
+U16 LCD_Back_Color = 0xFFFB; 	// 背景色
+U16 LCD_Word_Color = LCD_GRAY;
 U8 	LCD_HORIZONTAL = USE_HORIZONTAL;
 
 #ifdef Exist_LCD
@@ -654,6 +655,6 @@ void MODE_LCD_Init(int Set)
 	LCD_WR_CMD(0x11);
 	LCD_WR_CMD(0x29);
 	LCD_Delay(100);
-	LCD_Fill_Fun (0, 0, LCD_W, LCD_H, BACK_COLOR);
+	LCD_Fill_Fun (0, 0, LCD_W, LCD_H, LCD_Back_Color);
 #endif
 }
