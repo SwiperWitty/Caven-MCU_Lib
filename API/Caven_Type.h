@@ -3,7 +3,7 @@
 
 /*
  * Caven_Type.h file
- * 这是一个【纯C】的【.h】文件，是各个底层【.h】的 “共同语言”，上层管理函数的【.h】不需要包含
+ * 这是一个纯C的.h文件，是各个底层.h的 “共同语言”，上层管理函数的.h不需要包含
  *
 */
 #include "stdio.h"
@@ -40,7 +40,7 @@
 #endif 
 
 #ifndef ENABLE
-    #if (!defined (STM32F10X_HD) && !defined (STM32F10X_MD))
+    #if (!defined (STM32F10X_HD) && !defined (STM32F10X_MD) && !defined (STM32F40X_MD))
     #define DISABLE 0
     #define ENABLE (!DISABLE)
     #endif
