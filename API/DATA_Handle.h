@@ -12,22 +12,17 @@
 
 #include "Caven_Type.h"
 
-struct _Chang_Num
+typedef struct
 {
-    const char *Source;
+    char *Source;
     char Sign[8];           //取数符
     float NUM[8];           //取数结果
-    char flag;
-};
+    int flag;
+}Sign_atof_Type;
 
-struct Data_Handle_
-{
-    int (*Find_Data)(const U8 *source, char Target, int Length);
-    
-};
 
-int Find_Data(const U8 *source, char Target, int Length);
-char Data_Chang_NUM (struct _Chang_Num *Item);
+int Data_Sign_atof_Handle (Sign_atof_Type *Item);
+int Data_Median_filtering_Handle (float data,float *array,float *reverse,char *run,char array_num);
 
 #endif
 

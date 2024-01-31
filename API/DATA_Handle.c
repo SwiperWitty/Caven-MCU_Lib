@@ -1,18 +1,7 @@
 #include "DATA_Handle.h"
 
-int Find_Data(const U8 *source, char Target, int Length)
-{
-    for (size_t i = 0; i < Length;)
-    {
-        if (Target == source[i++])
-        {
-            return i;
-        }
-    }
-    return 0;
-}
 
-char Data_Chang_NUM (struct _Chang_Num *Item)
+int Data_Sign_atof_Handle (Sign_atof_Type *Item)
 {
     char i,n,m = 0;
     char flag = 1;                            //i是当前找的是 第几个 Sign
@@ -60,4 +49,61 @@ char Data_Chang_NUM (struct _Chang_Num *Item)
     }
 
     return Item->flag;
+}
+
+/*
+data是要载入的，最终装载到array数组
+如果得到结果，reverse会被改变（中值滤波结果），否则reverse不变
+run在载入状态会自动++，超过array_num会置零
+retval = 1则成功，retval = 0则正在运行，retval = (-1)失败
+*/
+int Data_Median_filtering_Handle (float data,float *array,float *reverse,char *run,char array_num)
+{
+	int retval = 0;
+	int temp_run = *run;
+	char max_sort = 0;
+	char min_sort = 0;
+	float temp_data_f;
+    if (array == NULL && array_num <= 2)
+    {
+        retval = (-1);
+        return retval;
+    }
+    
+	if(temp_run < array_num)
+	{
+		array[temp_run++] = data;
+	}
+	else
+	{
+		for(int i = 0;i < array_num;i++)
+		{
+			temp_data_f = MAX(array[i],array[max_sort]);
+			if(temp_data_f == array[i])
+			{
+				max_sort = i;
+			}
+		}
+		for(int i = 0;i < array_num;i++)
+		{
+			temp_data_f = MIN(array[i],array[min_sort]);
+			if(temp_data_f == array[i])
+			{
+				min_sort = i;
+			}
+		}
+		array[max_sort] = 0;
+		array[min_sort] = 0;
+		temp_data_f = 0;
+		for(int i = 0;i < array_num;i++)
+		{
+			temp_data_f += array[i];
+		}
+		temp_data_f /= (array_num - 2);
+		*reverse = temp_data_f;
+		temp_run = 0;
+		retval = 1;
+	}
+	*run = temp_run;
+	return retval;
 }

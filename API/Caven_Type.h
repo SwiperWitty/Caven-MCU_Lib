@@ -39,10 +39,11 @@
 
 #endif 
 
-
 #ifndef ENABLE
+    #if (!defined (STM32F10X_HD) && !defined (STM32F10X_MD))
     #define DISABLE 0
     #define ENABLE (!DISABLE)
+    #endif
 #endif
 
 #ifndef MAX
@@ -51,7 +52,6 @@
 #endif
 
 #define DESTROY_DATA(X,N) memset((X),0,(N))             // 销毁 的地址 (X)  长度 (N)
-
 
 #define BUFF_MAX 360
 
