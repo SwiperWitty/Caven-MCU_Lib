@@ -2,32 +2,46 @@
 #define _BASE_H__
 
 #ifdef DEFAULT
-#include "items.h"              //默认功能
+#include "items.h"              /*	默认功能	*/
 #else
-#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#include "User_items.h"         /*	自行设置功能，一般出现在本地文件的User中	*/
 #endif
 
-#include "Base_Exist_GPIO.h"
+/****************/
 
-#ifdef Exist_SPI 
-#include "Base_SPI.h"
+#include "Base_Exist_GPIO.h"    //items的附属（LED、BZZ之类的）
+
+#ifdef Exist_SYS_TIME          //这种保护不占内存，所以尽可能写
+#include "Base_sys_time.h"
 #endif
 
+#ifdef Exist_FLASH
+#include "Base_Flash.h"
+#endif
 
+#ifdef Exist_UART
+#include "Base_UART.h" 
+#endif
 
+#ifdef Exist_USB
+#include "USB_User.h" 
+#endif
 
-/*
-    SDK->Items->GPIO(Exist_GPIO)->BASE->
-                                         \\
-                                          -->[XXX]->MODE
-                                         //
-                    C(Lib)->Caven->API->
-*/
-/*
-    底层（Base）中有不少东西让人迷惑，他们大致分布在 system_xx32xxx.c 以及 xx32xxxx_it.h 和 xx32xxxx.h
-    如果查阅这里，问题都没有解决，那么这就是一个不该由你解决的问题。
-  Base层只能和 MCU SDK有关
-*/
+#ifdef Exist_SPI
+#include "Base_SPI.h" 
+#endif
 
+#ifdef Exist_IIC
+#include "Base_IIC.h" 
+#endif
 
+#ifdef Exist_ADC
+#include "Base_ADC.h" 
+#endif
+
+#ifdef Exist_PWM
+#include "Base_PWM.h"
+#endif
+
+//Base文件没有结构体索引
 #endif

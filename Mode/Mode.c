@@ -94,7 +94,7 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 void Mode_Index(void) 
 {
     Mode_Use_index();
-    
+    memset(&Mode_Init,0,sizeof(Mode_Init));
 #ifdef Exist_SYS_TIME
     Mode_Init.TIME = MODE_TIME_Init;
 #endif
@@ -144,7 +144,7 @@ void Mode_Index(void)
     Mode_Init.User_ADC = Base_ADC_Init;
 #endif
 
-}   //  Mode_Index
+}   // Mode_Index
 
 //--------------------------------//
 

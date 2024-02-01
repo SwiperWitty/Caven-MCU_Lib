@@ -23,7 +23,7 @@
 #include "Base_UART.h" 
 #endif
 
-#ifdef Exist_UART
+#ifdef Exist_USB
 #include "USB_User.h" 
 #endif
 

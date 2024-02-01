@@ -8,12 +8,23 @@ U8 	LCD_HORIZONTAL = USE_HORIZONTAL;
 #ifdef Exist_LCD
 void LCD_Writ_Bus(U8 dat)
 {
-	SPI_Send_DATA(dat);
+    #ifdef SPI_DMA
+    Base_SPI_Send_Data(m_SPI_CH2,dat);
+    #else
+    
+    #endif
 }
 
-void LCD_Writ_String(const void * DATA,int num)
+void LCD_Writ_String(const void * Data,int num)
 {
-    SPI_Send_String(DATA,num);
+    #ifdef SPI_DMA
+    Base_SPI_DMA_Send_Data(m_SPI_CH2,Data,num);
+    #else
+    for(int i = 0;i < num;i++)
+    {
+        LCD_Writ_Bus(Data[i]);
+    }
+    #endif
 }
 
 /******************************************************************************
@@ -23,17 +34,17 @@ void LCD_Writ_String(const void * DATA,int num)
 ******************************************************************************/
 void LCD_WR_DATA8(U8 dat)
 {
-	SPI_CS_Set(1,ENABLE);
+	Base_SPI_CS_Set(m_SPI_CH2,1,ENABLE);
 	LCD_Writ_Bus(dat);
-	SPI_CS_Set(1,DISABLE);
+	Base_SPI_CS_Set(m_SPI_CH2,1,DISABLE);
 }
 
 void LCD_WR_DATA(U16 dat)
 {
-	SPI_CS_Set(1,ENABLE);
+	Base_SPI_CS_Set(m_SPI_CH2,1,ENABLE);
 	LCD_Writ_Bus(dat >> 8);
 	LCD_Writ_Bus(dat & 0X00FF);
-	SPI_CS_Set(1,DISABLE);
+	Base_SPI_CS_Set(m_SPI_CH2,1,DISABLE);
 }
 
 /******************************************************************************
@@ -43,12 +54,12 @@ void LCD_WR_DATA(U16 dat)
 ******************************************************************************/
 void LCD_Send_Data(U8 *Data,int num)
 {
-	SPI_CS_Set(1,ENABLE);
+	Base_SPI_CS_Set(m_SPI_CH2,1,ENABLE);
 	for (size_t i = 0; i < num; i++)
 	{
 		LCD_Writ_Bus(*(Data + i));
 	}
-	SPI_CS_Set(1,DISABLE);
+	Base_SPI_CS_Set(m_SPI_CH2,1,DISABLE);
 }
 
 /******************************************************************************
@@ -58,11 +69,11 @@ void LCD_Send_Data(U8 *Data,int num)
 ******************************************************************************/
 void LCD_WR_CMD(U8 dat)
 {
-    SPI_CS_Set(1,ENABLE);
+    Base_SPI_CS_Set(m_SPI_CH2,1,ENABLE);
 	LCD_DC_L(); //写命令
 	LCD_Writ_Bus(dat);
 	LCD_DC_H(); //写数据	预备
-    SPI_CS_Set(1,DISABLE);
+    Base_SPI_CS_Set(m_SPI_CH2,1,DISABLE);
 }
 
 /******************************************************************************
@@ -549,11 +560,12 @@ static void LCD_Delay(int time)
 }
 #endif
 
-void MODE_LCD_Init(int Set)
+int MODE_LCD_Init(int Set)
 {
+    int retval = 0;
 #ifdef Exist_LCD
 	LCD_GPIO_Init(Set);
-	SPI_Start_Init(Set);
+    Base_SPI_Init(m_SPI_CH2,8,Set);
 	LCD_WR_DATA8(0x00);
 
 	LCD_Delay(300); // 等待电路复位完成
@@ -656,5 +668,7 @@ void MODE_LCD_Init(int Set)
 	LCD_WR_CMD(0x29);
 	LCD_Delay(100);
 	LCD_Fill_Fun (0, 0, LCD_W, LCD_H, LCD_Back_Color);
+    retval = 1;
 #endif
+    return retval;
 }

@@ -75,7 +75,7 @@ void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char p
 
 int LCD_Set_HORIZONTAL(char set);
 
-void MODE_LCD_Init(int SET); // LCD初始化
+int MODE_LCD_Init(int SET); // LCD初始化
 
 
 #endif
