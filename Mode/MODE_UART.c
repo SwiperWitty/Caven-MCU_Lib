@@ -5,7 +5,7 @@ int MODE_UART_Init(char Channel,int Baud,int SET)
 {
     int retavl = 1;
 #ifdef Exist_UART
-    Base_UART_Init(Channel,Baud,SET);
+    Base_UART_Init((UART_mType)Channel,Baud,SET);
 #endif
     return retavl;
 }
@@ -19,7 +19,7 @@ void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 
     while (temp--)
     {
-        Base_UART_Send_Byte(Channel,Data[i++]);       //等待标志位在里面
+        Base_UART_Send_Byte((UART_mType)Channel,Data[i++]);       //等待标志位在里面
     }
 #endif
 }
@@ -29,7 +29,7 @@ void MODE_UART_DMA_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 #ifdef Exist_UART
     int temp = MIN(Length,UART_Length_MAX);
 
-    Base_UART_DMA_Send_Data(Channel,Data,temp);
+    Base_UART_DMA_Send_Data((UART_mType)Channel,Data,temp);
 
 #endif
 }
@@ -44,7 +44,7 @@ void MODE_UART_Send_String_Fun(char Channel, const char *String)
 void MODE_UART_Receive_Bind_Fun(char Channel, D_pFun UART_pFun)
 {
 #ifdef Exist_UART
-    State_Machine_Bind (Channel,UART_pFun);
+    State_Machine_Bind ((UART_mType)Channel,UART_pFun);
 #endif
 }
 

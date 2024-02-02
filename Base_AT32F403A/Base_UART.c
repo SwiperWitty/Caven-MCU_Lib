@@ -141,11 +141,11 @@ static void Uart1_Init(int Baud, int Set)
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
     nvic_irq_enable(USART1_IRQn, 0, 1);                 //
 
-    usart_init(uart_Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT); // 波特率、位数、停止位
-    usart_transmitter_enable(uart_Temp, TRUE);                       // 发送使能
-    usart_receiver_enable(uart_Temp, TRUE);                          // 接收使能
+    usart_init(uart_Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);    // 波特率、位数、停止位
+    usart_transmitter_enable(uart_Temp, TRUE);                          // 发送使能
+    usart_receiver_enable(uart_Temp, TRUE);                             // 接收使能
 
-    usart_parity_selection_config(uart_Temp, USART_PARITY_NONE); // 无奇偶校验
+    usart_parity_selection_config(uart_Temp, USART_PARITY_NONE);        // 无奇偶校验
     usart_interrupt_enable(uart_Temp, USART_RDBF_INT, TRUE);
     usart_enable(uart_Temp, TRUE);
 }
@@ -200,7 +200,7 @@ void Uart2_Init(int Baud, int Set)
     gpio_init(GPIOA, &gpio_init_struct);
     /* configure param */
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
-    nvic_irq_enable(USART2_IRQn, 0, 2);                                 // 优先级
+    nvic_irq_enable(USART2_IRQn, 0, 2);                                 // 优先级,中断
     
     usart_init(uart_Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);    // 波特率、位数、停止位
     usart_transmitter_enable(uart_Temp, TRUE);                          // 发送使能
@@ -208,7 +208,7 @@ void Uart2_Init(int Baud, int Set)
     usart_parity_selection_config(uart_Temp, USART_PARITY_NONE);
     
     usart_hardware_flow_control_set(uart_Temp, USART_HARDWARE_FLOW_NONE);
-    usart_interrupt_enable(uart_Temp, USART_RDBF_INT, TRUE);
+    usart_interrupt_enable(uart_Temp, USART_RDBF_INT, TRUE);            // 中断
     /**
      * Users need to configure USART2 interrupt functions according to the actual application.
      * 1. Call the below function to enable the corresponding USART2 interrupt.
@@ -405,11 +405,8 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     
     dma_init_type dma_init_struct;
     dma_channel_type *Temp_DMA_Channel;
-    dma_flexible_request_type DMA_FLEXIBLE_Temp;
-    dma_type * DMA_Temp;
     
     uint32_t DMAy_FLAG;
-    uint8_t Temp_FLEX_Channel;
     uint8_t *p_DMA_BUFF = NULL;
     
     switch (Channel)
@@ -420,33 +417,24 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
         {
             uart_Temp = USART1;
             p_DMA_BUFF = NULL;
-            DMAy_FLAG = 0;
-            Temp_DMA_Channel = 0;
-            Temp_FLEX_Channel = 0;
-//            DMA_FLEXIBLE_Temp = 0;
-            DMA_Temp = DMA1;
+            DMAy_FLAG = DMA1_FDT4_FLAG;
+            Temp_DMA_Channel = DMA1_CHANNEL4;
         }
         break;
         case 2:
         {
             uart_Temp = USART2;
             p_DMA_BUFF = DMA_UART2_Buff;
-            DMAy_FLAG = DMA1_FDT1_FLAG;
-            Temp_DMA_Channel = DMA1_CHANNEL1;
-            Temp_FLEX_Channel = FLEX_CHANNEL1;
-            DMA_FLEXIBLE_Temp = DMA_FLEXIBLE_UART2_TX;
-            DMA_Temp = DMA1;
+            DMAy_FLAG = DMA1_FDT7_FLAG;
+            Temp_DMA_Channel = DMA1_CHANNEL7;
         }
         break;
         case 3:
         {
             uart_Temp = USART3;
             p_DMA_BUFF = DMA_UART3_Buff;
-            DMAy_FLAG = DMA1_FDT3_FLAG;
-            Temp_DMA_Channel = DMA1_CHANNEL3;   // usart3 tx
-            Temp_FLEX_Channel = FLEX_CHANNEL3;
-            DMA_FLEXIBLE_Temp = DMA_FLEXIBLE_UART3_TX;
-            DMA_Temp = DMA1;
+            DMAy_FLAG = DMA1_FDT2_FLAG;
+            Temp_DMA_Channel = DMA1_CHANNEL2;   // usart3 tx
         }
         break;
         case 4:
@@ -491,7 +479,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     /* config flexible dma for usartx tx */
     usart_dma_transmitter_enable(uart_Temp, TRUE); 
     
-    dma_flexible_config(DMA_Temp, Temp_FLEX_Channel, DMA_FLEXIBLE_Temp);
+//    dma_flexible_config(DMA_Temp, Temp_FLEX_Channel, DMA_FLEXIBLE_Temp);
     dma_channel_enable(Temp_DMA_Channel, TRUE);    /* usart tx begin dma transmitting */
 #endif
 }

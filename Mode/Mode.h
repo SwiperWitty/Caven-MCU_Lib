@@ -96,7 +96,7 @@ struct _Mode_Init
 #endif
 
 #ifdef Exist_UART
-	int (*UART)(UART_mType Channel,int Baud,int SET);
+	int (*UART)(char Channel,int Baud,int SET);
     int UART_Init_State;
 #endif
 #ifdef Exist_USB

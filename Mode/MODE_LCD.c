@@ -14,15 +14,18 @@ void LCD_Writ_Bus(U8 dat)
     
     #endif
 }
-
-void LCD_Writ_String(const void * Data,int num)
+/*
+    Data 是数据，可能是u16,也可能是u8
+    size 是数据字节，以byte为单位
+*/
+void LCD_Writ_String(const void * Data,int size)
 {
     #ifdef SPI_DMA
-    Base_SPI_DMA_Send_Data(m_SPI_CH2,Data,num);
+    Base_SPI_DMA_Send_Data(m_SPI_CH2,Data,size);
     #else
-    for(int i = 0;i < num;i++)
+    for(int i = 0;i < size;i++)
     {
-        LCD_Writ_Bus(Data[i]);
+        LCD_Writ_Bus(*(U8 *)Data + i);
     }
     #endif
 }

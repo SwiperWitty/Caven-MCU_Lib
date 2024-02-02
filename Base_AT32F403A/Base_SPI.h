@@ -7,6 +7,8 @@
 #include "User_items.h"         /*	自行设置功能，一般出现在本地文件的User中	*/
 #endif
 
+#include "string.h"
+
 /****************/
 
 /*
@@ -48,20 +50,22 @@ typedef enum
 
 // 选择输出模式
 #ifdef Exist_SPI
-//    #define SPI_SOFTWARE	        //屏蔽就是硬件模式
+//    #define SPI_SOFTWARE                    // 屏蔽就是硬件模式
+    #define SPI_SPEED   SPI_MCLK_DIV_16     // 16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
     #ifndef SPI_SOFTWARE
-        #define SPI_DMA			    //屏蔽就是普通模式
+        #define SPI_DMA			            // 屏蔽就是普通模式
+        #define SPI1_FINISH_HANDLERIT() DMA1_Channel3_IRQHandler()
+        #define SPI2_FINISH_HANDLERIT() DMA1_Channel5_IRQHandler()
     #endif
     #define HOST_MODE
 #endif
 
-#ifdef SPI_SOFTWARE                                 //软件SPI
+#ifdef SPI_SOFTWARE                                 // 软件SPI
     #define SPI_MODE_IN    GPIO_MODE_INPUT
     #define SPI_MODE_OUT   GPIO_MODE_OUTPUT
-#else                                               //硬件SPI
+#else                                               // 硬件SPI
     #define SPI_MODE_IN     GPIO_MODE_INPUT
     #define SPI_MODE_OUT    GPIO_MODE_MUX
-    #define SPI_SPEED       SPI_MCLK_DIV_8  //16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
 #endif
 
 //SPI1
@@ -86,7 +90,7 @@ void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State);
 
 void Base_SPI_ASK_Receive(SPI_mType Channel,uint16_t Data,uint16_t *Receive);
 void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data);
-void Base_SPI_DMA_Send_Data(SPI_mType Channel,const uint8_t *Data_array,int Length);
+void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int Length);
 
 
 
