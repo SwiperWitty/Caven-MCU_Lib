@@ -128,11 +128,12 @@ void Base_SPI1_Init (uint8_t Width,int Set)
     spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;                // 上升沿让从机读
     spi_init_struct.cs_mode_selection = SPI_CS_SOFTWARE_MODE;           // 软件cs
     spi_init_struct.mclk_freq_division = SPI_SPEED;                     // 速度
-    spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;
+    spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;		// SPI_TRANSMIT_HALF_DUPLEX_TX SPI_TRANSMIT_FULL_DUPLEX
     spi_init(spi_Temp, &spi_init_struct);
     
     #ifdef SPI_DMA
     crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
+	//
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
     nvic_irq_enable(DMA1_Channel3_IRQn, 1, 1);
     dma_reset(DMA1_CHANNEL3);                             // 优先级
@@ -171,15 +172,14 @@ void Base_SPI2_Init (uint8_t Width,int Set)
     spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;                // 上升沿让从机读
     spi_init_struct.cs_mode_selection = SPI_CS_SOFTWARE_MODE;           // 软件cs
     spi_init_struct.mclk_freq_division = SPI_SPEED;                     // 速度
-    spi_init_struct.transmission_mode = SPI_TRANSMIT_HALF_DUPLEX_TX;       // SPI_TRANSMIT_HALF_DUPLEX_TX SPI_TRANSMIT_FULL_DUPLEX
+    spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;		// SPI_TRANSMIT_HALF_DUPLEX_TX SPI_TRANSMIT_FULL_DUPLEX
     spi_init(spi_Temp, &spi_init_struct);
 
-//    spi_i2s_interrupt_enable(SPI2, SPI_I2S_TDBE_INT, TRUE);
-//    spi_i2s_interrupt_enable(SPI2, SPI_I2S_RDBF_INT, TRUE);
     #ifdef SPI_DMA
     crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
     /* enable iomux periph clock */
     crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+	//
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
     nvic_irq_enable(DMA1_Channel5_IRQn, 1, 2);
     dma_reset(DMA1_CHANNEL5);                             // 优先级
@@ -343,7 +343,7 @@ void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data)
     while(spi_i2s_flag_get(spi_Temp,SPI_I2S_BF_FLAG) != RESET);     //SPI忙就会 = 1，不忙就是0
 	
     #endif
-    SPI2_NSS_H();
+
 #endif 
 }
 
@@ -356,9 +356,12 @@ void SPI1_FINISH_HANDLERIT()
 {
     if(dma_flag_get(DMA1_FDT3_FLAG) != RESET)       // 传输完成
     {
-        dma_flag_clear(DMA1_FDT3_FLAG);
-        SPI1_DMA_Flag = 0;
-        Base_SPI_CS_Set(m_SPI_CH1,1,0);
+		if(spi_i2s_flag_get(SPI1,SPI_I2S_BF_FLAG) == RESET)
+		{
+			dma_flag_clear(DMA1_FDT3_FLAG);
+			SPI1_DMA_Flag = 0;
+			Base_SPI_CS_Set(m_SPI_CH1,1,0);
+		}
     }
 }
     #endif 
@@ -369,9 +372,12 @@ void SPI2_FINISH_HANDLERIT()
 {
     if(dma_flag_get(DMA1_FDT5_FLAG) != RESET)       // 传输完成
     {
-        dma_flag_clear(DMA1_FDT5_FLAG);
-        SPI2_DMA_Flag = 0;
-        Base_SPI_CS_Set(m_SPI_CH2,1,0);
+		if(spi_i2s_flag_get(SPI2,SPI_I2S_BF_FLAG) == RESET)
+		{
+			dma_flag_clear(DMA1_FDT5_FLAG);
+			SPI2_DMA_Flag = 0;
+			Base_SPI_CS_Set(m_SPI_CH2,1,0);
+		}
     }
 }
     #endif 
@@ -389,6 +395,9 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
 //    uint32_t DMAy_FLAG;
     uint8_t *p_DMA_BUFF = NULL;
     volatile char *SPI_DMA_Flag_Temp = 0;
+	dma_default_para_init(&dma_init_struct);
+	dma_init_struct.buffer_size = size;
+	
     switch (Channel)
     {
     case 0:
@@ -400,6 +409,12 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
         p_DMA_BUFF = DMA_SPI1_Buff;
         SPI_DMA_Flag_Temp = &SPI1_DMA_Flag;
         Temp_DMA_Channel = DMA1_CHANNEL3;
+		if(SPI1_Width > 8)
+		{
+			dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_HALFWORD;
+			dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_HALFWORD;
+			dma_init_struct.buffer_size = size / 2;
+		}
     #endif 
         break;
     case 2:
@@ -408,6 +423,12 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
         p_DMA_BUFF = DMA_SPI2_Buff;
         SPI_DMA_Flag_Temp = &SPI2_DMA_Flag;
         Temp_DMA_Channel = DMA1_CHANNEL5;
+		if(SPI2_Width > 8)
+		{
+			dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_HALFWORD;
+			dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_HALFWORD;
+			dma_init_struct.buffer_size = size / 2;
+		}
     #endif 
         break;
     case 3:
@@ -427,14 +448,11 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
     Base_SPI_CS_Set(Channel,1,TRUE);
   
     dma_channel_enable(Temp_DMA_Channel, FALSE);
-    dma_default_para_init(&dma_init_struct);
-    dma_init_struct.buffer_size = 1;                             //
+                                 //
     dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //
     dma_init_struct.memory_base_addr = (uint32_t)p_DMA_BUFF;        //
-    dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
     dma_init_struct.memory_inc_enable = TRUE;
     dma_init_struct.peripheral_base_addr = (uint32_t)&(spi_Temp->dt);   //
-    dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
     dma_init_struct.peripheral_inc_enable = FALSE;                      /*外设地址自增：关闭（一直是 SPI 数据寄存器，不变）*/
     dma_init_struct.priority = DMA_PRIORITY_MEDIUM;
     dma_init_struct.loop_mode_enable = FALSE;                           // 自动循环关

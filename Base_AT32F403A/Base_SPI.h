@@ -69,17 +69,17 @@ typedef enum
 #endif
 
 //SPI1
-#define SPI1_NSS        GPIO_PINS_4     //(CS)
-#define SPI1_SCK        GPIO_PINS_5
-#define SPI1_MISO       GPIO_PINS_6
-#define SPI1_MOSI       GPIO_PINS_7
+#define SPI1_NSS        GPIO_Pin_4     //(CS)
+#define SPI1_SCK        GPIO_Pin_5
+#define SPI1_MISO       GPIO_Pin_6
+#define SPI1_MOSI       GPIO_Pin_7
 #define GPIO_SPI1       GPIOA
 
 //SPI2
-#define SPI2_NSS        GPIO_PINS_12    //(CS)
-#define SPI2_SCK        GPIO_PINS_13
-#define SPI2_MISO       GPIO_PINS_14
-#define SPI2_MOSI       GPIO_PINS_15
+#define SPI2_NSS        GPIO_Pin_12    //(CS)
+#define SPI2_SCK        GPIO_Pin_13
+#define SPI2_MISO       GPIO_Pin_14
+#define SPI2_MOSI       GPIO_Pin_15
 #define GPIO_SPI2       GPIOB
 
 /*    驱动层      */

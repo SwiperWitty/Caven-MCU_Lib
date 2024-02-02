@@ -23,34 +23,32 @@
  */
 
 #ifdef Exist_LCD
-    #define LCD_DC_L() GPIOA->clr = GPIO_PINS_10    //DC_GPIO
-    #define LCD_DC_H() GPIOA->scr = GPIO_PINS_10    //PA10
-    #define LCD_RES_L() GPIOB->clr = GPIO_PINS_0    //RES_GPIO
-    #define LCD_RES_H() GPIOB->scr = GPIO_PINS_0    //PB0
+    #define LCD_DC_L() GPIOA->IO_L_REG = GPIO_PINS_10    //DC_GPIO
+    #define LCD_DC_H() GPIOA->IO_H_REG = GPIO_PINS_10    //PA10
+    #define LCD_RES_L() GPIOB->IO_L_REG = GPIO_PINS_0    //RES_GPIO
+    #define LCD_RES_H() GPIOB->IO_H_REG = GPIO_PINS_0    //PB0
 #endif
 
 #ifdef Exist_OLED
 
-    #define OLED_DC_Clr() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
+    #define OLED_DC_IO_L_REG() GPIOA->BCR = GPIO_Pin_10    //DC_GPIO
     #define OLED_DC_Set() GPIOA->BSHR = GPIO_Pin_10   //PA10
 
-//    #define LCD_RES_Clr()                                     //RES               //Caven 使用硬件复位
+//    #define LCD_RES_IO_L_REG()                                     //RES               //Caven 使用硬件复位
 //    #define LCD_RES_Set()
 #endif
 
 #ifdef Exist_LED
-    #define LED_Clr() GPIOA->BRR = GPIO_Pin_4       //LED
-    #define LED_Set() GPIOA->BSRR = GPIO_Pin_4      //PA04
-    #define LEDR_Clr() GPIOA->BSRR = GPIO_Pin_4      //PA04
-    #define LEDR_Set() GPIOA->BSRR = GPIO_Pin_4      //PA04
+    #define LED_L() GPIOA->IO_L_REG = GPIO_Pin_4       //LED
+    #define LED_H() GPIOA->IO_H_REG = GPIO_Pin_4      //PA04
 #endif
 #ifdef Exist_BZZ
-    #define BZZ_Clr() GPIOB->BCR = GPIO_Pin_5    //BZZ
-    #define BZZ_Set() GPIOB->BSHR = GPIO_Pin_5   //PB05
+    #define BZZ_L() GPIOB->IO_L_REG = GPIO_Pin_5    //BZZ
+    #define BZZ_H() GPIOB->IO_H_REG = GPIO_Pin_5   //PB05
 #endif
 
 #ifdef Exist_KEY
-    #define KEY_IN() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_13)     //KEY,读
+    #define KEY_IN() gpio_input_data_bit_read(GPIOC,GPIO_Pin_13)     //KEY,读
 #endif
 
 

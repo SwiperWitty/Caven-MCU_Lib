@@ -8,26 +8,8 @@ U8 	LCD_HORIZONTAL = USE_HORIZONTAL;
 #ifdef Exist_LCD
 void LCD_Writ_Bus(U8 dat)
 {
-    #ifdef SPI_DMA
     Base_SPI_Send_Data(m_SPI_CH2,dat);
-    #else
-    
-    #endif
-}
-/*
-    Data 是数据，可能是u16,也可能是u8
-    size 是数据字节，以byte为单位
-*/
-void LCD_Writ_String(const void * Data,int size)
-{
-    #ifdef SPI_DMA
-    Base_SPI_DMA_Send_Data(m_SPI_CH2,Data,size);
-    #else
-    for(int i = 0;i < size;i++)
-    {
-        LCD_Writ_Bus(*(U8 *)Data + i);
-    }
-    #endif
+
 }
 
 /******************************************************************************
@@ -58,11 +40,8 @@ void LCD_WR_DATA(U16 dat)
 void LCD_Send_Data(U8 *Data,int num)
 {
 	Base_SPI_CS_Set(m_SPI_CH2,1,ENABLE);
-	for (size_t i = 0; i < num; i++)
-	{
-		LCD_Writ_Bus(*(Data + i));
-	}
-	Base_SPI_CS_Set(m_SPI_CH2,1,DISABLE);
+	Base_SPI_DMA_Send_Data(m_SPI_CH2,Data,num);
+//	Base_SPI_CS_Set(m_SPI_CH2,1,DISABLE);
 }
 
 /******************************************************************************
@@ -569,8 +548,9 @@ int MODE_LCD_Init(int Set)
 #ifdef Exist_LCD
 	LCD_GPIO_Init(Set);
     Base_SPI_Init(m_SPI_CH2,8,Set);
+	LCD_Delay(1);
+	
 	LCD_WR_DATA8(0x00);
-
 	LCD_Delay(300); // 等待电路复位完成
 
 	#ifdef LCD_RES_L
@@ -609,32 +589,29 @@ int MODE_LCD_Init(int Set)
 	LCD_WR_DATA8(0x33);
 	LCD_WR_DATA8(0x33);
 
-	LCD_WR_CMD(0xB7);
+	LCD_WR_CMD(0xB7);	//Gate Control
 	LCD_WR_DATA8(0x35);
-
-	LCD_WR_CMD(0xBB);
+	LCD_WR_CMD(0xBB);	//VCOM Setting
 	LCD_WR_DATA8(0x19);
 
-	LCD_WR_CMD(0xC0);
+	LCD_WR_CMD(0xC0);	//LCM Control  
 	LCD_WR_DATA8(0x2C);
 
-	LCD_WR_CMD(0xC2);
+	LCD_WR_CMD(0xC2);	//VDV and VRH Command Enable
 	LCD_WR_DATA8(0x01);
-
-	LCD_WR_CMD(0xC3);
+	LCD_WR_CMD(0xC3);	//VRH Set
 	LCD_WR_DATA8(0x12);
-
-	LCD_WR_CMD(0xC4);
+	LCD_WR_CMD(0xC4);	//VDV Set
 	LCD_WR_DATA8(0x20);
 
-	LCD_WR_CMD(0xC6);
+	LCD_WR_CMD(0xC6);  //Frame Rate Control in Normal Mode
 	LCD_WR_DATA8(0x0F);
 
-	LCD_WR_CMD(0xD0);
+	LCD_WR_CMD(0xD0);	// Power Control 1
 	LCD_WR_DATA8(0xA4);
 	LCD_WR_DATA8(0xA1);
 
-	LCD_WR_CMD(0xE0);
+	LCD_WR_CMD(0xE0);	//Positive Voltage Gamma Control
 	LCD_WR_DATA8(0xD0);
 	LCD_WR_DATA8(0x04);
 	LCD_WR_DATA8(0x0D);
@@ -650,7 +627,7 @@ int MODE_LCD_Init(int Set)
 	LCD_WR_DATA8(0x1F);
 	LCD_WR_DATA8(0x23);
 
-	LCD_WR_CMD(0xE1);
+	LCD_WR_CMD(0xE1);	//Negative Voltage Gamma Control
 	LCD_WR_DATA8(0xD0);
 	LCD_WR_DATA8(0x04);
 	LCD_WR_DATA8(0x0C);
@@ -666,9 +643,9 @@ int MODE_LCD_Init(int Set)
 	LCD_WR_DATA8(0x20);
 	LCD_WR_DATA8(0x23);
 
-	LCD_WR_CMD(0x21);
-	LCD_WR_CMD(0x11);
-	LCD_WR_CMD(0x29);
+	LCD_WR_CMD(0x21);	//Display Inversion On
+	LCD_WR_CMD(0x11);	//Sleep Out
+	LCD_WR_CMD(0x29);	//Display On
 	LCD_Delay(100);
 	LCD_Fill_Fun (0, 0, LCD_W, LCD_H, LCD_Back_Color);
     retval = 1;

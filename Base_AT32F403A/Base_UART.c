@@ -408,7 +408,8 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     
     uint32_t DMAy_FLAG;
     uint8_t *p_DMA_BUFF = NULL;
-    
+    dma_default_para_init(&dma_init_struct);
+	
     switch (Channel)
     {
         case 0:
@@ -463,7 +464,8 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     }
     memcpy(p_DMA_BUFF,Data,Length);                     // 一定等上一个发送完成才能修改
     
-    dma_default_para_init(&dma_init_struct);
+	dma_channel_enable(Temp_DMA_Channel, FALSE);
+	
     dma_init_struct.buffer_size = Length;                           //
     dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;
     dma_init_struct.memory_base_addr = (uint32_t)p_DMA_BUFF;        //
