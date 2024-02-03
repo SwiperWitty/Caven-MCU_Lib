@@ -19,6 +19,7 @@ void LCD_GPIO_Init(int SET)
         
         gpio_init_struct.gpio_pins = GPIO_Pin_0;		// RES
         gpio_init(GPIOB, &gpio_init_struct);
+		LCD_RES_H();
     }
     else
     {

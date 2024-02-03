@@ -548,10 +548,10 @@ int MODE_LCD_Init(int Set)
 #ifdef Exist_LCD
 	LCD_GPIO_Init(Set);
     Base_SPI_Init(m_SPI_CH2,8,Set);
-	LCD_Delay(1);
+	LCD_Delay(500);
 	
 	LCD_WR_DATA8(0x00);
-	LCD_Delay(300); // 等待电路复位完成
+	LCD_Delay(500); // 等待电路复位完成
 
 	#ifdef LCD_RES_L
 	LCD_RES_L();
