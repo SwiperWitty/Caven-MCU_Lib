@@ -13,8 +13,9 @@ static void usb_gpio_config(void);
 static void usb_low_power_wakeup_config(void);
 #endif
 
-void USB_User_init (int SET)  
+int MODE_USB_Init (int SET)  
 {
+    int retval = 0;
 #ifdef Exist_USB
     if(SET)
     {
@@ -41,7 +42,9 @@ void USB_User_init (int SET)
     {
         crm_periph_clock_enable(OTG_CLOCK, FALSE);
     }
+    retval = 1;
 #endif
+    return retval;
 }
 
 int USB_Buffer_Receive (char *Data)

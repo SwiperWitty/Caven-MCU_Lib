@@ -448,6 +448,7 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
     Base_SPI_CS_Set(Channel,1,TRUE);
   
     dma_channel_enable(Temp_DMA_Channel, FALSE);
+    
                                  //
     dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //
     dma_init_struct.memory_base_addr = (uint32_t)p_DMA_BUFF;        //

@@ -19,7 +19,7 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.LCD.Show_Chinese_pFun = LCD_Show_Chinese;
     Mode_Use.LCD.Show_Picture_pFun = LCD_Show_Picture;
 
-    Mode_Use.LCD.Set_Direction_pFun = LCD_Set_HORIZONTAL;
+    Mode_Use.LCD.Set_Direction_pFun = LCD_Set_Horizontal;
 #endif
 
 #ifdef Exist_SYS_TIME
@@ -103,7 +103,7 @@ void Mode_Index(void)
     Mode_Init.UART = MODE_UART_Init;
 #endif
 #ifdef Exist_USB
-    Mode_Init.USB = MODE_USB_init;
+    Mode_Init.USB = MODE_USB_Init;
 #endif
     
 #ifdef Exist_LED

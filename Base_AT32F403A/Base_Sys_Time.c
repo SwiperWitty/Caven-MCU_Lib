@@ -160,7 +160,7 @@ void SYS_Base_Delay (int time,int Speed)
     volatile int temp;
     for (int i = 0; i < time; ++i)
     {
-        temp = Speed;            //SET
+        temp = Speed;
         do{
             NOP();
         }while((temp--) > 0);

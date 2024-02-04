@@ -47,8 +47,6 @@ Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
     #define TICK_OVER_IT (0.50)                 //定时器溢出时间（24位滴答才有）
 
     #define SYSTICK_NUM (SysTick->VAL)
-    #define SYS_TIME_INTERRUPT_GETFLAG()    SysTick->CTRL
-    #define SYS_TIME_INTERRUPT_CLEANFLAG()  SysTick->CTRL = 0
 
     #define SYS_TIME_HANDLER()  SysTick_Handler()
 #endif

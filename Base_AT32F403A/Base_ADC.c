@@ -157,7 +157,7 @@ float ADC_Get_MCU_Temperature_Fun(void)
     // while(dma_trans_complete_flag == 0);
     // dma_trans_complete_flag = 0;
 	
-    Temp = ADC_Conversion_Vol_Fun(ADC1_DMA_list[Channel_NUMs - 1]);     //温传是最后一个 
+    Temp = ADC_Conversion_Vol_Fun(ADC1_DMA_list[Channel_NUMs - 1]);     // 温传是最后一个 
     Temp = (ADC_TEMP_BASE - Temp) / ADC_TEMP_SLOPE + 25;
 	retval = (float)Temp;
 #endif
@@ -190,7 +190,7 @@ void ADC_Quick_Get_Bind_Fun(D_pFun ADC_pFun)
 void ADC_FINISH_HANDLERIT()
 {
 //    int *temp_p = ADC1_DMA_list;
-    if(dma_flag_get(DMA1_FDT1_FLAG) != RESET)       //ADC数据全部完成
+    if(dma_flag_get(DMA1_FDT1_FLAG) != RESET)       // ADC数据全部完成
     {
         dma_flag_clear(DMA1_FDT1_FLAG);
         if (ADC_Quick_Get_pFun != NULL)

@@ -19,12 +19,12 @@
 // Echo	PB05
 
 
-struct Ultrasonic_
+typedef struct 
 {
     float (*Distance)(void);
-};
+}MODE_Ultrasonic_Way;
 
-void Ultrasonic_Init(int SET);//初始化
+int MODE_Ultrasonic_Init (int Set);//初始化
 float Distance(void);//距离
 
 #endif

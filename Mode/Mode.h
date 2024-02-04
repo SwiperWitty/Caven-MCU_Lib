@@ -9,7 +9,8 @@
 #endif
 
 #ifdef Exist_LCD
-    #include "MODE_LCD.h"            //显示输出
+//    #include "MODE_LCD.h"            //显示输出
+    #include "MODE_LCD_1_28.h"
 #endif
 #ifdef Exist_OLED
     #include "OLED.h"            	//显示输出

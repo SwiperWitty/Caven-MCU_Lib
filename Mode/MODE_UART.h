@@ -12,13 +12,6 @@
     // DEBUG_RX_TX 看通不通
 */
 
-#ifdef MCU_Buff_Len
-    #define UART_Length_MAX    MCU_Buff_Len     //Buff MAX 长度(来自Items & User_items)
-#else
-    #define UART_Length_MAX    BUFF_MAX         //Buff MAX 长度(来自Caven_Type)
-#endif
-
-#define DEBUG_RX_BK_TX  0   // 0:off 1:on 
 
 
 typedef struct

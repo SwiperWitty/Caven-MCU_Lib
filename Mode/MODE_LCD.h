@@ -22,7 +22,7 @@
 
 extern U16  LCD_Back_Color; // 背景色
 extern U16  LCD_Word_Color; // 字体色
-extern U8   LCD_HORIZONTAL; // 设置横屏或者竖屏
+extern U8   LCD_Horizontal; // 设置横屏或者竖屏
 
 //画笔颜色
 #define LCD_WHITE            0xFFFF
@@ -73,9 +73,9 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char
 void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //显示汉字串
 void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //显示图片
 
-int LCD_Set_HORIZONTAL(char set);
+int LCD_Set_Horizontal(char set);
 
-int MODE_LCD_Init(int SET); // LCD初始化
+int MODE_LCD_Init(int Sse); // LCD初始化
 
 
 #endif

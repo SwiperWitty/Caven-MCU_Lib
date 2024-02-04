@@ -4,7 +4,7 @@
 static usart_type *uart_Temp;
 
 #define RXD_Falg USART_RDBF_FLAG //  接收标志
-#define TXD_Falg USART_TDC_FLAG  //  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
+#define TXD_Falg USART_TDC_FLAG  //  [USART_FLAG_TXE]这个只是说明，数据被cpu取走,[USART_FLAG_TC]这是完全发送完成
 
 static D_pFun State_Machine_UART_pFun[5];
 
@@ -126,14 +126,14 @@ static void Uart1_Init(int Baud, int Set)
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
 
-    gpio_init_struct.gpio_pins = GPIO_PINS_9; // Tx
+    gpio_init_struct.gpio_pins = GPIO_Pin_9; // Tx
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
     gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
     gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOA, &gpio_init_struct);
 
-    gpio_init_struct.gpio_pins = GPIO_PINS_10; // Rx
+    gpio_init_struct.gpio_pins = GPIO_Pin_10; // Rx
     gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
     gpio_init_struct.gpio_pull = GPIO_PULL_UP;
     gpio_init(GPIOA, &gpio_init_struct);
@@ -188,14 +188,14 @@ void Uart2_Init(int Baud, int Set)
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
     gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
     gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
-    gpio_init_struct.gpio_pins = GPIO_PINS_2;
+    gpio_init_struct.gpio_pins = GPIO_Pin_2;
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOA, &gpio_init_struct);
     /* configure the RX pin */
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
     gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
     gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
-    gpio_init_struct.gpio_pins = GPIO_PINS_3;
+    gpio_init_struct.gpio_pins = GPIO_Pin_3;
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOA, &gpio_init_struct);
     /* configure param */
@@ -257,14 +257,14 @@ void Uart3_Init(int Baud, int Set)
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
     gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
     gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
-    gpio_init_struct.gpio_pins = GPIO_PINS_10;
+    gpio_init_struct.gpio_pins = GPIO_Pin_10;
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOC, &gpio_init_struct);
     /* configure the RX pin */
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
     gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
     gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
-    gpio_init_struct.gpio_pins = GPIO_PINS_11;
+    gpio_init_struct.gpio_pins = GPIO_Pin_11;
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOC, &gpio_init_struct);
     gpio_pin_remap_config(USART3_GMUX_0001, TRUE);
@@ -387,16 +387,22 @@ void Base_UART_Send_Byte(UART_mType Channel, uint16_t Data)
         return;
     }
 
-    while (usart_flag_get(uart_Temp, TXD_Falg) == RESET)
-        ;
+    while (usart_flag_get(uart_Temp, TXD_Falg) == RESET);
     usart_data_transmit(uart_Temp, Data);
     // usart_flag_clear(uart_Temp, TXD_Falg);        //可以不要
 #endif
 }
 
 #ifdef DMA_UART
+    #if Exist_UART & OPEN_0010
+uint8_t DMA_UART1_Buff[UART_BUFF_MAX];
+    #endif
+    #if Exist_UART & OPEN_0100
 uint8_t DMA_UART2_Buff[UART_BUFF_MAX];
+    #endif
+    #if Exist_UART & OPEN_1000
 uint8_t DMA_UART3_Buff[UART_BUFF_MAX];
+    #endif
 #endif
 void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length)
 {
@@ -413,37 +419,49 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     switch (Channel)
     {
         case 0:
+        {
+    #if Exist_UART & OPEN_0001
+            p_DMA_BUFF = DMA_UART0_Buff;
+            uart_Temp = USART0;
+            DMAy_FLAG = 0;
+            Temp_DMA_Channel = 0;
         return;
+    #endif
+        }break;
         case 1:
         {
+    #if Exist_UART & OPEN_0010
+            p_DMA_BUFF = DMA_UART1_Buff;
             uart_Temp = USART1;
-            p_DMA_BUFF = NULL;
             DMAy_FLAG = DMA1_FDT4_FLAG;
             Temp_DMA_Channel = DMA1_CHANNEL4;
-        }
-        break;
+    #endif
+        }break;
         case 2:
         {
-            uart_Temp = USART2;
+    #if Exist_UART & OPEN_0100
             p_DMA_BUFF = DMA_UART2_Buff;
+            uart_Temp = USART2;
             DMAy_FLAG = DMA1_FDT7_FLAG;
             Temp_DMA_Channel = DMA1_CHANNEL7;
-        }
-        break;
+    #endif
+        }break;
         case 3:
         {
-            uart_Temp = USART3;
+    #if Exist_UART & OPEN_1000
             p_DMA_BUFF = DMA_UART3_Buff;
+            uart_Temp = USART3;
             DMAy_FLAG = DMA1_FDT2_FLAG;
             Temp_DMA_Channel = DMA1_CHANNEL2;   // usart3 tx
-        }
-        break;
+    #endif
+        }break;
         case 4:
         {
+    #if Exist_UART & OPEN_10000
             uart_Temp = UART4;
             p_DMA_BUFF = NULL;
-        }
-        break;
+    #endif
+        }break;
     default:
         return;
     }
@@ -480,7 +498,6 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
 
     /* config flexible dma for usartx tx */
     usart_dma_transmitter_enable(uart_Temp, TRUE); 
-    
 //    dma_flexible_config(DMA_Temp, Temp_FLEX_Channel, DMA_FLEXIBLE_Temp);
     dma_channel_enable(Temp_DMA_Channel, TRUE);    /* usart tx begin dma transmitting */
 #endif

@@ -4,7 +4,7 @@
 void Motor_BYJ_Init(int SET)
 {
 #ifdef Exist_STEP_Motor
-    STEP_Motor (SET);       //单纯初始GPIO
+    STEP_Motor_GPIO_Init (SET);       // 初始GPIO
     if(SET)
     {
         STEP_OUT_L(0);

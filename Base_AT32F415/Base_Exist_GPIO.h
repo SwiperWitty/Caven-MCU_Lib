@@ -54,10 +54,9 @@
 #endif
 
 #ifdef Exist_OLED
-    #define OLED_DC_L() GPIOA->IO_L_REG = GPIO_Pin_10    //DC_GPIO
+    #define OLED_DC_L() GPIOA->IO_L_REG = GPIO_Pin_10   //DC_GPIO
     #define OLED_DC_H() GPIOA->IO_H_REG = GPIO_Pin_10   //PA10
-//    #define LCD_RES_L()                                     // RES 使用硬件复位
-//    #define LCD_RES_H()
+
 #endif
 
 #ifdef Exist_LED
@@ -129,6 +128,11 @@
 
 #endif
 
+#ifdef Exist_Ultrasonic
+    #define Trig_IO_H() GPIOB->IO_H_REG = GPIO_Pin_0
+    #define Trig_IO_L() GPIOB->IO_L_REG = GPIO_Pin_0
+    #define Echo_Read() gpio_input_data_bit_read(GPIOB,GPIO_Pin_1)     // 读
+#endif
 
 /*  Init-Function    */
 
@@ -146,6 +150,7 @@ void User_GPIO_Init(int Set);	//!!!!
 
 /*  other    */
 void DS18B20_IO_Config(int Set);
-void STEP_Motor (int Set);
+void STEP_Motor_GPIO_Init (int Set);
+void Ultrasonic_GPIO_Init(int Set);
 
 #endif
