@@ -89,27 +89,20 @@ typedef struct
     U8 BULE;
 }Caven_Color_Type;
 
-/*
-**DATA
-**让 Run_num 去追 Length，如果 (Length - Run_num)为0，且过了很长的时间，那么这个数据就该结束了
-**将不在这个DATA存放数据，因为MCU内存不一样，规划的空间也不同，所以空间占用大小应该由MCU文件决定，而不是type文件。
-*/
-typedef struct Caven_Data           //这个数据是动态的
-{
-    U16 Length;                     //目前接收到的数据长度
-    volatile U16 Run_num;           //目前运行/处理到的数据个数
-
-    char index;                     //哪个指针会存放数据
-    U8 *Poit_U8;
-    U16 *Poit_U16;
-    int *Poit_U32;
-}Caven_Data_Type;
-
 
 // Function
 
 typedef void (*V_pFun) (void);
 typedef void (*D_pFun) (void *data);
 typedef void (*Send_pFun) (U8 *data,int length);
+
+typedef struct
+{
+    int app_ID;
+    void *p_Data;
+    char *string;
+    Caven_Watch_Type Watch;
+    Caven_BaseTIME_Type BaseTIME;
+}Caven_App_Type;
 
 #endif

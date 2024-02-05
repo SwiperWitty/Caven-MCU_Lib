@@ -308,7 +308,8 @@ void Uart4_Init(int Baud, int Set)
     usart_reset(uart_Temp);
     if (Set)
         set = TRUE;
-        
+    crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, set);
+    
 }
 
 void UART4_HANDLERIT()
