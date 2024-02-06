@@ -99,10 +99,21 @@ typedef void (*Send_pFun) (U8 *data,int length);
 typedef struct
 {
     int app_ID;
+    char layer;
+    char cursor;
+    char str_switch;
     void *p_Data;
     char *string;
     Caven_Watch_Type Watch;
     Caven_BaseTIME_Type BaseTIME;
 }Caven_App_Type;
+
+typedef struct
+{
+    int Control_x;
+    int Control_y;
+    int Control_botton;
+    float Control_value;
+}Caven_Control_Type;
 
 #endif
