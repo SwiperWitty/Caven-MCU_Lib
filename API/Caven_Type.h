@@ -113,7 +113,7 @@ typedef struct
     int Control_x;
     int Control_y;
     int Control_botton;
-    float Control_value;
+    void *Control_value;
 }Caven_Control_Type;
 
 #endif
