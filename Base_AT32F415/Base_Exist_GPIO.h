@@ -49,8 +49,8 @@
 #ifdef Exist_LCD
     #define LCD_DC_L()  GPIOA->IO_L_REG = GPIO_Pin_10  //DC_GPIO
     #define LCD_DC_H()  GPIOA->IO_H_REG = GPIO_Pin_10  //PA10
-//    #define LCD_RES_L() GPIOB->IO_L_REG = GPIO_Pin_0   // RES 使用硬件复位
-//    #define LCD_RES_H() GPIOB->IO_H_REG = GPIO_Pin_0
+    #define LCD_RES_L() GPIOB->IO_L_REG = GPIO_Pin_0   // RES 使用硬件复位
+    #define LCD_RES_H() GPIOB->IO_H_REG = GPIO_Pin_0
 #endif
 
 #ifdef Exist_OLED
