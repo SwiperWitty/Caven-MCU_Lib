@@ -551,13 +551,14 @@ int MODE_LCD_Init(int Set)
 	LCD_Delay(500);
 	
 	LCD_WR_DATA8(0x00);
-	LCD_Delay(500); // 等待电路复位完成
-
+	LCD_Delay(10);
 	#ifdef LCD_RES_L
 	LCD_RES_L();
 	LCD_Delay(200); //
 	LCD_RES_H();
 	LCD_Delay(100);
+    #else
+    LCD_Delay(500); // 等待电路复位完成
 	#endif
 	LCD_Set_Horizontal(USE_HORIZONTAL);
 

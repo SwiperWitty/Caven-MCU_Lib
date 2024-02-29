@@ -55,7 +55,7 @@ void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 #ifdef Exist_UART
     #define DMA_UART
-
+    #define UART_BUFF_MAX   500
 #endif
 
 // fun

@@ -51,6 +51,7 @@
     #define LCD_DC_H()  GPIOA->IO_H_REG = GPIO_Pin_10  //PA10
     #define LCD_RES_L() GPIOB->IO_L_REG = GPIO_Pin_0   // RES 使用硬件复位
     #define LCD_RES_H() GPIOB->IO_H_REG = GPIO_Pin_0
+    void LCD_GPIO_Init(int Set);
 #endif
 
 #ifdef Exist_OLED
@@ -66,16 +67,22 @@
     #define LED_H() GPIOA->IO_H_REG = GPIO_LED
     #define LEDR_L() GPIOC->IO_L_REG = GPIO_LEDR
     #define LEDR_H() GPIOC->IO_H_REG = GPIO_LEDR
+    
+    void LED_GPIO_Init(int Set);
 #endif
 
 #ifdef Exist_BZZ
     #define GPIO_BZZ    GPIO_Pin_5     //PB5
     #define BZZ_L() GPIOB->IO_L_REG = GPIO_BZZ
     #define BZZ_H() GPIOB->IO_H_REG = GPIO_BZZ
+    
+    void BZZ_GPIO_Init(int Set);
 #endif
 
 #ifdef Exist_BUTTON
     #define BUTTON_STATE() gpio_input_data_bit_read(GPIOC,GPIO_Pin_13)     // KEY,读
+    
+    void Button_GPIO_Init(int Set);
 #endif
 
 #ifdef Exist_HC595
@@ -136,15 +143,9 @@
 
 /*  Init-Function    */
 
-void LCD_GPIO_Init(int Set);
-
-void LED_GPIO_Init(int Set);
-void BZZ_GPIO_Init(int Set);
-
 void HC138_GPIO_Init(int Set);
 void HC595_GPIO_Init(int Set);
 
-void Button_GPIO_Init(int Set);
 
 void User_GPIO_Init(int Set);	//!!!!
 

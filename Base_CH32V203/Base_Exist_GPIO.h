@@ -17,11 +17,10 @@
  */
 
 #ifdef Exist_LCD
-    #define OLED_DC_L() GPIO_ResetBits(GPIOA, GPIO_Pin_10)  //DC_GPIO
-    #define OLED_DC_H() GPIO_SetBits(GPIOA, GPIO_Pin_10)    //PA10
-
-    #define LCD_RES_L() GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //RES
-    #define LCD_RES_H() GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB0
+    #define LCD_DC_L()  GPIOA->IO_L_REG = GPIO_Pin_10  //DC_GPIO
+    #define LCD_DC_H()  GPIOA->IO_H_REG = GPIO_Pin_10  //PA10
+    #define LCD_RES_L() GPIOB->IO_L_REG = GPIO_Pin_0   // RES 使用硬件复位
+    #define LCD_RES_H() GPIOB->IO_H_REG = GPIO_Pin_0
 
     void LCD_GPIO_Init(int SET);
 #endif
@@ -38,10 +37,6 @@
 #ifdef Exist_LED
     #define LED_L()     GPIO_ResetBits(GPIOB, GPIO_Pin_4)   //LED
     #define LED_H()     GPIO_SetBits(GPIOB, GPIO_Pin_4)     //PB04
-    #define LEDBLUE_L()  GPIO_ResetBits(GPIOB, GPIO_Pin_0)  //LED_bluetooth
-    #define LEDBLUE_H()  GPIO_SetBits(GPIOB, GPIO_Pin_0)    //PB00
-    #define LEDWIFI_L() GPIO_ResetBits(GPIOB, GPIO_Pin_1)   //LED_WiFi
-    #define LEDWIFI_H() GPIO_SetBits(GPIOB, GPIO_Pin_1)     //PB01
 
     void LED_GPIO_Init(int SET);
 #endif

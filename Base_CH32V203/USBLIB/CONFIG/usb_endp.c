@@ -21,7 +21,7 @@ uint8_t HIDKey[ENDP1_IN_SIZE] = {0};		  // dd-dd
 uint8_t HIDTxBuffer[ENDP2_IN_SIZE] = {0};
 uint8_t HIDRxBuffer[ENDP2_OUT_SIZE] = {0};
 
-struct Caven_Data HID_Data = {0};
+unsigned char HID_RX_Data[100];
 unsigned char HID_Data_Buff[1030];
 
 volatile u8 Endp1Busy = FALSE;            // dd-dd
@@ -60,10 +60,9 @@ void EP2_OUT_Callback(void)                   // dd-dd
 {
     uint8_t USB_RX_LEN;
     USB_RX_LEN = USB_SIL_Read(EP2_OUT, HIDRxBuffer);
-    HID_Data.Poit_U8 = HID_Data_Buff;
+
 //    printf("EP1_OUT:\n");
-    memcpy(HID_Data.Poit_U8 + HID_Data.Length,&HIDRxBuffer,USB_RX_LEN);  //�����µ��������� buff��      //  dd-dd
-    HID_Data.Length += USB_RX_LEN;
+    memcpy(HID_RX_Data,&HIDRxBuffer,USB_RX_LEN);  //�����µ��������� buff��      //  dd-dd
 
 //    for (int i = 0; i < USB_RX_LEN; i++)
 //    {
