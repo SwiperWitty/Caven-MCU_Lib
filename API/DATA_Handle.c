@@ -107,3 +107,28 @@ int Data_Median_filtering_Handle (float data,float *array,float *reverse,char *r
 	*run = temp_run;
 	return retval;
 }
+
+int Caven_math_approximate (int num,int num_step,int num_min,int num_max)
+{
+    int retval = 0;
+    int temp_num;
+    float f_temp_num;
+    float f_temp_temp;
+    temp_num = num / num_step;
+    f_temp_temp = num_step;
+    f_temp_temp /= 2;
+
+    f_temp_num = num % num_step;
+
+    if (f_temp_num > f_temp_temp) {
+        retval = (temp_num + 1) * num_step;
+    }
+    else {
+        retval = temp_num * num_step;
+    }
+    retval = MIN(num_max,retval);
+    retval = MAX(num_min,retval);
+//    printf("num : %d ,retval : %d \n",num,retval);
+    return retval;
+}
+
