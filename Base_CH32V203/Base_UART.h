@@ -53,6 +53,11 @@ void USART3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 #define UART3_HANDLERIT() USART3_IRQHandler()
 #endif
 
+#if (Exist_UART & OPEN_10000)
+void UART4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+#define UART4_HANDLERIT() UART4_IRQHandler()
+#endif
+
 #ifdef Exist_UART
     #define DMA_UART
     #define UART_BUFF_MAX   500

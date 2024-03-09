@@ -28,6 +28,9 @@ static char UART_RXD_Flag(UART_mType Channel)
     case 3:
         Temp = USART3;
         break;
+    case 4:
+        Temp = UART4;
+        break;
     default:
         return 0;
     }
@@ -116,6 +119,7 @@ void Base_UART_Send_Byte(UART_mType Channel,uint16_t Data)
 
     #ifdef DMA_UART
 uint8_t DMA_UART1_Buff[500];
+uint8_t DMA_UART2_Buff[500];
 uint8_t DMA_UART3_Buff[500];
 /*
  *
@@ -147,7 +151,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         {
             Temp_USART = USART2;
             DMAy_FLAG = DMA1_FLAG_TC7;
-            p_DMA_BUFF = NULL;
+            p_DMA_BUFF = DMA_UART2_Buff;
             Temp_DMA_Channel = DMA1_Channel7;
         }
         break;
@@ -162,9 +166,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         case 4:
         {
             Temp_USART = UART4;     //UART - DMA2-5_TX
-            DMAy_FLAG = DMA1_FLAG_TC5;
             p_DMA_BUFF = NULL;
-            Temp_DMA_Channel = DMA1_Channel5;
         }
         break;
     default:
@@ -371,7 +373,7 @@ void Uart3_Init(int Baud,int SET)
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, temp);    // USART3  (APB1)
 //  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);    // AFIO复用功能模块时钟(暂不需要)
-//  GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);         //端口复用
+//  GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);         // 端口复用
     USART_DeInit(Temp_USART);
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;      // RXD
@@ -425,8 +427,50 @@ void UART3_HANDLERIT()
 #if (Exist_UART & OPEN_10000)
 void Uart4_Init(int Baud,int SET)
 {
+    GPIO_InitTypeDef GPIO_InitStructure = {0};
+    USART_InitTypeDef USART_InitStructure = {0};
+    NVIC_InitTypeDef NVIC_InitStructure = {0};
+    USART_TypeDef * Temp_USART = UART4;
+    FunctionalState temp;
 
+    if(SET)
+        temp = ENABLE;
+    else
+        temp = DISABLE;
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART4, temp);     // UART4  (APB1)
 
+    USART_DeInit(Temp_USART);
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;       // RXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;       // TXD
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    if (!temp)
+    {
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+    }
+    USART_InitStructure.USART_BaudRate = Baud;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Tx | USART_Mode_Rx;
+    USART_InitStructure.USART_Parity = USART_Parity_No;         //
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;      //
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //
+    USART_Init(Temp_USART, &USART_InitStructure);
+    USART_ITConfig(Temp_USART, RXD_Falg, temp);
+
+    NVIC_InitStructure.NVIC_IRQChannel = UART4_IRQn;            // UART4
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;   // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 4;          // 响应优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = temp;
+    NVIC_Init(&NVIC_InitStructure);
+
+    USART_Cmd(Temp_USART, temp);
 }
 
 void UART4_HANDLERIT()
@@ -438,29 +482,6 @@ void UART4_HANDLERIT()
         temp = UART_RXD_Receive(UART_CH);
         if (State_Machine_UART_pFun[UART_CH] != NULL) {
             State_Machine_UART_pFun[UART_CH](&temp);
-        }
-        UART_RXD_Flag_Clear(UART_CH);
-    }
-}
-
-#endif
-
-#if (Exist_UART & OPEN_0001)
-void Uart4_Init(int Baud,int SET)
-{
-
-
-}
-
-void UART4_HANDLERIT()
-{
-    u8 temp;
-    UART_mType UART_CH = m_UART_CH4;
-    if (UART_RXD_Flag(UART_CH))
-    {
-        temp = UART_RXD_Receive(UART_CH);
-        if (State_Machine_UART_pFun[UART_CH] != NULL) {
-            State_Machine_UART_pFun[UART_CH](temp);
         }
         UART_RXD_Flag_Clear(UART_CH);
     }
@@ -490,6 +511,10 @@ int Base_UART_Init(UART_mType Channel,int Baud,int SET)
         Uart3_Init(Baud,SET);
         retval = 0;
         break;
+    case 4:
+        Uart4_Init(Baud,SET);
+        retval = 0;
+        break;
     default:
         break;
     }
@@ -501,10 +526,15 @@ int Base_UART_Init(UART_mType Channel,int Baud,int SET)
  *  Successful : return 0
  *
  */
+int Base_UART_Once_Flag = 0;
 int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun)
 {
     int retval = -1;
 #ifdef Exist_UART
+    if (Base_UART_Once_Flag == 0) {
+        memset(State_Machine_UART_pFun,0,sizeof(State_Machine_UART_pFun));
+        Base_UART_Once_Flag = 1;
+    }
     if (UART_pFun == NULL)
     {
         return retval;
