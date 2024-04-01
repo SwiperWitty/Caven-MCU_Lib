@@ -142,9 +142,9 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         temp = 7 + 2 + temp_packet.dSize + 3;
         if (temp_packet.Get_num >= temp)
         {
-#if 0
             temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
-            temp = ModBusCRC16((tepm_pData + sizeof(temp_packet.Head)), temp);
+            temp = CRC16_CCITT_fast_Fun(&array[sizeof(source.Head)], temp);
+            
             if (temp_packet.End_crc == temp)
             {
                 temp_packet.Result |= 0x50; // crc successful
@@ -155,10 +155,6 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
                 //                 printf("crc is %04x \n",temp);
                 temp_packet.Run_status = -temp_packet.Run_status;
             }
-#else
-            temp_packet.Result |= 0x50; // crc successful,not crc
-            temp_packet.Run_status = 0xff;
-#endif
         }
         break;
     default:
@@ -175,7 +171,8 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
 #if 1
         // 切割数据
-        temp = 7 + sizeof(temp_packet.Head); //
+        temp = sizeof(temp_packet.Head) + sizeof(temp_packet.Versions) + sizeof(temp_packet.Type) + sizeof(temp_packet.Addr) + \
+                sizeof(temp_packet.Cmd) + sizeof(temp_packet.Cmd_sub) + sizeof(temp_packet.dSize);  //
         if (temp_packet.dSize > 0)
         {
             memcpy(array, temp_packet.p_Data + temp, temp_packet.dSize);
@@ -216,11 +213,8 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
     int retval;
     int temp;
     int getnum;
-#ifdef BUFF_MAX
-    unsigned char array[BUFF_MAX];
-#else
-    unsigned char array[300];
-#endif
+
+    unsigned char *array;
 
     if (data == NULL || ((source.p_Data == NULL) && (source.dSize != 0)))
     {
@@ -228,6 +222,7 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
     }
     else
     {
+        array = data;
         getnum = 0;
         array[getnum++] = (source.Head >> 8) & 0xff;
         array[getnum++] = source.Head & 0xff;
@@ -240,39 +235,43 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
 
         array[getnum++] = (source.dSize >> 8) & 0xff;
         array[getnum++] = source.dSize & 0xff;
+
         if (source.dSize > 0)
         {
             memcpy(&array[getnum], source.p_Data, source.dSize);
             getnum += source.dSize;
         }
         array[getnum++] = (source.Result & 0x0F);
+        
         temp = getnum - 2;
-        temp = ModBusCRC16(&array[2], temp);
-        //        source.End_crc = temp;
+        temp = CRC16_CCITT_fast_Fun(&array[sizeof(source.Head)], temp);
+
         array[getnum++] = (temp >> 8) & 0xff;
         array[getnum++] = temp & 0xff;
 
-        memcpy(data, array, getnum);
         retval = getnum;
     }
     return retval;
 }
 
 /*
- * Caven_packet crc
- * He's very time-consuming.
+ * 借助Caven_info_Split_packet_Fun，重算crc
  */
 int Caven_packet_data_crc (Caven_info_packet_Type const source)
 {
     int retval = 0;
 
     Caven_info_packet_Type temp_packet;
+#ifdef BUFF_MAX
     unsigned char array[BUFF_MAX];
+#else
+    unsigned char array[300];
+#endif
     if ((source.p_Data == NULL) && (source.dSize != 0))
     {
         return retval;
     }
-    else if(source.Result & 0x50)
+    else if(source.Result & 0x50)       // 完整数据
     {
         int temp = 0;
         temp_packet = source;
@@ -346,7 +345,7 @@ Caven_info_packet_index_Fun
 ** 将数据[data]绑定到[packet]的指针变量
 传参
 ** target ：数据源包(这个包内有指针变量)
-** data     ：要绑定的数据目标
+** data     ：要绑定的数据目标(可以给NULL)
 return   : retval
 ** retval < 0 索引错误
 ** retval = 0 索引成功
@@ -373,7 +372,7 @@ int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_
             temp_packet = *target;                  // 抽离数据
             temp_packet.p_Data = source->p_Data;    // 保留指针
             memcpy(temp_packet.p_Data,target->p_Data,target->dSize);    // 复制指针内容,内容的长度依据是[dSize]
-            *source = temp_packet;                  // copy(因为是指针，所以就直接腹值吧)
+            *source = temp_packet;                  // copy(因为是指针，所以就直接附值吧)
         }
     }
     return retval;
@@ -395,16 +394,14 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
     p_data = target->p_Data;
     if (p_data != NULL)
     {
+        Caven_info_packet_fast_clean_Fun(target);
 #ifdef BUFF_MAX
         if(target->dSize > 0 && target->dSize <= BUFF_MAX)
         {
             memset(p_data, 0, target->dSize);
         }
-#else
 #endif
     }
-    memset(target, 0, sizeof(Caven_info_packet_Type));
-    target->p_Data = p_data;
     return retval;
 }
 
@@ -416,6 +413,8 @@ int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
     int retval = 0;
     target->Result = 0;
     target->Run_status = 0;
+    target->Get_num = 0;
+    target->Comm_way = 0;
     return retval;
 }
 

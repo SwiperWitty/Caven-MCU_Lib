@@ -155,6 +155,7 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time)
     temp = API_Hourly_to_Seconds(task->Set_time);
     if (temp == 0 && task->Set_time.time_us == 0)   // time empty
     {
+        retval = 2;
         return retval;
     }
     if (task->Switch == 1)

@@ -3,12 +3,12 @@
 
 /*
     Vofa_info.h
-    CÓïÑÔ»·¾³¼´¿ÉÔËĞĞ
+    Cè¯­è¨€ç¯å¢ƒå³å¯è¿è¡Œ
     2024.1.1
 
 */
 
-#ifdef CAVEN    /* Ô¤±àÒë */
+#ifdef CAVEN    /* é¢„ç¼–è¯‘ */
 #include "Caven_Type.h"
 #else
 #include "stdint.h"

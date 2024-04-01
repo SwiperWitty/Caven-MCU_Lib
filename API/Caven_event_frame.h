@@ -7,7 +7,7 @@
 #ifndef CAVEN_EVENT_FRAME_H_
 #define CAVEN_EVENT_FRAME_H_
 
-#ifdef CAVEN    /* Ô¤±àÒë */
+#ifdef CAVEN    /* é¢„ç¼–è¯‘ */
 #include "Caven_Type.h"
 #else
 #include "stdint.h"
@@ -19,7 +19,7 @@
 #define CAVEN_EVENTS_MAX    20
 
 /*
-    ´Ë½á¹¹Ìå°üº¬Ö¸Õë±äÁ¿£¬ËùÒÔ´Ë½á¹¹ÌåĞèÒª³õÊ¼»¯ÆäÖĞµÄÖ¸Õë¡£
+    æ­¤ç»“æ„ä½“åŒ…å«æŒ‡é’ˆå˜é‡ï¼Œæ‰€ä»¥æ­¤ç»“æ„ä½“éœ€è¦åˆå§‹åŒ–å…¶ä¸­çš„æŒ‡é’ˆã€‚
 */
 typedef struct
 {

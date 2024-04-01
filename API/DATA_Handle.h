@@ -22,7 +22,8 @@ typedef struct
 
 
 int Data_Sign_atof_Handle (Sign_atof_Type *Item);
-int Data_Median_filtering_Handle (float data,float *array,float *reverse,char *run,char array_num);
+int Caven_find_string_array (char const *str,char const * target,int length);
+int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,char *run,char array_num);
 int Caven_math_approximate (int num,int num_step,int num_min,int num_max);
 
 #endif
