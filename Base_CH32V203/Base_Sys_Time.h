@@ -34,7 +34,6 @@ void SYS_Feed_Watchdog (void);
 #include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
 #endif
 
-#include "Caven_Type.h"
 
 
 
@@ -62,14 +61,14 @@ void SYS_Feed_Watchdog (void);
 //很长的时间戳（一天）
 typedef struct
 {
-    u32 SYS_Time_H; //每Frequency进1
-    u32 SYS_Time_L; // 24bit 的
+    uint32_t SYS_Time_H; //每Frequency进1
+    uint32_t SYS_Time_L; // 24bit 的
 }SYS_Time_Type;
 // 系统运行总时长 8byte
 typedef struct
 {
-    U32 SYS_Sec;
-    U32 SYS_Us;             // 这里最大 1000 000
+    uint32_t SYS_Sec;
+    uint32_t SYS_Us;             // 这里最大 1000 000
 }SYS_BaseTIME_Type;
 
 void SYS_Time_Init(int Set);

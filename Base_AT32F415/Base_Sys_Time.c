@@ -45,7 +45,7 @@ void SYS_Time_Set(SYS_BaseTIME_Type * time)
     s_Tick_cnt *= s_Frequency;
 
     temp += time->SYS_Us;
-    s_Tick_cnt += (u64)(temp * s_Frequency_us);
+    s_Tick_cnt += (uint64_t)(temp * s_Frequency_us);
 	
 	temp = (s_Tick_cnt % s_Frequency_CMP);
 	SYSTICK_NUM = s_Frequency_CMP - temp;						// 载入寄存器
@@ -100,8 +100,8 @@ void SYS_Delay_us(int n)
 {
 #ifdef Exist_SYS_TIME
     n = MIN(5000,n);
-    u32 set_Tick_cnt = n * s_Frequency_us;
-    u64 start_Tick_cnt;
+    uint32_t set_Tick_cnt = n * s_Frequency_us;
+    uint64_t start_Tick_cnt;
     s_Tick_cnt = s_SYS_Time.SYS_Time_H;
     s_Tick_cnt *= s_Frequency_CMP;
     s_Tick_cnt += LLTIMER_REG;
@@ -127,8 +127,8 @@ void SYS_Delay_ms(int n)
 {
 #ifdef Exist_SYS_TIME
     n = MIN(5000,n);
-    u32 set_Tick_cnt = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
-    u64 start_Tick_cnt;
+    uint32_t set_Tick_cnt = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
+    uint64_t start_Tick_cnt;
     s_Tick_cnt = s_SYS_Time.SYS_Time_H;
     s_Tick_cnt *= s_Frequency_CMP;
     s_Tick_cnt += LLTIMER_REG;

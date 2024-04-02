@@ -12,15 +12,15 @@
 #ifdef Base_SysTick
 static uint32_t SysTick_Config(u64 ticks)
 {
-    SysTick->CTLR = (u32)0x00;                  //关闭系统计数器STK，计数器停止计数
+    SysTick->CTLR = (uint32_t)0x00;                  //关闭系统计数器STK，计数器停止计数
 
-    SysTick->SR = (u32)0;
-    SysTick->CNT = (u64)0;
+    SysTick->SR = (uint32_t)0;
+    SysTick->CNT = (uint64_t)0;
     SysTick->CMP = ticks;
 //    NVIC_SetPriority(SysTicK_IRQn, 15);      //设置SysTick中断优先级
 //    NVIC_EnableIRQ(SysTicK_IRQn);            //使能开启Systick中断
-    SysTick->CTLR = (u32)(0X2D);            //0X2D 0x2F
-//    SysTick->CTLR |= (u32)(0x00 << 31);
+    SysTick->CTLR = (uint32_t)(0X2D);            //0X2D 0x2F
+//    SysTick->CTLR |= (uint32_t)(0x00 << 31);
     return (0);
 }
 #endif
@@ -37,7 +37,7 @@ void Sys_Time_Init (int Set)
     }
     else
 //        NVIC_SystemReset();
-        SysTick->CTLR = (u32)0x00;
+        SysTick->CTLR = (uint32_t)0x00;
     
     #else
     if(Set)

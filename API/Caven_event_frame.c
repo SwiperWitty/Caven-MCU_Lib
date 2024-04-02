@@ -68,6 +68,12 @@ int Caven_delete_event_Fun(Caven_event_Type *events,int *handle)
     return retval;
 }
 
+/*
+ * handle的低8位是任务号，高8位是EE说明这个事件被初始化了，句柄有效。
+ * (temp_events.events[temp_num] & 0x80) > 0,说明事件有绑定执行函数。
+ * (temp_events.events[temp_num] & 0x40) > 0,说明事件被触发，想结束这个事件，只能由执行函数将其 & 0x80。
+ * data只有6位有效值
+ */
 int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
 {
     int retval = 0;

@@ -14,18 +14,18 @@ static uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick�
 static uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
 static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
 
-static uint32_t SysTick_Config(u64 ticks)
+static uint32_t SysTick_Config(uint64_t ticks)
 {
     // STK_CTLR = SysTick->CTLR
-    SysTick->CTLR = (u32)0x00; // 关闭系统计数器STK，计数器停止计数
+    SysTick->CTLR = (uint32_t)0x00; // 关闭系统计数器STK，计数器停止计数
 
-    SysTick->SR = (u32)0;
-    SysTick->CNT = (u64)0;
+    SysTick->SR = (uint32_t)0;
+    SysTick->CNT = (uint64_t)0;
     SysTick->CMP = ticks;
     //    NVIC_SetPriority(SysTicK_IRQn, 15);       //设置SysTick中断优先级
     //    NVIC_EnableIRQ(SysTicK_IRQn);             //使能开启Systick中断
-    SysTick->CTLR = (u32)(0x29); // [向上计数] [0x29:8分频  0x2D:不开中断] 0x2F:开中断
-    //    SysTick->CTLR |= (u32)(0x01 << 31);       // 中断触发使能
+    SysTick->CTLR = (uint32_t)(0x29); // [向上计数] [0x29:8分频  0x2D:不开中断] 0x2F:开中断
+    //    SysTick->CTLR |= (uint32_t)(0x01 << 31);       // 中断触发使能
 
     s_Frequency = TICK_FREQUENCY;
     s_Frequency_us = s_Frequency / 1000000;
@@ -45,7 +45,7 @@ void SYS_Time_Init(int Set)
     }
     else
     {
-        SysTick->CTLR = (u32)0x00;
+        SysTick->CTLR = (uint32_t)0x00;
     }
 #endif
 }
@@ -116,7 +116,7 @@ void SYS_Delay_us(int n)
 {
 #ifdef Exist_SYS_TIME
     n = MIN(5000,n);
-    u32 set_time = n * s_Frequency_us;
+    uint32_t set_time = n * s_Frequency_us;
     s_Tick_cnt = SYSTICK_NUM;
     while (1)
     {
@@ -139,7 +139,7 @@ void SYS_Delay_ms(int n)
 {
 #ifdef Exist_SYS_TIME
     n = MIN(5000,n);
-    u32 set_time = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
+    uint32_t set_time = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
     s_Tick_cnt = SYSTICK_NUM;
     while (1)
     {
