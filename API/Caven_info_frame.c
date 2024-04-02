@@ -1,6 +1,6 @@
 #include "Caven_info_frame.h"
 
-#include "Check_CRC.h"
+#include "Examine_crc.h"
 
 /*
 Caven_info_Make_packet_Fun
@@ -143,7 +143,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         if (temp_packet.Get_num >= temp)
         {
             temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
-            temp = CRC16_CCITT_fast_Fun(&array[sizeof(source.Head)], temp);
+            temp = CRC16_CCITT_fast_Fun(&array[sizeof(temp_packet.Head)], temp);
             
             if (temp_packet.End_crc == temp)
             {

@@ -1,5 +1,5 @@
-#ifndef _Check_CRC16_H_
-#define _Check_CRC16_H_
+#ifndef _EXAMINE_CRC_H_
+#define _EXAMINE_CRC_H_
 
 
 #ifdef CAVEN

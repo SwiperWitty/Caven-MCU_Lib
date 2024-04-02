@@ -7,9 +7,9 @@
 
 /*
  * Caven_new_event_Fun
- * 1.Ê×ÏÈÄãµÃÓĞ¸öevents
- * 2.·ûºÏ½á¹¹¡¢º¯ÊıÖ¸Õë
- * 3.¾ä±ú´ø0xEExxËµÃ÷´æÔÚeven,µ«ÊÇÊÂ¼ş¼ì²âÆ÷eventsµÄ×î¸ßÎ»0x80²ÅÊÇ×î¸ßÅĞ¶Ï±ê×¼¡£
+ * 1.é¦–å…ˆä½ å¾—æœ‰ä¸ªevents
+ * 2.ç¬¦åˆç»“æ„ã€å‡½æ•°æŒ‡é’ˆ
+ * 3.å¥æŸ„å¸¦0xEExxè¯´æ˜å­˜åœ¨even,ä½†æ˜¯äº‹ä»¶æ£€æµ‹å™¨eventsçš„æœ€é«˜ä½0x80æ‰æ˜¯æœ€é«˜åˆ¤æ–­æ ‡å‡†ã€‚
  */
 int Caven_new_event_Fun(Caven_event_Type *events,D_pFun event_pFun,int *handle)
 {
@@ -29,8 +29,8 @@ int Caven_new_event_Fun(Caven_event_Type *events,D_pFun event_pFun,int *handle)
     else
     {
         temp_events.events_num ++;
-        *handle = temp_events.events_num | 0xEE00;              // ÓĞ¾ä±ú£¬ËµÃ÷ÊÂ¼ş´æÔÚ
-        temp_events.events[temp_events.events_num] = 0x80;      // ×î¸ßÎ»Îª1£¬ËµÃ÷ÊÂ¼ş´æÔÚ
+        *handle = temp_events.events_num | 0xEE00;              // æœ‰å¥æŸ„ï¼Œè¯´æ˜äº‹ä»¶å­˜åœ¨
+        temp_events.events[temp_events.events_num] = 0x80;      // æœ€é«˜ä½ä¸º1ï¼Œè¯´æ˜äº‹ä»¶å­˜åœ¨
         temp_events.events_pFun[temp_events.events_num] = event_pFun;
         memcpy(events,&temp_events,sizeof(Caven_event_Type));
     }
@@ -80,11 +80,11 @@ int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
         retval = (-1);
         return retval;
     }
-    if (handle & 0xee00)              // ÓĞ¾ä±ú£¬ËµÃ÷ÊÂ¼ş´æÔÚ
+    if (handle & 0xee00)              // æœ‰å¥æŸ„ï¼Œè¯´æ˜äº‹ä»¶å­˜åœ¨
     {
         temp_num = handle;
         temp_num &= 0xff;
-        temp_events.events[temp_num] |= ((data & 0x3f) + 0x40);     // ´¥·¢ÊÂ¼ş²¢´«µİ±äÁ¿
+        temp_events.events[temp_num] |= ((data & 0x3f) + 0x40);     // è§¦å‘äº‹ä»¶å¹¶ä¼ é€’å˜é‡
         memcpy(events,&temp_events,sizeof(Caven_event_Type));
     }
     else
@@ -97,10 +97,10 @@ int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
 
 /*
  * Caven_handle_event_Fun
- * 1.Ê¹ÓÃÇ°ĞèÒªÏÈµ÷ÓÃCaven_new_event_Fun
- * 2.Caven_handle_event_Funº¯ÊıÓ¦¸Ã·ÅÔÚ×´Ì¬»úÀïÃæÂÖ·¬µ÷ÓÃ
- * 3.eventsÀïÃæµÄevents_pFun£¬±ØĞëÎŞ×èÈû¡£
- * 4.Í¨¹ıCaven_trigger_event_Fun¼¤»î£¬data»á½«²ÎÊı¸øevents±£´æ£¬events_pFunÀïÃæĞèÒª½«dataÖÃ0£¬½áÊøµ±Ç°´¥·¢¡£
+ * 1.ä½¿ç”¨å‰éœ€è¦å…ˆè°ƒç”¨Caven_new_event_Fun
+ * 2.Caven_handle_event_Funå‡½æ•°åº”è¯¥æ”¾åœ¨çŠ¶æ€æœºé‡Œé¢è½®ç•ªè°ƒç”¨
+ * 3.eventsé‡Œé¢çš„events_pFunï¼Œå¿…é¡»æ— é˜»å¡ã€‚
+ * 4.é€šè¿‡Caven_trigger_event_Funæ¿€æ´»ï¼Œdataä¼šå°†å‚æ•°ç»™eventsä¿å­˜ï¼Œevents_pFuné‡Œé¢éœ€è¦å°†dataç½®0ï¼Œç»“æŸå½“å‰è§¦å‘ã€‚
  */
 int Caven_handle_event_Fun(Caven_event_Type *events)
 {
@@ -122,18 +122,18 @@ int Caven_handle_event_Fun(Caven_event_Type *events)
     for (int i = 0; i <= temp_num; ++i)
     {
         temp = events->events[i] & 0xff;
-        if (temp & 0x80)        /* ´æÔÚ¾ä±ú  */
+        if (temp & 0x80)        /* å­˜åœ¨å¥æŸ„  */
         {
-            if (temp & 0x40)    /* ´æÔÚ´¥·¢  */
+            if (temp & 0x40)    /* å­˜åœ¨è§¦å‘  */
             {
                 temp &= 0x3F;
                 if (events->events_pFun[i] != NULL)
                 {
-                    events->events_pFun[i](&temp);          /* Ö´ĞĞÖ¸Õëº¯Êı  */
+                    events->events_pFun[i](&temp);          /* æ‰§è¡ŒæŒ‡é’ˆå‡½æ•°  */
                 }
                 if (temp == 0)
                 {
-                    events->events[i] &= 0x80;              /* Çå³ı´¥·¢±ê¼Ç  */
+                    events->events[i] &= 0x80;              /* æ¸…é™¤è§¦å‘æ ‡è®°  */
                 }
             }
         }

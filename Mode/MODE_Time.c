@@ -8,7 +8,7 @@
 
 
 static Real_TIME_Type Real_TIME = {0};
-
+static int SYNC_TIME_Fun (void);
 
 int MODE_TIME_Init(int SET)
 {
@@ -26,7 +26,7 @@ void MODE_TIME_Set_Date_Fun(Caven_Date_Type time)
 {
 #ifdef Exist_SYS_TIME
     while (Real_TIME.SYNC_Flag);
-    Real_TIME.SYNC_Flag = 1;
+    Real_TIME.SYNC_Flag = 2;
     Real_TIME.Date = time;
     SYNC_TIME_Fun ();
 #endif
@@ -49,7 +49,11 @@ Caven_Date_Type MODE_TIME_Get_Date_Fun(void)
     while (Real_TIME.SYNC_Flag);
     Real_TIME.SYNC_Flag = 0;
     SYNC_TIME_Fun ();
+
     retval = Real_TIME.Date;
+    retval.day = retval.SYS_Day % 30;
+    retval.month = ((retval.SYS_Day / 30) % 12) + 1;
+    retval.year = retval.SYS_Day / 365;
 #endif
     return retval;
 }
@@ -61,19 +65,8 @@ Caven_Watch_Type MODE_TIME_Get_Watch_Fun(void)
     while (Real_TIME.SYNC_Flag);
     Real_TIME.SYNC_Flag = 0;
     SYNC_TIME_Fun ();
+    
     retval = Real_TIME.Watch;
-#endif
-    return retval;
-}
-
-Caven_BaseTIME_Type MODE_TIME_Get_Base_Fun(void)
-{
-    Caven_BaseTIME_Type retval = {0};
-#ifdef Exist_SYS_TIME
-    while (Real_TIME.SYNC_Flag);
-    Real_TIME.SYNC_Flag = 0;
-    SYNC_TIME_Fun ();
-    retval = Real_TIME.BaseTIME;
 #endif
     return retval;
 }
@@ -88,28 +81,47 @@ int SYNC_TIME_Fun (void)
 {
     int retval = 0;
 #ifdef Exist_SYS_TIME
+    SYS_BaseTIME_Type BaseTIME;
     int i,j,k;
-    if (Real_TIME.SYNC_Flag) 
+    if (Real_TIME.SYNC_Flag == 1) 
     {
         i = API_Hourly_to_Seconds(Real_TIME.Watch);
-        j = Real_TIME.Date.Days;
-        j *= 86400;
+        if (i == (Real_TIME.Watch.SYS_Sec % 86400))
+        {
+            i = 0;
+            j = Real_TIME.Watch.SYS_Sec;
+        }
+        else
+        {
+            Real_TIME.Watch.SYS_Sec = i;        // 更新SYS_Sec
+            j = 0;
+        }
         k = i + j;
-        Real_TIME.BaseTIME.SYS_Sec = k;
-        Real_TIME.BaseTIME.SYS_Us = Real_TIME.Watch.time_us;
+        BaseTIME.SYS_Sec = k;
+        BaseTIME.SYS_Us = Real_TIME.Watch.time_us;
 //        printf("SYNC_TIME : set i: %d,j: %d,sec：%d,us:%d \n",i,j,Real_TIME.TIME.SYS_Sec,Real_TIME.Watch.time_us);
-        SYS_Time_Set(&Real_TIME.BaseTIME);
+        SYS_Time_Set(&BaseTIME);
+    }
+    else if(Real_TIME.SYNC_Flag == 2)
+    {
+        i = Real_TIME.Date.SYS_Day * 86400;
+        j = API_Hourly_to_Seconds(Real_TIME.Watch);
+        k = i + j;
+        Real_TIME.Watch.SYS_Sec = k;        // 更新SYS_Sec
+        BaseTIME.SYS_Sec = k;
+        BaseTIME.SYS_Us = Real_TIME.Watch.time_us;
+        SYS_Time_Set(&BaseTIME);
     }
     else
     {
-        SYS_Time_Get(&Real_TIME.BaseTIME);
+        SYS_Time_Get(&BaseTIME);
 
-        i = Real_TIME.BaseTIME.SYS_Sec % 86400;
+        i = BaseTIME.SYS_Sec % 86400;
         Real_TIME.Watch = API_Seconds_to_Hourly (i);
-        Real_TIME.Watch.time_us = Real_TIME.BaseTIME.SYS_Us;
+        Real_TIME.Watch.time_us = BaseTIME.SYS_Us;
+        Real_TIME.Watch.SYS_Sec = i;
 
-        Real_TIME.Date.Days = Real_TIME.BaseTIME.SYS_Sec / 86400;
-        
+        Real_TIME.Date.SYS_Day = i / 86400;
     }
     Real_TIME.SYNC_Flag = 0;
 #else

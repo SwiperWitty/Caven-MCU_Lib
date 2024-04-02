@@ -56,30 +56,25 @@
 #define BUFF_MAX 360
 
 
-// 日期 8byte
+// 日期
 typedef struct
 {
     U16 year;
     U8 month;
     U8 day;
-    int Days;
+    U32 SYS_Day;
 }Caven_Date_Type;
 
-// 时间 8byte
+// 时间
 typedef struct
 {
     U8 hour;
     U8 minutes;
     U8 second;
     U32 time_us;            // 这里最大 1000 000
+    U32 SYS_Sec;
 }Caven_Watch_Type;
 
-// 系统运行总时长 8byte
-typedef struct
-{
-    U32 SYS_Sec;
-    U32 SYS_Us;             // 这里最大 1000 000
-}Caven_BaseTIME_Type;
 
 // 颜色 4byte
 typedef struct
@@ -105,7 +100,6 @@ typedef struct
     void *p_Data;
     char *string;
     Caven_Watch_Type Watch;
-    Caven_BaseTIME_Type BaseTIME;
 }Caven_App_Type;
 
 typedef struct

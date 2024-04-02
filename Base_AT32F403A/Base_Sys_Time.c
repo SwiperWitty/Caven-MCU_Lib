@@ -36,7 +36,7 @@ void SYS_Time_Init(int Set)
 #endif
 }
 
-void SYS_Time_Set(Caven_BaseTIME_Type * time)
+void SYS_Time_Set(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
     int temp = 0;
@@ -55,7 +55,7 @@ void SYS_Time_Set(Caven_BaseTIME_Type * time)
 #endif
 }
 
-void SYS_Time_Get(Caven_BaseTIME_Type * time)
+void SYS_Time_Get(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
     int temp = 0;

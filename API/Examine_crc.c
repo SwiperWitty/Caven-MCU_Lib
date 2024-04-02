@@ -1,4 +1,4 @@
-#include "Check_CRC.h"
+#include "Examine_crc.h"
 
 
 /******函数名:CRC16_CCITT() *********************
@@ -89,7 +89,7 @@ int CRC16_CCITT_fast_Fun(unsigned char *data, int len)
 	int temp_run = 0;
 	while (len--)
 	{
-		retval = CRC16_CCITT_Table_Byte(*data[temp_run++], retval);
+		retval = CRC16_CCITT_Table_Byte(data[temp_run++], retval);
 	}
 	return (retval & 0xffff);
 }

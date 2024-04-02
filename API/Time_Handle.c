@@ -112,40 +112,9 @@ Caven_Watch_Type API_Watch_Get_differ (Caven_Watch_Type temp_a,Caven_Watch_Type 
 }
 
 /*
- * 1.不区分大小，单纯取差值
- */
-Caven_BaseTIME_Type API_TIME_Get_differ (Caven_BaseTIME_Type temp_a,Caven_BaseTIME_Type temp_b)
-{
-    Caven_BaseTIME_Type retval = {0};
-    int i,j;
-    if (temp_b.SYS_Sec > temp_a.SYS_Sec) {
-        retval.SYS_Sec = temp_b.SYS_Sec - temp_a.SYS_Sec;
-        i = temp_a.SYS_Us;
-        j = temp_b.SYS_Us;
-    }
-    else if (temp_b.SYS_Sec == temp_a.SYS_Sec) {
-        i = MIN(temp_b.SYS_Sec,temp_a.SYS_Sec);
-        j = MAX(temp_b.SYS_Sec,temp_a.SYS_Sec);
-    }
-    else {
-        retval.SYS_Sec = temp_a.SYS_Sec - temp_b.SYS_Sec;
-        j = temp_a.SYS_Us;
-        i = temp_b.SYS_Us;
-    }
-
-    if (i > j) {
-        j += 1000000;
-        retval.SYS_Sec --;
-    }
-    retval.SYS_Us = j - i;
-
-    return retval;
-}
-
-/*
  * API:时间触发的任务（指Task标志位）
  */
-int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time)
+int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type now_time)
 {
     int retval = 0;
     int temp;
@@ -160,13 +129,13 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time)
     }
     if (task->Switch == 1)
     {
-        diff_time = API_Watch_Get_differ(task->Begin_time,time);
+        diff_time = API_Watch_Get_differ(task->Begin_time,now_time);
         temp = API_Watch_Compare (task->Set_time,diff_time);
         if (temp >= 0)
         {
             task->Flip_falg = !task->Flip_falg;
             task->Trigger_Flag = 1;
-            task->Begin_time = time;
+            task->Begin_time = now_time;
             retval = 1;
         }
         else

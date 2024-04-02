@@ -26,9 +26,9 @@ int API_Hourly_to_Seconds(Caven_Watch_Type time);
 
 Caven_Watch_Type API_Seconds_to_Hourly (int Seconds);
 Caven_Watch_Type API_Watch_Get_differ (Caven_Watch_Type temp_a,Caven_Watch_Type temp_b);
-Caven_BaseTIME_Type API_TIME_Get_differ (Caven_BaseTIME_Type temp_a,Caven_BaseTIME_Type temp_b);
+
 int API_Watch_Compare (Caven_Watch_Type temp_a,Caven_Watch_Type temp_b);
 
-int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type time);
+int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type now_time);
 
 #endif

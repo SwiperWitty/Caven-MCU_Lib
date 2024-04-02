@@ -27,7 +27,6 @@ typedef struct
 {
     Caven_Date_Type Date;
     Caven_Watch_Type Watch;
-    Caven_BaseTIME_Type BaseTIME;
     volatile int SYNC_Flag;
 }Real_TIME_Type;
 
@@ -40,9 +39,6 @@ typedef struct
 
     Caven_Date_Type (*Get_Date_pFun)(void);
     Caven_Watch_Type (*Get_Watch_pFun)(void);
-    Caven_BaseTIME_Type (*Get_Base_pFun)(void);
-
-    int (*SYNC_TIME_pFun)(void);
 
     void (*Delay_Us)(int num);
     void (*Delay_Ms)(int num);
@@ -57,9 +53,6 @@ void MODE_TIME_Set_Watch_Fun(Caven_Watch_Type time);
 
 Caven_Date_Type MODE_TIME_Get_Date_Fun(void);
 Caven_Watch_Type MODE_TIME_Get_Watch_Fun(void);
-Caven_BaseTIME_Type MODE_TIME_Get_Base_Fun(void);
-
-int SYNC_TIME_Fun(void);
 
 void MODE_Delay_Us(int num);
 void MODE_Delay_Ms(int num);

@@ -1,11 +1,10 @@
 #ifndef _API__H_
 #define _API__H_
 
-#include "keyboard.h"
 
 /* 数据处理 */
 #include "DATA_Handle.h"
-#include "Check_CRC.h"
+#include "Examine_crc.h"
 #include "Caven_info_frame.h"
 
 /* 时间处理 */

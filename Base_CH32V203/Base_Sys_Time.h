@@ -8,8 +8,8 @@
 为了方便上层统一调用，本文件需要提供以下函数
 void SYS_Time_Init (int Set);
 
-void SYS_Set_Tick (Caven_BaseTIME_Type * time);
-void SYS_Get_Tick (Caven_BaseTIME_Type * time);
+void SYS_Set_Tick (SYS_BaseTIME_Type * time);
+void SYS_Get_Tick (SYS_BaseTIME_Type * time);
 
 // Delay
 void SYS_Base_Delay (int time,int Speed);
@@ -65,12 +65,18 @@ typedef struct
     u32 SYS_Time_H; //每Frequency进1
     u32 SYS_Time_L; // 24bit 的
 }SYS_Time_Type;
+// 系统运行总时长 8byte
+typedef struct
+{
+    U32 SYS_Sec;
+    U32 SYS_Us;             // 这里最大 1000 000
+}SYS_BaseTIME_Type;
 
 void SYS_Time_Init(int Set);
 
 //
-void SYS_Time_Set(Caven_BaseTIME_Type * time);
-void SYS_Time_Get(Caven_BaseTIME_Type * time);
+void SYS_Time_Set(SYS_BaseTIME_Type * time);
+void SYS_Time_Get(SYS_BaseTIME_Type * time);
 
 // Delay
 void SYS_Base_Delay(int time, int speed);
