@@ -1,38 +1,9 @@
 #include "Examine_crc.h"
 
 
-/******函数名:CRC16_CCITT() *********************
- *
- *   功能描述:
- *       这个函数为系统的CRC16的计算函数，将给定的CRC值和要
- *       计算的数据做CRC计算并将计算结果赋予前面给定的CRC值。
- *       计算公式：
- *       	 CRC_16= x^16 + x^12 + x^5 + 1
- *   返回值:
- *       函数新计算的CRC值
- */
-unsigned short CRC16_CCITT(unsigned char *pchMsg, unsigned short wDataLen)
-{
-	unsigned char i, chChar;
-	unsigned short retval = 0;
-	while (wDataLen--)
-	{
-		chChar = *pchMsg++;
-		retval ^= (((unsigned short)chChar) << 8);
-		for (i = 0; i < 8; i++)
-		{
-			if (retval & 0x8000)
-				retval = (retval << 1) ^ CRC_16_CCITT;
-			else
-				retval <<= 1;
-		}
-	}
-
-	return retval;
-}
 
 /*CRC校验表*/
-static const uint16_t CRC_CCITT_table[256] = {
+static const uint16_t CRC_XMODEM_table[256] = {
 	0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7, 0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
 	0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6, 0x9339, 0x8318, 0xb37b, 0xa35a, 0xd3bd, 0xc39c, 0xf3ff, 0xe3de,
 	0x2462, 0x3443, 0x0420, 0x1401, 0x64e6, 0x74c7, 0x44a4, 0x5485, 0xa56a, 0xb54b, 0x8528, 0x9509, 0xe5ee, 0xf5cf, 0xc5ac, 0xd58d,
@@ -49,7 +20,8 @@ static const uint16_t CRC_CCITT_table[256] = {
 	0xcb7d, 0xdb5c, 0xeb3f, 0xfb1e, 0x8bf9, 0x9bd8, 0xabbb, 0xbb9a, 0x4a75, 0x5a54, 0x6a37, 0x7a16, 0x0af1, 0x1ad0, 0x2ab3, 0x3a92,
 	0xfd2e, 0xed0f, 0xdd6c, 0xcd4d, 0xbdaa, 0xad8b, 0x9de8, 0x8dc9, 0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83, 0x1ce0, 0x0cc1,
 	0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8, 0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0};
-/******函数名:CRC16_CCITT_CalateByte() *********************
+
+/******函数名:CRC16_XMODEM_Table_Byte() *********************
  *
  *   功能描述:
  *       这个函数为系统的CRC16的计算函数，将给定的CRC值和要
@@ -57,19 +29,20 @@ static const uint16_t CRC_CCITT_table[256] = {
  *       计算公式：
  *       	 CRC_16= x^16 + x^12 + x^5 + 1
  *				查表
+ *          多项式:1021,初始:0000,结果异或:0000,高字节在前。
  *   调用参数:
- *       CRC_byte       要计算的数据
- *		last_CRC_value 上次计算的CRC值
+ *       CheckByte       要计算的数据
+ *		LastCRC 上次计算的CRC值
  *   返回值:
  *       函数新计算的CRC值
  *   函数代码:
  */
-unsigned short CRC16_CCITT_Table_Byte(unsigned char CheckByte, unsigned short LastCRC)
+unsigned short CRC16_XMODEM_Table_Byte(unsigned char CheckByte, unsigned short LastCRC)
 {
-	return (LastCRC << 8) ^ CRC_CCITT_table[(LastCRC >> 8) ^ CheckByte];
+	return (LastCRC << 8) ^ CRC_XMODEM_table[(LastCRC >> 8) ^ CheckByte];
 }
 
-/******函数名:CRC16_CalculateBuf() *********************
+/******函数名:CRC16_XMODEM_fast_Fun() *********************
  *
  *   功能描述:
  *       这个函数为系统的CRC16的计算函数，计算指定地址和个数
@@ -83,13 +56,13 @@ unsigned short CRC16_CCITT_Table_Byte(unsigned char CheckByte, unsigned short La
  *   返回值:
  *       函数计算的CRC值
  */
-int CRC16_CCITT_fast_Fun(unsigned char *data, int len)
+int CRC16_XMODEM_Fast_Fun(unsigned char *data, int len)
 {
 	int retval = 0;
 	int temp_run = 0;
 	while (len--)
 	{
-		retval = CRC16_CCITT_Table_Byte(data[temp_run++], retval);
+		retval = CRC16_XMODEM_Table_Byte(data[temp_run++], retval);
 	}
 	return (retval & 0xffff);
 }

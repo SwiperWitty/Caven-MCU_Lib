@@ -14,6 +14,6 @@
 #define CRC_16_CCITT            0x1021
 
 int ModBus_CRC16(unsigned char *data, int len);
-int CRC16_CCITT_fast_Fun(unsigned char *data, int len);
+int CRC16_XMODEM_Fast_Fun(unsigned char *data, int len);
 
 #endif
