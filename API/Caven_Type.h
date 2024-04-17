@@ -97,8 +97,8 @@ typedef struct
     char layer;
     char cursor;
     char str_switch;
+	char *string;
     void *p_Data;
-    char *string;
     Caven_Watch_Type Watch;
 }Caven_App_Type;
 

@@ -130,7 +130,7 @@ int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,c
 				max_sort = i;
 			}
 		}
-		for(int i = 0;i < array_num;i++)
+		for(int i = array_num - 1;i > 0;i--)
 		{
 			temp_data_f = MIN(array[i],array[min_sort]);
 			if(temp_data_f == array[i])
