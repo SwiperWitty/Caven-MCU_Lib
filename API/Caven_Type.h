@@ -56,7 +56,9 @@
 #define BUFF_MAX 360
 
 
-// 日期
+/*
+	SYS_Day 是系统总天数 
+*/
 typedef struct
 {
     U16 year;
@@ -65,7 +67,9 @@ typedef struct
     U32 SYS_Day;
 }Caven_Date_Type;
 
-// 时间
+/*
+	SYS_Sec 组合 time_us就是系统主时钟 
+*/
 typedef struct
 {
     U8 hour;
@@ -86,11 +90,26 @@ typedef struct
 
 
 // Function
-
+/*
+	无传参函数指针
+*/
 typedef void (*V_pFun) (void);
+/*
+	有传参函数指针
+*/
 typedef void (*D_pFun) (void *data);
+/*
+	带数量传数据函数指针
+*/
 typedef void (*Send_pFun) (U8 *data,int length);
 
+/*
+	这个是给APP做的管理结构体
+1)app_ID 任务ID;layer当前的app的界面;cursor当前界面的光标坐落的选项
+2)str_switch 是否需要更新str;string的主体,是初始化时提供的内存。
+3)p_Data 绑定一个地址，地址内容是需要传给当前APP的数据
+4)Watch 给app传递系统时间
+*/
 typedef struct
 {
     int app_ID;
@@ -102,6 +121,11 @@ typedef struct
     Caven_Watch_Type Watch;
 }Caven_App_Type;
 
+/*
+	x,y 是输入量
+	botton 是按键量
+	value 是其他数据输入 
+*/
 typedef struct
 {
     int Control_x;
