@@ -1,5 +1,9 @@
 #ifndef _SYS_TIME_H__
 #define _SYS_TIME_H__
+#if __cplusplus
+extern "C"
+{
+#endif
 /*
  *
 本文件属于MCU专属文件，每个MCU不同，这里的内容就会不同 ———— 需要系统提供时钟
@@ -80,5 +84,8 @@ void SYS_Delay_ms(int n);
 //dog
 void SYS_IWDG_Configuration(void);
 void SYS_Feed_Watchdog(void);
+#if __cplusplus
+}
+#endif
 
 #endif
