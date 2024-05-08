@@ -181,3 +181,10 @@ int Caven_math_approximate (int num,int num_step,int num_min,int num_max)
     return retval;
 }
 
+int Caven_math_approximate_float(float num)
+{
+	int retval = 0;
+	retval = num + 0.5;
+	return retval;
+}
+
