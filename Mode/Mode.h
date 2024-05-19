@@ -9,8 +9,11 @@
 #endif
 
 #ifdef Exist_LCD
+	#if Exist_LCD == OPEN_0010
+	#include "MODE_LCD_1_28.h"
+	#else
     #include "MODE_LCD.h"            //显示输出
-//    #include "MODE_LCD_1_28.h"
+	#endif
 #endif
 #ifdef Exist_OLED
     #include "OLED.h"               //显示输出

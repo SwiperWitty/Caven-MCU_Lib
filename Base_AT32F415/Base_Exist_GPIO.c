@@ -37,10 +37,20 @@ void User_GPIO_config(int gpiox,int pin,int set)
 	switch (gpiox)
     {
     case 1:
+		if (pin == 15)		// swd 不要用
+		{
+			crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+			gpio_pin_remap_config(SWJTAG_GMUX_010,TRUE);                //禁用Jtag，但是保留SWD
+		}
         value = CRM_GPIOA_PERIPH_CLOCK;
         gpio_x = GPIOA;
         break;
     case 2:
+		if (pin == 3 || pin == 4)
+		{
+			crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+			gpio_pin_remap_config(SWJTAG_GMUX_010,TRUE);                //禁用Jtag，但是保留SWD
+		}
         value = CRM_GPIOB_PERIPH_CLOCK;
         gpio_x = GPIOB;
         break;
