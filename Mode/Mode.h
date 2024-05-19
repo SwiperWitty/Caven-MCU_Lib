@@ -9,11 +9,11 @@
 #endif
 
 #ifdef Exist_LCD
-//    #include "MODE_LCD.h"            //显示输出
-    #include "MODE_LCD_1_28.h"
+    #include "MODE_LCD.h"            //显示输出
+//    #include "MODE_LCD_1_28.h"
 #endif
 #ifdef Exist_OLED
-    #include "OLED.h"            	//显示输出
+    #include "OLED.h"               //显示输出
 #endif
 
 #ifdef Exist_BZZ
@@ -32,7 +32,7 @@
 #endif
 
 #ifdef Exist_HC595
-    #include "HC595.h"			//驱动输出
+    #include "HC595.h"          //驱动输出
 #endif
 #ifdef Exist_HC138
     #include "HC138.h"
@@ -45,7 +45,7 @@
 #ifdef Exist_Voice
     #include "MODE_MP3.h"
 #endif
-#ifdef Exist_Steering_Engine    		//动力输出
+#ifdef Exist_Steering_Engine            //动力输出
     #include "Steering_engine.h"
 #endif
 #ifdef Exist_Motor
@@ -57,7 +57,7 @@
 #endif
 
 #ifdef Exist_FindLine
-    #include "Tracing.h"		//外部需要模块才能输入的条件
+    #include "Tracing.h"        //外部需要模块才能输入的条件
 #endif
 
 #ifdef Exist_Ultrasonic
@@ -88,65 +88,65 @@ struct _Mode_Init
 {
     char empty;
 #ifdef Exist_LCD
-	int (*LCD)(int SET);
+    int (*LCD)(int SET);
     int LCD_Init_State;
 #endif
 #ifdef Exist_SYS_TIME
-	int (*TIME)(int SET);
+    int (*TIME)(int SET);
     int TIME_Init_State;
 #endif
 
 #ifdef Exist_UART
-	int (*UART)(char Channel,int Baud,int SET);
+    int (*UART)(char Channel,int Baud,int SET);
     int UART_Init_State;
 #endif
 #ifdef Exist_USB
-	int (*USB)(int SET);
+    int (*USB)(int SET);
     int USB_Init_State;
 #endif
     
 #ifdef Exist_LED
-	void (*LED)(int SET);
+    void (*LED)(int SET);
     int LED_Init_State;
 #endif
 #ifdef Exist_BZZ
-	void (*BZZ)(int SET);
+    void (*BZZ)(int SET);
     int BZZ_Init_State;
 #endif
 #ifdef Exist_HC595
-	void (*HC_595)(int SET);
+    void (*HC_595)(int SET);
     int HC_595_Init_State;
 #endif
 #ifdef Exist_HC138
-	void (*HC_138)(int SET);
+    void (*HC_138)(int SET);
     int HC_138_Init_State;
 #endif
 
 #ifdef Exist_DS18B20
-	int (*DS18B20)(int SET);
+    int (*DS18B20)(int SET);
     int DS18B20_Init_State;
 #endif
 
 #ifdef Exist_BUTTON
-	void (*Button)(char Channel,int SET);
+    void (*Button)(char Channel,int SET);
     int Button_Init_State;
 #endif
 #ifdef Exist_Ultrasonic
-	int (*Ultrasonic)(int SET);
+    int (*Ultrasonic)(int SET);
     int Ultrasonic_Init_State;
 #endif
 
 #ifdef Exist_Voice
-	int (*Voice) (int Set);
+    int (*Voice) (int Set);
     int Voice_Init_State;
 #endif
 #ifdef Exist_Steering_Engine
-	int (*Steering_Engine) (int Set);
+    int (*Steering_Engine) (int Set);
     int Steering_Engine_Init_State;
 #endif
 
 #ifdef Exist_ADC
-	int (*User_ADC) (int Set);
+    int (*User_ADC) (int Set);
     int User_ADC_Init_State;
 #endif
 
@@ -178,27 +178,27 @@ struct _Mode_Use
     MODE_HC595_Way HC595;
 #endif
 #ifdef Exist_HC138
-	MODE_HC138_Way HC138;
+    MODE_HC138_Way HC138;
 #endif
 #ifdef Exist_DS18B20
-	MODE_DS18B20_Way DS18B20;
+    MODE_DS18B20_Way DS18B20;
 #endif
 #ifdef Exist_BUTTON
     MODE_Button_Way Button;
 #endif
 #ifdef Exist_Ultrasonic
-	MODE_Ultrasonic_Way Ultrasonic;
+    MODE_Ultrasonic_Way Ultrasonic;
 #endif
 
 #ifdef Exist_Voice
-	MODE_MP3_Way MP3;
+    MODE_MP3_Way MP3;
 #endif
 #ifdef Exist_Steering_Engine
-	MODE_Steering_Engine_Way Steering_Engine;
+    MODE_Steering_Engine_Way Steering_Engine;
 #endif
 
 #ifdef Exist_ADC
-	MODE_USER_ADC_Way USER_ADC;
+    MODE_USER_ADC_Way USER_ADC;
 #endif
 };
 

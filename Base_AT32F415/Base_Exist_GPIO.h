@@ -20,30 +20,10 @@
                         C(Lib)->Caven->API->
 */
 
-/*
-        本文件在上述关系图中属于 【GPIO_Init】
-         这里存放的是【只使用GPIO外设】功能的初始化（KEY、LED、BZZ、超声波等）。
-         其他功能的初始化（例如UART、IIC），除了先初始化【GPIO外设】还要【功能外设】，这种功能的初始化GPIO并不在本文件范围内。
-         IIC有软件版本和硬件版本，所以它的GPIO跟本文件无关。
-         但是LCD的驱动由SPI协议和DC（IO）接口组成，那么这个IO接口由本文件提供。
-
-                                                                     ————202207.14
- */
 
 #define READ_Config		0
 #define WRITE_Config	1
 
-//  User io
-#define PD_CGF_A_L() GPIOD->IO_L_REG = GPIO_Pin_2
-#define PD_CGF_A_H() GPIOD->IO_H_REG = GPIO_Pin_2
-#define PD_CGF_B_L() GPIOC->IO_L_REG = GPIO_Pin_12
-#define PD_CGF_B_H() GPIOC->IO_H_REG = GPIO_Pin_12
-
-#define DC_5V_ON()	 GPIOC->IO_H_REG = GPIO_Pin_0
-#define DC_5V_OFF()  GPIOC->IO_L_REG = GPIO_Pin_0
-#define DC_OUT_ON()  GPIOC->IO_H_REG = GPIO_Pin_1
-#define DC_OUT_OFF() GPIOC->IO_L_REG = GPIO_Pin_1
-#define YG_KEY_STATE()  gpio_input_data_bit_read(GPIOC,GPIO_Pin_3)
 //---User MODE---
 
 #ifdef Exist_LCD
@@ -146,8 +126,10 @@
 void HC138_GPIO_Init(int Set);
 void HC595_GPIO_Init(int Set);
 
-
-void User_GPIO_Init(int Set);	//!!!!
+/*  Init-Function    */
+void User_GPIO_config(int gpiox,int pin,int set);
+void User_GPIO_set(int gpiox,int pin,int set);
+char User_GPIO_get(int gpiox,int pin);
 
 /*  other    */
 void DS18B20_IO_Config(int Set);
