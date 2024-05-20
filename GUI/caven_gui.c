@@ -27,7 +27,7 @@ int Caven_GUI_Draw_Circle(U16 x0, U16 y0, U16 radius, char wide, char percent, U
     U16 show_x, show_y;
     U16 x_point = 0;
 
-    U16 middle_point = 0, middle_maxpointx, middle_maxpointy;
+    U16 middle_point = 0, middle_maxpointx = 0, middle_maxpointy = 0;
     U16 Outside_sin_max, Outside_cos_max;
 
     float f_temp_percent;
