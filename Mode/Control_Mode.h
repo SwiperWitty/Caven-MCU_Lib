@@ -4,7 +4,6 @@
 #include "Base.h"
 
 /*
-        【MODE】      ————C语言环境即可运行
 
 
 

@@ -6,7 +6,7 @@
 /*
 	// 30min  set 60max
 	// 1-L  15min read (60min next)
-  本文件只提供方法-WAY  
+
 */
 
 typedef struct

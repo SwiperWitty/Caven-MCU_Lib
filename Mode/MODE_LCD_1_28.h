@@ -5,24 +5,24 @@
 #include "Caven_Type.h"
 
 /*
-    GC9A01Ğ¾Æ¬£¬Ô²ÆÁ
+    GC9A01èŠ¯ç‰‡ï¼Œåœ†å±
     
 */
 
-#define USE_HORIZONTAL 0 // ÉèÖÃÄ¬ÈÏºáÆÁ»òÕßÊúÆÁÏÔÊ¾ 0»ò1ÎªÊúÆÁ 2»ò3ÎªºáÆÁ
+#define USE_HORIZONTAL 0 // è®¾ç½®é»˜è®¤æ¨ªå±æˆ–è€…ç«–å±æ˜¾ç¤º 0æˆ–1ä¸ºç«–å± 2æˆ–3ä¸ºæ¨ªå±
 #define LCD_W 240        // X MAX 240
 #define LCD_H 240        // Y MAX 240
 
 #ifndef LCD_CMD
-#define LCD_CMD 0	// Ğ´ÃüÁî
-#define LCD_DATA 1	// Ğ´Êı¾İ
+#define LCD_CMD 0	// å†™å‘½ä»¤
+#define LCD_DATA 1	// å†™æ•°æ®
 #endif
 
-extern U16  LCD_Back_Color; // ±³¾°É«
-extern U16  LCD_Word_Color; // ×ÖÌåÉ«
-extern U8   LCD_Horizontal; // ÉèÖÃºáÆÁ»òÕßÊúÆÁ
+extern U16  LCD_Back_Color; // èƒŒæ™¯è‰²
+extern U16  LCD_Word_Color; // å­—ä½“è‰²
+extern U8   LCD_Horizontal; // è®¾ç½®æ¨ªå±æˆ–è€…ç«–å±
 
-//»­±ÊÑÕÉ«
+//ç”»ç¬”é¢œè‰²
 #define LCD_WHITE            0xFFFF
 #define LCD_BLACK            0x0000
 #define LCD_BLUE             0x001F
@@ -34,46 +34,46 @@ extern U8   LCD_Horizontal; // ÉèÖÃºáÆÁ»òÕßÊúÆÁ
 #define LCD_GREEN            0x07E0
 #define LCD_CYAN             0x7FFF
 #define LCD_YELLOW           0xFFE0
-#define LCD_BROWN            0XBC40 //×ØÉ«
-#define LCD_BRRED            0XFC07 //×ØºìÉ«
-#define LCD_GRAY             0X8430 //»ÒÉ«
-#define LCD_DARKBLUE         0X01CF //ÉîÀ¶É«
-#define LCD_LIGHTBLUE        0X7D7C //Ç³À¶É«
-#define LCD_GRAYBLUE         0X5458 //»ÒÀ¶É«
-#define LCD_LIGHTGREEN       0X841F //Ç³ÂÌÉ«
-#define LCD_LGRAY            0XC618 //Ç³»ÒÉ«(PANNEL),´°Ìå±³¾°É«
-#define LCD_LGRAYBLUE        0XA651 //Ç³»ÒÀ¶É«(ÖĞ¼ä²ãÑÕÉ«)
-#define LCD_LBBLUE           0X2B12 //Ç³×ØÀ¶É«(Ñ¡ÔñÌõÄ¿µÄ·´É«)
+#define LCD_BROWN            0XBC40 //æ£•è‰²
+#define LCD_BRRED            0XFC07 //æ£•çº¢è‰²
+#define LCD_GRAY             0X8430 //ç°è‰²
+#define LCD_DARKBLUE         0X01CF //æ·±è“è‰²
+#define LCD_LIGHTBLUE        0X7D7C //æµ…è“è‰²
+#define LCD_GRAYBLUE         0X5458 //ç°è“è‰²
+#define LCD_LIGHTGREEN       0X841F //æµ…ç»¿è‰²
+#define LCD_LGRAY            0XC618 //æµ…ç°è‰²(PANNEL),çª—ä½“èƒŒæ™¯è‰²
+#define LCD_LGRAYBLUE        0XA651 //æµ…ç°è“è‰²(ä¸­é—´å±‚é¢œè‰²)
+#define LCD_LBBLUE           0X2B12 //æµ…æ£•è“è‰²(é€‰æ‹©æ¡ç›®çš„åè‰²)
 
 typedef struct
 {
-    void (*Fill_pFun)(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //Ö¸¶¨ÇøÓòÌî³äÑÕÉ«
+    void (*Fill_pFun)(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //æŒ‡å®šåŒºåŸŸå¡«å……é¢œè‰²
 
-    void (*Draw_Point_pFun)(U16 x, U16 y, U16 color);                       //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»¸öµã
-    void (*Draw_Line_pFun)(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);      //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»ÌõÏß
-    void (*Draw_Circle_pFun)(U16 x0, U16 y0, char r, U16 color);            //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»¸öÔ²
-    void (*Draw_Rectangle_pFun)(U16 x1, U16 y1, U16 x2, U16 y2, U16 color); //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»¸ö¾ØĞÎ
+    void (*Draw_Point_pFun)(U16 x, U16 y, U16 color);                       //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€ä¸ªç‚¹
+    void (*Draw_Line_pFun)(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);      //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€æ¡çº¿
+    void (*Draw_Circle_pFun)(U16 x0, U16 y0, char r, U16 color);            //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€ä¸ªåœ†
+    void (*Draw_Rectangle_pFun)(U16 x1, U16 y1, U16 x2, U16 y2, U16 color); //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€ä¸ªçŸ©å½¢
 
-    void (*Show_String_pFun)(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //ÏÔÊ¾×Ö·û´®
-    void (*Show_Chinese_pFun)(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //ÏÔÊ¾ºº×Ö´®
-    void (*Show_Picture_pFun)(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //ÏÔÊ¾Í¼Æ¬
+    void (*Show_String_pFun)(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //æ˜¾ç¤ºå­—ç¬¦ä¸²
+    void (*Show_Chinese_pFun)(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //æ˜¾ç¤ºæ±‰å­—ä¸²
+    void (*Show_Picture_pFun)(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //æ˜¾ç¤ºå›¾ç‰‡
 
     int (*Set_Direction_pFun)(char set);
 }MODE_LCD_Way;
 
-void LCD_Fill_Fun (U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //Ö¸¶¨ÇøÓòÌî³äÑÕÉ«
-void LCD_Draw_Point(U16 x, U16 y, U16 color);                         //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»¸öµã
-void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);        //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»ÌõÏß
-void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color);              //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»¸öÔ²
-void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);   //ÔÚÖ¸¶¨Î»ÖÃ»­Ò»¸ö¾ØĞÎ
+void LCD_Fill_Fun (U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //æŒ‡å®šåŒºåŸŸå¡«å……é¢œè‰²
+void LCD_Draw_Point(U16 x, U16 y, U16 color);                         //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€ä¸ªç‚¹
+void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);        //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€æ¡çº¿
+void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color);              //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€ä¸ªåœ†
+void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);   //åœ¨æŒ‡å®šä½ç½®ç”»ä¸€ä¸ªçŸ©å½¢
 
-void LCD_Show_String(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //ÏÔÊ¾×Ö·û´®
-void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //ÏÔÊ¾ºº×Ö´®
-void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //ÏÔÊ¾Í¼Æ¬
+void LCD_Show_String(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //æ˜¾ç¤ºå­—ç¬¦ä¸²
+void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //æ˜¾ç¤ºæ±‰å­—ä¸²
+void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //æ˜¾ç¤ºå›¾ç‰‡
 
 int LCD_Set_Horizontal(char set);
 
-int MODE_LCD_Init(int Sse); // LCD³õÊ¼»¯
+int MODE_LCD_Init(int Sse); // LCDåˆå§‹åŒ–
 
 
 #endif
