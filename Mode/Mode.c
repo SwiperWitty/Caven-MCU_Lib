@@ -63,7 +63,7 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
 #ifdef Exist_USB
     Mode_Use.USB_HID.Keyboard_Send_Data = USB_Keyboard_Send_Data;
     Mode_Use.USB_HID.Keyboard_Send_String = USB_Keyboard_Send_String;
-    Mode_Use.USB_HID.Custom_Send = USB_Buffer_send;
+    Mode_Use.USB_HID.Custom_Send = USB_Buffer_Send;
     Mode_Use.USB_HID.Custom_Receive = USB_Buffer_Receive;
 #endif
 
@@ -102,7 +102,7 @@ void Mode_Index(void)
     Mode_Init.UART = MODE_UART_Init;
 #endif
 #ifdef Exist_USB
-    Mode_Init.USB = MODE_USB_Init;
+    Mode_Init.USB = USB_User_init;      // 来自Base
 #endif
     
 #ifdef Exist_LED

@@ -54,8 +54,20 @@ void USB_LP_CAN1_RX0_IRQHandler(void)
  */
 void Set_USBConfig( )
 {
-	RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_Div3);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);	 		 
+    if (SystemCoreClock == 48000000) {
+        RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_Div1);
+    }
+    else if(SystemCoreClock == 96000000) {
+        RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_Div2);
+    }
+    else if(SystemCoreClock == 144000000) {
+        RCC_USBCLKConfig(RCC_USBCLKSource_PLLCLK_Div3);
+    }
+    else {
+        return;
+    }
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USB, ENABLE);
 }
 
 /*******************************************************************************
@@ -67,7 +79,8 @@ void Set_USBConfig( )
  */
 void Enter_LowPowerMode(void)
 {  
- 	// printf("usb enter low power mode\r\n");	//如果系统不初始化串口，调用这个就会USB无法识别！
+ 	// printf("usb enter low power mode\r\n");
+    // printf("usb down\n");
 	bDeviceState=SUSPENDED;
 } 
 
@@ -81,7 +94,8 @@ void Enter_LowPowerMode(void)
 void Leave_LowPowerMode(void)
 {
 	DEVICE_INFO *pInfo=&Device_Info;
-	// printf("leave low power mode\r\n"); 
+	// printf("leave low power mode\r\n");
+    // printf("usb open\n");
 	if (pInfo->Current_Configuration!=0)bDeviceState=CONFIGURED; 
 	else bDeviceState = ATTACHED; 
 } 
@@ -133,7 +147,7 @@ void USB_Port_Set(FunctionalState NewState, FunctionalState Pin_In_IPU)
 	if(NewState) {
 		_SetCNTR(_GetCNTR()&(~(1<<1)));
 		GPIOA->CFGHR&=0XFFF00FFF;
-		GPIOA->OUTDR&=~(3<<11);	//PA11/12=0
+		GPIOA->OUTDR&=~(3<<11);	//PA11/12=0 GPIO_Pin_11 GPIO_Pin_12
 		GPIOA->CFGHR|=0X00044000; //float
 	}
 	else

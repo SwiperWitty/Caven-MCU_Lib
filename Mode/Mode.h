@@ -30,10 +30,6 @@
     #include "MODE_UART.h"
 #endif
 
-#ifdef Exist_USB
-#include "USB_User.h"
-#endif
-
 #ifdef Exist_HC595
     #include "HC595.h"          //驱动输出
 #endif
@@ -166,7 +162,7 @@ struct _Mode_Use
     MODE_UART_Way UART;
 #endif
 #ifdef Exist_USB
-    MODE_USB_HID_Way USB_HID;
+    MODE_USB_Way USB_HID;
 #endif 
 #ifdef Exist_LCD
     MODE_LCD_Way LCD;

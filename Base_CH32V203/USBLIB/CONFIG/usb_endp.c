@@ -10,7 +10,7 @@
 #include "usb_lib.h"
 #include "usb_desc.h"
 #include "usb_mem.h"
-#include "hw_config.h"      //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ caven
+#include "hw_config.h"      // 
 #include "usb_istr.h"
 #include "usb_pwr.h"
 
@@ -21,8 +21,8 @@ uint8_t HIDKey[ENDP1_IN_SIZE] = {0};		  // dd-dd
 uint8_t HIDTxBuffer[ENDP2_IN_SIZE] = {0};
 uint8_t HIDRxBuffer[ENDP2_OUT_SIZE] = {0};
 
-unsigned char HID_RX_Data[100];
-unsigned char HID_Data_Buff[1030];
+int HID_rx_run = 0;
+unsigned char HID_Data_Buff[1024];      // ×Ü»ñÈ¡Êý¾Ý[0]H + [1]L
 
 volatile u8 Endp1Busy = FALSE;            // dd-dd
 volatile u8 Endp2Busy = FALSE;
@@ -60,15 +60,19 @@ void EP2_OUT_Callback(void)                   // dd-dd
 {
     uint8_t USB_RX_LEN;
     USB_RX_LEN = USB_SIL_Read(EP2_OUT, HIDRxBuffer);
-
 //    printf("EP1_OUT:\n");
-    memcpy(HID_RX_Data,&HIDRxBuffer,USB_RX_LEN);  //ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ buffï¿½ï¿½      //  dd-dd
 
-//    for (int i = 0; i < USB_RX_LEN; i++)
-//    {
-//        printf("%02x ",HIDRxBuffer[i]);
-//    }
-//    printf("num: %d\n",(int)USB_RX_LEN);
+    HID_rx_run = HID_Data_Buff[0];
+    HID_rx_run <<= 8;
+    HID_rx_run += HID_Data_Buff[1];
+    if ((HID_rx_run + USB_RX_LEN) < (sizeof(HID_Data_Buff) - 2))
+    {
+        memcpy(&HID_Data_Buff[HID_rx_run + 2],HIDRxBuffer,USB_RX_LEN);  // //  dd-dd
+        HID_rx_run += USB_RX_LEN;
+        HID_Data_Buff[0] = (HID_rx_run >> 8) & 0xff;
+        HID_Data_Buff[1] = (HID_rx_run) & 0xff;
+    }
+
     SetEPRxValid(ENDP2);
 }
 
