@@ -24,7 +24,7 @@
 #endif
 
 #ifdef Exist_USB
-#include "USB_User.h" 
+#include "Base_USB.h"
 #endif
 
 #ifdef Exist_SPI
