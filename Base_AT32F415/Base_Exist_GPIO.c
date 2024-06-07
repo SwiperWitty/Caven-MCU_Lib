@@ -12,7 +12,7 @@ void User_GPIO_config(int gpiox,int pin,int set)
     gpio_init_type gpio_init_struct;
     crm_periph_clock_type value;
     gpio_type *gpio_x;
-    int temp_num = 0x01;
+    uint16_t temp_num = 0x01;
     gpio_default_para_init(&gpio_init_struct);
 
     if (set)
@@ -79,7 +79,7 @@ void User_GPIO_set(int gpiox,int pin,int set)
 {
     // crm_periph_clock_type value;
     gpio_type *gpio_x;
-    int temp_num = 0x01;
+    uint16_t temp_num = 0x01;
 
 	switch (gpiox)
     {
@@ -129,7 +129,7 @@ char User_GPIO_get(int gpiox,int pin)
 {
     // crm_periph_clock_type value;
     gpio_type *gpio_x;
-    int temp_num = 0x01;
+    uint16_t temp_num = 0x01;
 	char retval = 0;
 	switch (gpiox)
     {

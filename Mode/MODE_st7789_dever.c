@@ -3,13 +3,17 @@
 static uint8_t LCD_Horizontal = 0;
 static char LCD_Target_Model = 0;
 
-//#define Exist_LCD
+#define Exist_LCD
 
 #ifdef Exist_LCD
 void st7789_dever_gpio_init(int set)
 {
     User_GPIO_config(1, 10, 1); // PA10 out DC
     User_GPIO_config(2, 0, 1);  // PB0  out RES
+	// User_GPIO_config(2, 1, 1);  // PB1  out nss2
+	// User_GPIO_config(2, 14, 1);	// PB12	out DC2
+    // User_GPIO_set(2, 1, 1);
+    // User_GPIO_set(2, 14, 1);
     User_GPIO_set(1, 10, 1);
     User_GPIO_set(2, 0, 1);
 }
@@ -91,7 +95,7 @@ static void LCD_WR_CMD(uint8_t data)
     User_GPIO_set(1, 10, 0); // 写命令
     MODE_st7789_dever_Writ_Bus(data);
     User_GPIO_set(1, 10, 1); // 写数据	预备
-    MODE_st7789_dever_CS(0); // 写命令之后必然要写数据，所以不要取消片选
+    // MODE_st7789_dever_CS(0); // 写命令之后必然要写数据，所以不要取消片选
 }
 
 #endif
@@ -159,6 +163,7 @@ void MODE_st7789_dever_1_28_config (void)
 	LCD_WR_CMD(0xEF);
 	LCD_WR_CMD(0xEB);
 	MODE_st7789_dever_Writ_Bus(0x14); 
+    
     LCD_WR_CMD(0xFE);			 
 	LCD_WR_CMD(0xEF); 
 	LCD_WR_CMD(0xEB);	
@@ -507,13 +512,15 @@ int MODE_st7789_dever_Init(int set)
     MODE_st7789_dever_RST(0);
     Base_SPI_Init(m_SPI_CH2, 8, set);
     st7789_dever_delay(50);
+	// st7789_dever_gpio_init(set);
     MODE_st7789_dever_Writ_Bus(0x00);
 
     st7789_dever_delay(200);
     MODE_st7789_dever_RST(1);
     st7789_dever_delay(100);
+    
     //************* Start Initial Sequence **********//
-    if (LCD_Horizontal == 12)
+    if (LCD_Target_Model == 12)
     {
         MODE_st7789_dever_1_28_config ();
         retval = 0;
@@ -769,6 +776,7 @@ int MODE_st7789_dever_Init(int set)
         retval = 1;
         break;
     }
+    MODE_st7789_dever_CS(0);    // important
     st7789_dever_delay(100);
 #endif
     return retval;
