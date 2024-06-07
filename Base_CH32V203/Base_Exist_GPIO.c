@@ -151,18 +151,18 @@ void Custom_GPIO_Init(int SET)
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-//        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_11;  //GPIO_OUT
-//        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-//        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-//        GPIO_Init(GPIOA, &GPIO_InitStructure);
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_11;  //GPIO_OUT
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOA, &GPIO_InitStructure);
 
         RSTIC_L();
         WIG0_L();
         WIG1_L();
         GPO1_L();
         GPO2_L();
-//        GPO3_L();
-//        GPO4_L();
+        GPO3_L();
+        GPO4_L();
 
         // GPIO_Mode_IN_FLOATING
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6;  // GPIO_IN

@@ -60,7 +60,6 @@ void EP2_OUT_Callback(void)                   // dd-dd
 {
     uint8_t USB_RX_LEN;
     USB_RX_LEN = USB_SIL_Read(EP2_OUT, HIDRxBuffer);
-//    printf("EP1_OUT:\n");
 
     HID_rx_run = HID_Data_Buff[0];
     HID_rx_run <<= 8;

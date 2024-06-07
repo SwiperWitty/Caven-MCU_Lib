@@ -31,7 +31,7 @@ void USB_LP_CAN1_RX0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fa
 void USBWakeUp_IRQHandler(void) 
 {
 	EXTI_ClearITPendingBit(EXTI_Line18);
-} 
+}
 
 /*******************************************************************************
  * @fn           USBWakeUp_IRQHandler
@@ -78,9 +78,7 @@ void Set_USBConfig( )
  * @return    None
  */
 void Enter_LowPowerMode(void)
-{  
- 	// printf("usb enter low power mode\r\n");
-    // printf("usb down\n");
+{
 	bDeviceState=SUSPENDED;
 } 
 
@@ -94,8 +92,7 @@ void Enter_LowPowerMode(void)
 void Leave_LowPowerMode(void)
 {
 	DEVICE_INFO *pInfo=&Device_Info;
-	// printf("leave low power mode\r\n");
-    // printf("usb open\n");
+
 	if (pInfo->Current_Configuration!=0)bDeviceState=CONFIGURED; 
 	else bDeviceState = ATTACHED; 
 } 
@@ -162,6 +159,15 @@ void USB_Port_Set(FunctionalState NewState, FunctionalState Pin_In_IPU)
 	else (EXTEN->EXTEN_CTR) &= ~EXTEN_USBD_PU_EN;
 }  
 
+
+int USB_State_Get (void)
+{
+    int retval = 0;
+    if (bDeviceState == 5) {
+        retval = 1;
+    }
+    return retval;
+}
 
 
 

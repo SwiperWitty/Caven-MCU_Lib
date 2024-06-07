@@ -16,10 +16,10 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.LCD.Draw_Rectangle_pFun = LCD_Draw_Rectangle;
     
     Mode_Use.LCD.Show_String_pFun = LCD_Show_String;
-    Mode_Use.LCD.Show_Chinese_pFun = LCD_Show_Chinese;
     Mode_Use.LCD.Show_Picture_pFun = LCD_Show_Picture;
 
     Mode_Use.LCD.Set_Direction_pFun = LCD_Set_Horizontal;
+    Mode_Use.LCD.Set_TargetModel_pFun = LCD_Set_TargetModel;
 #endif
 
 #ifdef Exist_SYS_TIME

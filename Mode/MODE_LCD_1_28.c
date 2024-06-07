@@ -37,7 +37,7 @@ static void LCD_WR_DATA(U16 dat)
 	  入口数据：dat 写入的数据
 	  返回值：  无
 ******************************************************************************/
-void LCD_Send_Data(U8 *Data,int num)
+static void LCD_Send_Data(U8 *Data,int num)
 {
 	Base_SPI_CS_Set(m_SPI_CH2,1,ENABLE);
 	Base_SPI_DMA_Send_Data(m_SPI_CH2,Data,num);
@@ -127,7 +127,7 @@ void LCD_Fill_Fun(U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color)
 
 #endif
 }
-
+// -> 基本
 /******************************************************************************
 	  函数说明：设置屏幕显示方向
 	  入口数据：0或1为竖屏 2或3为横屏
@@ -161,6 +161,7 @@ void LCD_Draw_Point(U16 x, U16 y, U16 color)
 #endif
 }
 
+// -> 应用
 /******************************************************************************
 	  函数说明：画线
 	  入口数据：x1,y1   起始坐标
@@ -264,130 +265,7 @@ void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color)
 	}
 }
 
-/******************************************************************************
-	  函数说明：显示单个24x24汉字
-	  入口数据：x,y显示坐标
-				*s 要显示的汉字
-				fc 字的颜色
-				bc 字的背景色
-				sizey 字号
-				mode:  0非叠加模式  1叠加模式
-	  返回值：  无
-******************************************************************************/
-void LCD_Show_Chinese24x24(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
-{
-#ifdef STRING_CHN
-	char i, j, m = 0;
-	U16 k;
-	U16 HZnum;		 //汉字数目
-	U16 TypefaceNum; //一个字符所占字节大小
-	U16 x0 = x;
-	TypefaceNum = (sizey / 8 + ((sizey % 8) ? 1 : 0)) * sizey;
-	HZnum = sizeof(tfont24) / sizeof(typFNT_GB24); //统计汉字数目
-	for (k = 0; k < HZnum; k++)
-	{
-		if ((tfont24[k].Index[0] == *(s)) && (tfont24[k].Index[1] == *(s + 1)))
-		{
-			LCD_Address_Set(x, y, x + sizey - 1, y + sizey - 1);
-			for (i = 0; i < TypefaceNum; i++)
-			{
-				for (j = 0; j < 8; j++)
-				{
-					if (!mode) //非叠加方式
-					{
-						if (tfont24[k].Msk[i] & (0x01 << j))
-							LCD_WR_DATA(fc);
-						else
-							LCD_WR_DATA(bc);
-						m++;
-						if (m % sizey == 0)
-						{
-							m = 0;
-							break;
-						}
-					}
-					else //叠加方式
-					{
-						if (tfont24[k].Msk[i] & (0x01 << j))
-							LCD_Draw_Point(x, y, fc); //画一个点
-						x++;
-						if ((x - x0) == sizey)
-						{
-							x = x0;
-							y++;
-							break;
-						}
-					}
-				}
-			}
-		}
-		continue; //查找到对应点阵字库立即退出，防止多个汉字重复取模带来影响
-	}
-#endif
-}
-
-/******************************************************************************
-	  函数说明：显示单个32x32汉字
-	  入口数据：x,y显示坐标
-				*s 要显示的汉字
-				fc 字的颜色
-				bc 字的背景色
-				sizey 字号
-				mode:  0非叠加模式  1叠加模式
-	  返回值：  无
-******************************************************************************/
-void LCD_Show_Chinese32x32(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
-{
-#ifdef STRING_CHN
-	char i, j, m = 0;
-	U16 k;
-	U16 HZnum;		 //汉字数目
-	U16 TypefaceNum; //一个字符所占字节大小
-	U16 x0 = x;
-	TypefaceNum = (sizey / 8 + ((sizey % 8) ? 1 : 0)) * sizey;
-	HZnum = sizeof(tfont32) / sizeof(typFNT_GB32); //统计汉字数目
-	for (k = 0; k < HZnum; k++)
-	{
-		if ((tfont32[k].Index[0] == *(s)) && (tfont32[k].Index[1] == *(s + 1)))
-		{
-			LCD_Address_Set(x, y, x + sizey - 1, y + sizey - 1);
-			for (i = 0; i < TypefaceNum; i++)
-			{
-				for (j = 0; j < 8; j++)
-				{
-					if (!mode) //非叠加方式
-					{
-						if (tfont32[k].Msk[i] & (0x01 << j))
-							LCD_WR_DATA(fc);
-						else
-							LCD_WR_DATA(bc);
-						m++;
-						if (m % sizey == 0)
-						{
-							m = 0;
-							break;
-						}
-					}
-					else //叠加方式
-					{
-						if (tfont32[k].Msk[i] & (0x01 << j))
-							LCD_Draw_Point(x, y, fc); //画一个点
-						x++;
-						if ((x - x0) == sizey)
-						{
-							x = x0;
-							y++;
-							break;
-						}
-					}
-				}
-			}
-		}
-		continue; //查找到对应点阵字库立即退出，防止多个汉字重复取模带来影响
-	}
-#endif
-}
-
+// -> 拓展
 /******************************************************************************
 	  函数说明：显示单个字符
 	  入口数据：x,y显示坐标
@@ -398,9 +276,9 @@ void LCD_Show_Chinese32x32(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, ch
 				mode:  0非叠加模式  1叠加模式
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode)
+static void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode)
 {
-#ifdef STRING_ASC
+#if LCD_String
 	char temp, sizex, t, m = 0;
 	U16 i, TypefaceNum; //一个字符所占字节大小
 	U16 x0 = x;
@@ -449,32 +327,6 @@ void LCD_Show_Char(U16 x, U16 y, char num, U16 fc, U16 bc, char sizey, char mode
 	}
 #endif
 }
-/*    以上为文字最小单元      */
-
-/******************************************************************************
-	  函数说明：显示汉字串
-	  入口数据：x,y显示坐标
-				*s 要显示的汉字串
-				fc 字的颜色
-				bc 字的背景色
-				sizey 字号 可选 24 32
-				mode:  0非叠加模式  1叠加模式
-	  返回值：  无
-******************************************************************************/
-void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 fc, U16 bc, char sizey, char mode)
-{
-	while (*s != 0)
-	{
-		if (sizey == 24)
-		{LCD_Show_Chinese24x24(x, y, s, fc, bc, sizey, mode);}
-		else if (sizey == 32)
-		{LCD_Show_Chinese32x32(x, y, s, fc, bc, sizey, mode);}
-		else
-		{return;}
-		s += 2;
-		x += sizey;
-	}
-}
 
 /******************************************************************************
 	  函数说明：显示字符串
@@ -516,7 +368,7 @@ void LCD_Show_String(U16 x, U16 y, const char *p, U16 fc, U16 bc, char sizey)
 				pic[]  图片数组
 	  返回值：  无
 ******************************************************************************/
-void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
+void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,U8 pic[])
 {
 #ifdef Exist_LCD
 	u16 i,j;
@@ -528,9 +380,11 @@ void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,const U8 pic[])
 		{
 			LCD_WR_DATA8(pic[k*2]);
 			LCD_WR_DATA8(pic[k*2+1]);
+            
+//            LCD_WR_DATA();-
 			k++;
 		}
-		
+//        LCD_Send_Data(pic,width);
 	}
 #endif
 }

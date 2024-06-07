@@ -9,6 +9,8 @@
     
 */
 
+#define LCD_String 0
+
 #define USE_HORIZONTAL 0 // 设置默认横屏或者竖屏显示 0或1为竖屏 2或3为横屏
 #define LCD_W 240        // X MAX 240
 #define LCD_H 240        // Y MAX 240
@@ -54,22 +56,20 @@ typedef struct
     void (*Draw_Circle_pFun)(U16 x0, U16 y0, char r, U16 color);            //在指定位置画一个圆
     void (*Draw_Rectangle_pFun)(U16 x1, U16 y1, U16 x2, U16 y2, U16 color); //在指定位置画一个矩形
 
-    void (*Show_String_pFun)(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //显示字符串
-    void (*Show_Chinese_pFun)(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //显示汉字串
-    void (*Show_Picture_pFun)(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //显示图片
+    void (*Show_String_pFun)(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       // 显示字符串
+    void (*Show_Picture_pFun)(U16 x,U16 y,U16 length,U16 width,U8 pic[]);        // 显示图片
 
     int (*Set_Direction_pFun)(char set);
 }MODE_LCD_Way;
 
-void LCD_Fill_Fun (U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color); //指定区域填充颜色
-void LCD_Draw_Point(U16 x, U16 y, U16 color);                         //在指定位置画一个点
-void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);        //在指定位置画一条线
-void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color);              //在指定位置画一个圆
-void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);   //在指定位置画一个矩形
+void LCD_Fill_Fun (U16 x_sta, U16 y_sta, U16 x_end, U16 y_end, U16 color);  //指定区域填充颜色
+void LCD_Draw_Point(U16 x, U16 y, U16 color);                               //在指定位置画一个点
+void LCD_Draw_Line(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);              //在指定位置画一条线
+void LCD_Draw_Circle(U16 x0, U16 y0, char r, U16 color);                    //在指定位置画一个圆
+void LCD_Draw_Rectangle(U16 x1, U16 y1, U16 x2, U16 y2, U16 color);         //在指定位置画一个矩形
 
-void LCD_Show_String(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);       //显示字符串
-void LCD_Show_Chinese(U16 x, U16 y, char *s, U16 coloer, U16 b_coloer, char Size, char mode); //显示汉字串
-void LCD_Show_Picture(U16 x, U16 y, U16 length, U16 width, const unsigned char pic[]);        //显示图片
+void LCD_Show_String(U16 x, U16 y, const char *p, U16 coloer, U16 b_coloer, char Size);     //显示字符串
+void LCD_Show_Picture(U16 x,U16 y,U16 length,U16 width,U8 pic[]);                           //显示图片
 
 int LCD_Set_Horizontal(char set);
 

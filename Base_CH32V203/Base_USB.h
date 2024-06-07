@@ -35,6 +35,7 @@ int USB_Keyboard_Send_Data (char *data, int size);
 int USB_Buffer_Send (const uint8_t *data,int size);        //有缓冲的发送
 int USB_Buffer_Receive (uint8_t *data);
 
+int USB_User_State_Get (void);
 #endif
 
 //

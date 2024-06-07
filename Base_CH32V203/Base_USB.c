@@ -10,11 +10,12 @@ extern uint8_t HIDTxBuffer[];
 extern uint8_t HID_Data_Buff[];
 
 extern uint8_t HIDKey[];
+uint8_t usb_init_flag = 0;
 
 extern void SYS_Base_Delay(int time, int speed);
 void usb_delay (int times)
 {
-    SYS_Base_Delay (times, 2000);
+    SYS_Base_Delay(times, 2000);
 }
 #endif
 
@@ -24,14 +25,36 @@ int USB_User_init (int SET)
 #ifdef Exist_USB
     HID_Data_Buff[0] = 0;
     HID_Data_Buff[1] = 0;
+    if(usb_init_flag)
+    {
+        return retval;
+    }
+    if (SET) {
+        Set_USBConfig();
+        USB_Init();
+        USB_Port_Set(DISABLE, DISABLE);
+        usb_delay(700);
+        USB_Port_Set(ENABLE, ENABLE);
+        USB_Interrupts_Config();
+        usb_delay(700);          //一定要
+    }
+    else {
+        USB_Init();
+        USB_Port_Set(DISABLE, DISABLE);
+    }
 
-    Set_USBConfig();
-    USB_Init();
-    USB_Port_Set(DISABLE, DISABLE);
-    usb_delay(700);
-    USB_Port_Set(ENABLE, ENABLE);
-    USB_Interrupts_Config();
-    usb_delay(700);          //一定要
+    usb_init_flag = SET;
+#endif
+    return retval;
+}
+
+int USB_User_State_Get  (void)
+{
+    int retval = 0;
+#ifdef Exist_USB
+    if (usb_init_flag) {
+        retval = USB_State_Get();
+    }
 #endif
     return retval;
 }
@@ -39,10 +62,13 @@ int USB_User_init (int SET)
 //keyboard
 int USB_Keyboard_Send_Data (char *data, int size)
 {
-    int retval = 0;
+    int retval = 1;
 #ifdef Exist_USB
     int temp = size;
     int num = 0;
+    if (USB_User_State_Get() == 0) {
+        return retval;
+    }
     do {
         for(int i = 0;i< ENDP1_IN_SIZE;i++) HIDKey[i] = 0;
         if(temp >= ENDP1_IN_SIZE)
@@ -83,6 +109,9 @@ int USB_Buffer_Send (const uint8_t *data,int size)
 #ifdef Exist_USB
     int temp = size;
     int num = 0;
+    if (USB_User_State_Get() == 0) {
+        return retval;
+    }
     do {
         for(int i = 0;i< ENDP2_IN_SIZE;i++) HIDTxBuffer[i] = 0;
         if(temp >= ENDP2_IN_SIZE)
@@ -96,7 +125,7 @@ int USB_Buffer_Send (const uint8_t *data,int size)
             for(int i = 0;i< temp;i++) HIDTxBuffer[i] = data[num + i];
             temp = 0;
         }
-        USBD_HID_Data_Updata();                         //发usb
+        USBD_HID_Data_Updata();                         // 发usb
         retval = 0;
     } while (temp);
 #endif
@@ -119,4 +148,5 @@ int USB_Buffer_Receive (uint8_t *data)
 #endif
     return retval;
 }
+
 

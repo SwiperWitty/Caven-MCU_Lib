@@ -25,6 +25,7 @@ void Enter_LowPowerMode(void);
 void Leave_LowPowerMode(void);
 void USB_Interrupts_Config(void);
 void USB_Port_Set(FunctionalState NewState, FunctionalState Pin_In_IPU);
+int USB_State_Get (void);
 
 #endif /* __HW_CONFIG_H */ 
 
