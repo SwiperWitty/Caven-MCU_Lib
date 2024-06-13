@@ -4,270 +4,236 @@
 void IIC_SDA_Satar (char GPIO_Mode)
 {
 #ifdef Exist_IIC
-    gpio_init_type gpio_init_struct;
-
-    if(GPIO_Mode == IIC_Mode_OUT)
-    {
-        gpio_init_struct.gpio_mode = IIC_Mode_OUT;
-    }
-    else
-    {
-        gpio_init_struct.gpio_mode = IIC_Mode_IN;
-    }
-    gpio_init_struct.gpio_pins = IIC_SDA;
-    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-    gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-    gpio_init_struct.gpio_pull = GPIO_PULL_UP;
-    gpio_init(GPIO_IIC, &gpio_init_struct);
-#endif
-}
-
-void IIC_Start_Init(int SET)
-{
-#ifdef Exist_IIC
-    gpio_init_type  gpio_init_struct;
-    gpio_default_para_init(&gpio_init_struct);
-    if (SET)
-    {
-        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
-        
-        gpio_init_struct.gpio_mode = IIC_Mode_OUT;
-        
-        gpio_init_struct.gpio_pins = IIC_SCL;
-        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_pull = GPIO_PULL_UP;
-        gpio_init(GPIO_IIC, &gpio_init_struct);             //单纯启动SCL
-
-        IIC_SDA_H();
-        IIC_SDA_Satar (IIC_Mode_OUT);                       //启动SDA
-        IIC_SCL_H();
-    }
-    else
-    {
-        gpio_init_struct.gpio_pins = IIC_SCL|IIC_SDA;
-        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIO_IIC, &gpio_init_struct);
+    static char last_mode = -1;
+    if (GPIO_Mode != last_mode) {
+        last_mode = GPIO_Mode;
+        User_GPIO_config(GPIO_IIC,IIC_SDA,GPIO_Mode);
     }
 #endif
 }
+
 // **   //
 #ifdef Exist_IIC
+extern void SYS_Base_Delay(int time, int speed);
 static void IIC_Delay (int time)
 {
-    volatile int temp;
-    for (int i = 0; i < time; ++i)
-    {
-        temp = IIC_Base_Speed;            //SET
-        do{
-            NOP();
-        }while((temp--) > 0);
-    }
+    SYS_Base_Delay(time,IIC_Base_Speed);
 }
 
-void IIC_StartBit(int Speed)//  开始
+void IIC_StartBit(void)//  开始
 {
-    IIC_SCL_L();  // Set SCL line
-    IIC_SDA_Satar (IIC_Mode_OUT);
-    IIC_SDA_H();  // Set SDA line
-    IIC_Delay(Speed); // Wait a few microseconds
-    IIC_SCL_H();  // Set SCL line
-    IIC_Delay(Speed); // Generate bus free time between Stop
-    IIC_SDA_L();  // Clear SDA line
-    IIC_Delay(Speed); // Hold time after (Repeated) Start
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);  // Set SCL line
+    IIC_Delay(1);
+    IIC_SDA_Satar (1);
+    User_GPIO_set(GPIO_IIC,IIC_SDA,1);  // Set SDA line
+    IIC_Delay(1); // Wait a few microseconds
+    User_GPIO_set(GPIO_IIC,IIC_SCL,1);  // Set SCL line
+    IIC_Delay(1); // Generate bus free time between Stop
+    User_GPIO_set(GPIO_IIC,IIC_SDA,0);  // Clear SDA line
+    IIC_Delay(1); // Hold time after (Repeated) Start
     // Condition. After this period, the first clock is generated.
     //(Thd:sta=4.0us min)在SCK=1时，检测到SDA由1到0表示通信开始（下降沿）
-    IIC_SCL_L();  // Clear SCL line
-    IIC_Delay(Speed); // Wait a few microseconds
-}   //结束之后SDA:L  SCL: L
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);  // Clear SCL line
+    IIC_Delay(1); // Wait a few microseconds
+}
 
-void IIC_StopBit(int Speed)//  停止
+void IIC_StopBit(void)//  停止
 {
-    IIC_SCL_L();  // Clear SCL line
-    IIC_SDA_Satar (IIC_Mode_OUT);
-    IIC_Delay(Speed); // Wait a few microseconds
-    IIC_SDA_L();  // Clear SDA line
-    IIC_Delay(Speed); // Wait a few microseconds
-    IIC_SCL_H();  // Set SCL line           /*  END    */
-    IIC_Delay(Speed); // Stop condition setup time(Tsu:sto=4.0us min)
-    IIC_SDA_H();  // Set SDA line在SCL=1时，检测到SDA由0到1表示通信结束（上升沿）
-}   //结束之后SDA:H  SCL: H
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);  // Clear SCL line
+    IIC_SDA_Satar (1);
+    IIC_Delay(1); // Wait a few microseconds
+    User_GPIO_set(GPIO_IIC,IIC_SDA,0);  // Clear SDA line
+    IIC_Delay(1); // Wait a few microseconds
+    User_GPIO_set(GPIO_IIC,IIC_SCL,1);  // Set SCL line           /*  END    */
+    IIC_Delay(1); // Stop condition setup time(Tsu:sto=4.0us min)
+    User_GPIO_set(GPIO_IIC,IIC_SDA,1);  // Set SDA line在SCL=1时，检测到SDA由0到1表示通信结束（上升沿）
+}
 
-void IIC_ASK(int Speed)      //速度快，不在乎是否有从设备
+void IIC_ASK(void)      //主机应答
 {
-    IIC_SCL_L();
-    IIC_SDA_Satar (IIC_Mode_OUT);
-    IIC_SDA_L();    //模拟响应
-    IIC_Delay(Speed);
-    IIC_SCL_H();
-    IIC_Delay(Speed);
-}   //结束之后SDA:L  SCL: H
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
+    IIC_SDA_Satar (1);
+    User_GPIO_set(GPIO_IIC,IIC_SDA,0);
+    IIC_Delay(2);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,1);
+    IIC_Delay(2);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
+}
 
-void IIC_NASK(int Speed)     //基本不用
+void IIC_NASK(void)     //主机不应答
 {
-    IIC_SCL_L();
-    IIC_SDA_H();
-    IIC_SDA_Satar (IIC_Mode_IN);  //模拟不响应
-    
-    IIC_Delay(Speed);
-    IIC_SCL_H();
-    IIC_Delay(Speed);
-}   //结束之后SDA:H  SCL: H
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
+    IIC_SDA_Satar (1);
+    User_GPIO_set(GPIO_IIC,IIC_SDA,1);
+    IIC_Delay(1);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,1);
+    IIC_Delay(1);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
+}
 
-char IIC_WaitASK(int Speed)  //一定要有从设备响应
+char IIC_WaitASK(char num)  //一定要有从设备响应
 {
     char temp = 0;
     int Time = 0;
-    IIC_SCL_L();
-    IIC_Delay(0);
-    IIC_SDA_H();
-    IIC_SDA_Satar (IIC_Mode_IN);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
+    IIC_SDA_Satar (0);
     do {
-        IIC_Delay(Speed);
+        IIC_Delay(1);
         Time++;
-        if (IIC_SDA_R() == 0)      //找到数据，即可跳出
+        if (User_GPIO_get(GPIO_IIC,IIC_SDA) == 0)      //找到数据，即可跳出
         {
             temp = 1;
+            User_GPIO_set(GPIO_IIC,IIC_SDA,0);
+            User_GPIO_set(GPIO_IIC,IIC_SCL,1);
+            IIC_SDA_Satar (1);
             break;
         }
-    } while (Time < 20);
-    IIC_SDA_Satar (IIC_Mode_OUT);
-    IIC_SDA_H();
-    IIC_SCL_H();
-    IIC_Delay(Speed);
+    } while (Time < num);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,1);
+    IIC_Delay(1);
     return temp;
-}   //结束之后SDA:X  SCL: H
+}
 #endif
 
-void IIC_Write_DATA(char DATA,int Speed)
+void IIC_Write_DATA(uint8_t DATA,int Speed)
 {
 #ifdef Exist_IIC
-    char temp;
-    IIC_SCL_L();
-    IIC_SDA_Satar (IIC_Mode_OUT);
+    uint8_t temp;
+    IIC_SDA_Satar (1);
     for (int i = 0; i < 8; i++) {
-        IIC_SCL_L();      //准备数据变更
+        User_GPIO_set(GPIO_IIC,IIC_SCL,0);      //准备数据变更
         IIC_Delay(Speed);
         temp = (DATA << i) & 0x80;
         if (temp)
-            IIC_SDA_H();
+            User_GPIO_set(GPIO_IIC,IIC_SDA,1);
         else
-            IIC_SDA_L();
+            User_GPIO_set(GPIO_IIC,IIC_SDA,0);
         IIC_Delay(Speed);
-        IIC_SCL_H();      //数据变更完成
+        User_GPIO_set(GPIO_IIC,IIC_SCL,1);      //数据变更完成
         IIC_Delay(Speed);
     }
 #endif
-}   //结束之后SDA:X  SCL: H
+}
 
-char IIC_Read_DATA(int Speed)
+uint8_t IIC_Read_DATA(int Speed)
 {
-    char temp = 0;
+    uint8_t temp = 0;
 #ifdef Exist_IIC
-    IIC_SCL_L();      //准备读数据
-    IIC_SDA_Satar (IIC_Mode_IN);
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
+    IIC_SDA_Satar (0);
     for (int i = 0; i < 8; i++) {
-        IIC_SCL_L();      //准备读数据
+        User_GPIO_set(GPIO_IIC,IIC_SCL,0);      //准备数据变更
         IIC_Delay(Speed);
-        
-        IIC_SCL_H();      //数据读完成
-        temp |= ((char)IIC_SDA_R() << i);
+        temp = (User_GPIO_get(GPIO_IIC,IIC_SDA) << i);
+//        IIC_Delay(Speed);
+        User_GPIO_set(GPIO_IIC,IIC_SCL,1);      //数据变更完成
         IIC_Delay(Speed);
     }
 #endif
     return temp;
-}   //结束之后SDA:X  SCL: H
+}
 
-int IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed)
+/*
+ * 返回的是是否成功ACK
+ * ACK意味着快速跳过ACK(OLED这类只发不收的)
+ * continuous 参数意味着不发结束
+ */
+char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Speed,char continuous)
 {
-    int retval = 0;
+    char BK = 0;
 #ifdef Exist_IIC
-    IIC_StartBit(Speed);
-    IIC_Write_DATA((Addr << 1) & 0xFE,Speed);      //写模式
-    if(ACK)      //需要使用ACK
+    IIC_StartBit();
+    IIC_Write_DATA((Addr << 1) & 0xFE,Speed);      // 写模式
+    if(ACK != 0)      // 需要使用ACK
     {
-        retval = IIC_WaitASK(Speed);
-        if (retval == 0)
+        BK = IIC_WaitASK(20);
+        if (BK == 0)
         {
-            IIC_StopBit(Speed);
-            return retval;
+            IIC_StopBit();
+            return BK;
         }
+    }
+    else if(ACK == 0)
+    {
+        IIC_ASK();
+        BK = 1;
+    }
+
+    for (int i = 0; i < Length; i++)
+    {
+        IIC_Write_DATA(Data[i],Speed);
+        if(ACK != 0)
+        {
+            BK = IIC_WaitASK(10);
+            if (BK == 0)    // 有一次不成功
+            {
+                break;
+            }
+        }
+        else if(ACK == 0)
+            IIC_ASK();
+    }// 数据结束
+    if (continuous) {
+    }
+    else {
+        IIC_StopBit();
+    }// IIC结束
+#endif
+    return BK;
+}
+
+/*
+ * 返回的是是否成功ACK
+ * 主机也是要回答的
+ */
+char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed)
+{
+    char BK = 0;
+#ifdef Exist_IIC
+    IIC_StartBit();
+    IIC_Write_DATA((Addr << 1) | 0x01,Speed);   // 读模式
+    if(ACK != 0)        // 需要使用ACK
+    {
+        BK = IIC_WaitASK(10);
+        if (BK == 0)
+        {
+            IIC_StopBit();
+            return BK;
+        }
+    }
+    else if(ACK == 0)   // 不需要使用ACK
+    {
+        IIC_ASK();
+        BK = 1;
+    }
+    for (int i = 0; i < Length; i++)
+    {
+        *(Data + i) = IIC_Read_DATA(Speed);
+        IIC_ASK();      // 给从机回应
+    }
+    IIC_StopBit();
+    //IIC结束
+#endif
+    return BK;
+}
+
+void Base_IIC_Init(int set)
+{
+#ifdef Exist_IIC
+
+    if (set)
+    {
+        User_GPIO_config(GPIO_IIC,IIC_SCL,1);
+        User_GPIO_config(GPIO_IIC,IIC_SDA,1);
+        User_GPIO_set(GPIO_IIC,IIC_SCL,1);
+        User_GPIO_set(GPIO_IIC,IIC_SDA,1);
+
     }
     else
     {
-        IIC_ASK(Speed);
-        retval = 1;
+        User_GPIO_config(GPIO_IIC,IIC_SCL,0);
+        User_GPIO_config(GPIO_IIC,IIC_SDA,0);
     }
-    //地址结束
-    for (int i = 0; i < Length; ++i)
-    {
-        IIC_Write_DATA(Data[i],Speed);
-        if(ACK && retval == 0)
-        {
-            retval = IIC_WaitASK(Speed);
-            if (retval == 0)    //有一次不成功
-            {
-                break;
-            }
-        }
-        else
-        {
-            IIC_ASK(Speed);
-        }
-    }
-    //数据结束
-    IIC_StopBit(Speed);
-//IIC结束
 #endif
-    return retval;
-}
-
-int IIC_Receive_DATA(char Addr,char *Target,char ACK,int Length,int Speed)
-{
-    int retval = 0;
-#ifdef Exist_IIC
-    if(Target == NULL || Length <= 0 || Speed < 0)
-    {
-        retval = 2;
-        return retval;
-    }
-    IIC_StartBit(Speed);
-    IIC_Write_DATA((Addr << 1) | IIC_R_BIT,Speed);      //读模式
-    if(ACK)                 //需要使用ACK
-    {
-        retval = IIC_WaitASK(Speed);
-        if (retval == 0)
-        {
-            IIC_StopBit(Speed);
-            return retval;
-        }
-    }
-    else                   //不需要使用ACK
-    {
-        IIC_ASK(Speed);
-        retval = 1;
-    }
-    //地址结束
-    for(int i = 0;i < Length;i++)
-    {
-        *(Target + i) = IIC_Read_DATA(Speed);
-        if(ACK && retval == 0)
-        {
-            retval = IIC_WaitASK(Speed);
-            if (retval == 0)    //有一次不成功
-            {
-                break;
-            }
-        }
-        else
-        {
-            IIC_ASK(Speed);
-        }
-    }
-    IIC_StopBit(Speed);
-//IIC结束
-#endif
-    return retval;
 }
 
