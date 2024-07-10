@@ -5,6 +5,7 @@
 /* 数据处理 */
 #include "DATA_Handle.h"
 #include "Examine_crc.h"
+#include "Encrypt_crc.h"
 #include "Caven_info_frame.h"
 
 /* 时间处理 */

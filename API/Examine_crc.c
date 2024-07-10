@@ -37,7 +37,7 @@ static const uint16_t CRC_XMODEM_table[256] = {
  *       函数新计算的CRC值
  *   函数代码:
  */
-unsigned short CRC16_XMODEM_Table_Byte(unsigned char CheckByte, unsigned short LastCRC)
+static unsigned short CRC16_XMODEM_Table_Byte(unsigned char CheckByte, unsigned short LastCRC)
 {
 	return (LastCRC << 8) ^ CRC_XMODEM_table[(LastCRC >> 8) ^ CheckByte];
 }
