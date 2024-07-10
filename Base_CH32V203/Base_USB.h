@@ -14,7 +14,7 @@
 #include "usb_pwr.h"
 #include "usb_prop.h"
 #include "usb_core.h"
-#endif
+
 
 typedef struct
 {
@@ -23,8 +23,11 @@ typedef struct
     //custom
     int (*Custom_Send) (const uint8_t *data,int size);
     int (*Custom_Receive) (uint8_t *data);
+    int (*Custom_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
+int USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
+#endif
 
 int USB_User_init (int SET);
 

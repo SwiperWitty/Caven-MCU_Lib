@@ -9,8 +9,8 @@
 
 #ifdef Exist_USB
 #include "usb_core.h"
-#endif
 
+typedef void (*D_Callback_pFun) (void *data);
 typedef struct
 {
     int (*Keyboard_Send_String) (char *string);
@@ -18,8 +18,11 @@ typedef struct
     //custom
     int (*Custom_Send) (const uint8_t *data,int size);
     int (*Custom_Receive) (uint8_t *data);
+    int (*Custom_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
+void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
+#endif
 
 int USB_User_init (int SET);
 
@@ -27,7 +30,7 @@ int USB_User_init (int SET);
 int USB_Keyboard_Send_String (char *string);
 int USB_Keyboard_Send_Data (char *data, int size);
 //custom
-int USB_Buffer_Send (const uint8_t *data,int size);        //有缓冲的发送
+int USB_Buffer_Send (const uint8_t *data,int size);        // 有缓冲的发送
 int USB_Buffer_Receive (uint8_t *data);
 
 #endif

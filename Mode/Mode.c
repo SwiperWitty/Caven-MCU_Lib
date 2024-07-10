@@ -27,7 +27,6 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.TIME.Delay_Ms = MODE_Delay_Ms;
     Mode_Use.TIME.Delay_S = MODE_Delay_S;
 	
-
     Mode_Use.TIME.Get_Date_pFun = MODE_TIME_Get_Date_Fun;
     Mode_Use.TIME.Get_Watch_pFun = MODE_TIME_Get_Watch_Fun;
 
@@ -65,6 +64,7 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.USB_HID.Keyboard_Send_String = USB_Keyboard_Send_String;
     Mode_Use.USB_HID.Custom_Send = USB_Buffer_Send;
     Mode_Use.USB_HID.Custom_Receive = USB_Buffer_Receive;
+    Mode_Use.USB_HID.Custom_Callback_Bind = USB_Callback_Bind;
 #endif
 
 #ifdef Exist_BUTTON

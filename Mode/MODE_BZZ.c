@@ -1,9 +1,10 @@
-#include <MODE_BZZ.h>
+#include "MODE_BZZ.h"
 
 void MODE_BZZ_Init(int SET)
 {
     #ifdef Exist_BZZ
-    BZZ_GPIO_Init(SET);
+    
+    User_GPIO_config(2,BZZ_IO,1);
     MODE_BZZ_SET_Fun(DISABLE);
     #endif
 }
@@ -15,9 +16,9 @@ void MODE_BZZ_SET_Fun(int SET)
 {
     #ifdef Exist_BZZ
     if(SET)
-        BZZ_H();
+        User_GPIO_set(2,BZZ_IO,1);
     else
-        BZZ_L();
+        User_GPIO_set(2,BZZ_IO,0);
     #endif
 }
 

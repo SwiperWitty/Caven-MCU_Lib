@@ -21,8 +21,6 @@ uint8_t HIDKey[ENDP1_IN_SIZE] = {0};		  // dd-dd
 uint8_t HIDTxBuffer[ENDP2_IN_SIZE] = {0};
 uint8_t HIDRxBuffer[ENDP2_OUT_SIZE] = {0};
 
-int HID_rx_run = 0;
-unsigned char HID_Data_Buff[1024];      // 总获取数据[0]H + [1]L
 
 volatile u8 Endp1Busy = FALSE;            // dd-dd
 volatile u8 Endp2Busy = FALSE;
@@ -56,20 +54,31 @@ void EP1_OUT_Callback(void)               // dd-dd
 
 }
 
+D_Callback_pFun USB_HID_Callback_Fun = NULL;
+
+/*
+ * 返回1是有效绑定
+ */
+int USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
+{
+    int retval = 0;
+    USB_HID_Callback_Fun = USB_Callback_pFun;
+    if (USB_Callback_pFun != NULL) {
+        retval = 1;
+    }
+    return retval;
+}
+
 void EP2_OUT_Callback(void)                   // dd-dd
 {
     uint8_t USB_RX_LEN;
     USB_RX_LEN = USB_SIL_Read(EP2_OUT, HIDRxBuffer);
-
-    HID_rx_run = HID_Data_Buff[0];
-    HID_rx_run <<= 8;
-    HID_rx_run += HID_Data_Buff[1];
-    if ((HID_rx_run + USB_RX_LEN) < (sizeof(HID_Data_Buff) - 2))
+    if (USB_HID_Callback_Fun != NULL)
     {
-        memcpy(&HID_Data_Buff[HID_rx_run + 2],HIDRxBuffer,USB_RX_LEN);  // //  dd-dd
-        HID_rx_run += USB_RX_LEN;
-        HID_Data_Buff[0] = (HID_rx_run >> 8) & 0xff;
-        HID_Data_Buff[1] = (HID_rx_run) & 0xff;
+        for (int i = 0; i < USB_RX_LEN; i++)
+        {
+            USB_HID_Callback_Fun (HIDRxBuffer + i);
+        }
     }
 
     SetEPRxValid(ENDP2);

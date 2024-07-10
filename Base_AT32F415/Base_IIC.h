@@ -22,9 +22,9 @@
 #define IIC_Base_Speed  20
 
 //
-#define IIC_CONFIG      0       // L 上升沿读取
-#define IIC_SCL         10   // GPIO_Pin_10
-#define IIC_SDA         11   // GPIO_Pin_11
+#define IIC_CONFIG      0   // L 上升沿读取
+#define IIC_SCL         10  // GPIO_Pin_10
+#define IIC_SDA         11  // GPIO_Pin_11
 #define GPIO_IIC        2
 
 #endif

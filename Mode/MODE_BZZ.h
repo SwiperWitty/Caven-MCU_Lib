@@ -10,12 +10,16 @@
 
 
 */
+#ifdef Exist_BZZ
+
+#define BZZ_IO  5
 
 typedef struct
 {
     void (*SET_pFun)(int SET);
 }MODE_BZZ_Way;
 
+#endif
 void MODE_BZZ_Init(int SET);
 void MODE_BZZ_SET_Fun(int SET);
 

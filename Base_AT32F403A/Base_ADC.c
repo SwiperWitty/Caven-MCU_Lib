@@ -175,7 +175,7 @@ float ADC_Conversion_Vol_Fun(int NUM)
 }
 
 /*
-回调函数
+回调函数 
 */
 D_pFun ADC_Quick_Get_pFun = NULL;
 void ADC_Quick_Get_Bind_Fun(D_pFun ADC_pFun)

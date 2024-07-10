@@ -8,11 +8,16 @@
  * WS2812
  * LED
 */
+#ifdef Exist_LED
+
+#define LED_IO  4
+
 typedef struct
 {
     void (*SET_pFun)(char Channel,int SET);
     void (*RGB_pFun)(Caven_Color_Type Color,int SET);
 }MODE_LED_Way;
+#endif
 
 void MODE_LED_Init(int SET);
 

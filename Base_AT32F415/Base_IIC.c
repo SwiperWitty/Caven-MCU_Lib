@@ -1,18 +1,6 @@
 #include "Base_IIC.h"
 
 
-void IIC_SDA_Satar (char GPIO_Mode)
-{
-#ifdef Exist_IIC
-    static char last_mode = -1;
-    if (GPIO_Mode != last_mode) {
-        last_mode = GPIO_Mode;
-        User_GPIO_config(GPIO_IIC,IIC_SDA,GPIO_Mode);
-    }
-#endif
-}
-
-// **   //
 #ifdef Exist_IIC
 extern void SYS_Base_Delay(int time, int speed);
 static void IIC_Delay (int time)
@@ -20,7 +8,16 @@ static void IIC_Delay (int time)
     SYS_Base_Delay(time,IIC_Base_Speed);
 }
 
-void IIC_StartBit(void)//  开始
+static void IIC_SDA_Satar (char GPIO_Mode)
+{
+    static char last_mode = -1;
+    if (GPIO_Mode != last_mode) {
+        last_mode = GPIO_Mode;
+        User_GPIO_config(GPIO_IIC,IIC_SDA,GPIO_Mode);
+    }
+}
+
+void IIC_StartBit(void) // 开始
 {
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);  // Set SCL line
     IIC_Delay(1);
@@ -37,7 +34,7 @@ void IIC_StartBit(void)//  开始
     IIC_Delay(1); // Wait a few microseconds
 }
 
-void IIC_StopBit(void)//  停止
+void IIC_StopBit(void)  // 停止
 {
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);  // Clear SCL line
     IIC_SDA_Satar (1);
@@ -49,7 +46,7 @@ void IIC_StopBit(void)//  停止
     User_GPIO_set(GPIO_IIC,IIC_SDA,1);  // Set SDA line在SCL=1时，检测到SDA由0到1表示通信结束（上升沿）
 }
 
-void IIC_ASK(void)      //主机应答
+void IIC_ASK(void)      // 主机应答
 {
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);
     IIC_SDA_Satar (1);
@@ -60,7 +57,7 @@ void IIC_ASK(void)      //主机应答
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);
 }
 
-void IIC_NASK(void)     //主机不应答
+void IIC_NASK(void)     // 主机不应答
 {
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);
     IIC_SDA_Satar (1);
@@ -71,7 +68,7 @@ void IIC_NASK(void)     //主机不应答
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);
 }
 
-char IIC_WaitASK(char num)  //一定要有从设备响应
+char IIC_WaitASK(char num)  // 一定要有从设备响应
 {
     char temp = 0;
     int Time = 0;
@@ -80,7 +77,7 @@ char IIC_WaitASK(char num)  //一定要有从设备响应
     do {
         IIC_Delay(1);
         Time++;
-        if (User_GPIO_get(GPIO_IIC,IIC_SDA) == 0)      //找到数据，即可跳出
+        if (User_GPIO_get(GPIO_IIC,IIC_SDA) == 0)      // 找到数据，即可跳出
         {
             temp = 1;
             User_GPIO_set(GPIO_IIC,IIC_SDA,0);
@@ -93,15 +90,13 @@ char IIC_WaitASK(char num)  //一定要有从设备响应
     IIC_Delay(1);
     return temp;
 }
-#endif
 
 void IIC_Write_DATA(uint8_t DATA,int Speed)
 {
-#ifdef Exist_IIC
     uint8_t temp;
     IIC_SDA_Satar (1);
     for (int i = 0; i < 8; i++) {
-        User_GPIO_set(GPIO_IIC,IIC_SCL,0);      //准备数据变更
+        User_GPIO_set(GPIO_IIC,IIC_SCL,0);      // 准备数据变更
         IIC_Delay(Speed);
         temp = (DATA << i) & 0x80;
         if (temp)
@@ -109,34 +104,34 @@ void IIC_Write_DATA(uint8_t DATA,int Speed)
         else
             User_GPIO_set(GPIO_IIC,IIC_SDA,0);
         IIC_Delay(Speed);
-        User_GPIO_set(GPIO_IIC,IIC_SCL,1);      //数据变更完成
+        User_GPIO_set(GPIO_IIC,IIC_SCL,1);      // 数据变更完成
         IIC_Delay(Speed);
     }
-#endif
 }
 
 uint8_t IIC_Read_DATA(int Speed)
 {
+    uint8_t retval = 0;
     uint8_t temp = 0;
-#ifdef Exist_IIC
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);
     IIC_SDA_Satar (0);
-    for (int i = 0; i < 8; i++) {
-        User_GPIO_set(GPIO_IIC,IIC_SCL,0);      //准备数据变更
+    for (int i = 7; i >= 0; i--) {
+        User_GPIO_set(GPIO_IIC,IIC_SCL,0);      // 准备数据变更
         IIC_Delay(Speed);
-        temp = (User_GPIO_get(GPIO_IIC,IIC_SDA) << i);
+        temp = User_GPIO_get(GPIO_IIC,IIC_SDA);
+        retval |= temp << i;
 //        IIC_Delay(Speed);
-        User_GPIO_set(GPIO_IIC,IIC_SCL,1);      //数据变更完成
+        User_GPIO_set(GPIO_IIC,IIC_SCL,1);      // 数据变更完成
         IIC_Delay(Speed);
     }
-#endif
-    return temp;
+    return retval;
 }
+#endif
 
 /*
  * 返回的是是否成功ACK
  * ACK意味着快速跳过ACK(OLED这类只发不收的)
- * continuous 参数意味着不发结束
+ * continuous 参数为1意味着不发结束
  */
 char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Speed,char continuous)
 {
@@ -184,7 +179,7 @@ char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Sp
 
 /*
  * 返回的是是否成功ACK
- * 主机也是要回答的
+ * 主机也是要回答的(IIC_ASK)
  */
 char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed)
 {
@@ -220,14 +215,12 @@ char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed
 void Base_IIC_Init(int set)
 {
 #ifdef Exist_IIC
-
     if (set)
     {
         User_GPIO_config(GPIO_IIC,IIC_SCL,1);
         User_GPIO_config(GPIO_IIC,IIC_SDA,1);
         User_GPIO_set(GPIO_IIC,IIC_SCL,1);
         User_GPIO_set(GPIO_IIC,IIC_SDA,1);
-
     }
     else
     {

@@ -7,7 +7,6 @@
 
 #ifdef Exist_USB
 extern uint8_t HIDTxBuffer[];
-extern uint8_t HID_Data_Buff[];
 
 extern uint8_t HIDKey[];
 uint8_t usb_init_flag = 0;
@@ -23,8 +22,6 @@ int USB_User_init (int SET)
 {
     int retval = 0;
 #ifdef Exist_USB
-    HID_Data_Buff[0] = 0;
-    HID_Data_Buff[1] = 0;
     if(usb_init_flag)
     {
         return retval;
@@ -136,15 +133,7 @@ int USB_Buffer_Receive (uint8_t *data)
 {
     int retval = 0;
 #ifdef Exist_USB
-    if (data == NULL) {
-        return retval;
-    }
-    retval = HID_Data_Buff[0];
-    retval <<= 8;
-    retval += HID_Data_Buff[1];
-    memcpy(data,&HID_Data_Buff[2],retval);
-    HID_Data_Buff[0] = 0;
-    HID_Data_Buff[1] = 0;
+
 #endif
     return retval;
 }

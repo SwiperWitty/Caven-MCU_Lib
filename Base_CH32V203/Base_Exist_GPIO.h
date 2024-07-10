@@ -98,8 +98,12 @@
     void Custom_GPIO_Init(int SET);
 #endif
 
+
 /*  Init-Function    */
-//
+void User_GPIO_config(int gpiox,int pin,int set);
+void User_GPIO_set(int gpiox,int pin,int set);
+char User_GPIO_get(int gpiox,int pin);
+
 
 
 #endif

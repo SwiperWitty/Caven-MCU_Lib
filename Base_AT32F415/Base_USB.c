@@ -69,6 +69,14 @@ int USB_Buffer_Receive (uint8_t *data)
     return len;
 }
 
+#ifdef Exist_USB 
+D_Callback_pFun USB_HID_Callback_Fun = NULL;
+void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
+{
+    USB_HID_Callback_Fun = USB_Callback_pFun;
+}
+#endif
+
 int USB_Buffer_Send (const uint8_t *data,int size)
 {
     int temp = 0;

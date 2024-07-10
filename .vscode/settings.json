@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "usb_core.h": "c",
+        "hc595.h": "c",
+        "caven_type.h": "c",
+        "hc138.h": "c"
+    }
+}

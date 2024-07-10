@@ -7,7 +7,7 @@ void MODE_Button_Init (char Channel,int Set)
         case 0:
             break;
         case 1:
-            Button_GPIO_Init(Set);
+            User_GPIO_config(3,BUTTON_IO,0);
             break;
         case 2:
 
@@ -26,7 +26,7 @@ u32 MODE_Get_Button_State_Fun (char Channel)
         case 0:
             break;
         case 1:
-            if (BUTTON_STATE()) {
+            if (User_GPIO_get(3,BUTTON_IO)) {
                 temp |= (0x01 << Channel);
             }
             break;

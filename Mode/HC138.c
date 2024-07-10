@@ -3,7 +3,13 @@
 void MODE_HC138_Init (int SET)
 {
 #ifdef Exist_HC138
-    HC138_GPIO_Init(SET);
+    User_GPIO_config(HC138_GPIO,HC138_D1_IO,1);
+    User_GPIO_config(HC138_GPIO,HC138_D2_IO,1);
+    User_GPIO_config(HC138_GPIO,HC138_D3_IO,1);
+
+    User_GPIO_set(HC138_GPIO,HC138_D1_IO,1);
+    User_GPIO_set(HC138_GPIO,HC138_D2_IO,1);
+    User_GPIO_set(HC138_GPIO,HC138_D3_IO,1);
 #endif
 }
 
@@ -16,28 +22,27 @@ void HC138_Set_Data_Fun (int Data)
     Data--;
     if (Data & 0x01)
     {
-        HC138_D1_H();
+        User_GPIO_set(HC138_GPIO,HC138_D1_IO,1);
     }
     else
     {
-        HC138_D1_L();
+        User_GPIO_set(HC138_GPIO,HC138_D1_IO,0);
     }
     if (Data & 0x02)
     {
-        HC138_D2_H();
+        User_GPIO_set(HC138_GPIO,HC138_D2_IO,1);
     }
     else
     {
-        HC138_D2_L();
+        User_GPIO_set(HC138_GPIO,HC138_D2_IO,0);
     }
     if (Data & 0x04)
     {
-        HC138_D3_H();
+        User_GPIO_set(HC138_GPIO,HC138_D3_IO,1);
     }
     else
     {
-        HC138_D3_L();
+        User_GPIO_set(HC138_GPIO,HC138_D3_IO,0);
     }
-//    printf("asd %d \r\n",Data);
 #endif
 }

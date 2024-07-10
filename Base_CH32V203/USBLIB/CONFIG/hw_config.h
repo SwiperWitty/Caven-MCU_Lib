@@ -18,7 +18,7 @@
 // #else
 // #define printf_usb(X...)
 // #endif 
-
+typedef void (*D_Callback_pFun) (void *data);
 
 void Set_USBConfig(void);
 void Enter_LowPowerMode(void);

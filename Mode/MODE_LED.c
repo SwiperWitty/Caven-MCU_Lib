@@ -1,11 +1,11 @@
-#include <MODE_LED.h>
+#include "MODE_LED.h"
 
 
 void MODE_LED_Init(int SET)
 {
 #ifdef Exist_LED
-    LED_GPIO_Init(SET);
-    
+    User_GPIO_config(1,LED_IO,1);
+    User_GPIO_set(1,LED_IO,1);
 #endif
 }
 
@@ -15,9 +15,9 @@ void MODE_LED_SET_Fun(char Channel,int SET)
     switch (Channel) {
         case 1:
             if(SET)
-                LED_L();
+                User_GPIO_set(1,LED_IO,0);
             else
-                LED_H();
+                User_GPIO_set(1,LED_IO,1);
             break;
 
         default:
@@ -35,9 +35,9 @@ void WS2812_Delay(int time)
 void WS2812_Reset (void)
 {
 #ifdef Exist_LED
-	LED_L();
+	User_GPIO_set(1,LED_IO,0);
 	WS2812_Delay(60);
-	LED_H();
+	User_GPIO_set(1,LED_IO,1);
 #endif
 }
 
@@ -49,20 +49,20 @@ void WS2812_write_byte(char data)
 	{
 	    if((temp << i) & 0x80)
 	    {
-	        LED_H();
+	        User_GPIO_set(1,LED_IO,1);
 	        WS2812_Delay(7);
-	        LED_L();
+	        User_GPIO_set(1,LED_IO,0);
 	        WS2812_Delay(3);
 	    }
 	    else
 	    {
-            LED_H();
+            User_GPIO_set(1,LED_IO,1);
             WS2812_Delay(3);
-            LED_L();
+            User_GPIO_set(1,LED_IO,0);
 	        WS2812_Delay(6);
         }
 	}
-	LED_L();
+	User_GPIO_set(1,LED_IO,0);
 #endif
 }
 
