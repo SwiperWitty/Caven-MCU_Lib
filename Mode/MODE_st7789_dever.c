@@ -410,7 +410,6 @@ void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16
             y_end = (y2);
         }
         retval = 1;
-        break;
     }
     break;
     case 13: // 1.3
@@ -437,8 +436,8 @@ void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16
             y_end = (y2);
         }
         retval = 1;
-        break;
     }
+	break;
     case 14: // 1.69
     {
         if (LCD_Horizontal == 1)
@@ -701,6 +700,7 @@ int MODE_st7789_dever_Init(int set)
         LCD_WR_CMD(0x11); // Sleep Out
         LCD_WR_CMD(0x29); // Display On
     }
+	break;
     case 15: // 1.90
     {
         LCD_WR_CMD(0x3A); /* RGB 5-6-5-bit  */
