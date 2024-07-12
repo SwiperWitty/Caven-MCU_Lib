@@ -2,27 +2,175 @@
 
 static uint8_t LCD_Horizontal = 0;
 static char LCD_Target_Model = 0;
-
+int flag_dc = 0;
 
 #ifdef Exist_LCD
 void st7789_dever_gpio_init(int set)
 {
-    User_GPIO_config(1, 10, 1); // PA10 out DC
-    User_GPIO_config(2, 0, 1);  // PB0  out RES
-	// User_GPIO_config(2, 1, 1);  // PB1  out nss2
-	// User_GPIO_config(2, 14, 1);	// PB12	out DC2
-    // User_GPIO_set(2, 1, 1);
-    // User_GPIO_set(2, 14, 1);
-    User_GPIO_set(1, 10, 1);
-    User_GPIO_set(2, 0, 1);
+    if (set)
+    {
+#if (PIN_LCD_DC != (-1))
+#ifdef CONFIG_IDF_TARGET_ESP32
+        gpio_pad_select_gpio(PIN_LCD_DC);
+        gpio_set_direction(PIN_LCD_DC, GPIO_MODE_OUTPUT);
+        gpio_set_level(PIN_LCD_DC, 1);
+#else
+        User_GPIO_config(1, PIN_LCD_DC, 1); // PA10 out DC
+        User_GPIO_set(1, PIN_LCD_DC, 1);
+#endif
+#endif
+
+#if (PIN_LCD_RST != (-1))
+#ifdef CONFIG_IDF_TARGET_ESP32
+        gpio_pad_select_gpio(PIN_LCD_RST);
+        gpio_set_direction(PIN_LCD_RST, GPIO_MODE_OUTPUT);
+        gpio_set_level(PIN_LCD_RST, 1);
+#else
+        User_GPIO_config(2, PIN_LCD_RST, 1); // PB0  out RES
+        User_GPIO_set(2, PIN_LCD_RST, 1);
+#endif
+#endif
+
+#if (PIN_LCD_CS != (-1))
+#ifdef CONFIG_IDF_TARGET_ESP32
+        gpio_pad_select_gpio(PIN_LCD_CS);
+        gpio_set_direction(PIN_LCD_CS, GPIO_MODE_OUTPUT);
+        gpio_set_level(PIN_LCD_CS, 0);
+#else
+        User_GPIO_config(2, PIN_LCD_CS, 1);
+        User_GPIO_set(2, PIN_LCD_CS, 1);
+#endif
+#endif
+    }
+    else
+    {
+    }
 }
 
 void st7789_dever_delay(int time)
 {
+#ifdef CONFIG_IDF_TARGET_ESP32
+    vTaskDelay(time);
+#else
+#ifdef NOP
     SYS_Base_Delay(time, 10000);
+#endif
+#endif
 }
 
+#ifdef CONFIG_IDF_TARGET_ESP32
+
+#define MODE_st7789_dever_Writ_Bus(x) LCD_Writ_Bus(x)
+#define MODE_st7789_dever_GPIO_CS(x) gpio_set_level(PIN_LCD_CS, x);
+#define MODE_st7789_dever_GPIO_DC(x) gpio_set_level(PIN_LCD_DC, x);
+#define MODE_st7789_dever_GPIO_RST(x) gpio_set_level(PIN_LCD_RST, x);
+
+void preposition_DC_Fun(spi_transaction_t *t)
+{
+    if (flag_dc)
+    {
+        MODE_st7789_dever_GPIO_DC(1);
+    }
+    else
+    {
+        MODE_st7789_dever_GPIO_DC(0);
+    }
+}
+
+spi_device_handle_t LCD_spi = {0};
+int Base_SPI_Init(int Set)
+{
+    int retval = 0;
+    if (Set)
+    {
+        esp_err_t ret;
+        spi_bus_config_t buscfg = {
+            .miso_io_num = PIN_LCD_MISO,
+            .mosi_io_num = PIN_LCD_MOSI,
+            .sclk_io_num = PIN_LCD_CLK,
+            .quadwp_io_num = -1,
+            .quadhd_io_num = -1,
+            .max_transfer_sz = (16 * 320 * 2 + 8)};
+        spi_device_interface_config_t devcfg = {
+            .clock_speed_hz = 26 * 1000 * 1000, // Clock out at 26 MHz
+            .mode = 3,                          // SPI mode 0-3
+            .spics_io_num = -1,                 // CS pin
+            .queue_size = 7,                    // We want to be able to queue 7 transactions at a time
+            .pre_cb = preposition_DC_Fun,       // 传输开始时的回调函数
+        };
+        // Initialize the SPI bus
+        ret = spi_bus_initialize(LCD_HOST, &buscfg, SPI_DMA_CH_AUTO);
+        ESP_ERROR_CHECK(ret);
+        // Attach the LCD to the SPI bus
+        ret = spi_bus_add_device(LCD_HOST, &devcfg, &LCD_spi);
+        ESP_ERROR_CHECK(ret);
+    }
+    else
+    {
+    }
+    return retval;
+}
+
+static void EPS_SPI_SendData(const uint8_t *data, int num, int cmd)
+{
+    esp_err_t ret;
+    spi_transaction_t t;
+    int send_size = 0;
+
+    if (data == 0)
+    {
+        return;
+    }
+
+    memset(&t, 0, sizeof(t)); // Zero out the transaction
+    if (cmd)
+    {
+        t.user = (void *)1;
+    }
+    else
+    {
+        t.user = (void *)0;
+    }
+    send_size = 8 * num;
+    t.length = send_size;                           // Len is in bytes, transaction length is in bits.
+    t.tx_buffer = data;                             // Data
+    ret = spi_device_polling_transmit(LCD_spi, &t); // Transmit!
+    // ret = spi_device_transmit(LCD_spi, &t);			// Transmit!
+
+    assert(ret == ESP_OK);
+    if (ret == ESP_OK)
+    {
+        // printf("spi send run : %d \n",num);
+    }
+}
+
+static void LCD_Writ_Bus(uint8_t data)
+{
+    // SPI_Send_DATA(data);
+    esp_err_t ret;
+    spi_transaction_t t;
+
+    memset(&t, 0, sizeof(t));                       // Zero out the transaction
+    t.length = 1 * 8;                               // Len is in bytes, transaction length is in bits.
+    t.tx_buffer = &data;                            // Data
+    ret = spi_device_polling_transmit(LCD_spi, &t); // Transmit!
+    assert(ret == ESP_OK);                          // Should have had no issues.
+}
+
+#else
 #define MODE_st7789_dever_Writ_Bus(x) Base_SPI_Send_Data(m_SPI_CH2, x)
+#define MODE_st7789_dever_GPIO_CS(x) Base_SPI_CS_Set(m_SPI_CH2, 1, x);
+#define MODE_st7789_dever_GPIO_DC(x) User_GPIO_set(1, PIN_LCD_DC, x);
+#define MODE_st7789_dever_GPIO_RST(x) User_GPIO_set(0, PIN_LCD_RST, x);
+#endif
+
+void set_flag_dc(int n)
+{
+    flag_dc = n;
+#ifndef CONFIG_IDF_TARGET_ESP32
+    MODE_st7789_dever_GPIO_DC(n); // 写命令
+#endif
+}
 
 /*
     支持同型号同时使用
@@ -33,21 +181,10 @@ void MODE_st7789_dever_CS(uint8_t data)
     switch (LCD_Target_Model)
     {
     case 11:
-        Base_SPI_CS_Set(m_SPI_CH2, 1, data);
-        break;
-    case 12:
-        Base_SPI_CS_Set(m_SPI_CH2, 1, data);
-        break;
-    case 13:
-        Base_SPI_CS_Set(m_SPI_CH2, 1, data);
-        break;
-    case 14:
-        Base_SPI_CS_Set(m_SPI_CH2, 1, data);
-        break;
-    case 15:
-        Base_SPI_CS_Set(m_SPI_CH2, 1, data);
+        // MODE_st7789_dever_GPIO_CS(data);
         break;
     default:
+        // MODE_st7789_dever_GPIO_CS(data);
         break;
     }
 #endif
@@ -63,21 +200,10 @@ void MODE_st7789_dever_RST(uint8_t data)
     switch (LCD_Target_Model)
     {
     case 11:
-        User_GPIO_set(2, 0, data);
-        break;
-    case 12:
-        User_GPIO_set(2, 0, data);
-        break;
-    case 13:
-        User_GPIO_set(2, 0, data);
-        break;
-    case 14:
-        User_GPIO_set(2, 0, data);
-        break;
-    case 15:
-        User_GPIO_set(2, 0, data);
+        MODE_st7789_dever_GPIO_RST(data);
         break;
     default:
+        MODE_st7789_dever_GPIO_RST(data);
         break;
     }
 #endif
@@ -91,9 +217,9 @@ void MODE_st7789_dever_RST(uint8_t data)
 static void LCD_WR_CMD(uint8_t data)
 {
     MODE_st7789_dever_CS(1);
-    User_GPIO_set(1, 10, 0); // 写命令
+    set_flag_dc(0);
     MODE_st7789_dever_Writ_Bus(data);
-    User_GPIO_set(1, 10, 1); // 写数据	预备
+    set_flag_dc(1);
     // MODE_st7789_dever_CS(0); // 写命令之后必然要写数据，所以不要取消片选
 }
 
@@ -151,222 +277,226 @@ void MODE_st7789_dever_Send_Data(uint8_t *data, int num)
 {
 #ifdef Exist_LCD
     MODE_st7789_dever_CS(1); // 写数据之前必然要写命令，所以不要开启片选
+#ifdef CONFIG_IDF_TARGET_ESP32
+    EPS_SPI_SendData(data, num, 1);
+#else
     Base_SPI_DMA_Send_Data(m_SPI_CH2, data, num);
+#endif
 //	MODE_st7789_dever_CS (0);   // 应该被中断处理了
 #endif
 }
 
-void MODE_st7789_dever_1_28_config (void)
+void MODE_st7789_dever_1_28_config(void)
 {
 #ifdef Exist_LCD
-	LCD_WR_CMD(0xEF);
-	LCD_WR_CMD(0xEB);
-	MODE_st7789_dever_Writ_Bus(0x14); 
-    
-    LCD_WR_CMD(0xFE);			 
-	LCD_WR_CMD(0xEF); 
-	LCD_WR_CMD(0xEB);	
-	MODE_st7789_dever_Writ_Bus(0x14); 
-	LCD_WR_CMD(0x84);			
-	MODE_st7789_dever_Writ_Bus(0x40); 
-	LCD_WR_CMD(0x85);			
-	MODE_st7789_dever_Writ_Bus(0xFF); 
-	LCD_WR_CMD(0x86);			
-	MODE_st7789_dever_Writ_Bus(0xFF); 
-	LCD_WR_CMD(0x87);			
-	MODE_st7789_dever_Writ_Bus(0xFF);
-	LCD_WR_CMD(0x88);			
-	MODE_st7789_dever_Writ_Bus(0x0A);
-	LCD_WR_CMD(0x89);			
-	MODE_st7789_dever_Writ_Bus(0x21); 
-	LCD_WR_CMD(0x8A);			
-	MODE_st7789_dever_Writ_Bus(0x00); 
-	LCD_WR_CMD(0x8B);			
-	MODE_st7789_dever_Writ_Bus(0x80); 
-	LCD_WR_CMD(0x8C);			
-	MODE_st7789_dever_Writ_Bus(0x01); 
-	LCD_WR_CMD(0x8D);			
-	MODE_st7789_dever_Writ_Bus(0x01); 
-	LCD_WR_CMD(0x8E);			
-	MODE_st7789_dever_Writ_Bus(0xFF); 
-	LCD_WR_CMD(0x8F);			
-	MODE_st7789_dever_Writ_Bus(0xFF); 
+    LCD_WR_CMD(0xEF);
+    LCD_WR_CMD(0xEB);
+    MODE_st7789_dever_Writ_Bus(0x14);
 
-	LCD_WR_CMD(0xB6);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x20);
+    LCD_WR_CMD(0xFE);
+    LCD_WR_CMD(0xEF);
+    LCD_WR_CMD(0xEB);
+    MODE_st7789_dever_Writ_Bus(0x14);
+    LCD_WR_CMD(0x84);
+    MODE_st7789_dever_Writ_Bus(0x40);
+    LCD_WR_CMD(0x85);
+    MODE_st7789_dever_Writ_Bus(0xFF);
+    LCD_WR_CMD(0x86);
+    MODE_st7789_dever_Writ_Bus(0xFF);
+    LCD_WR_CMD(0x87);
+    MODE_st7789_dever_Writ_Bus(0xFF);
+    LCD_WR_CMD(0x88);
+    MODE_st7789_dever_Writ_Bus(0x0A);
+    LCD_WR_CMD(0x89);
+    MODE_st7789_dever_Writ_Bus(0x21);
+    LCD_WR_CMD(0x8A);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    LCD_WR_CMD(0x8B);
+    MODE_st7789_dever_Writ_Bus(0x80);
+    LCD_WR_CMD(0x8C);
+    MODE_st7789_dever_Writ_Bus(0x01);
+    LCD_WR_CMD(0x8D);
+    MODE_st7789_dever_Writ_Bus(0x01);
+    LCD_WR_CMD(0x8E);
+    MODE_st7789_dever_Writ_Bus(0xFF);
+    LCD_WR_CMD(0x8F);
+    MODE_st7789_dever_Writ_Bus(0xFF);
 
-	LCD_WR_CMD(0x36);
+    LCD_WR_CMD(0xB6);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x20);
 
-	switch (LCD_Horizontal)
-	{
-	case 0:
-		MODE_st7789_dever_Writ_Bus(0x08);
-		break;
-	case 1:
-		MODE_st7789_dever_Writ_Bus(0xC8);
-		break;
-	case 2:
-		MODE_st7789_dever_Writ_Bus(0x68);
-		break;
-	default:
-		MODE_st7789_dever_Writ_Bus(0xA8);
-		break;
-	}
-	LCD_WR_CMD(0x3A);			
-	MODE_st7789_dever_Writ_Bus(0x05); 
+    LCD_WR_CMD(0x36);
 
-	LCD_WR_CMD(0x90);			
-	MODE_st7789_dever_Writ_Bus(0x08);
-	MODE_st7789_dever_Writ_Bus(0x08);
-	MODE_st7789_dever_Writ_Bus(0x08);
-	MODE_st7789_dever_Writ_Bus(0x08); 
-	LCD_WR_CMD(0xBD);			
-	MODE_st7789_dever_Writ_Bus(0x06);
-	LCD_WR_CMD(0xBC);			
-	MODE_st7789_dever_Writ_Bus(0x00);	
-	LCD_WR_CMD(0xFF);			
-	MODE_st7789_dever_Writ_Bus(0x60);
-	MODE_st7789_dever_Writ_Bus(0x01);
-	MODE_st7789_dever_Writ_Bus(0x04);
-	LCD_WR_CMD(0xC3);			
-	MODE_st7789_dever_Writ_Bus(0x13);
-	LCD_WR_CMD(0xC4);			
-	MODE_st7789_dever_Writ_Bus(0x13);
-	LCD_WR_CMD(0xC9);			
-	MODE_st7789_dever_Writ_Bus(0x22);
-	LCD_WR_CMD(0xBE);			
-	MODE_st7789_dever_Writ_Bus(0x11); 
-	LCD_WR_CMD(0xE1);			
-	MODE_st7789_dever_Writ_Bus(0x10);
-	MODE_st7789_dever_Writ_Bus(0x0E);
-	LCD_WR_CMD(0xDF);			
-	MODE_st7789_dever_Writ_Bus(0x21);
-	MODE_st7789_dever_Writ_Bus(0x0c);
-	MODE_st7789_dever_Writ_Bus(0x02);
-	LCD_WR_CMD(0xF0);   
-	MODE_st7789_dever_Writ_Bus(0x45);
-	MODE_st7789_dever_Writ_Bus(0x09);
-	MODE_st7789_dever_Writ_Bus(0x08);
-	MODE_st7789_dever_Writ_Bus(0x08);
-	MODE_st7789_dever_Writ_Bus(0x26);
- 	MODE_st7789_dever_Writ_Bus(0x2A);
- 	LCD_WR_CMD(0xF1);    
- 	MODE_st7789_dever_Writ_Bus(0x43);
- 	MODE_st7789_dever_Writ_Bus(0x70);
- 	MODE_st7789_dever_Writ_Bus(0x72);
- 	MODE_st7789_dever_Writ_Bus(0x36);
- 	MODE_st7789_dever_Writ_Bus(0x37);  
- 	MODE_st7789_dever_Writ_Bus(0x6F);
+    switch (LCD_Horizontal)
+    {
+    case 0:
+        MODE_st7789_dever_Writ_Bus(0x08);
+        break;
+    case 1:
+        MODE_st7789_dever_Writ_Bus(0xC8);
+        break;
+    case 2:
+        MODE_st7789_dever_Writ_Bus(0x68);
+        break;
+    default:
+        MODE_st7789_dever_Writ_Bus(0xA8);
+        break;
+    }
+    LCD_WR_CMD(0x3A);
+    MODE_st7789_dever_Writ_Bus(0x05);
 
- 	LCD_WR_CMD(0xF2);   
- 	MODE_st7789_dever_Writ_Bus(0x45);
- 	MODE_st7789_dever_Writ_Bus(0x09);
- 	MODE_st7789_dever_Writ_Bus(0x08);
- 	MODE_st7789_dever_Writ_Bus(0x08);
- 	MODE_st7789_dever_Writ_Bus(0x26);
- 	MODE_st7789_dever_Writ_Bus(0x2A);
+    LCD_WR_CMD(0x90);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    LCD_WR_CMD(0xBD);
+    MODE_st7789_dever_Writ_Bus(0x06);
+    LCD_WR_CMD(0xBC);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    LCD_WR_CMD(0xFF);
+    MODE_st7789_dever_Writ_Bus(0x60);
+    MODE_st7789_dever_Writ_Bus(0x01);
+    MODE_st7789_dever_Writ_Bus(0x04);
+    LCD_WR_CMD(0xC3);
+    MODE_st7789_dever_Writ_Bus(0x13);
+    LCD_WR_CMD(0xC4);
+    MODE_st7789_dever_Writ_Bus(0x13);
+    LCD_WR_CMD(0xC9);
+    MODE_st7789_dever_Writ_Bus(0x22);
+    LCD_WR_CMD(0xBE);
+    MODE_st7789_dever_Writ_Bus(0x11);
+    LCD_WR_CMD(0xE1);
+    MODE_st7789_dever_Writ_Bus(0x10);
+    MODE_st7789_dever_Writ_Bus(0x0E);
+    LCD_WR_CMD(0xDF);
+    MODE_st7789_dever_Writ_Bus(0x21);
+    MODE_st7789_dever_Writ_Bus(0x0c);
+    MODE_st7789_dever_Writ_Bus(0x02);
+    LCD_WR_CMD(0xF0);
+    MODE_st7789_dever_Writ_Bus(0x45);
+    MODE_st7789_dever_Writ_Bus(0x09);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x26);
+    MODE_st7789_dever_Writ_Bus(0x2A);
+    LCD_WR_CMD(0xF1);
+    MODE_st7789_dever_Writ_Bus(0x43);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x72);
+    MODE_st7789_dever_Writ_Bus(0x36);
+    MODE_st7789_dever_Writ_Bus(0x37);
+    MODE_st7789_dever_Writ_Bus(0x6F);
 
- 	LCD_WR_CMD(0xF3);   
- 	MODE_st7789_dever_Writ_Bus(0x43);
- 	MODE_st7789_dever_Writ_Bus(0x70);
- 	MODE_st7789_dever_Writ_Bus(0x72);
- 	MODE_st7789_dever_Writ_Bus(0x36);
- 	MODE_st7789_dever_Writ_Bus(0x37); 
- 	MODE_st7789_dever_Writ_Bus(0x6F);
+    LCD_WR_CMD(0xF2);
+    MODE_st7789_dever_Writ_Bus(0x45);
+    MODE_st7789_dever_Writ_Bus(0x09);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x26);
+    MODE_st7789_dever_Writ_Bus(0x2A);
 
-	LCD_WR_CMD(0xED);	
-	MODE_st7789_dever_Writ_Bus(0x1B); 
-	MODE_st7789_dever_Writ_Bus(0x0B); 
-	LCD_WR_CMD(0xAE);			
-	MODE_st7789_dever_Writ_Bus(0x77);
-	LCD_WR_CMD(0xCD);			
-	MODE_st7789_dever_Writ_Bus(0x63);
-	LCD_WR_CMD(0x70);			
-	MODE_st7789_dever_Writ_Bus(0x07);
-	MODE_st7789_dever_Writ_Bus(0x07);
-	MODE_st7789_dever_Writ_Bus(0x04);
-	MODE_st7789_dever_Writ_Bus(0x0E); 
-	MODE_st7789_dever_Writ_Bus(0x0F); 
-	MODE_st7789_dever_Writ_Bus(0x09);
-	MODE_st7789_dever_Writ_Bus(0x07);
-	MODE_st7789_dever_Writ_Bus(0x08);
-	MODE_st7789_dever_Writ_Bus(0x03);
-	LCD_WR_CMD(0xE8);			
-	MODE_st7789_dever_Writ_Bus(0x34);
-	LCD_WR_CMD(0x62);			
-	MODE_st7789_dever_Writ_Bus(0x18);
-	MODE_st7789_dever_Writ_Bus(0x0D);
-	MODE_st7789_dever_Writ_Bus(0x71);
-	MODE_st7789_dever_Writ_Bus(0xED);
-	MODE_st7789_dever_Writ_Bus(0x70); 
-	MODE_st7789_dever_Writ_Bus(0x70);
-	MODE_st7789_dever_Writ_Bus(0x18);
-	MODE_st7789_dever_Writ_Bus(0x0F);
-	MODE_st7789_dever_Writ_Bus(0x71);
-	MODE_st7789_dever_Writ_Bus(0xEF);
-	MODE_st7789_dever_Writ_Bus(0x70); 
-	MODE_st7789_dever_Writ_Bus(0x70);
-	LCD_WR_CMD(0x63);			
-	MODE_st7789_dever_Writ_Bus(0x18);
-	MODE_st7789_dever_Writ_Bus(0x11);
-	MODE_st7789_dever_Writ_Bus(0x71);
-	MODE_st7789_dever_Writ_Bus(0xF1);
-	MODE_st7789_dever_Writ_Bus(0x70); 
-	MODE_st7789_dever_Writ_Bus(0x70);
-	MODE_st7789_dever_Writ_Bus(0x18);
-	MODE_st7789_dever_Writ_Bus(0x13);
-	MODE_st7789_dever_Writ_Bus(0x71);
-	MODE_st7789_dever_Writ_Bus(0xF3);
-	MODE_st7789_dever_Writ_Bus(0x70); 
-	MODE_st7789_dever_Writ_Bus(0x70);
-	LCD_WR_CMD(0x64);			
-	MODE_st7789_dever_Writ_Bus(0x28);
-	MODE_st7789_dever_Writ_Bus(0x29);
-	MODE_st7789_dever_Writ_Bus(0xF1);
-	MODE_st7789_dever_Writ_Bus(0x01);
-	MODE_st7789_dever_Writ_Bus(0xF1);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x07);
-	LCD_WR_CMD(0x66);			
-	MODE_st7789_dever_Writ_Bus(0x3C);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0xCD);
-	MODE_st7789_dever_Writ_Bus(0x67);
-	MODE_st7789_dever_Writ_Bus(0x45);
-	MODE_st7789_dever_Writ_Bus(0x45);
-	MODE_st7789_dever_Writ_Bus(0x10);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	LCD_WR_CMD(0x67);			
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x3C);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x00);
-	MODE_st7789_dever_Writ_Bus(0x01);
-	MODE_st7789_dever_Writ_Bus(0x54);
-	MODE_st7789_dever_Writ_Bus(0x10);
-	MODE_st7789_dever_Writ_Bus(0x32);
-	MODE_st7789_dever_Writ_Bus(0x98);
-	LCD_WR_CMD(0x74);			
-	MODE_st7789_dever_Writ_Bus(0x10);	
-	MODE_st7789_dever_Writ_Bus(0x85);	
-	MODE_st7789_dever_Writ_Bus(0x80);
-	MODE_st7789_dever_Writ_Bus(0x00); 
-	MODE_st7789_dever_Writ_Bus(0x00); 
-	MODE_st7789_dever_Writ_Bus(0x4E);
-	MODE_st7789_dever_Writ_Bus(0x00);
-    LCD_WR_CMD(0x98);			
-	MODE_st7789_dever_Writ_Bus(0x3e);
-	MODE_st7789_dever_Writ_Bus(0x07);
+    LCD_WR_CMD(0xF3);
+    MODE_st7789_dever_Writ_Bus(0x43);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x72);
+    MODE_st7789_dever_Writ_Bus(0x36);
+    MODE_st7789_dever_Writ_Bus(0x37);
+    MODE_st7789_dever_Writ_Bus(0x6F);
 
-	LCD_WR_CMD(0x35);	
-	LCD_WR_CMD(0x21);
-	LCD_WR_CMD(0x11);
-	st7789_dever_delay(120);
-	LCD_WR_CMD(0x29);
+    LCD_WR_CMD(0xED);
+    MODE_st7789_dever_Writ_Bus(0x1B);
+    MODE_st7789_dever_Writ_Bus(0x0B);
+    LCD_WR_CMD(0xAE);
+    MODE_st7789_dever_Writ_Bus(0x77);
+    LCD_WR_CMD(0xCD);
+    MODE_st7789_dever_Writ_Bus(0x63);
+    LCD_WR_CMD(0x70);
+    MODE_st7789_dever_Writ_Bus(0x07);
+    MODE_st7789_dever_Writ_Bus(0x07);
+    MODE_st7789_dever_Writ_Bus(0x04);
+    MODE_st7789_dever_Writ_Bus(0x0E);
+    MODE_st7789_dever_Writ_Bus(0x0F);
+    MODE_st7789_dever_Writ_Bus(0x09);
+    MODE_st7789_dever_Writ_Bus(0x07);
+    MODE_st7789_dever_Writ_Bus(0x08);
+    MODE_st7789_dever_Writ_Bus(0x03);
+    LCD_WR_CMD(0xE8);
+    MODE_st7789_dever_Writ_Bus(0x34);
+    LCD_WR_CMD(0x62);
+    MODE_st7789_dever_Writ_Bus(0x18);
+    MODE_st7789_dever_Writ_Bus(0x0D);
+    MODE_st7789_dever_Writ_Bus(0x71);
+    MODE_st7789_dever_Writ_Bus(0xED);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x18);
+    MODE_st7789_dever_Writ_Bus(0x0F);
+    MODE_st7789_dever_Writ_Bus(0x71);
+    MODE_st7789_dever_Writ_Bus(0xEF);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    LCD_WR_CMD(0x63);
+    MODE_st7789_dever_Writ_Bus(0x18);
+    MODE_st7789_dever_Writ_Bus(0x11);
+    MODE_st7789_dever_Writ_Bus(0x71);
+    MODE_st7789_dever_Writ_Bus(0xF1);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x18);
+    MODE_st7789_dever_Writ_Bus(0x13);
+    MODE_st7789_dever_Writ_Bus(0x71);
+    MODE_st7789_dever_Writ_Bus(0xF3);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    MODE_st7789_dever_Writ_Bus(0x70);
+    LCD_WR_CMD(0x64);
+    MODE_st7789_dever_Writ_Bus(0x28);
+    MODE_st7789_dever_Writ_Bus(0x29);
+    MODE_st7789_dever_Writ_Bus(0xF1);
+    MODE_st7789_dever_Writ_Bus(0x01);
+    MODE_st7789_dever_Writ_Bus(0xF1);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x07);
+    LCD_WR_CMD(0x66);
+    MODE_st7789_dever_Writ_Bus(0x3C);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0xCD);
+    MODE_st7789_dever_Writ_Bus(0x67);
+    MODE_st7789_dever_Writ_Bus(0x45);
+    MODE_st7789_dever_Writ_Bus(0x45);
+    MODE_st7789_dever_Writ_Bus(0x10);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    LCD_WR_CMD(0x67);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x3C);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x01);
+    MODE_st7789_dever_Writ_Bus(0x54);
+    MODE_st7789_dever_Writ_Bus(0x10);
+    MODE_st7789_dever_Writ_Bus(0x32);
+    MODE_st7789_dever_Writ_Bus(0x98);
+    LCD_WR_CMD(0x74);
+    MODE_st7789_dever_Writ_Bus(0x10);
+    MODE_st7789_dever_Writ_Bus(0x85);
+    MODE_st7789_dever_Writ_Bus(0x80);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    MODE_st7789_dever_Writ_Bus(0x4E);
+    MODE_st7789_dever_Writ_Bus(0x00);
+    LCD_WR_CMD(0x98);
+    MODE_st7789_dever_Writ_Bus(0x3e);
+    MODE_st7789_dever_Writ_Bus(0x07);
+
+    LCD_WR_CMD(0x35);
+    LCD_WR_CMD(0x21);
+    LCD_WR_CMD(0x11);
+    st7789_dever_delay(120);
+    LCD_WR_CMD(0x29);
     st7789_dever_delay(100);
 #endif
 }
@@ -437,7 +567,7 @@ void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16
         }
         retval = 1;
     }
-	break;
+    break;
     case 14: // 1.69
     {
         if (LCD_Horizontal == 1)
@@ -505,26 +635,30 @@ int MODE_st7789_dever_Init(int set)
         retval = 1;
         return retval;
     }
-        
+
     st7789_dever_gpio_init(set);
     MODE_st7789_dever_RST(0);
+#ifdef CONFIG_IDF_TARGET_ESP32
+    Base_SPI_Init(set);
+#else
     Base_SPI_Init(m_SPI_CH2, 8, set);
+#endif
     st7789_dever_delay(50);
-	// st7789_dever_gpio_init(set);
+    // st7789_dever_gpio_init(set);
     MODE_st7789_dever_Writ_Bus(0x00);
 
     st7789_dever_delay(200);
     MODE_st7789_dever_RST(1);
     st7789_dever_delay(100);
-    
+
     //************* Start Initial Sequence **********//
     if (LCD_Target_Model == 12)
     {
-        MODE_st7789_dever_1_28_config ();
+        MODE_st7789_dever_1_28_config();
         retval = 0;
         return retval;
     }
-    
+
     LCD_WR_CMD(0x36); // res
     switch (LCD_Horizontal)
     {
@@ -547,10 +681,9 @@ int MODE_st7789_dever_Init(int set)
     case 11:
         /* code */
         break;
-    case 12:        // 1.28
-    {
-    }
-    break;
+    case 12: // 1.28
+        /* other */
+        break;
     case 13: // 1.3
     {
         LCD_WR_CMD(0x3A);
@@ -700,7 +833,7 @@ int MODE_st7789_dever_Init(int set)
         LCD_WR_CMD(0x11); // Sleep Out
         LCD_WR_CMD(0x29); // Display On
     }
-	break;
+    break;
     case 15: // 1.90
     {
         LCD_WR_CMD(0x3A); /* RGB 5-6-5-bit  */
@@ -775,7 +908,7 @@ int MODE_st7789_dever_Init(int set)
         retval = 1;
         break;
     }
-    MODE_st7789_dever_CS(0);    // important
+    MODE_st7789_dever_CS(0); // important
     st7789_dever_delay(100);
 #endif
     return retval;

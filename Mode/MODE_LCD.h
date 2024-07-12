@@ -15,7 +15,11 @@ extern uint16_t LCD_W_Max;
 extern uint16_t LCD_H_Max;
 extern int LCD_PicSize;
 
-//画笔颜色
+#ifndef LVGL_LIB
+    #define LCD_LIB_ASCII
+#endif
+
+// 画笔颜色
 #define LCD_WHITE            0xFFFF
 #define LCD_BLACK            0x0000
 #define LCD_BLUE             0x001F

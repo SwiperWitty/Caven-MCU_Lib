@@ -151,27 +151,27 @@ void LCD_Draw_Circle(uint16_t x0, uint16_t y0, char r, uint16_t color)
 */
 void LCD_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, char sizey, char mode)
 {
-#ifdef STRING_ASC
+#ifdef LCD_LIB_ASCII
 	char temp, sizex, t, m = 0;
 	uint16_t i, TypefaceNum; // 一个字符所占字节大小
 	uint16_t x0 = x;
 	sizex = sizey / 2;
 	TypefaceNum = (sizex / 8 + ((sizex % 8) ? 1 : 0)) * sizey;
-	num = num - ' ';											// 得到偏移后的值
+	int temp_num = num - ' ';											// 得到偏移后的值
 	s_LCD_Set_Address_pFun(x, y, x + sizex - 1, y + sizey - 1); // 设置光标位置
 	for (i = 0; i < TypefaceNum; i++)
 	{
 		if (sizey == 16)
 		{
-			temp = ascii_1608[num][i];
+			temp = ascii_1608[temp_num][i];
 		} // 调用8x16字体
 		else if (sizey == 24)
 		{
-			temp = ascii_2412[num][i];
+			temp = ascii_2412[temp_num][i];
 		} // 调用12x24字体
 		else if (sizey == 32)
 		{
-			temp = ascii_3216[num][i];
+			temp = ascii_3216[temp_num][i];
 		} // 调用16x32字体
 		else
 		{
