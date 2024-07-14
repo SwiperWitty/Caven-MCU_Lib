@@ -29,7 +29,7 @@
 #else
 #include "Base.h"
 
-    #define PIN_LCD_CS      (-1)        /* -1 是不使用	*/
+    #define PIN_LCD_CS      (12)        /* PB12	*/
 
     #define PIN_LCD_DC      (10)        // PA10
     #define PIN_LCD_RST     (0)         // PB0

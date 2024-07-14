@@ -178,15 +178,17 @@ void set_flag_dc(int n)
 void MODE_st7789_dever_CS(uint8_t data)
 {
 #ifdef Exist_LCD
+	#if (PIN_LCD_CS != (-1))
     switch (LCD_Target_Model)
     {
     case 11:
-        // MODE_st7789_dever_GPIO_CS(data);
+        MODE_st7789_dever_GPIO_CS(data);
         break;
     default:
-        // MODE_st7789_dever_GPIO_CS(data);
+        MODE_st7789_dever_GPIO_CS(data);
         break;
     }
+	#endif
 #endif
 }
 
@@ -630,10 +632,10 @@ int MODE_st7789_dever_Init(int set)
 {
     int retval = 0;
 #ifdef Exist_LCD
-    if (LCD_Target_Model == 0)
+    if (LCD_Target_Model == 0 && set)
     {
-        retval = 1;
-        return retval;
+		retval = 1;
+		return retval;
     }
 
     st7789_dever_gpio_init(set);
