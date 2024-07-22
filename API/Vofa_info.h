@@ -17,7 +17,7 @@
 #include "stdio.h"
 #endif
 
-int Vofa_JustFloat_Init_Fun (char ch_num,Send_pFun send_fun);
-int Vofa_JustFloat_Show_Fun (float *f_num);
+int Vofa_JustFloat_Init_Fun (Send_pFun send_fun);
+int Vofa_JustFloat_Show_Fun (char ch_num,float *f_num);
 
 #endif
