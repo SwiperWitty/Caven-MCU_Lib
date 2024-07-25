@@ -288,6 +288,21 @@ void MODE_st7789_dever_Send_Data(uint8_t *data, int num)
 #endif
 }
 
+void MODE_st7789_dever_Display(int set)
+{
+#ifdef Exist_LCD
+    if (set)
+    {
+        LCD_WR_CMD(0x29); // Display On
+    }
+    else
+    {
+        LCD_WR_CMD(0x21); // Display Inversion On
+        LCD_WR_CMD(0x11); // Sleep Out
+    }
+#endif
+}
+
 void MODE_st7789_dever_1_28_config(void)
 {
 #ifdef Exist_LCD
@@ -495,11 +510,9 @@ void MODE_st7789_dever_1_28_config(void)
     MODE_st7789_dever_Writ_Bus(0x07);
 
     LCD_WR_CMD(0x35);
-    LCD_WR_CMD(0x21);
-    LCD_WR_CMD(0x11);
-    st7789_dever_delay(120);
-    LCD_WR_CMD(0x29);
+    MODE_st7789_dever_Display(0);
     st7789_dever_delay(100);
+    //end
 #endif
 }
 
@@ -751,10 +764,8 @@ int MODE_st7789_dever_Init(int set)
         MODE_st7789_dever_Writ_Bus(0x1F);
         MODE_st7789_dever_Writ_Bus(0x20);
         MODE_st7789_dever_Writ_Bus(0x23);
-
-        LCD_WR_CMD(0x21); // Display Inversion On
-        LCD_WR_CMD(0x11); // Sleep Out
-        LCD_WR_CMD(0x29); // Display On
+        MODE_st7789_dever_Display(0);
+        //end
     }
     break;
     case 14: // 1.69
@@ -831,9 +842,8 @@ int MODE_st7789_dever_Init(int set)
         MODE_st7789_dever_Writ_Bus(0x00);
         MODE_st7789_dever_Writ_Bus(0x00);
 
-        LCD_WR_CMD(0x21); // Display Inversion On
-        LCD_WR_CMD(0x11); // Sleep Out
-        LCD_WR_CMD(0x29); // Display On
+        MODE_st7789_dever_Display(0);
+        //end
     }
     break;
     case 15: // 1.90
@@ -901,9 +911,8 @@ int MODE_st7789_dever_Init(int set)
         MODE_st7789_dever_Writ_Bus(0x29);
         MODE_st7789_dever_Writ_Bus(0x32);
 
-        LCD_WR_CMD(0x21); // Display Inversion On
-        LCD_WR_CMD(0x11); // Sleep Out
-        LCD_WR_CMD(0x29); // Display On
+        MODE_st7789_dever_Display(0);
+        //end
     }
     break;
     default:

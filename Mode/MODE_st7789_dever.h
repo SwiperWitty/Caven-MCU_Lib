@@ -43,6 +43,7 @@
 */
 
 int MODE_st7789_dever_Init(int set);
+void MODE_st7789_dever_Display(int set);
 
 int MODE_st7789_dever_Set_TargetModel(char set);
 int MODE_st7789_dever_Set_Horizontal(char set);

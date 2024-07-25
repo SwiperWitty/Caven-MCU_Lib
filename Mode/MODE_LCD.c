@@ -448,6 +448,7 @@ int MODE_LCD_Init(int set)
 	}
 	// 4
 	LCD_Fill_Fun(0, 0, LCD_W_Max, LCD_H_Max, LCD_Back_Color);
+	MODE_st7789_dever_Display(1);
 #endif
 	return retval;
 }
