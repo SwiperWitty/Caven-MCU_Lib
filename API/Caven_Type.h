@@ -68,7 +68,7 @@ typedef struct
 }Caven_Date_Type;
 
 /*
-	SYS_Sec 组合 time_us就是系统主时钟 
+	[SYS_Sec]组合[time_us],就是系统主时钟 
 */
 typedef struct
 {
@@ -76,7 +76,7 @@ typedef struct
     U8 minutes;
     U8 second;
     U32 time_us;            // 这里最大 1000 000
-    U32 SYS_Sec;
+    U32 SYS_Sec;            // UTC
 }Caven_Watch_Type;
 
 
@@ -112,13 +112,13 @@ typedef void (*Send_pFun) (U8 *data,int length);
 */
 typedef struct
 {
-    int app_ID;
-    char layer;
-    char cursor;
+    int app_ID;             // APP任务
+    char layer;             // 层级
+    char cursor;            // 光标位置
     char str_switch;
-	char *string;
-    void *p_Data;
-    Caven_Watch_Type Watch;
+	char *string;           // 输出字符
+    void *p_Data;           // 输入指针
+    Caven_Watch_Type Watch; // 时间(里面有utc)
 }Caven_App_Type;
 
 /*
