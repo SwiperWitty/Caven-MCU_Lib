@@ -9,7 +9,7 @@ uint16_t LCD_H_Max = 0;
 int LCD_PicSize = 0;
 
 static char LCD_Target_Model = 0;
-static uint8_t LCD_Horizontal = 0;
+static char LCD_Horizontal = 0;
 
 // Very important 
 static void (*s_LCD_Set_Address_pFun)(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
@@ -50,6 +50,10 @@ void LCD_Draw_Line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t 
 	delta_y = y2 - y1;
 	uRow = x1; // 画线起点坐标
 	uCol = y1;
+	if(LCD_PicSize == 0)
+	{
+		return;
+	}
 	if (delta_x > 0)
 		incx = 1; // 设置单步方向
 	else if (delta_x == 0)
@@ -120,6 +124,10 @@ void LCD_Draw_Circle(uint16_t x0, uint16_t y0, char r, uint16_t color)
 	int a, b;
 	a = 0;
 	b = r;
+	if(LCD_PicSize == 0)
+	{
+		return;
+	}
 	while (a <= b)
 	{
 		LCD_Draw_Point(x0 - b, y0 - a, color); // 3
@@ -151,14 +159,20 @@ void LCD_Draw_Circle(uint16_t x0, uint16_t y0, char r, uint16_t color)
 */
 void LCD_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, char sizey, char mode)
 {
-#ifdef LCD_LIB_ASCII
+#ifdef Exist_LCD
+	#if LCD_LIB_ASCII
 	char temp, sizex, t, m = 0;
 	uint16_t i, TypefaceNum; // 一个字符所占字节大小
 	uint16_t x0 = x;
+	int temp_num;
+	if(LCD_PicSize == 0)
+	{
+		return;
+	}
 	sizex = sizey / 2;
 	TypefaceNum = (sizex / 8 + ((sizex % 8) ? 1 : 0)) * sizey;
-	int temp_num = num - ' ';											// 得到偏移后的值
-	s_LCD_Set_Address_pFun(x, y, x + sizex - 1, y + sizey - 1); // 设置光标位置
+	temp_num = num - ' ';	// 得到偏移后的值
+	s_LCD_Set_Address_pFun(x, y, x + sizex - 1, y + sizey - 1);	// 设置光标位置
 	for (i = 0; i < TypefaceNum; i++)
 	{
 		if (sizey == 16)
@@ -212,6 +226,7 @@ void LCD_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, c
 			}
 		}
 	}
+	#endif
 #endif
 }
 
@@ -258,6 +273,10 @@ void LCD_Fill_Fun(uint16_t x_sta, uint16_t y_sta, uint16_t x_end, uint16_t y_end
 	int temp_num = 0;
 	uint8_t color_l = 0xff & color;
 	uint8_t color_h = (color >> 8) & 0xff;
+	if(LCD_PicSize == 0)
+	{
+		return;
+	}
 	s_LCD_Set_Address_pFun(x_sta, y_sta, x_end - 1, y_end - 1); // 设置显示范围
 
 	for (int i = 0; i < y_len; i++)
@@ -289,7 +308,10 @@ void LCD_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, c
 	int temp_run = 0;
 	uint8_t pic_buff[650]; /* 一个y 320 * 2	*/
 	uint16_t temp_data;
-
+	if(LCD_PicSize == 0)
+	{
+		return;
+	}
 	s_LCD_Set_Address_pFun(x, y, (x + length - 1), (y + width - 1));
 
 	for (int i = 0; i < length; i++)

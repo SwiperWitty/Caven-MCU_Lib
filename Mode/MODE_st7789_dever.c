@@ -1,8 +1,8 @@
 #include "MODE_st7789_dever.h"
 
-static uint8_t LCD_Horizontal = 0;
+static char LCD_Horizontal = 0;
 static char LCD_Target_Model = 0;
-int flag_dc = 0;
+static char flag_dc = 0;
 
 #ifdef Exist_LCD
 void st7789_dever_gpio_init(int set)
