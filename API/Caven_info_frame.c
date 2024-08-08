@@ -1,6 +1,6 @@
 #include "Caven_info_frame.h"
 
-#include "Examine_crc.h"
+#include "Encrypt_crc.h"
 
 /*
 Caven_info_Make_packet_Fun
@@ -143,7 +143,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         if (temp_packet.Get_num >= temp)
         {
             temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
-            temp = CRC16_XMODEM_Fast_Fun(&array[sizeof(temp_packet.Head)], temp);
+            temp = Encrypt_XMODEM_CRC16_Fun(&array[sizeof(temp_packet.Head)], temp);
             
             if (temp_packet.End_crc == temp)
             {
@@ -244,7 +244,7 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
         array[getnum++] = (source.Result & 0x0F);
         
         temp = getnum - 2;
-        temp = CRC16_XMODEM_Fast_Fun(&array[sizeof(source.Head)], temp);
+        temp = Encrypt_XMODEM_CRC16_Fun(&array[sizeof(source.Head)], temp);
 
         array[getnum++] = (temp >> 8) & 0xff;
         array[getnum++] = temp & 0xff;

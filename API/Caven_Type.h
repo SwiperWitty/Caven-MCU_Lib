@@ -20,7 +20,7 @@
  *  C(Lib)->Caven_Type->        API
 */
 
-#ifndef u8
+#ifndef U8
     #define U8  unsigned char
     #define S8  signed char
     #define U16 unsigned short
@@ -28,14 +28,6 @@
     #define U32 unsigned int
     #define S32 signed int
     #define U64 unsigned long long
-
-    #define u8  unsigned char
-    #define s8  signed char
-    #define u16 unsigned short
-    #define s16 signed short
-    #define u32 unsigned int
-    #define s32 signed int
-    #define u64 unsigned long long
 
 #endif 
 
