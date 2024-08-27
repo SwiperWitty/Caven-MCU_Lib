@@ -62,7 +62,7 @@
 #ifdef Exist_MLX90614
     #include "mlx90614.h"
 #endif
-#ifdef Exist_RTC8564
+#ifdef Exist_RTC_Clock
 #include "Mode_RTC8564.h"
 #endif
 
