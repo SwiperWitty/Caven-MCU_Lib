@@ -168,7 +168,7 @@ void set_flag_dc(int n)
 {
     flag_dc = n;
 #ifndef CONFIG_IDF_TARGET_ESP32
-    MODE_st7789_dever_GPIO_DC(n); // 写命令
+    MODE_st7789_dever_GPIO_DC(flag_dc); // 写命令
 #endif
 }
 
@@ -662,9 +662,9 @@ int MODE_st7789_dever_Init(int set)
     // st7789_dever_gpio_init(set);
     MODE_st7789_dever_Writ_Bus(0x00);
 
-    st7789_dever_delay(200);
-    MODE_st7789_dever_RST(1);
     st7789_dever_delay(100);
+    MODE_st7789_dever_RST(1);
+    st7789_dever_delay(50);
 
     //************* Start Initial Sequence **********//
     if (LCD_Target_Model == 12)
