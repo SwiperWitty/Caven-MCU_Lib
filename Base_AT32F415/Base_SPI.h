@@ -51,9 +51,9 @@ typedef enum
 // 选择输出模式
 #ifdef Exist_SPI
 //    #define SPI_SOFTWARE                    // 屏蔽就是硬件模式
-    #define SPI_SPEED   SPI_MCLK_DIV_4     // 16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
+    #define SPI_SPEED   SPI_MCLK_DIV_4     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
     #ifndef SPI_SOFTWARE
-        #define SPI_DMA			            // 屏蔽就是普通模式
+        #define SPI_DMA			            // 屏蔽就是普通模式,注意nss
         #define SPI1_FINISH_HANDLERIT() DMA1_Channel3_IRQHandler()
         #define SPI2_FINISH_HANDLERIT() DMA1_Channel5_IRQHandler()
     #endif
