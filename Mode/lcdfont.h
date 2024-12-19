@@ -1,9 +1,9 @@
 #ifndef __LCDFONT_H_
 #define __LCDFONT_H_
 
-#ifndef GUI
-#define LCD_LIB_ASCII	1
-#define LCD_LIB_CN		0
+#ifndef LVGL_LIB
+    #define LCD_LIB_ASCII	1
+    #define LCD_LIB_CN		0
 #endif
 
 #if LCD_LIB_ASCII

@@ -3,7 +3,6 @@
 struct _Mode_Init Mode_Init;
 struct _Mode_Use Mode_Use;    //结构体实体
 
-extern u32 MODE_Get_Button_STATE (char Channel);
 static void Mode_Use_index(void)		//索引 功能函数 本体
 {
     Mode_Use.Debug_Out_Way = Debug_Out;

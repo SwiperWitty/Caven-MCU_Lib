@@ -38,19 +38,19 @@
 #ifdef Exist_LED
     #define LED_L()     GPIO_ResetBits(GPIOB, GPIO_Pin_4)   //LED
     #define LED_H()     GPIO_SetBits(GPIOB, GPIO_Pin_4)     //PB04
+    // E1107
     #define RUN_LED_L() GPIO_ResetBits(GPIOB, GPIO_Pin_12)  //
     #define RUN_LED_H() GPIO_SetBits(GPIOB, GPIO_Pin_12)    //PB12
     #define ERROR_LED_L()   GPIO_ResetBits(GPIOB, GPIO_Pin_13)  //
     #define ERROR_LED_H()   GPIO_SetBits(GPIOB, GPIO_Pin_13)    //PB13
+
     #define RFID_LED_L()   GPIO_ResetBits(GPIOB, GPIO_Pin_15)  //
     #define RFID_LED_H()   GPIO_SetBits(GPIOB, GPIO_Pin_15)    //PB15
-    void LED_GPIO_Init(int SET);
 #endif
 #ifdef Exist_BZZ
     #define BZZ_L() GPIO_ResetBits(GPIOB, GPIO_Pin_7)       //BZZ
     #define BZZ_H() GPIO_SetBits(GPIOB, GPIO_Pin_7)         //PB07
 
-    void BZZ_GPIO_Init(int SET);
 #endif
 
 #ifdef Exist_BUTTON
@@ -70,7 +70,6 @@
     #define HC595_RCK_L()    GPIO_ResetBits(GPIOB, GPIO_Pin_12)   //
     #define HC595_RCK_H()    GPIO_SetBits(GPIOB, GPIO_Pin_12)     //PB12
 
-    void HC595_GPIO_Init(int SET);
 #endif
 
 #ifdef Exist_CustomIO

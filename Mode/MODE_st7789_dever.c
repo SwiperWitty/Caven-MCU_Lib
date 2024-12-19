@@ -644,6 +644,7 @@ void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16
 int MODE_st7789_dever_Init(int set)
 {
     int retval = 0;
+    flag_dc = 0;
 #ifdef Exist_LCD
     if (LCD_Target_Model == 0 && set)
     {

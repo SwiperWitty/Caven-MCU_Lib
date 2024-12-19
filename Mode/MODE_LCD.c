@@ -160,7 +160,7 @@ void LCD_Draw_Circle(uint16_t x0, uint16_t y0, char r, uint16_t color)
 void LCD_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, char sizey, char mode)
 {
 #ifdef Exist_LCD
-	#ifdef LCD_LIB_ASCII
+	#if LCD_LIB_ASCII
 	char temp, sizex, t, m = 0;
 	uint16_t i, TypefaceNum; // 一个字符所占字节大小
 	uint16_t x0 = x;
@@ -338,7 +338,7 @@ void LCD_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, c
 int LCD_Set_TargetModel(char set)
 {
 	int retval = 0;
-#ifdef Exist_LCD
+
 	if ((set > 0 && set < 10)) // MODE_
 	{
 		s_LCD_Set_Address_pFun = NULL;
@@ -359,7 +359,7 @@ int LCD_Set_TargetModel(char set)
 	{
 		retval = 0;
 	}
-#endif
+
 	return retval;
 }
 
@@ -441,6 +441,9 @@ int LCD_Set_Horizontal(char set)
 	}
 	LCD_PicSize = LCD_W_Max * LCD_H_Max;
 #endif
+	if (LCD_PicSize) {
+	    LCD_Horizontal = 0;
+    }
 	return retval;
 }
 

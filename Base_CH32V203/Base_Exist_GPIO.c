@@ -193,73 +193,6 @@ void LCD_GPIO_Init(int SET)
 #endif
 }
 
-void LED_GPIO_Init(int SET)
-{
-#ifdef Exist_LED
-    GPIO_InitTypeDef GPIO_InitStructure = {0};
-    if (SET) {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_15;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-        LED_H();
-        RUN_LED_L();
-        ERROR_LED_L();
-
-    }
-    else {
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_4;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-    }
-#endif
-}
-
-void BZZ_GPIO_Init(int SET)
-{
-#ifdef Exist_BZZ
-    GPIO_InitTypeDef GPIO_InitStructure = {0};
-    if (SET) {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-        BZZ_L();
-    }
-    else {
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-    }
-#endif
-}
-
-void HC595_GPIO_Init(int SET)
-{
-#ifdef Exist_HC595
-    GPIO_InitTypeDef GPIO_InitStructure = {0};
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    if (SET) {
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14; //HC595
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-        HC595_SCK_L();
-        HC595_RCK_L();          // 上升沿有效
-    }
-    else {
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14; //HC595
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        GPIO_Init(GPIOB, &GPIO_InitStructure);
-    }
-#endif
-}
-
 void Button_GPIO_Init(int SET)
 {
 #ifdef Exist_BUTTON
@@ -309,6 +242,11 @@ void Custom_GPIO_Init(int SET)
         GPIO_Init(GPIOB, &GPIO_InitStructure);
 
         GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;  //GPIO_OUT
+        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
+        GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+        GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_15;  //RFID_LED
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
         GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
         GPIO_Init(GPIOB, &GPIO_InitStructure);
