@@ -7,14 +7,7 @@
 #ifndef CAVEN_EVENT_FRAME_H_
 #define CAVEN_EVENT_FRAME_H_
 
-#ifdef CAVEN    /* 预编译 */
 #include "Caven_Type.h"
-#else
-#include "stdint.h"
-#include "string.h"
-#include "stddef.h"
-#include "stdio.h"
-#endif
 
 #define CAVEN_EVENTS_MAX    20
 
