@@ -16,32 +16,28 @@ return   : retval
 ** 3.retval = -0x8F 目标包的指针没有索引
 ** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
 ** 5.retval = 其他   获取中(包含没开始retval = 0)
+** 示例[FA 55 01 00 01 00 00 00 04 12 34 56 78 00 A1 CE] [https://kdocs.cn/l/cjMY23q4aET2]
 */
-
-static int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target);
-
-int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, unsigned char data)
+int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint8_t data)
 {
     int retval = 0;
     int temp = 0;
-#ifdef BUFF_MAX
-    unsigned char array[BUFF_MAX];
-#else
-    unsigned char array[300];
-#endif
 
     Caven_info_packet_Type temp_packet = *target;
-    unsigned char *tepm_pData = temp_packet.p_Data;
+    uint8_t *tepm_pData = temp_packet.p_AllData;
 
     if (temp_packet.Result & 0x50) /* 目标有数据没处理 */
     {
         return (-0x80);
     }
-    if (target == NULL || temp_packet.p_Data == NULL)
+    if (target == NULL || tepm_pData == NULL)
     {
         return (-0x8F);
     }
-
+    if (temp_packet.Run_status > 0 && temp_packet.Run_status < 9)   // 跳过头帧和crc校验帧
+    {
+        temp_packet.end_crc = CRC16_XMODEM_Table_Byte(data, temp_packet.end_crc);
+    }
     switch (temp_packet.Run_status)
     {
     case 0: /* Head */
@@ -49,6 +45,10 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         if (temp_packet.Head == standard.Head)
         {
             temp_packet.Get_num = 0;
+            temp_packet.dSize = 0;
+            temp_packet.get_crc = 0;
+            temp_packet.end_crc = 0;
+            temp_packet.p_Data = NULL;
             tepm_pData[temp_packet.Get_num++] = (temp_packet.Head >> 8) & 0x00ff;
             tepm_pData[temp_packet.Get_num++] = (temp_packet.Head) & 0x00ff;
             temp_packet.Run_status++;
@@ -114,7 +114,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
             }
             else if (temp_packet.dSize == 0)
             {
-                temp_packet.Run_status += 2; /* 0个 p_Data ，直接去 End_crc */
+                temp_packet.Run_status += 2; /* 0个 p_Data */
             }
             else
             {
@@ -133,26 +133,22 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     case 8: /* Result */
         tepm_pData[temp_packet.Get_num++] = data;
         temp_packet.Result = data;
-        temp_packet.Result &= 0x0F;     // 高位置0
+        temp_packet.Result &= 0x0F;     // 高4位置0
         temp_packet.Run_status++;
         break;
-    case 9: /* End_crc */
+    case 9: /* crc */
         tepm_pData[temp_packet.Get_num++] = data;
-        temp_packet.End_crc = (temp_packet.End_crc << 8) + data;
-        temp = 7 + 2 + temp_packet.dSize + 3;
+        temp_packet.get_crc = (temp_packet.get_crc << 8) + data;
+        temp = 2 + 5 + 2 + temp_packet.dSize + 3;
         if (temp_packet.Get_num >= temp)
         {
-            temp = temp_packet.Get_num - sizeof(temp_packet.Head) - sizeof(temp_packet.End_crc); /* 减尾 减头 */
-            temp = Encrypt_XMODEM_CRC16_Fun(&array[sizeof(temp_packet.Head)], temp);
-            
-            if (temp_packet.End_crc == temp)
+            if (temp_packet.end_crc == temp_packet.get_crc)
             {
                 temp_packet.Result |= 0x50; // crc successful
                 temp_packet.Run_status = 0xff;
             }
             else
             {
-                //                 printf("crc is %04x \n",temp);
                 temp_packet.Run_status = -temp_packet.Run_status;
             }
         }
@@ -165,34 +161,17 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
         retval = temp_packet.Run_status;
         Caven_info_packet_fast_clean_Fun(target);
-        //        printf("error %x \n",retval);
+        // printf("error code [%d] \n",retval);
     }
     else if (temp_packet.Run_status == 0xff) // Successful
     {
-#if 1
-        // 切割数据
-        temp = sizeof(temp_packet.Head) + sizeof(temp_packet.Versions) + sizeof(temp_packet.Type) + sizeof(temp_packet.Addr) + \
-                sizeof(temp_packet.Cmd) + sizeof(temp_packet.Cmd_sub) + sizeof(temp_packet.dSize);  //
-        if (temp_packet.dSize > 0)
-        {
-            memcpy(array, temp_packet.p_Data + temp, temp_packet.dSize);
-            memcpy(temp_packet.p_Data, array, temp_packet.dSize);
-        }
-        else
-        {
-            memset(temp_packet.p_Data, 0, 10);
-        }
-#else
-        // 原始数据
-#endif
+        temp_packet.p_Data = tepm_pData + 2 + 5 + 2;
         *target = temp_packet;
         retval = 0xFF;
-        //        printf("succ %x \n",retval);
     }
     else // doing
     {
         *target = temp_packet;
-        target->Result &= 0x0F;
         retval = temp_packet.Run_status;
     }
     return retval;
@@ -213,7 +192,6 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
     int retval;
     int temp;
     int getnum;
-
     unsigned char *array;
 
     if (data == NULL || ((source.p_Data == NULL) && (source.dSize != 0)))
@@ -255,48 +233,23 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
 }
 
 /*
- * 借助Caven_info_Split_packet_Fun，重算crc
- */
-int Caven_packet_data_crc (Caven_info_packet_Type const source)
-{
-    int retval = 0;
-
-    Caven_info_packet_Type temp_packet;
-#ifdef BUFF_MAX
-    unsigned char array[BUFF_MAX];
-#else
-    unsigned char array[300];
-#endif
-    if ((source.p_Data == NULL) && (source.dSize != 0))
-    {
-        return retval;
-    }
-    else if(source.Result & 0x50)       // 完整数据
-    {
-        int temp = 0;
-        temp_packet = source;
-        temp_packet.Result &= 0x0F;
-        temp = Caven_info_Split_packet_Fun(temp_packet, array);
-        retval = array[temp - 2];
-        retval <<= 8;
-        retval += array[temp - 1];
-    }
-    return retval;
-}
-
-/*
+ * retval = (-1):队列满载，拒绝载入
  * 这个函数需要快速响应
  */
 int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num)
 {
     int retval = 0;
-    Caven_info_packet_Type temp_packet;
+    if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
+    {
+        retval = -2;
+        return retval;
+    }
+
     for (int i = 0;i < Buff_Num;i++)
     {
-        temp_packet = Buff_data[i];
-        if (temp_packet.Result & 0x50)
+        if (Buff_data[i].Result & 0x50)
         {
-            retval = (-1);                                  // 队列满载，拒绝载入
+            retval = (-1);
         }
         else
         {
@@ -306,7 +259,6 @@ int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_T
             break;
         }
     }
-    Caven_info_packet_fast_clean_Fun(data);      // 无论是否能载入，都要清，否则影响下一帧接收
     return retval;
 }
 
@@ -319,13 +271,17 @@ int Caven_Circular_queue_output (Caven_info_packet_Type *data,Caven_info_packet_
 {
     int retval = 0;
     Caven_info_packet_Type temp_packet;
+    if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
+    {
+        retval = -2;
+        return retval;
+    }
+    
     for (int i = 0;i < Buff_Num;i++)
     {
-        temp_packet = Buff_data[i];
-
-        if (temp_packet.Result & 0x50)
+        if (Buff_data[i].Result & 0x50)
         {
-            Caven_packet_data_copy_Fun(data,&temp_packet);    // 从队列提取数据
+            Caven_packet_data_copy_Fun(data,&Buff_data[i]);    // 从队列提取数据
             Caven_info_packet_fast_clean_Fun(&Buff_data[i]);
             retval = i;
 
@@ -345,21 +301,29 @@ Caven_info_packet_index_Fun
 ** 将数据[data]绑定到[packet]的指针变量
 传参
 ** target ：数据源包(这个包内有指针变量)
-** data     ：要绑定的数据目标(可以给NULL)
+** data     ：要绑定的数据目标
 return   : retval
 ** retval < 0 索引错误
 ** retval = 0 索引成功
 */
-int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, unsigned char *data)
+int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, uint8_t *data)
 {
     int retval = 0;
     if (target != NULL)
     {
-        target->p_Data = data;
+        target->p_AllData = data;
+    }
+    else
+    {
+        retval = -1;
     }
     return retval;
 }
 
+/*
+ * Caven_packet_data_copy_Fun
+ * 把[target]内容给[source]
+*/
 int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type *target)
 {
     int retval = 0;
@@ -367,12 +331,20 @@ int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_
 
     if ((source != NULL) && (target != NULL))
     {
-        if ((source->p_Data != NULL) && (target->p_Data != NULL))
+        if ((source->p_AllData != NULL) && (target->p_AllData != NULL))
         {
-            temp_packet = *target;                  // 抽离数据
-            temp_packet.p_Data = source->p_Data;    // 保留指针
-            memcpy(temp_packet.p_Data,target->p_Data,target->dSize);    // 复制指针内容,内容的长度依据是[dSize]
-            *source = temp_packet;                  // copy(因为是指针，所以就直接附值吧)
+            temp_packet = *target;      // 先拿框架
+            temp_packet.p_AllData = source->p_AllData;      // 还原指针
+            memcpy(temp_packet.p_AllData,target->p_AllData,target->Get_num);
+            if (temp_packet.dSize > 0)
+            {
+                temp_packet.p_Data = temp_packet.p_AllData + 2 + 5 + 2;
+            }
+            else
+            {
+                temp_packet.p_Data = NULL;
+            }
+            *source = temp_packet;
         }
     }
     return retval;
@@ -391,17 +363,14 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
 {
     int retval = 0;
     unsigned char *p_data;
-    p_data = target->p_Data;
-    if (p_data != NULL)
-    {
-        Caven_info_packet_fast_clean_Fun(target);
+    p_data = target->p_AllData;
 #ifdef BUFF_MAX
-        if(target->dSize > 0 && target->dSize <= BUFF_MAX)
-        {
-            memset(p_data, 0, target->dSize);
-        }
-#endif
+    if (p_data != NULL && (target->Get_num > 0 && target->Get_num < BUFF_MAX))
+    {
+        memset(p_data, 0, target->Get_num);    // 清除指针内容,内容的长度依据是[Get_num]
     }
+#endif
+    Caven_info_packet_fast_clean_Fun(target);
     return retval;
 }
 
@@ -414,8 +383,7 @@ int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
     target->Result = 0;
     target->Run_status = 0;
     target->Get_num = 0;
+
     target->Comm_way = 0;
     return retval;
 }
-
-
