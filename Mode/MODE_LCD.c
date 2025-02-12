@@ -8,6 +8,8 @@ uint16_t LCD_W_Max = 0;
 uint16_t LCD_H_Max = 0;
 int LCD_PicSize = 0;
 
+
+#ifdef Exist_LCD
 static char LCD_Target_Model = 0;
 static char LCD_Horizontal = 0;
 
@@ -15,7 +17,7 @@ static char LCD_Horizontal = 0;
 static void (*s_LCD_Set_Address_pFun)(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 static void (*s_LCD_WR_Data_pFun)(uint16_t data);
 static void (*s_LCD_Send_Data_pFun)(uint8_t *data, int num);
-
+#endif
 
 /*
 	函数说明：在指定位置画点
@@ -338,14 +340,13 @@ void LCD_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, c
 int LCD_Set_TargetModel(char set)
 {
 	int retval = 0;
-
+#ifdef Exist_LCD
+    retval = LCD_Target_Model;
 	if ((set > 0 && set < 10)) // MODE_
 	{
 		s_LCD_Set_Address_pFun = NULL;
 		s_LCD_WR_Data_pFun = NULL;
 		s_LCD_Send_Data_pFun = NULL;
-
-		retval = LCD_Target_Model;
 	}
 	else if (set > 10 && set < 20) // MODE_st7789
 	{
@@ -353,13 +354,12 @@ int LCD_Set_TargetModel(char set)
 		s_LCD_WR_Data_pFun = MODE_st7789_dever_WR_Data;
 		s_LCD_Send_Data_pFun = MODE_st7789_dever_Send_Data;
 		LCD_Target_Model = MODE_st7789_dever_Set_TargetModel(set);
-		retval = LCD_Target_Model;
 	}
 	else
 	{
 		retval = 0;
 	}
-
+#endif
 	return retval;
 }
 
@@ -440,10 +440,10 @@ int LCD_Set_Horizontal(char set)
 		break;
 	}
 	LCD_PicSize = LCD_W_Max * LCD_H_Max;
-#endif
-	if (LCD_PicSize) {
+    if (LCD_PicSize) {
 	    LCD_Horizontal = 0;
     }
+#endif
 	return retval;
 }
 

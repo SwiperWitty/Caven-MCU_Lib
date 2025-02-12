@@ -23,7 +23,7 @@ typedef struct
 }Caven_at_info_packet_Type;
 
 int caven_at_info_Make_packet_Fun(Caven_at_info_packet_Type const standard, Caven_at_info_packet_Type *target, uint8_t data);
-int caven_at_info_Split_packet_Fun(Caven_at_info_packet_Type const target, void *data);
+int caven_at_info_Split_packet_Fun(Caven_at_info_packet_Type const target, uint8_t *data);
 int caven_at_info_packet_index_Fun(Caven_at_info_packet_Type *target, uint8_t *data);
 int caven_at_info_packet_clean_Fun(Caven_at_info_packet_Type *target);
 int caven_at_info_packet_fast_clean_Fun(Caven_at_info_packet_Type *target);
