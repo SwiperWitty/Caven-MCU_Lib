@@ -1,12 +1,18 @@
 #include "Base_UART.h"
 
 #ifdef Exist_UART
-static usart_type *uart_Temp;
 
 #define RXD_Falg USART_RDBF_FLAG //  接收标志
 #define TXD_Falg USART_TDC_FLAG  //  [USART_FLAG_TXE]这个只是说明，数据被cpu取走,[USART_FLAG_TC]这是完全发送完成
 
+static usart_type *uart_Temp;
 static D_pFun State_Machine_UART_pFun[5];
+
+uint8_t uart0_enable = 0;
+uint8_t uart1_enable = 0;
+uint8_t uart2_enable = 0;
+uint8_t uart3_enable = 0;
+uint8_t uart4_enable = 0;
 
 static char UART_RXD_Flag(UART_mType Channel)
 {
@@ -91,8 +97,9 @@ static uint16_t UART_RXD_Receive(UART_mType Channel) // RXD 读取值
 
 // 驱动初始化及回调函数
 #if (Exist_UART & OPEN_0001)
-static void Uart0_Init(int Baud, int SET)
+static void Uart0_Init(int Baud, int Set)
 {
+    uart0_enable = Set;
 }
 
 void UART0_HANDLERIT()
@@ -118,11 +125,11 @@ static void Uart1_Init(int Baud, int Set)
     confirm_state set = FALSE;
     uart_Temp = USART1;
     usart_reset(uart_Temp);
+    uart1_enable = Set;
     if (Set)
         set = TRUE;
-
-    crm_periph_clock_enable(CRM_USART1_PERIPH_CLOCK, set);
     crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
+    crm_periph_clock_enable(CRM_USART1_PERIPH_CLOCK, set);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
 
@@ -142,12 +149,13 @@ static void Uart1_Init(int Baud, int Set)
     nvic_irq_enable(USART1_IRQn, 0, 1);                 //
 
     usart_init(uart_Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);    // 波特率、位数、停止位
-    usart_transmitter_enable(uart_Temp, TRUE);                          // 发送使能
-    usart_receiver_enable(uart_Temp, TRUE);                             // 接收使能
+    usart_transmitter_enable(uart_Temp, set);                           // 发送使能
+    usart_receiver_enable(uart_Temp, set);                              // 接收使能
 
     usart_parity_selection_config(uart_Temp, USART_PARITY_NONE);        // 无奇偶校验
-    usart_interrupt_enable(uart_Temp, USART_RDBF_INT, TRUE);
-    usart_enable(uart_Temp, TRUE);
+    usart_interrupt_enable(uart_Temp, USART_RDBF_INT, set);
+    
+    usart_enable(uart_Temp, set);
 }
 
 void UART1_HANDLERIT()
@@ -175,12 +183,13 @@ void Uart2_Init(int Baud, int Set)
     usart_reset(uart_Temp);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
+    uart2_enable = Set;
     if (Set)
         set = TRUE;
     /* add user code begin usart2_init 0 */
     /* add user code end usart2_init 0 */
     crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
-    crm_periph_clock_enable(CRM_USART2_PERIPH_CLOCK, TRUE);
+    crm_periph_clock_enable(CRM_USART2_PERIPH_CLOCK, set);
     
     /* add user code begin usart2_init 1 */
     /* add user code end usart2_init 1 */
@@ -203,12 +212,12 @@ void Uart2_Init(int Baud, int Set)
     nvic_irq_enable(USART2_IRQn, 0, 2);                                 // 优先级,中断
     
     usart_init(uart_Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);    // 波特率、位数、停止位
-    usart_transmitter_enable(uart_Temp, TRUE);                          // 发送使能
-    usart_receiver_enable(uart_Temp, TRUE);                             // 接收使能
+    usart_transmitter_enable(uart_Temp, set);                           // 发送使能
+    usart_receiver_enable(uart_Temp, set);                              // 接收使能
     usart_parity_selection_config(uart_Temp, USART_PARITY_NONE);
     
     usart_hardware_flow_control_set(uart_Temp, USART_HARDWARE_FLOW_NONE);
-    usart_interrupt_enable(uart_Temp, USART_RDBF_INT, TRUE);            // 中断
+    usart_interrupt_enable(uart_Temp, USART_RDBF_INT, set);             // 中断
     /**
      * Users need to configure USART2 interrupt functions according to the actual application.
      * 1. Call the below function to enable the corresponding USART2 interrupt.
@@ -244,12 +253,13 @@ void Uart3_Init(int Baud, int Set)
     confirm_state set = FALSE;
     uart_Temp = USART3;
     usart_reset(uart_Temp);
+    uart3_enable = Set;
     if (Set)
         set = TRUE;
 
     crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
     crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
-    crm_periph_clock_enable(CRM_USART3_PERIPH_CLOCK, TRUE);
+    crm_periph_clock_enable(CRM_USART3_PERIPH_CLOCK, set);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
 
@@ -273,8 +283,8 @@ void Uart3_Init(int Baud, int Set)
     nvic_irq_enable(USART3_IRQn, 0, 3);                                 // 优先级
     
     usart_init(uart_Temp, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);    // 波特率、位数、停止位
-    usart_transmitter_enable(uart_Temp, TRUE);                          // 发送使能
-    usart_receiver_enable(uart_Temp, TRUE);                             // 接收使能
+    usart_transmitter_enable(uart_Temp, set);                           // 发送使能
+    usart_receiver_enable(uart_Temp, set);                              // 接收使能
     usart_parity_selection_config(uart_Temp, USART_PARITY_NONE);
     
     usart_hardware_flow_control_set(uart_Temp, USART_HARDWARE_FLOW_NONE);
@@ -306,6 +316,7 @@ void Uart4_Init(int Baud, int Set)
     confirm_state set = FALSE;
     uart_Temp = UART4;
     usart_reset(uart_Temp);
+    uart4_enable = Set;
     if (Set)
         set = TRUE;
     crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, set);
@@ -371,23 +382,42 @@ void Base_UART_Send_Byte(UART_mType Channel, uint16_t Data)
     switch (Channel)
     {
     case 0:
+        if (uart0_enable == 0)
+        {
+            return;
+        }
         return;
     case 1:
+        if (uart1_enable == 0)
+        {
+            return;
+        }
         uart_Temp = USART1;
         break;
     case 2:
+        if (uart2_enable == 0)
+        {
+            return;
+        }
         uart_Temp = USART2;
         break;
     case 3:
+        if (uart3_enable == 0)
+        {
+            return;
+        }
         uart_Temp = USART3;
         break;
     case 4:
+        if (uart4_enable == 0)
+        {
+            return;
+        }
         uart_Temp = UART4;
         break;
     default:
         return;
     }
-
     while (usart_flag_get(uart_Temp, TXD_Falg) == RESET);
     usart_data_transmit(uart_Temp, Data);
     // usart_flag_clear(uart_Temp, TXD_Falg);        //可以不要
@@ -412,11 +442,9 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     
     dma_init_type dma_init_struct;
     dma_channel_type *Temp_DMA_Channel;
-    
     uint32_t DMAy_FLAG;
     uint8_t *p_DMA_BUFF = NULL;
-    dma_default_para_init(&dma_init_struct);
-	
+    
     switch (Channel)
     {
         case 0:
@@ -426,6 +454,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
             uart_Temp = USART0;
             DMAy_FLAG = 0;
             Temp_DMA_Channel = 0;
+            if (uart0_enable == 0)
+            {
+                return;
+            }
         return;
     #endif
         }break;
@@ -436,6 +468,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
             uart_Temp = USART1;
             DMAy_FLAG = DMA1_FDT4_FLAG;
             Temp_DMA_Channel = DMA1_CHANNEL4;
+            if (uart1_enable == 0)
+            {
+                return;
+            }
     #endif
         }break;
         case 2:
@@ -445,6 +481,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
             uart_Temp = USART2;
             DMAy_FLAG = DMA1_FDT7_FLAG;
             Temp_DMA_Channel = DMA1_CHANNEL7;
+            if (uart2_enable == 0)
+            {
+                return;
+            }
     #endif
         }break;
         case 3:
@@ -454,6 +494,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
             uart_Temp = USART3;
             DMAy_FLAG = DMA1_FDT2_FLAG;
             Temp_DMA_Channel = DMA1_CHANNEL2;   // usart3 tx
+            if (uart3_enable == 0)
+            {
+                return;
+            }
     #endif
         }break;
         case 4:
@@ -461,16 +505,20 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     #if Exist_UART & OPEN_10000
             uart_Temp = UART4;
             p_DMA_BUFF = NULL;
+            if (uart4_enable == 0)
+            {
+                return;
+            }
     #endif
         }break;
     default:
         return;
     }
     // 开始DMA
-    if (Data == NULL || p_DMA_BUFF == NULL || (Length < 0)) {
+    if (Data == NULL || p_DMA_BUFF == NULL || (Length <= 0)) {
         return;
     }
-
+    dma_default_para_init(&dma_init_struct);
     if ((dma_send_First & (0x01 << Channel)) == 0)            // 当前通道首次DMA，不等
     {
         dma_send_First |= (0x01 << Channel);
