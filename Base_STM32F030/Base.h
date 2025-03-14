@@ -3,7 +3,7 @@
 
 #include "items.h"
 
-#include "Exist_GPIO.h"     //LED、BZZ、KEY...
+#include "Base_GPIO.h"     //LED、BZZ、KEY...
 
 #ifdef Exist_UART
 #include "uart.h"

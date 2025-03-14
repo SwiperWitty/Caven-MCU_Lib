@@ -10,14 +10,14 @@
 
 typedef struct
 {
-    u32 (*State_pFun) (char Channel);
+    U32 (*State_pFun) (char Channel);
 }MODE_Button_Way;
 
 #endif
 
 void MODE_Button_Init (char Channel,int Set);
 
-u32 MODE_Get_Button_State_Fun (char Channel);
+U32 MODE_Get_Button_State_Fun (char Channel);
 
 
 #endif
