@@ -1,8 +1,10 @@
 #include "MODE_st7789_dever.h"
 
+#ifdef Exist_LCD
 static char LCD_Horizontal = 0;
 static char LCD_Target_Model = 0;
 static char flag_dc = 0;
+#endif
 
 #ifdef Exist_LCD
 void st7789_dever_gpio_init(int set)
@@ -231,11 +233,13 @@ static void LCD_WR_CMD(uint8_t data)
 int MODE_st7789_dever_Set_TargetModel(char set)
 {
     int retval = 0;
+#ifdef Exist_LCD
     if (set > 10 && set < 20) // MODE_st7789
     {
         LCD_Target_Model = set;
         retval = set;
     }
+#endif
     return retval;
 }
 
@@ -246,6 +250,7 @@ int MODE_st7789_dever_Set_TargetModel(char set)
 int MODE_st7789_dever_Set_Horizontal(char set)
 {
     int retval = 0;
+#ifdef Exist_LCD
     if (set < 4) // 0 1 2 3
     {
         LCD_Horizontal = set;
@@ -254,6 +259,7 @@ int MODE_st7789_dever_Set_Horizontal(char set)
     {
     }
     retval = LCD_Horizontal;
+#endif
     return retval;
 }
 
@@ -644,8 +650,8 @@ void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16
 int MODE_st7789_dever_Init(int set)
 {
     int retval = 0;
-    flag_dc = 0;
 #ifdef Exist_LCD
+    flag_dc = 0;
     if (LCD_Target_Model == 0 && set)
     {
 		retval = 1;

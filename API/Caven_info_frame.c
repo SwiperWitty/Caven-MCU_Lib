@@ -270,7 +270,7 @@ int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_T
 int Caven_Circular_queue_output (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num)
 {
     int retval = 0;
-    Caven_info_packet_Type temp_packet;
+//    Caven_info_packet_Type temp_packet;
     if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
     {
         retval = -2;

@@ -21,7 +21,7 @@ void SPI1_GPIO_Init(int Set)
     if (Set)
     {
         crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK,TRUE);
-        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+//        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
 
         gpio_init_struct.gpio_pins = SPI1_SCK | SPI1_MOSI;
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
@@ -58,7 +58,7 @@ void SPI2_GPIO_Init(int Set)
     if (Set)
     {
         crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
-        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+//        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
         
         gpio_init_struct.gpio_pins = SPI2_NSS;                  //NSS-输出模式（输出）
         gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
@@ -126,6 +126,43 @@ void SPI2_DMA_Config (const void *DMA_Buffer,int BufferSize)
 
 }
 
+void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State)
+{
+#ifdef Exist_SPI
+    
+    switch (Channel)
+    {
+    case 0:
+
+        break;
+    case 1:
+    #if Exist_SPI & OPEN_0010
+        if(Serial == 1)
+        {
+            if(State) {SPI1_NSS_L();}
+            else {SPI1_NSS_H();}
+        }
+    #endif
+        break;
+    case 2:
+    #if Exist_SPI & OPEN_0100
+        if(Serial == 1)
+        {
+            if(State) {SPI2_NSS_L();}
+            else {SPI2_NSS_H();}
+        }
+    #endif
+        break;
+    case 3:
+
+        break;
+    default:
+        break;
+    }
+#endif
+    
+}
+
 void SPI_Start_Init(int Set)
 {
 #ifdef Exist_SPI
@@ -137,7 +174,7 @@ void SPI_Start_Init(int Set)
     #elif (SPIx == 2)
         SPI2_GPIO_Init(set);
     #endif
-    SPI_CS_Set(1,0);
+    Base_SPI_CS_Set(SPIx,1,0);
     
     #ifndef SPI_Software
     spi_i2s_reset(Temp_SPI);
@@ -189,7 +226,7 @@ void SPI_Start_Init(int Set)
 #ifdef Exist_SPI
 static void SPI_Delay (int time)
 {
-    if (MCU_SYS_Freq >= 72000000)
+    if (MCU_SYS_FREQ >= 72000000)
     {
         volatile int temp;
         for (int i = 0; i < time; ++i)
@@ -202,29 +239,6 @@ static void SPI_Delay (int time)
         while((time--) > 0);
 }
 #endif
-
-void SPI_CS_Set(char Serial,char State)
-{
-#ifdef Exist_SPI
-    switch (Serial)
-    {
-        case 1:
-            if (State) {
-                SPI_NSS_L();      //  Low
-            }
-            else {
-                SPI_NSS_H();     //  High
-            }
-            break;
-        case 2:
-
-            break;
-        default:
-            break;
-    }
-#endif
-
-}
 
 //普通\软件 发送，只管SCLK、MOSI不管 NSS
 void SPI_Send_DATA(const uint16_t DATA)     

@@ -40,6 +40,14 @@
 
 */
 
+typedef enum
+{
+//    m_SPI_CH0 = 0,
+    m_SPI_CH1 = 1,
+    m_SPI_CH2,
+//    m_SPI_CH3,
+}SPI_mType;
+
 // 选择输出模式
 #ifdef Exist_SPI
 //    #define SPI_Software	        //屏蔽就是硬件模式
@@ -76,43 +84,40 @@
 #define SPI2_MOSI       GPIO_PINS_15
 #define GPIO_SPI2       GPIOB
 
-void SPI_Start_Init(int Set);
 
 //    驱动层      //
 
-void SPI_CS_Set(char Serial,char State);
+int Base_SPI_Init(SPI_mType Channel,uint8_t Width,int Set);
 
-void SPI_Send_DATA(const uint16_t DATA);
+void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State);
 
-//    调用层      //
-
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA);
-uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr);
-
-void SPI_Send_String(const void * DATA,int num);
+void Base_SPI_ASK_Receive(SPI_mType Channel,uint16_t Data,uint16_t *Receive);
+void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data);
+void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int Length);
 
 
 
-#if (SPIx == 1)
-#define SPI_NSS_H()  GPIO_SPI1->scr = SPI1_NSS		//置高电平
-#define SPI_NSS_L()  GPIO_SPI1->clr = SPI1_NSS 		//置低电平
-#define SPI_SCK_H()  GPIO_SPI1->scr = SPI1_SCK
-#define SPI_SCK_L()  GPIO_SPI1->clr = SPI1_SCK 
-#define SPI_MOSI_H() GPIO_SPI1->scr = SPI1_MOSI
-#define SPI_MOSI_L() GPIO_SPI1->clr = SPI1_MOSI
+/*******************/
+#if Exist_SPI & OPEN_0010
+#define SPI1_NSS_H()  GPIO_SPI1->IO_H_REG = SPI1_NSS     // 置高电平
+#define SPI1_NSS_L()  GPIO_SPI1->IO_L_REG = SPI1_NSS     // 置低电平
+#define SPI1_SCK_H()  GPIO_SPI1->IO_H_REG = SPI1_SCK
+#define SPI1_SCK_L()  GPIO_SPI1->IO_L_REG = SPI1_SCK 
+#define SPI1_MOSI_H() GPIO_SPI1->IO_H_REG = SPI1_MOSI
+#define SPI1_MOSI_L() GPIO_SPI1->IO_L_REG = SPI1_MOSI
 
-#define SPI_MISO_IN() GPIO_SPI1->idt & SPI1_MISO      //读取引脚电平
+#define SPI1_MISO_R() gpio_input_data_bit_read(GPIO_SPI1,SPI1_MISO)  // 读取引脚电平
+#endif
 
-#elif (SPIx == 2)
-#define SPI_NSS_H()  GPIO_SPI2->scr = SPI2_NSS		//置高电平
-#define SPI_NSS_L()  GPIO_SPI2->clr = SPI2_NSS 		//置低电平
-#define SPI_SCK_H()  GPIO_SPI2->scr = SPI2_SCK
-#define SPI_SCK_L()  GPIO_SPI2->clr = SPI2_SCK 
-#define SPI_MOSI_H() GPIO_SPI2->scr = SPI2_MOSI
-#define SPI_MOSI_L() GPIO_SPI2->clr = SPI2_MOSI
+#if Exist_SPI & OPEN_0100
+#define SPI2_NSS_H()  GPIO_SPI2->IO_H_REG = SPI2_NSS     // 置高电平
+#define SPI2_NSS_L()  GPIO_SPI2->IO_L_REG = SPI2_NSS     // 置低电平
+#define SPI2_SCK_H()  GPIO_SPI2->IO_H_REG = SPI2_SCK
+#define SPI2_SCK_L()  GPIO_SPI2->IO_L_REG = SPI2_SCK 
+#define SPI2_MOSI_H() GPIO_SPI2->IO_H_REG = SPI2_MOSI
+#define SPI2_MOSI_L() GPIO_SPI2->IO_L_REG = SPI2_MOSI
 
-#define SPI_MISO_IN() GPIO_SPI2->idt & SPI2_MISO      //读取引脚电平
-
+#define SPI2_MISO_R() gpio_input_data_bit_read(GPIO_SPI2,SPI2_MISO)  // 读取引脚电平
 #endif
 
 #endif
