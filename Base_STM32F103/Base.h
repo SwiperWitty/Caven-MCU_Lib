@@ -11,7 +11,7 @@
 
 /****************/
 
-#include "Base_Exist_GPIO.h"    //items的附属（LED、BZZ之类的）
+#include "Base_GPIO.h"    //items的附属（LED、BZZ之类的）
 
 #ifdef Exist_SYS_TIME          //这种保护不占内存，所以尽可能写
 #include "Base_sys_time.h"

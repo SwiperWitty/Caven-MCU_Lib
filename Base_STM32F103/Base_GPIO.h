@@ -1,5 +1,5 @@
-#ifndef __Exist_GPIO__H_
-#define __Exist_GPIO__H_
+#ifndef __BASE_GPIO__H_
+#define __BASE_GPIO__H_
 
 #ifdef DEFAULT
 #include "items.h"              //默认功能

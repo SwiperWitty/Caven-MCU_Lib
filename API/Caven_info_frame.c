@@ -16,7 +16,7 @@ return   : retval
 ** 3.retval = -0x8F 目标包的指针没有索引
 ** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
 ** 5.retval = 其他   获取中(包含没开始retval = 0)
-** 示例[FA 55 01 00 01 00 00 00 04 12 34 56 78 00 A1 CE] [https://kdocs.cn/l/cjMY23q4aET2]
+** 示例[FA 55 01 00 01 00 00 00 04 12 34 56 78 00 A1 CE]
 */
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint8_t data)
 {
@@ -114,7 +114,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
             }
             else if (temp_packet.dSize == 0)
             {
-                temp_packet.Run_status += 2; /* 0个 p_Data */
+                temp_packet.Run_status += 2; /* 0个 p_Data ，直接去 crc */
             }
             else
             {

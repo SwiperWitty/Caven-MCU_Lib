@@ -121,25 +121,25 @@ int caven_at_info_Make_packet_Fun(Caven_at_info_packet_Type const standard, Cave
     return retval;
 }
 
-int caven_at_info_Split_packet_Fun(Caven_at_info_packet_Type const target, uint8_t *data)
+int caven_at_info_Split_packet_Fun(Caven_at_info_packet_Type const target, void *data)
 {
     int retval = 0;
     int temp_len = 0;
-    char *temp_data = (char *)data;
-    if (temp_data != NULL)
+    char * temp_str = data;
+    if (data != NULL)
     {
-        temp_len = strlen(temp_data);
-        memset(temp_data,0,temp_len);
-        strcat(temp_data,"AT");
+        temp_len = strlen(data);
+        memset(data,0,temp_len);
+        strcat(data,"AT");
         retval += 2;
         if (target.dSize)
         {
-            memcpy(&temp_data[retval],target.p_Data,target.dSize);
+            memcpy(&temp_str[retval],target.p_Data,target.dSize);
             retval += target.dSize;
         }
-        if (memcmp(&temp_data[retval-2],"\r\n",2) != 0)
+        if (memcmp(&temp_str[retval-2],"\r\n",2) != 0)
         {
-            memcpy(&temp_data[retval],"\r\n",2);
+            memcpy(&temp_str[retval],"\r\n",2);
             retval += 2;
         }
     }
