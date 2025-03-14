@@ -36,7 +36,15 @@ void SYS_Feed_Watchdog (void);
 #endif
 
 /*
-Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
+    Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
+    TICK_FREQUENCY 是 MCU_SYS_FREQ的8分频，
+    TICK_SET_CMP 是tick的满值，为啥是 (TICK_FREQUENCY / 2)呢？因为tick是24位的，不能过大，跑满也就是半秒(TICK_OVER_IT)，
+    TICK_OVER_IT 没什么用.
+
+    SYS_Time_H 是tick跑满的次数,
+    SYS_Time_L是tick跑到当前的刻度;
+    SYS_Sec 是SYS_Time_H/2(是SYS_Time_H >> 1),
+    SYS_Us 是SYSTICK_NUM/s_Frequency_us.
 */
 
 
@@ -45,9 +53,9 @@ Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
 
 #ifdef Exist_SYS_TIME
 
-    #define TICK_FREQUENCY (MCU_SYS_FREQ / 8)   //滴答分频（8分频）
-    #define TICK_SET_CMP (TICK_FREQUENCY / 2)   //设置滴答初始值(/2 就是 1/2 s)
-    #define TICK_OVER_IT (0.50)                 //定时器溢出时间（24位滴答才有）
+    #define TICK_FREQUENCY (MCU_SYS_FREQ / 8)   // 滴答分频（8分频）
+    #define TICK_SET_CMP (TICK_FREQUENCY / 2)   // 设置滴答初始值(/2 就是 1/2 s)
+    #define TICK_OVER_IT (0.50)                 // 定时器溢出时间（24位滴答才有）
 
     #define SYSTICK_NUM (SysTick->VAL)
 
