@@ -10,7 +10,6 @@
 #include "sys_time.h"
 #include "PWM.h"
 
-#include "Exist_GPIO.h"
 #include "Flash.h"
 
 /*

@@ -26,6 +26,19 @@
 
 /* 【宏函数群】   */
 
+//很长的时间戳（一天）
+typedef struct
+{
+    uint32_t SYS_Time_H; //每Frequency进1
+    uint32_t SYS_Time_L; // 24bit 的
+}SYS_Time_Type;
+// 系统运行总时长 8byte
+typedef struct
+{
+    uint32_t SYS_Sec;
+    uint32_t SYS_Us;             // 这里最大 1000 000
+}SYS_BaseTIME_Type;
+
 #define Exist_SYS_Time_Falg         //存在 中断标志位
 
 #ifdef Exist_SYS_TIME

@@ -13,6 +13,15 @@
 #define END_Data    'N'             //这个作为串口接收【结束符】
 #define NO_END      'N'             //如果【结束符】和它相同，那么就没有 结束符
 
+typedef enum
+{
+//    m_UART_CH0 = 0,
+    m_UART_CH1 = 1,
+    m_UART_CH2,
+    m_UART_CH3,
+    m_UART_CH4,
+//    m_UART_CH5,
+}UART_mType;
 
 #ifdef Exist_UART
 /*  中断   */
