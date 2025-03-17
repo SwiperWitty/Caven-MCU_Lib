@@ -8,8 +8,13 @@
 // int printf ( const char * format, ... );
 void debug_log (int type,const char *tag,const char * format,...)
 {
-	char my_buf[1024]={0};
+	char my_buf[102400]={0};
     char type_str[20];
+    if (type < LOG_LEVEL)
+    {
+        return;
+    }
+    
 	va_list my_ap;              //定义参数指针，获取可选参数
 	va_start(my_ap,format);     //初始化参数指针，将ap指向第一个实际参数的地址
 	
@@ -57,7 +62,7 @@ void debug_log_hex (uint8_t *data,int len)
 void my_system(const char *cmd,char *ret_str,int str_size)
 {
     FILE *fp = NULL;
-    char buf[1024] = {0};
+    char buf[10240] = {0};
     char *temp_ptr;
     int temp_num = 0,temp_run = 0;
     if (ret_str == NULL)

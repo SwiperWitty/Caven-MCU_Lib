@@ -15,6 +15,8 @@
 extern "C" {
 #endif
 
+#define LOG_LEVEL   LOG_Warn
+
 #define LOG_View    0
 #define LOG_Info    1
 #define LOG_Warn    2
