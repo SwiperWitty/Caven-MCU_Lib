@@ -6,17 +6,27 @@
     MODE_Time.h
     这个文件不依赖MCU的MDK（指编译能过）
     但是需要使用Base文件才能正常运行
-    一般依赖于 SysTick & SysTick_Handler，缺一不可
-    如果没有，即可使用普通定时器（16位及以上）
+    一般依赖于 SysTick,如果没有，即可使用普通定时器（16位及以上）
     
-
+    base本质上提供的是sys_sec以及sys_us(SYS_BaseTIME_Type),mode层可以做date转utc，以及utc转date
+    对base操作只允许给utc为参数。
+    
 */
 
 #include "Base.h"
+#include "time.h"
 #include "API.h"
 
 #define Exist_SYS_TIME
 
+#ifndef _SYS_TIME_H__
+typedef struct
+{
+    uint32_t SYS_Sec;
+    uint32_t SYS_Us;             // 这里最大 1000 000
+}SYS_BaseTIME_Type;
+
+#endif
 /*
  * (Date.Days + Watch) -> TIME -> Tick
  * 1.BaseTIME是所有TIME的基础，他的设置逻辑是 Days + Watch所有秒数+Watch.time_us
@@ -25,8 +35,8 @@
  */
 typedef struct
 {
-    Caven_Date_Type Date;
-    Caven_Watch_Type Watch;
+    struct tm date;
+    Caven_BaseTIME_Type Time;
     volatile int SYNC_Flag;
 }Real_TIME_Type;
 
@@ -34,12 +44,10 @@ typedef struct
 
 typedef struct
 {
-    void (*Set_Date_pFun)(Caven_Date_Type time);
-    void (*Set_Watch_pFun)(Caven_Watch_Type time);
-
-    Caven_Date_Type (*Get_Date_pFun)(void);
-    Caven_Watch_Type (*Get_Watch_pFun)(void);
-
+    void (*Set_BaseTIME_pFun)(Caven_BaseTIME_Type time);
+    Caven_BaseTIME_Type (*Get_BaseTIME_pFun)(void);
+    struct tm (*Get_Date_pFun) (void);
+    
     void (*Delay_Us)(int num);
     void (*Delay_Ms)(int num);
     void (*Delay_S) (int num);
@@ -48,11 +56,9 @@ typedef struct
 
 int MODE_TIME_Init(int SET);
 
-void MODE_TIME_Set_Date_Fun(Caven_Date_Type time);
-void MODE_TIME_Set_Watch_Fun(Caven_Watch_Type time);
-
-Caven_Date_Type MODE_TIME_Get_Date_Fun(void);
-Caven_Watch_Type MODE_TIME_Get_Watch_Fun(void);
+void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time);
+Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void);
+struct tm MODE_TIME_Get_Date (void);
 
 void MODE_Delay_Us(int num);
 void MODE_Delay_Ms(int num);

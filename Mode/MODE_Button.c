@@ -18,9 +18,9 @@ void MODE_Button_Init (char Channel,int Set)
 #endif
 }
 
-u32 MODE_Get_Button_State_Fun (char Channel)
+uint32_t MODE_Get_Button_State_Fun (char Channel)
 {
-    u32 temp = 0;
+    uint32_t temp = 0;
 	#ifdef Exist_BUTTON
     switch (Channel) {
         case 0:

@@ -71,6 +71,11 @@ typedef struct
     U32 SYS_Sec;            // UTC
 }Caven_Watch_Type;
 
+typedef struct
+{
+    uint32_t SYS_Sec;
+    uint32_t SYS_Us;             // 这里最大 1000 000
+}Caven_BaseTIME_Type;
 
 // 颜色 4byte
 typedef struct

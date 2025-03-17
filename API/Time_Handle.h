@@ -12,10 +12,11 @@
 
 #include "Caven_Type.h"
 
+
 typedef struct
 {
-    volatile Caven_Watch_Type Set_time;
-    volatile Caven_Watch_Type Begin_time;
+    volatile Caven_BaseTIME_Type Set_time;
+    volatile Caven_BaseTIME_Type Begin_time;
     volatile char Trigger_Flag;              //[000][1][000]
     volatile char Flip_falg;                 //[000][111][000]   only Read
     int Switch;
@@ -24,11 +25,6 @@ typedef struct
 
 int API_Hourly_to_Seconds(Caven_Watch_Type time);
 
-Caven_Watch_Type API_Seconds_to_Hourly (int Seconds);
-Caven_Watch_Type API_Watch_Get_differ (Caven_Watch_Type temp_a,Caven_Watch_Type temp_b);
-
-int API_Watch_Compare (Caven_Watch_Type temp_a,Caven_Watch_Type temp_b);
-
-int API_Task_Timer (Task_Overtime_Type *task,Caven_Watch_Type now_time);
+int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time);
 
 #endif
