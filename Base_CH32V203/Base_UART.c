@@ -9,6 +9,12 @@
 
 static D_pFun State_Machine_UART_pFun[5]; //[0-4]
 
+uint8_t uart0_enable = 0;
+uint8_t uart1_enable = 0;
+uint8_t uart2_enable = 0;
+uint8_t uart3_enable = 0;
+uint8_t uart4_enable = 0;
+
 // 以下函数单纯方便MCU移植
 
 static char UART_RXD_Flag(UART_mType Channel)
@@ -92,29 +98,49 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
 
 void Base_UART_Send_Byte(UART_mType Channel,uint16_t Data)
 {
-    USART_TypeDef * Temp;
+    USART_TypeDef * uart_Temp;
     switch (Channel)
     {
     case 0:
+        if (uart0_enable == 0)
+        {
+            return;
+        }
         return;
     case 1:
-        Temp = USART1;
+        if (uart1_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = USART1;
         break;
     case 2:
-        Temp = USART2;
+        if (uart2_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = USART2;
         break;
     case 3:
-        Temp = USART3;
+        if (uart3_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = USART3;
         break;
     case 4:
-        Temp = UART4;
+        if (uart4_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = UART4;
         break;
     default:
         return;
     }
-    while (USART_GetFlagStatus(Temp, TXD_Falg) == 0);
-    USART_ClearFlag(Temp, TXD_Falg);
-    USART_SendData(Temp, Data);
+    while (USART_GetFlagStatus(uart_Temp, TXD_Falg) == 0);
+    USART_ClearFlag(uart_Temp, TXD_Falg);
+    USART_SendData(uart_Temp, Data);
 }
 
     #ifdef DMA_UART
@@ -137,10 +163,19 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
     switch (Channel)
     {
         case 0:
-
+        {
+            if (uart0_enable == 0)
+            {
+                return;
+            }
+        }
         return;
         case 1:
         {
+            if (uart1_enable == 0)
+            {
+                return;
+            }
             Temp_USART = USART1;
             DMAy_FLAG = DMA1_FLAG_TC4;
             p_DMA_BUFF = DMA_UART1_Buff;
@@ -149,6 +184,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         break;
         case 2:
         {
+            if (uart2_enable == 0)
+            {
+                return;
+            }
             Temp_USART = USART2;
             DMAy_FLAG = DMA1_FLAG_TC7;
             p_DMA_BUFF = DMA_UART2_Buff;
@@ -157,6 +196,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         break;
         case 3:
         {
+            if (uart3_enable == 0)
+            {
+                return;
+            }
             Temp_USART = USART3;
             DMAy_FLAG = DMA1_FLAG_TC2;
             p_DMA_BUFF = DMA_UART3_Buff;
@@ -165,6 +208,10 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         break;
         case 4:
         {
+            if (uart4_enable == 0)
+            {
+                return;
+            }
             Temp_USART = UART4;     //UART - DMA2-5_TX
             p_DMA_BUFF = NULL;
         }
@@ -231,7 +278,7 @@ void Uart1_Init(int Baud,int SET)
 	NVIC_InitTypeDef NVIC_InitStructure = {0};
 	USART_TypeDef * Temp_USART = USART1;
 	FunctionalState temp;
-
+	uart1_enable = SET;
     if(SET)
         temp = ENABLE;
     else
@@ -298,7 +345,7 @@ void Uart2_Init(int Baud,int SET)
     NVIC_InitTypeDef NVIC_InitStructure = {0};
     USART_TypeDef * Temp_USART = USART2;
     FunctionalState temp;
-
+    uart2_enable = SET;
     if(SET)
         temp = ENABLE;
     else
@@ -365,7 +412,7 @@ void Uart3_Init(int Baud,int SET)
     NVIC_InitTypeDef NVIC_InitStructure = {0};
     USART_TypeDef * Temp_USART = USART3;
     FunctionalState temp;
-
+    uart3_enable = SET;
     if(SET)
         temp = ENABLE;
     else
@@ -432,7 +479,7 @@ void Uart4_Init(int Baud,int SET)
     NVIC_InitTypeDef NVIC_InitStructure = {0};
     USART_TypeDef * Temp_USART = UART4;
     FunctionalState temp;
-
+    uart4_enable = SET;
     if(SET)
         temp = ENABLE;
     else

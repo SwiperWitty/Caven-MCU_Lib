@@ -18,20 +18,20 @@ int API_Hourly_to_Seconds(Caven_Watch_Type time)
 int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
 {
     int retval = 0;
-    int temp;
+    int temp_num,temp_val;
 
     Caven_BaseTIME_Type diff_time;
 
-    temp = task->Set_time.SYS_Sec;
-    if (temp == 0 && task->Set_time.SYS_Us == 0)   // time empty
+    temp_num = task->Set_time.SYS_Sec;
+    if (temp_num == 0 && task->Set_time.SYS_Us == 0)   // time empty
     {
         retval = 2;
         return retval;
     }
     if (task->Switch == 1)
     {
-        temp = now_time.SYS_Sec - task->Begin_time.SYS_Sec;
-        if (temp < 0)
+        temp_num = now_time.SYS_Sec - task->Begin_time.SYS_Sec;
+        if (temp_num < 0)
         {
             retval = 3;
             task->Begin_time = now_time;
@@ -39,27 +39,28 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
         }
         else
         {
+            temp_val = now_time.SYS_Us;
             if (now_time.SYS_Us < task->Begin_time.SYS_Us)
             {
-                temp --;
-                now_time.SYS_Us += 10000000;
+                temp_num --;
+                temp_val = now_time.SYS_Us + 1000000;
             }
-            diff_time.SYS_Us = now_time.SYS_Us - task->Begin_time.SYS_Us;
-            diff_time.SYS_Sec = temp;
+            diff_time.SYS_Us = temp_val - task->Begin_time.SYS_Us;
+            diff_time.SYS_Sec = temp_num;
         }
-        temp = 0;
+        temp_num = 0;
         if (diff_time.SYS_Sec > task->Set_time.SYS_Sec)
         {
-            temp = 1;
+            temp_num = 1;
         }
         else if (diff_time.SYS_Sec >= task->Set_time.SYS_Sec)
         {
             if (diff_time.SYS_Us >= task->Set_time.SYS_Us)
             {
-                temp = 2;
+                temp_num = 2;
             }
         }
-        if (temp >= 0)
+        if (temp_num > 0)
         {
             task->Flip_falg = !task->Flip_falg;
             task->Trigger_Flag = 1;

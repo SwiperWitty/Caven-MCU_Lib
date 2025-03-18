@@ -1,8 +1,7 @@
 #include "MODE_Time.h"
 
 /*
- * 防止被编译器优化，并且只能在本文件使用
- * while(a);和while(get(a));不一样
+   *  防止被编译器优化，并且只能在本文件使用
  *
 */
 
@@ -49,12 +48,14 @@ struct tm MODE_TIME_Get_Date (void)
     struct tm retval = {0};
 #ifdef Exist_SYS_TIME
     struct tm *time_info;
+    time_t utc = Real_TIME.Time.SYS_Sec;
     while (Real_TIME.SYNC_Flag);
     Real_TIME.SYNC_Flag = 0;
     SYNC_TIME_Fun ();
-    time_info = localtime(&Real_TIME.Time.SYS_Sec);
+    time_info = gmtime(&utc);
     Real_TIME.date = *time_info;
     Real_TIME.date.tm_year += 1900;
+    Real_TIME.date.tm_mon += 1;
     retval = Real_TIME.date;
 #endif
     return retval;
