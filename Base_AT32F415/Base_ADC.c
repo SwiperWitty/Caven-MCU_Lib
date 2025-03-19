@@ -7,7 +7,7 @@ float VDDA_num = 3.30; 							//其实这个是动态的，ADC内部基准源
 
 static int Channel_NUMs;
 static u16 ADC1_DMA_list[20];
-
+int adc_enable_flag = 0;
 static void ADC_GPIO_Init(int Set)
 {
     gpio_init_type gpio_init_struct;
@@ -133,6 +133,7 @@ static int ADC_Start_Init(int Set)
 int Base_ADC_Init(int Set)
 {
     int retval = 0;
+    adc_enable_flag = Set;
 #ifdef Exist_ADC
     ADC_GPIO_Init(Set);
     if (Set)
@@ -193,7 +194,7 @@ void ADC_FINISH_HANDLERIT()
     if(dma_flag_get(DMA1_FDT1_FLAG) != RESET)       // ADC数据全部完成
     {
         dma_flag_clear(DMA1_FDT1_FLAG);
-        if (ADC_Quick_Get_pFun != NULL)
+        if (ADC_Quick_Get_pFun != NULL && adc_enable_flag > 0)
         {
             ADC_Quick_Get_pFun(ADC1_DMA_list);
         }

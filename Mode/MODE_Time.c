@@ -1,28 +1,32 @@
 #include "MODE_Time.h"
 
 /*
-   *  防止被编译器优化，并且只能在本文件使用
+ *  防止被编译器优化，并且只能在本文件使用
  *
 */
 
 
 static Real_TIME_Type Real_TIME = {0};
+static int time_enable = 0;
 static int SYNC_TIME_Fun (void);
 
 int MODE_TIME_Init(int SET)
 {
+    time_enable = SET;
 #ifdef Exist_SYS_TIME
     SYS_Time_Init(SET);
     return 0;
 #else
     return 1;
 #endif
-    
 }
 
 void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time)
 {
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return ;
+    }
     while (Real_TIME.SYNC_Flag);
     Real_TIME.SYNC_Flag = 1;
     Real_TIME.Time = time;
@@ -34,6 +38,9 @@ Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
 {
     Caven_BaseTIME_Type retval = {0};
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return retval;
+    }
     while (Real_TIME.SYNC_Flag);
     Real_TIME.SYNC_Flag = 0;
     SYNC_TIME_Fun ();
@@ -47,6 +54,9 @@ struct tm MODE_TIME_Get_Date (void)
 {
     struct tm retval = {0};
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return retval;
+    }
     struct tm *time_info;
     time_t utc = Real_TIME.Time.SYS_Sec;
     while (Real_TIME.SYNC_Flag);
@@ -71,6 +81,9 @@ int SYNC_TIME_Fun (void)
 {
     int retval = 0;
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return retval;
+    }
     SYS_BaseTIME_Type time;
     if (Real_TIME.SYNC_Flag == 1) 
     {
@@ -94,28 +107,31 @@ int SYNC_TIME_Fun (void)
 void MODE_Delay_Us(int num)
 {
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return ;
+    }
     SYS_Delay_us(num);
-#else
-    while(1);
 #endif
 }
 void MODE_Delay_Ms(int num)
 {
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return ;
+    }
     SYS_Delay_ms (num);
-#else
-    while(1);
 #endif
 }
 void MODE_Delay_S(int num)
 {
 #ifdef Exist_SYS_TIME
+    if (time_enable == 0) {
+        return ;
+    }
     for (int i = 0; i < num; i++)
     {
         SYS_Delay_ms (1000);
     }
-#else
-    while(1);
 #endif
 }
 #endif

@@ -37,6 +37,7 @@ static uint32_t SysTick_Config(uint64_t ticks)
 
 void SYS_Time_Init(int Set)
 {
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 #ifdef Exist_SYS_TIME
     if (Set)
     {

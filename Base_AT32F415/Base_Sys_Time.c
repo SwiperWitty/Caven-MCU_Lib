@@ -17,6 +17,7 @@ static SYS_Time_Type s_SYS_Time = {0};
 
 void SYS_Time_Init(int Set)
 {
+    nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 #ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
     s_Frequency = TICK_FREQUENCY;
     s_Frequency_CMP = TICK_SET_CMP;
