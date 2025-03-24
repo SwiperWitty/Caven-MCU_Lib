@@ -5,8 +5,15 @@
 #define RXD_Falg    USART_IT_RXNE     //  接收标志
 #define TXD_Falg    USART_FLAG_TC		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
 
-static USART_TypeDef * Temp;
-static D_pFun State_Machine_UART_pFun[5];
+static USART_TypeDef * uart_Temp;
+static D_pFun State_Machine_UART_pFun[6];
+
+uint8_t uart0_enable = 0;
+uint8_t uart1_enable = 0;
+uint8_t uart2_enable = 0;
+uint8_t uart3_enable = 0;
+uint8_t uart4_enable = 0;
+uint8_t uart5_enable = 0;
 
 static char UART_RXD_Flag(UART_mType Channel)
 {
@@ -16,18 +23,21 @@ static char UART_RXD_Flag(UART_mType Channel)
     case 0:
         return 0;
     case 1:
-        Temp = USART1;
+        uart_Temp = USART1;
         break;
     case 2:
-        Temp = USART2;
+        uart_Temp = USART2;
         break;
     case 3:
-        Temp = USART3;
+        uart_Temp = USART3;
+        break;
+    case 4:
+        uart_Temp = UART4;
         break;
     default:
         return 0;
     }
-    res = USART_GetITStatus(Temp,RXD_Falg);
+    res = USART_GetITStatus(uart_Temp,RXD_Falg);
     return res;
 }
 
@@ -38,18 +48,21 @@ static void UART_RXD_Flag_Clear(UART_mType Channel)
     case 0:
         return;
     case 1:
-        Temp = USART1;
+        uart_Temp = USART1;
         break;
     case 2:
-        Temp = USART2;
+        uart_Temp = USART2;
         break;
     case 3:
-        Temp = USART3;
+        uart_Temp = USART3;
+        break;
+    case 4:
+        uart_Temp = UART4;
         break;
     default:
         return;
     }
-    USART_ClearFlag(Temp, RXD_Falg);
+    USART_ClearFlag(uart_Temp, RXD_Falg);
 }
 
 /*  发送 接收    */
@@ -63,18 +76,21 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
     case 0:
         return 0;
     case 1:
-        Temp = USART1;
+        uart_Temp = USART1;
         break;
     case 2:
-        Temp = USART2;
+        uart_Temp = USART2;
         break;
     case 3:
-        Temp = USART3;
+        uart_Temp = USART3;
+        break;
+    case 4:
+        uart_Temp = UART4;
         break;
     default:
         return 0;
     }
-    res = USART_ReceiveData(Temp);
+    res = USART_ReceiveData(uart_Temp);
     return res;
 }
 
@@ -84,22 +100,46 @@ void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
     switch (Channel)
     {
     case 0:
+        if (uart0_enable == 0)
+        {
+            return;
+        }
         return;
     case 1:
-        Temp = USART1;
+        if (uart1_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = USART1;
         break;
     case 2:
-        Temp = USART2;
+        if (uart2_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = USART2;
         break;
     case 3:
-        Temp = USART3;
+        if (uart3_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = USART3;
+        break;
+    case 4:
+        if (uart4_enable == 0)
+        {
+            return;
+        }
+        uart_Temp = UART4;
         break;
     default:
         return;
     }
-    while (USART_GetFlagStatus(Temp, TXD_Falg) == 0);
-    USART_ClearFlag(Temp, TXD_Falg);
-    USART_SendData(Temp, DATA);
+    
+    while (USART_GetFlagStatus(uart_Temp, TXD_Falg) == 0);
+    USART_ClearFlag(uart_Temp, TXD_Falg);
+    USART_SendData(uart_Temp, DATA);
 }
 
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
@@ -112,7 +152,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
 #if (Exist_UART & OPEN_0001)
 void Uart0_Init(int Baud,int SET)
 {
-
+    uart0_enable = SET;
 }
 
 void UART0_HANDLERIT()
@@ -135,8 +175,9 @@ void UART0_HANDLERIT()
 void Uart1_Init(int Baud,int Set)
 {
     FunctionalState Cmd_set;
-    Temp = USART1;
-    USART_DeInit(Temp);
+    uart_Temp = USART1;
+    USART_DeInit(uart_Temp);
+    uart1_enable = SET;
     if (Set) {Cmd_set = ENABLE;}
     else {Cmd_set = DISABLE;}
     
@@ -176,7 +217,7 @@ void Uart1_Init(int Baud,int Set)
     USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
-    USART_Init(Temp, &USART_InitStructure);
+    USART_Init(uart_Temp, &USART_InitStructure);
     
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
@@ -184,8 +225,8 @@ void Uart1_Init(int Baud,int Set)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     
-    USART_ITConfig(Temp, USART_IT_RXNE, Cmd_set);   //
-    USART_Cmd(Temp, Cmd_set);					    //
+    USART_ITConfig(uart_Temp, USART_IT_RXNE, Cmd_set);   //
+    USART_Cmd(uart_Temp, Cmd_set);					    //
 }
 
 void UART1_HANDLERIT()
@@ -209,8 +250,9 @@ void UART1_HANDLERIT()
 void Uart2_Init(int Baud,int Set)
 {
     FunctionalState set = DISABLE;
-    Temp = USART2;
-    USART_DeInit(Temp);
+    uart_Temp = USART2;
+    USART_DeInit(uart_Temp);
+    uart2_enable = SET;
     if (Set)
         set = ENABLE;
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -220,7 +262,7 @@ void Uart2_Init(int Baud,int Set)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	//AFIO复用功能模块时钟
 
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, set);
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2; //USART2 TX；
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推挽输出；
@@ -237,7 +279,7 @@ void Uart2_Init(int Baud,int Set)
     USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
-    USART_Init(Temp, &USART_InitStructure);
+    USART_Init(uart_Temp, &USART_InitStructure);
     
     NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
@@ -245,8 +287,8 @@ void Uart2_Init(int Baud,int Set)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     
-    USART_ITConfig(Temp, USART_IT_RXNE, set);   //
-    USART_Cmd(Temp, set);					    //
+    USART_ITConfig(uart_Temp, USART_IT_RXNE, set);   //
+    USART_Cmd(uart_Temp, set);					    //
 }
 
 void UART2_HANDLERIT()
@@ -270,8 +312,9 @@ void UART2_HANDLERIT()
 void Uart3_Init(int Baud,int Set)
 {
     FunctionalState set = DISABLE;
-    Temp = USART3;
-    USART_DeInit(Temp);
+    uart_Temp = USART3;
+    USART_DeInit(uart_Temp);
+    uart3_enable = SET;
     if (Set)
         set = ENABLE;
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -310,7 +353,7 @@ void Uart3_Init(int Baud,int Set)
     USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
-    USART_Init(Temp, &USART_InitStructure);
+    USART_Init(uart_Temp, &USART_InitStructure);
     
     NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
@@ -318,8 +361,8 @@ void Uart3_Init(int Baud,int Set)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     
-    USART_ITConfig(Temp, USART_IT_RXNE, set);   //
-    USART_Cmd(Temp, set);					    //
+    USART_ITConfig(uart_Temp, USART_IT_RXNE, set);   //
+    USART_Cmd(uart_Temp, set);					    //
 }
 
 void UART3_HANDLERIT()
@@ -342,7 +385,7 @@ void UART3_HANDLERIT()
 #if (Exist_UART & OPEN_10000)
 void Uart4_Init(int Baud,int SET)
 {
-
+    uart4_enable = SET;
 
 }
 

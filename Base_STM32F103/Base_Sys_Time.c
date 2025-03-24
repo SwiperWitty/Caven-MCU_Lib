@@ -17,6 +17,7 @@ static SYS_Time_Type s_SYS_Time = {0};
 void SYS_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
     s_Frequency = TICK_FREQUENCY;
     s_Frequency_CMP = TICK_SET_CMP;
     s_Frequency_ms = (s_Frequency / 1000);
