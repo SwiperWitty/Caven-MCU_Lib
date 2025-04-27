@@ -43,7 +43,7 @@ Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
 
     #define TICK_FREQUENCY (MCU_SYS_FREQ)       // 滴答分频（1分频）
     #define TICK_SET_CMP (TICK_FREQUENCY / 8)   // 设置滴答初始值(/8 就是 1/8 s)
-    #define TICK_OVER_IT (0.125)                // 定时器溢出时间（24位滴答才有）
+    #define TICK_OVER_IT (8)                	// 定时器溢出时间1/8（24位滴答才有）
 
     #define SYSTICK_NUM (SysTick->VAL)
     #define SYS_TIME_INTERRUPT_GETFLAG()    SysTick->CTRL

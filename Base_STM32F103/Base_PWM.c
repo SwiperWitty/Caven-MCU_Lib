@@ -3,80 +3,79 @@
 void TIM3_PWM_GPIO_Init(int Set)
 {
 #ifdef Exist_PWM
-    gpio_init_type gpio_init_struct;
-    gpio_default_para_init(&gpio_init_struct);
+    GPIO_InitTypeDef gpio_init_struct;
+    GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);                       //gpio时钟
-        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
-        gpio_pin_remap_config(TMR3_GMUX_0011,TRUE);                                 //重映射Tim3
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+		//gpio时钟
+//        gpio_pin_remap_config(TMR3_GMUX_0011,TRUE);                                 //重映射Tim3
 
-        gpio_init_struct.gpio_pins = GPIO_PINS_6 | GPIO_PINS_7 | GPIO_PINS_8 | GPIO_PINS_9;
-        gpio_init_struct.gpio_mode = GPIO_MODE_MUX;                                         //复用模式
-        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIOC, &gpio_init_struct);
+		gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;                                         //复用模式
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_AF_PP;
+        gpio_init_struct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+        GPIO_Init(GPIOA, &gpio_init_struct);
+		gpio_init_struct.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+        GPIO_Init(GPIOB, &gpio_init_struct);
     }
     else
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_6 | GPIO_PINS_7 | GPIO_PINS_8 | GPIO_PINS_9;
-        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIOC, &gpio_init_struct);
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+		gpio_init_struct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+        GPIO_Init(GPIOA, &gpio_init_struct);
+		gpio_init_struct.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1;
+        GPIO_Init(GPIOB, &gpio_init_struct);
     }
 #endif
 }
 void TIM4_PWM_GPIO_Init(int Set)
 {
 #ifdef Exist_PWM
-    gpio_init_type gpio_init_struct;
-    gpio_default_para_init(&gpio_init_struct);
+    GPIO_InitTypeDef gpio_init_struct;
+    GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);       //gpio时钟
-        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
-        gpio_pin_remap_config(SWJTAG_GMUX_010,TRUE);                //禁用Jtag，但是保留SWD
-
-        gpio_init_struct.gpio_pins = GPIO_PINS_6 | GPIO_PINS_7 | GPIO_PINS_8 | GPIO_PINS_9;
-        gpio_init_struct.gpio_mode = GPIO_MODE_MUX;                                         //复用模式
-        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIOB, &gpio_init_struct);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+		RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+		GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE); 
+        
+		gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;                                         //复用模式
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_AF_PP;
+		gpio_init_struct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+        GPIO_Init(GPIOB, &gpio_init_struct);
     }
     else
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_6 | GPIO_PINS_7 | GPIO_PINS_8 | GPIO_PINS_9;
-        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIOB, &gpio_init_struct);
+		gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        gpio_init_struct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+        GPIO_Init(GPIOB, &gpio_init_struct);
     }
 #endif
 }
 void TIM8_PWM_GPIO_Init(int Set)
 {
 #ifdef Exist_PWM
-    gpio_init_type gpio_init_struct;
-    gpio_default_para_init(&gpio_init_struct);
+    GPIO_InitTypeDef gpio_init_struct;
+    GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);                               //gpio时钟
-        crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC,ENABLE);
 
-        gpio_init_struct.gpio_pins = GPIO_PINS_6 | GPIO_PINS_7 | GPIO_PINS_8 | GPIO_PINS_9;
-        gpio_init_struct.gpio_mode = GPIO_MODE_MUX;                                         //复用模式
-        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIOC, &gpio_init_struct);
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;                                         //复用模式
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_AF_PP;
+		gpio_init_struct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+        GPIO_Init(GPIOC, &gpio_init_struct);
     }
     else
     {
-        gpio_init_struct.gpio_pins = GPIO_PINS_6 | GPIO_PINS_7 | GPIO_PINS_8 | GPIO_PINS_9;
-        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIOC, &gpio_init_struct);
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        gpio_init_struct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9;
+        GPIO_Init(GPIOC, &gpio_init_struct);
     }
 #endif
 
@@ -87,44 +86,46 @@ void TIM8_PWM_GPIO_Init(int Set)
 void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 {
 #ifdef Exist_PWM
-    confirm_state state = FALSE;
+    FunctionalState state = DISABLE;
     if (Set)
-        state = TRUE;
+        state = ENABLE;
     if(arr < 0 || psc < 0)
         return ;
-    crm_periph_clock_enable(CRM_TMR3_PERIPH_CLOCK, state);
-    tmr_type *Temp_TIM = TMR3;
-    tmr_reset(Temp_TIM);
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef TIM_OCInitStructure;
+	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, state);
+    TIM_TypeDef *Temp_TIM = TIM3;
 
-    TIM3_PWM_GPIO_Init(Set);
+    TIM4_PWM_GPIO_Init(Set);
 
-    tmr_base_init(Temp_TIM,arr,psc);                            //前面是周期，后面是分频
-    tmr_cnt_dir_set(Temp_TIM, TMR_COUNT_UP);                    //向上计数
+    TIM_TimeBaseStructure.TIM_Period = arr;
+	TIM_TimeBaseStructure.TIM_Prescaler = psc;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);	                    //向上计数
 
-    tmr_output_config_type tmr_output_struct;                   //时钟输出配置（PWM）
-    tmr_output_default_para_init(&tmr_output_struct);
-    tmr_output_struct.oc_mode = TMR_OUTPUT_CONTROL_PWM_MODE_B;
-    tmr_output_struct.oc_output_state = TRUE;
-    tmr_output_struct.oc_polarity = TMR_OUTPUT_ACTIVE_LOW;
-    tmr_output_struct.oc_idle_state = TRUE;
-    tmr_output_struct.occ_output_state = FALSE;
-    tmr_output_struct.occ_polarity = TMR_OUTPUT_ACTIVE_HIGH;
-    tmr_output_struct.occ_idle_state = FALSE;
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_1, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_1, 0);                       //TIMx 通道1 启动时占峰比为0
+	TIM_OC1Init(Temp_TIM, &TIM_OCInitStructure);
+	TIM_OC1PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_2, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_2, 0);                       //TIMx 通道2 启动时占峰比为0
+	TIM_OC2Init(Temp_TIM, &TIM_OCInitStructure); 
+	TIM_OC2PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_3, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_3, 0);                       //TIMx 通道3 启动时占峰比为0
+	TIM_OC3Init(Temp_TIM, &TIM_OCInitStructure);
+	TIM_OC3PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_4, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_4, 0);                       //TIMx 通道4 启动时占峰比为0
-
-    tmr_output_enable(Temp_TIM, state);          //使能定时器输出
-    tmr_counter_enable(Temp_TIM, state);         //启动定时器 TIMx
+	TIM_OC4Init(Temp_TIM, &TIM_OCInitStructure); 
+	TIM_OC4PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
+    
+	TIM_CtrlPWMOutputs(Temp_TIM, state); 												//OCPolarity 
+	TIM_ARRPreloadConfig(Temp_TIM, state);
+	
+	TIM_ITConfig(Temp_TIM,TIM_IT_Update,DISABLE);
+	TIM_Cmd(Temp_TIM, state);
 #endif
 }
 
@@ -132,46 +133,46 @@ void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 {
 #ifdef Exist_PWM
-    confirm_state state = FALSE;
+    FunctionalState state = DISABLE;
     if (Set)
-        state = TRUE;
+        state = ENABLE;
     if(arr < 0 || psc < 0)
         return ;
-    crm_periph_clock_enable(CRM_TMR4_PERIPH_CLOCK, state);
-    tmr_type *Temp_TIM = TMR4;
-    tmr_reset(Temp_TIM);
-    crm_clocks_freq_type crm_clocks_freq_struct = {0};
-    crm_clocks_freq_get(&crm_clocks_freq_struct);               //get system clock 
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef TIM_OCInitStructure;
+	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, state);
+    TIM_TypeDef *Temp_TIM = TIM4;
 
     TIM4_PWM_GPIO_Init(Set);
 
-    tmr_base_init(Temp_TIM,arr,psc);                            //前面是周期，后面是分频
-    tmr_cnt_dir_set(Temp_TIM, TMR_COUNT_UP);                    //向上计数
+    TIM_TimeBaseStructure.TIM_Period = arr;
+	TIM_TimeBaseStructure.TIM_Prescaler = psc;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);	                    //向上计数
 
-    tmr_output_config_type tmr_output_struct;                   //时钟输出配置（PWM）
-    tmr_output_default_para_init(&tmr_output_struct);
-    tmr_output_struct.oc_mode = TMR_OUTPUT_CONTROL_PWM_MODE_B;
-    tmr_output_struct.oc_output_state = TRUE;
-    tmr_output_struct.oc_polarity = TMR_OUTPUT_ACTIVE_LOW;
-    tmr_output_struct.oc_idle_state = TRUE;
-    tmr_output_struct.occ_output_state = FALSE;
-    tmr_output_struct.occ_polarity = TMR_OUTPUT_ACTIVE_HIGH;
-    tmr_output_struct.occ_idle_state = FALSE;
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_1, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_1, 0);                       //TIMx 通道1 启动时占峰比为0
+	TIM_OC1Init(Temp_TIM, &TIM_OCInitStructure);
+	TIM_OC1PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_2, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_2, 0);                       //TIMx 通道2 启动时占峰比为0
+	TIM_OC2Init(Temp_TIM, &TIM_OCInitStructure); 
+	TIM_OC2PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_3, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_3, 0);                       //TIMx 通道3 启动时占峰比为0
+	TIM_OC3Init(Temp_TIM, &TIM_OCInitStructure);
+	TIM_OC3PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
 
-    tmr_output_channel_config(Temp_TIM, TMR_SELECT_CHANNEL_4, &tmr_output_struct);
-    tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_4, 0);                       //TIMx 通道4 启动时占峰比为0
-
-    tmr_output_enable(Temp_TIM, state);          //使能定时器输出
-    tmr_counter_enable(Temp_TIM, state);         //启动定时器 TIMx
+	TIM_OC4Init(Temp_TIM, &TIM_OCInitStructure); 
+	TIM_OC4PreloadConfig(Temp_TIM, TIM_OCPreload_Enable);
+    
+	TIM_CtrlPWMOutputs(Temp_TIM, state); 												//OCPolarity 
+	TIM_ARRPreloadConfig(Temp_TIM, state);
+	
+	TIM_ITConfig(Temp_TIM,TIM_IT_Update,DISABLE);
+	TIM_Cmd(Temp_TIM, state);
 #endif
 }
 
@@ -187,21 +188,21 @@ void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 void TIM3_PWMx_SetValue(char PWMx,int value)
 {
 #ifdef Exist_PWM
-    tmr_type *Temp_TIM = TMR3;
+    TIM_TypeDef *Temp_TIM = TIM3;
 
     switch (PWMx)
     {
     case (1):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_1, value);
+        TIM_SetCompare1(Temp_TIM, value);
         break;
     case (2):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_2, value);
+        TIM_SetCompare2(Temp_TIM, value);
         break;
     case (3):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_3, value);
+        TIM_SetCompare3(Temp_TIM, value);
         break;
     case (4):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_4, value);
+        TIM_SetCompare4(Temp_TIM, value);
         break;
     default:
         break;
@@ -212,21 +213,21 @@ void TIM3_PWMx_SetValue(char PWMx,int value)
 void TIM4_PWMx_SetValue(char PWMx,int value)
 {
 #ifdef Exist_PWM
-    tmr_type *Temp_TIM = TMR4;
+    TIM_TypeDef *Temp_TIM = TIM4;
 
     switch (PWMx)
     {
     case (1):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_1, value);
+        TIM_SetCompare1(Temp_TIM, value);
         break;
     case (2):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_2, value);
+        TIM_SetCompare2(Temp_TIM, value);
         break;
     case (3):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_3, value);
+        TIM_SetCompare3(Temp_TIM, value);
         break;
     case (4):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_4, value);
+        TIM_SetCompare4(Temp_TIM, value);
         break;
     default:
         break;
@@ -237,21 +238,21 @@ void TIM4_PWMx_SetValue(char PWMx,int value)
 void TIM8_PWMx_SetValue(char PWMx,int value)
 {
 #ifdef Exist_PWM
-    tmr_type *Temp_TIM = TMR3;          //这个单片机没有8 
+    TIM_TypeDef *Temp_TIM = TIM8;
 
     switch (PWMx)
     {
     case (1):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_1, value);
+        TIM_SetCompare1(Temp_TIM, value);
         break;
     case (2):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_2, value);
+        TIM_SetCompare2(Temp_TIM, value);
         break;
     case (3):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_3, value);
+        TIM_SetCompare3(Temp_TIM, value);
         break;
     case (4):
-        tmr_channel_value_set(Temp_TIM, TMR_SELECT_CHANNEL_4, value);
+        TIM_SetCompare4(Temp_TIM, value);
         break;
     default:
         break;
