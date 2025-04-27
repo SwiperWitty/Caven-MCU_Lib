@@ -63,7 +63,7 @@ void User_GPIO_config(int gpiox,int pin,int set)
         return;
 //        break;
     }
-    RCC_APB2PeriphResetCmd(value,ENABLE);
+    RCC_APB2PeriphClockCmd(value,ENABLE);
     GPIO_Init(gpio_x, &gpio_init_struct);
 }
 /*

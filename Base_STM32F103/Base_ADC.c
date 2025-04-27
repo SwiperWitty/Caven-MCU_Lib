@@ -15,8 +15,8 @@ void ADC_GPIO_Init(int Set)
     {
         return ;
     }
-    RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOA,ENABLE);
-    RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOB,ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
 
     gpio_init_struct.GPIO_Mode = GPIO_Mode_Out_PP;
     gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
@@ -104,7 +104,7 @@ int Base_ADC_Init(int Set)
         set = ENABLE;
     }
     ADC_InitTypeDef adc_base_struct;
-    RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, set);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, set);
 //    crm_adc_clock_div_set(CRM_ADC_DIV_6);                         //ADC是时钟的6分频
     ADC_GPIO_Init(Set);                                             //GPIO
 

@@ -20,7 +20,7 @@ void SPI1_GPIO_Init(int Set)
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOA, ENABLE);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
         gpio_init_struct.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
@@ -54,7 +54,7 @@ void SPI2_GPIO_Init(int Set)
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        RCC_APB2PeriphResetCmd(RCC_APB2Periph_GPIOB, ENABLE);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
         gpio_init_struct.GPIO_Pin = SPI2_SCK | SPI2_MOSI;
