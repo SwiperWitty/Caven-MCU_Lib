@@ -37,5 +37,10 @@
 #include "Base_PWM.h"
 #endif
 
+#ifdef Exist_CAPTURE
+#include "Base_Capture.h"
+#endif
+
+
 //Base文件没有结构体索引
 #endif

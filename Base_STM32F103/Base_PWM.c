@@ -129,7 +129,7 @@ void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 #endif
 }
 
-//溢出时间T = (arr+1)*(psc+1)
+// 溢出时间 T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 20MS
 void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 {
 #ifdef Exist_PWM
@@ -150,7 +150,7 @@ void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 	TIM_TimeBaseStructure.TIM_Prescaler = psc;
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);	                    //向上计数
+	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);	                    // 向上计数
 
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -176,11 +176,10 @@ void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 #endif
 }
 
-//溢出时间T = (arr+1)*(psc+1)
 void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 {
 #ifdef Exist_PWM
-    //AT32f415没有定时器8，但是IO与定时器3的复用是一样的
+    // AT32f415没有定时器8，但是IO与定时器3的复用是一样的
 
 #endif
 }

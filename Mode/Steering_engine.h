@@ -6,9 +6,9 @@
 
 #define Steering_PWM 4
 #define	Arr_T4	2000-1
-#define Por_T4	(SystemCoreClock / 100000)-1      //144 000 000 / 100000 = 1440
+#define Por_T4	(MCU_SYS_FREQ / 100000)-1
 
-//	T = ((arr + 1) * (por + 1)) / 144MHz = 20MS
+//	T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 20MS
 
 typedef struct
 {

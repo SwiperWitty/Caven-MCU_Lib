@@ -15,6 +15,7 @@ int MODE_TIME_Init(int SET)
     time_enable = SET;
 #ifdef Exist_SYS_TIME
     SYS_Time_Init(SET);
+	Real_TIME.SYNC_Flag = 0;
     return 0;
 #else
     return 1;

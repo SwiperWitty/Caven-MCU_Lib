@@ -22,7 +22,9 @@
 typedef struct
 {
     char Channel;
-	int val;
+	char finish_flag;
+	int period_val;
+	int high_val;
 }TIM_Capture_Type;
 
 void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set);

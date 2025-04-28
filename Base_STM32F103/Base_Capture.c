@@ -12,6 +12,12 @@ int TIM3_lastCount = 0;
 int TIM4_lastCount = 0;
 int TIM5_lastCount = 0;
 
+int TIM1_arr = 0;
+int TIM2_arr = 0;
+int TIM3_arr = 0;
+int TIM4_arr = 0;
+int TIM5_arr = 0;
+
 void TIMx_Capture_Callback_pFunBind(char TIMx,D_pFun pFun)
 {
 	if(TIMx > 3 || pFun == NULL)
@@ -108,7 +114,7 @@ void TIM1_Capture_GPIO_Init(int Set)
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
         
 		gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;                                         //复用模式
-        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_IPD;
 		gpio_init_struct.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11;
         GPIO_Init(GPIOA, &gpio_init_struct);
     }
@@ -177,7 +183,7 @@ void TIM3_Capture_GPIO_Init(int Set)
 }
 
 /*
-	溢出时间T = (arr+1)*(psc+1)
+	溢出时间 T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 20MS
 	Channel = 1-4
 	mode 0-输入捕获	1-编码捕获
 	set	0/1
@@ -199,6 +205,7 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
     TIM_TypeDef *Temp_TIM = TIM1;
 
     TIM1_Capture_GPIO_Init(Set);
+	TIM1_arr = arr;
 
     TIM_TimeBaseStructure.TIM_Period = arr;
 	TIM_TimeBaseStructure.TIM_Prescaler = psc;
@@ -214,42 +221,6 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 	}
 	else
 	{
-		if (Channel & 0x01)
-		{
-			TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;
-			TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
-			TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
-			TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
-			TIM_ICInitStructure.TIM_ICFilter = 0x0;
-			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
-		}
-		if (Channel & (0x01 << 1))
-		{
-			TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
-			TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
-			TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
-			TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
-			TIM_ICInitStructure.TIM_ICFilter = 0x0;
-			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
-		}
-		if (Channel & (0x01 << 2))
-		{
-			TIM_ICInitStructure.TIM_Channel = TIM_Channel_3;
-			TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
-			TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
-			TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
-			TIM_ICInitStructure.TIM_ICFilter = 0x0;
-			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
-		}
-		if (Channel & (0x01 << 3))
-		{
-			TIM_ICInitStructure.TIM_Channel = TIM_Channel_4;
-			TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
-			TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
-			TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
-			TIM_ICInitStructure.TIM_ICFilter = 0x0;
-			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
-		}
 		// 中断配置
 		NVIC_InitStructure.NVIC_IRQChannel = TIM1_CC_IRQn;
 		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
@@ -257,7 +228,34 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-		TIM_ITConfig(Temp_TIM, TIM_IT_CC1, ENABLE); // 使能捕获中断
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+		TIM_ICInitStructure.TIM_ICFilter = 0x0;
+		if (Channel & 0x01)
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC1, ENABLE);
+		}
+		if (Channel & (0x01 << 1))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC2, ENABLE);
+		}
+		if (Channel & (0x01 << 2))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_3;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC3, ENABLE);
+		}
+		if (Channel & (0x01 << 3))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_4;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC4, ENABLE);
+		}
 	}
     TIM_Cmd(Temp_TIM, ENABLE); // 使能定时器
 #endif
@@ -265,56 +263,332 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
 void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
+    FunctionalState state = DISABLE;
+    if (Set)
+        state = ENABLE;
+    if(arr < 0 || psc < 0)
+        return ;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    TIM_ICInitTypeDef TIM_ICInitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+	TIM_ICStructInit(&TIM_ICInitStructure);
+	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, state);
+    TIM_TypeDef *Temp_TIM = TIM2;
+
+    TIM2_Capture_GPIO_Init(Set);
+	TIM2_arr = arr;
+
+    TIM_TimeBaseStructure.TIM_Period = arr;
+	TIM_TimeBaseStructure.TIM_Prescaler = psc;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);                    //向上计数
+	if (mode)
+	{
+		TIM_EncoderInterfaceConfig(Temp_TIM, TIM_EncoderMode_TI12,TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
+		
+		TIM_ICInitStructure.TIM_ICFilter = 5;		// 适当滤波
+		TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+	}
+	else
+	{
+		// 中断配置
+		NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
+		
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+		TIM_ICInitStructure.TIM_ICFilter = 0x0;
+		if (Channel & 0x01)
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC1, ENABLE);
+		}
+		if (Channel & (0x01 << 1))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC2, ENABLE);
+		}
+		if (Channel & (0x01 << 2))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_3;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC3, ENABLE);
+		}
+		if (Channel & (0x01 << 3))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_4;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC4, ENABLE);
+		}
+	}
+    TIM_Cmd(Temp_TIM, ENABLE); // 使能定时器
 }
 
 void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
+    FunctionalState state = DISABLE;
+    if (Set)
+        state = ENABLE;
+    if(arr < 0 || psc < 0)
+        return ;
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+    TIM_ICInitTypeDef TIM_ICInitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+	TIM_ICStructInit(&TIM_ICInitStructure);
+	
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, state);
+    TIM_TypeDef *Temp_TIM = TIM2;
+
+    TIM3_Capture_GPIO_Init(Set);
+	TIM2_arr = arr;
+
+    TIM_TimeBaseStructure.TIM_Period = arr;
+	TIM_TimeBaseStructure.TIM_Prescaler = psc;
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);                    //向上计数
+	if (mode)
+	{
+		TIM_EncoderInterfaceConfig(Temp_TIM, TIM_EncoderMode_TI12,TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
+		
+		TIM_ICInitStructure.TIM_ICFilter = 5;		// 适当滤波
+		TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+	}
+	else
+	{
+		// 中断配置
+		NVIC_InitStructure.NVIC_IRQChannel = TIM3_IRQn;
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+		NVIC_Init(&NVIC_InitStructure);
+		
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+		TIM_ICInitStructure.TIM_ICFilter = 0x0;
+		if (Channel & 0x01)
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_1;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC1, ENABLE);
+		}
+		if (Channel & (0x01 << 1))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_2;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC2, ENABLE);
+		}
+		if (Channel & (0x01 << 2))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_3;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC3, ENABLE);
+		}
+		if (Channel & (0x01 << 3))
+		{
+			TIM_ICInitStructure.TIM_Channel = TIM_Channel_4;
+			TIM_ICInit(Temp_TIM, &TIM_ICInitStructure);
+			TIM_ITConfig(Temp_TIM, TIM_IT_CC4, ENABLE);
+		}
+	}
+    TIM_Cmd(Temp_TIM, ENABLE); // 使能定时器
 }
 
+int time1_ch1_mode = 0;
+int time1_ch1_up = 0;
+int time1_ch1_down = 0;
+int time1_ch2_mode = 0;
+int time1_ch2_up = 0;
+int time1_ch2_down = 0;
+int time1_ch3_mode = 0;
+int time1_ch3_up = 0;
+int time1_ch3_down = 0;
+int time1_ch4_mode = 0;
+int time1_ch4_up = 0;
+int time1_ch4_down = 0;
 void TIM1_HANDLERIT ()
 {
+	int temp_num = 0;
 	TIM_TypeDef *Temp_TIM = TIM1;
 	TIM_Capture_Type temp_Capture = {0};
     if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC1) != RESET)
     {
+		if (time1_ch1_mode == 0)
+		{
+			time1_ch1_up = TIM_GetCapture1(Temp_TIM);
+			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
+			time1_ch1_mode ++;
+		}
+		else if (time1_ch1_mode == 1)
+		{
+			time1_ch1_down = TIM_GetCapture1(Temp_TIM);
+			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time1_ch1_mode ++;
+		}
+		else if(time1_ch1_mode >= 2)
+		{
+			temp_num = TIM_GetCapture1(Temp_TIM);
+			if (temp_num <= time1_ch1_up)
+			{
+				temp_num += (TIM1_arr + 1);
+			}
+			temp_Capture.period_val = temp_num - time1_ch1_up;
+			if (time1_ch1_down < time1_ch1_up)
+			{
+				time1_ch1_down += (TIM1_arr + 1);
+			}
+			temp_Capture.high_val = time1_ch1_down - time1_ch1_up;
+			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time1_ch1_mode = 0;
+			temp_Capture.finish_flag = 1;
+		}
         if(TIM1_Capture_Fun != NULL)
 		{
 			temp_Capture.Channel = 1;
-			temp_Capture.val = TIM_GetCapture1(Temp_TIM);
 			TIM1_Capture_Fun(&temp_Capture);
 		}
         TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC1);
     }
-    if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC2) != RESET)
+	if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC2) != RESET)
     {
-        if(TIM1_Capture_Fun != NULL)
+		if (time1_ch2_mode == 0)
 		{
-			temp_Capture.Channel = 2;
-			temp_Capture.val = TIM_GetCapture1(Temp_TIM);
-			TIM1_Capture_Fun(&temp_Capture);
+			time1_ch2_up = TIM_GetCapture2(Temp_TIM);
+			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
+			time1_ch2_mode ++;
 		}
-        TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC2);
-    }
-	if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC3) != RESET)
-    {
-        if(TIM1_Capture_Fun != NULL)
+		else if (time1_ch2_mode == 1)
 		{
-			temp_Capture.Channel = 3;
-			temp_Capture.val = TIM_GetCapture1(Temp_TIM);
-			TIM1_Capture_Fun(&temp_Capture);
+			time1_ch2_down = TIM_GetCapture2(Temp_TIM);
+			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time1_ch2_mode ++;
 		}
-        TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC2);
-    }
-	if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC4) != RESET)
-    {
+		else if(time1_ch2_mode >= 2)
+		{
+			temp_num = TIM_GetCapture2(Temp_TIM);
+			if (temp_num <= time1_ch2_up)
+			{
+				temp_num += (TIM1_arr + 1);
+			}
+			temp_Capture.period_val = temp_num - time1_ch2_up;
+			if (time1_ch2_down < time1_ch2_up)
+			{
+				time1_ch2_down += (TIM1_arr + 1);
+			}
+			temp_Capture.high_val = time1_ch2_down - time1_ch2_up;
+			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time1_ch2_mode = 0;
+			temp_Capture.finish_flag = 1;
+		}
         if(TIM1_Capture_Fun != NULL)
 		{
-			temp_Capture.Channel = 4;
-			temp_Capture.val = TIM_GetCapture1(Temp_TIM);
+			temp_Capture.Channel = 1;
 			TIM1_Capture_Fun(&temp_Capture);
 		}
         TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC2);
     }
 }
 
-
+int time2_ch1_mode = 0;
+int time2_ch1_up = 0;
+int time2_ch1_down = 0;
+int time2_ch2_mode = 0;
+int time2_ch2_up = 0;
+int time2_ch2_down = 0;
+int time2_ch3_mode = 0;
+int time2_ch3_up = 0;
+int time2_ch3_down = 0;
+int time2_ch4_mode = 0;
+int time2_ch4_up = 0;
+int time2_ch4_down = 0;
+void TIM2_HANDLERIT ()
+{
+	int temp_num = 0;
+	TIM_TypeDef *Temp_TIM = TIM2;
+	TIM_Capture_Type temp_Capture = {0};
+    if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC1) != RESET)
+    {
+		if (time2_ch1_mode == 0)
+		{
+			time2_ch1_up = TIM_GetCapture1(Temp_TIM);
+			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
+			time2_ch1_mode ++;
+		}
+		else if (time2_ch1_mode == 1)
+		{
+			time2_ch1_down = TIM_GetCapture1(Temp_TIM);
+			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time2_ch1_mode ++;
+		}
+		else if(time2_ch1_mode >= 2)
+		{
+			temp_num = TIM_GetCapture1(Temp_TIM);
+			if (temp_num <= time2_ch1_up)
+			{
+				temp_num += (TIM2_arr + 1);
+			}
+			temp_Capture.period_val = temp_num - time2_ch1_up;
+			if (time2_ch1_down < time2_ch1_up)
+			{
+				time2_ch1_down += (TIM2_arr + 1);
+			}
+			temp_Capture.high_val = time2_ch1_down - time2_ch1_up;
+			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time2_ch1_mode = 0;
+			temp_Capture.finish_flag = 1;
+		}
+        if(TIM2_Capture_Fun != NULL)
+		{
+			temp_Capture.Channel = 1;
+			TIM2_Capture_Fun(&temp_Capture);
+		}
+        TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC1);
+    }
+	if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC2) != RESET)
+    {
+		if (time2_ch2_mode == 0)
+		{
+			time2_ch2_up = TIM_GetCapture2(Temp_TIM);
+			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
+			time2_ch2_mode ++;
+		}
+		else if (time2_ch2_mode == 1)
+		{
+			time2_ch2_down = TIM_GetCapture2(Temp_TIM);
+			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time2_ch2_mode ++;
+		}
+		else if(time2_ch2_mode >= 2)
+		{
+			temp_num = TIM_GetCapture2(Temp_TIM);
+			if (temp_num <= time2_ch2_up)
+			{
+				temp_num += (TIM2_arr + 1);
+			}
+			temp_Capture.period_val = temp_num - time2_ch2_up;
+			if (time2_ch2_down < time2_ch2_up)
+			{
+				time2_ch2_down += (TIM2_arr + 1);
+			}
+			temp_Capture.high_val = time2_ch2_down - time2_ch2_up;
+			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time2_ch2_mode = 0;
+			temp_Capture.finish_flag = 1;
+		}
+        if(TIM2_Capture_Fun != NULL)
+		{
+			temp_Capture.Channel = 1;
+			TIM2_Capture_Fun(&temp_Capture);
+		}
+        TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC2);
+    }
+}

@@ -35,12 +35,10 @@ typedef struct
  */
 typedef struct
 {
+	volatile char SYNC_Flag;
+	Caven_BaseTIME_Type Time;
     struct tm date;
-    Caven_BaseTIME_Type Time;
-    volatile int SYNC_Flag;
 }Real_TIME_Type;
-
-//extern Real_TIME_Type Real_TIME;
 
 typedef struct
 {

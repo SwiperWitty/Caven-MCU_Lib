@@ -18,7 +18,8 @@ int Vofa_JustFloat_Init_Fun (Send_pFun send_fun)
 }
 
 /*
- *
+ * ch_num 数据个数
+ * f_num 数据个数对应的 float数组
  */
 int Vofa_JustFloat_Show_Fun (char ch_num,float *f_num)
 {

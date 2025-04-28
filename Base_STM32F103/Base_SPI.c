@@ -2,26 +2,37 @@
 
 #ifdef Exist_SPI
 
-    #if (SPIx == 1)
-        spi_type *Temp_SPI = SPI1;
-        #define SPI_Tx_DMA_Channel     DMA1_CHANNEL3
-    #elif (SPIx == 2)
-        SPI_TypeDef *Temp_SPI = SPI2;
-        #define SPI_Tx_DMA_Channel     DMA1_CHANNEL5
-    #endif
-#endif
+SPI_TypeDef *spi_Temp;
+char SPI1_Width = 0;
+char SPI2_Width = 0;
+    #if Exist_SPI & OPEN_0010
+	uint8_t DMA_SPI1_Buff[500];
+	#endif
+    #if Exist_SPI & OPEN_0100
+	uint8_t DMA_SPI2_Buff[500];
+	#endif
 
-__IO uint16_t SPI_complete_flag = 1;
-
-void SPI1_GPIO_Init(int Set)
+static void SPI_Delay (int time)
 {
-#ifdef Exist_SPI
+    volatile int temp;
+    for (int i = 0; i < time; ++i)
+    {
+        temp = 10;            //SET
+        do{
+            NOP();
+        }while((temp--) > 0);
+    }
+}
+
+
+static void SPI1_GPIO_Init(int Set)
+{
+#if Exist_SPI & OPEN_0010
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
 
         gpio_init_struct.GPIO_Pin = SPI1_SCK | SPI1_MOSI;
         gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
@@ -29,358 +40,439 @@ void SPI1_GPIO_Init(int Set)
         GPIO_Init(GPIO_SPI1, &gpio_init_struct);
         
         gpio_init_struct.GPIO_Pin = SPI1_NSS;
-        gpio_init_struct.GPIO_Mode = SPI_MODE_NSS;                //NSS-输出模式（输出）
+        gpio_init_struct.GPIO_Mode = SPI_MODE_NSS;      // NSS-输出模式（输出）
         GPIO_Init(GPIO_SPI1, &gpio_init_struct);
         
         gpio_init_struct.GPIO_Pin = SPI1_MISO;
         gpio_init_struct.GPIO_Mode = SPI_MODE_IN;
         GPIO_Init(GPIO_SPI1, &gpio_init_struct);
-
+        
+        SPI1_NSS_H();
     }
     else
     {
-        gpio_init_struct.GPIO_Pin  = SPI1_NSS|SPI1_SCK|SPI1_MOSI|SPI1_MISO;
-        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Pin = SPI1_NSS|SPI1_SCK|SPI1_MOSI|SPI1_MISO;
         gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-        GPIO_Init(GPIO_SPI1, &gpio_init_struct);
+        gpio_init(GPIO_SPI1, &gpio_init_struct);
     }
 #endif
 }
 
-void SPI2_GPIO_Init(int Set)
+static void SPI2_GPIO_Init(int Set)
 {
-#ifdef Exist_SPI
+#if Exist_SPI & OPEN_0100
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
     {
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-        RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
+        
         gpio_init_struct.GPIO_Pin = SPI2_SCK | SPI2_MOSI;
         gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
         gpio_init_struct.GPIO_Mode = SPI_MODE_OUT;
         GPIO_Init(GPIO_SPI2, &gpio_init_struct);
         
         gpio_init_struct.GPIO_Pin = SPI2_NSS;
-        gpio_init_struct.GPIO_Mode = SPI_MODE_NSS;                //NSS-输出模式（输出）
+        gpio_init_struct.GPIO_Mode = SPI_MODE_NSS;      // NSS-输出模式（输出）
         GPIO_Init(GPIO_SPI2, &gpio_init_struct);
         
         gpio_init_struct.GPIO_Pin = SPI2_MISO;
         gpio_init_struct.GPIO_Mode = SPI_MODE_IN;
         GPIO_Init(GPIO_SPI2, &gpio_init_struct);
-
+        
+        SPI2_NSS_H();
     }
     else
     {
-        gpio_init_struct.GPIO_Pin  = SPI2_NSS|SPI2_SCK|SPI2_MOSI|SPI2_MISO;
-        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Pin = SPI2_NSS|SPI2_SCK|SPI2_MOSI|SPI2_MISO;
         gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         GPIO_Init(GPIO_SPI2, &gpio_init_struct);
     }
 #endif
 }
 
-void SPI1_DMA_Config (const void *DMA_Buffer,int BufferSize)
+/*
+    这个是给硬件SPI的初始化 
+*/
+void Base_SPI1_Init (uint8_t Width,int Set)
 {
-#ifdef SPI_DMA
-    dma_init_type dma_init_struct;
-    dma_default_para_init(&dma_init_struct);        
-    dma_init_struct.buffer_size = BufferSize;       //长度
-    dma_init_struct.memory_base_addr = (uint32_t)DMA_Buffer;
-    dma_init_struct.peripheral_base_addr = (uint32_t)&SPI1->dt;
-    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //内存到外设
-    dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
-    dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
-    dma_init_struct.memory_inc_enable = TRUE;                       //内存地址是否自动递增
-    dma_init_struct.peripheral_inc_enable = FALSE;                  //外设地址是否自动递增
-    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //设置优先级--中
-    dma_init_struct.loop_mode_enable = FALSE;                       //非循环模式
-    dma_init(SPI_Tx_DMA_Channel, &dma_init_struct);
-#endif
-
-}
-void SPI2_DMA_Config (const void *DMA_Buffer,int BufferSize)
-{
-#ifdef SPI_DMA
-    dma_init_type dma_init_struct;
-    dma_default_para_init(&dma_init_struct);        
-    dma_init_struct.buffer_size = BufferSize;       //长度
-    dma_init_struct.memory_base_addr = (uint32_t)DMA_Buffer;
-    dma_init_struct.peripheral_base_addr = (uint32_t)&SPI2->dt;
-    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;       //内存到外设
-    dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
-    dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
-    dma_init_struct.memory_inc_enable = TRUE;                       //内存地址是否自动递增
-    dma_init_struct.peripheral_inc_enable = FALSE;                  //外设地址是否自动递增
-    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;                 //设置优先级--中
-    dma_init_struct.loop_mode_enable = FALSE;                       //非循环模式
-    dma_init(SPI_Tx_DMA_Channel, &dma_init_struct);
-#endif
-
-}
-
-void SPI_Start_Init(int Set)
-{
-#ifdef Exist_SPI
+#if Exist_SPI & OPEN_0010
     FunctionalState set = DISABLE;
+    SPI_InitTypeDef spi_init_struct;
+
+    spi_Temp = SPI1;
     if (Set)
         set = ENABLE;
-    #if (SPIx == 1)
-        SPI1_GPIO_Init(set);
-    #elif (SPIx == 2)
-        SPI2_GPIO_Init(set);
-    #endif
-    SPI_CS_Set(1,0);
-    
-    #ifndef SPI_Software
-    spi_i2s_reset(Temp_SPI);
-    spi_init_type spi_init_struct;
-    spi_default_para_init(&spi_init_struct);
-    nvic_priority_group_config(NVIC_PRIORITY_GROUP_0);
-        #if (SPIx == 1)
-            crm_periph_clock_enable(CRM_SPI1_PERIPH_CLOCK, TRUE);
-            nvic_irq_enable(SPI1_IRQn, 1, 0);                       //SPI中断是用来 接收NSS的
-        #elif (SPIx == 2)
-            crm_periph_clock_enable(CRM_SPI2_PERIPH_CLOCK, set);
-            nvic_irq_enable(SPI2_IRQn, 1, 0);
-        #endif
-    
-        #ifdef HOST_MODE
-        spi_init_struct.master_slave_mode =SPI_MODE_MASTER;
-        #else
-        spi_init_struct.master_slave_mode =SPI_MODE_SLAVE;
-        #endif
-        spi_init_struct.frame_bit_num = SPI_Size;
-        spi_init_struct.mclk_freq_division = SPI_Speed;
-        spi_init_struct.first_bit_transmission = SPI_FIRST_BIT_MSB;
-        spi_init_struct.clock_polarity = SPI_CLOCK_POLARITY_HIGH;           //闲时 SCK状态
-        spi_init_struct.clock_phase = SPI_CLOCK_PHASE_2EDGE;                //上升沿让从机读
-        spi_init_struct.cs_mode_selection = SPI_CS_SOFTWARE_MODE;
-        spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;
-        SPI_Init(Temp_SPI, &spi_init_struct);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
-        #ifdef SPI_DMA
-        spi_i2s_dma_transmitter_enable (Temp_SPI, TRUE);        //发送的DMA
-        crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
-
-        dma_reset(SPI_Tx_DMA_Channel);                          //取消配置
-        // SPI2_DMA_Config (0,SPI_BufferSize);                     //重新配置
-        dma_channel_enable(SPI_Tx_DMA_Channel,FALSE);
-        #endif
-        
-        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, FALSE);    //先别开 <FALSE>
-        spi_enable(Temp_SPI, set);
-        
-        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, FALSE);
-        spi_enable(Temp_SPI, FALSE);
-        spi_i2s_reset(Temp_SPI);
+    #ifdef HOST_MODE
+    spi_init_struct.SPI_Mode = SPI_Mode_Master;
     #else
-
+    spi_init_struct.SPI_Mode = SPI_Mode_Slave;
     #endif
-#endif
-}
-
-#ifdef Exist_SPI
-static void SPI_Delay (int time)
-{
-    if (MCU_SYS_FREQ >= 72000000)
+    if(Width > 8)
     {
-        volatile int temp;
-        for (int i = 0; i < time; ++i)
-        {
-            temp = 100;            //SET
-            while((temp--) > 0);
-        }
+        spi_init_struct.SPI_DataSize = SPI_DataSize_16b;
     }
     else
-        while((time--) > 0);
+    {
+        spi_init_struct.SPI_DataSize = SPI_DataSize_8b;
+    }
+    spi_init_struct.SPI_FirstBit = SPI_FirstBit_MSB;
+    spi_init_struct.SPI_CPOL = SPI_CPOL_High;           // 闲时 SCK状态
+    spi_init_struct.SPI_CPHA = SPI_CPHA_1Edge;          // 上升沿让从机读                
+    spi_init_struct.SPI_NSS = SPI_NSS_Soft;             // 软件cs
+    spi_init_struct.SPI_BaudRatePrescaler = SPI_SPEED;  // 速度
+    spi_init_struct.SPI_CRCPolynomial = 7;
+    spi_init_struct.SPI_Direction = SPI_Direction_2Lines_FullDuplex;    // SPI_Direction_1Line_Tx
+    SPI_Init(spi_Temp, &spi_init_struct);
+    
+    #ifdef SPI_DMA
+	DMA_InitTypeDef DMA_InitStruct;
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    // 配置DMA1通道3(SPI1_TX)
+    DMA_DeInit(DMA1_Channel3);
+    DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)&(spi_Temp->DR);
+    DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t)DMA_SPI1_Buff;
+    DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralDST;
+    DMA_InitStruct.DMA_BufferSize = sizeof(DMA_SPI1_Buff);
+    DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+    DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
+    DMA_InitStruct.DMA_Priority = DMA_Priority_High;
+    DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
+    DMA_Init(DMA1_Channel3, &DMA_InitStruct);
+    DMA_ITConfig(DMA1_Channel3, DMA_IT_TC, ENABLE);
+    // 配置DMA中断
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel3_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    #endif
+    SPI_Cmd(spi_Temp, set);
+#endif
+}
+
+void Base_SPI2_Init (uint8_t Width,int Set)
+{
+#if Exist_SPI & OPEN_0100
+    FunctionalState set = DISABLE;
+    SPI_InitTypeDef spi_init_struct;
+    
+    spi_Temp = SPI2;
+    if (Set)
+        set = ENABLE;
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_SPI2, ENABLE);
+
+    #ifdef HOST_MODE
+    spi_init_struct.SPI_Mode = SPI_Mode_Master;
+    #else
+    spi_init_struct.SPI_Mode = SPI_Mode_Slave;
+    #endif
+    if(Width > 8)
+    {
+        spi_init_struct.SPI_DataSize = SPI_DataSize_16b;
+    }
+    else
+    {
+        spi_init_struct.SPI_DataSize = SPI_DataSize_8b;
+    }
+    spi_init_struct.SPI_FirstBit = SPI_FirstBit_MSB;
+    spi_init_struct.SPI_CPOL = SPI_CPOL_High;           // 闲时 SCK状态
+    spi_init_struct.SPI_CPHA = SPI_CPHA_1Edge;          // 上升沿让从机读                
+    spi_init_struct.SPI_NSS = SPI_NSS_Soft;             // 软件cs
+    spi_init_struct.SPI_BaudRatePrescaler = SPI_SPEED;  // 速度
+    spi_init_struct.SPI_Direction = SPI_Direction_1Line_Tx;
+    SPI_Init(spi_Temp, &spi_init_struct);
+    
+    #ifdef SPI_DMA
+	DMA_InitTypeDef DMA_InitStruct;
+    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+    // 配置DMA1通道5(SPI2_TX)
+    DMA_DeInit(DMA1_Channel5);
+    DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t)&(spi_Temp->DR);
+    DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t)DMA_SPI2_Buff;
+    DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralDST;
+    DMA_InitStruct.DMA_BufferSize = sizeof(DMA_SPI2_Buff);
+    DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
+    DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
+    DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
+    DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
+    DMA_InitStruct.DMA_Priority = DMA_Priority_High;
+    DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
+    DMA_Init(DMA1_Channel5, &DMA_InitStruct);
+    DMA_ITConfig(DMA1_Channel5, DMA_IT_TC, ENABLE);
+    // 配置DMA中断
+    NVIC_InitTypeDef NVIC_InitStructure;
+    NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel5_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    #endif
+    SPI_Cmd(spi_Temp, set);
+#endif
 }
 #endif
 
-void SPI_CS_Set(char Serial,char State)
+int Base_SPI_Init(SPI_mType Channel,uint8_t Width,int Set)
 {
+    int retval = -1;
 #ifdef Exist_SPI
-    switch (Serial)
-    {
-        case 1:
-            if (State) {
-                SPI_NSS_L();      //  Low
-            }
-            else {
-                SPI_NSS_H();     //  High
-            }
-            break;
-        case 2:
 
-            break;
-        default:
-            break;
+    SPI_Delay (1);
+    switch (Channel)
+    {
+    case 0:
+		
+        break;
+    case 1:
+        SPI1_GPIO_Init(Set);
+    #ifndef SPI_SOFTWARE
+        Base_SPI1_Init(Width, Set);
+    #endif
+        SPI1_Width = Width;
+        retval = 0;
+        break;
+    case 2:
+        SPI2_GPIO_Init(Set);
+    #ifndef SPI_SOFTWARE
+        Base_SPI2_Init(Width, Set);
+    #endif
+        SPI2_Width = Width;
+        retval = 0;
+        break;
+    case 3:
+
+        break;
+    default:
+        break;
     }
 #endif
-
+    return retval;
 }
 
-//普通\软件 发送，只管SCLK、MOSI不管 NSS
-void SPI_Send_DATA(const uint16_t DATA)     
+void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State)
 {
+#ifdef Exist_SPI
+    
+    switch (Channel)
+    {
+    case 0:
+
+        break;
+    case 1:
+    #if Exist_SPI & OPEN_0010
+        if(Serial == 1)
+        {
+            if(State) {SPI1_NSS_L();}
+            else {SPI1_NSS_H();}
+        }
+    #endif
+        break;
+    case 2:
+    #if Exist_SPI & OPEN_0100
+        if(Serial == 1)
+        {
+            if(State) {SPI2_NSS_L();}
+            else {SPI2_NSS_H();}
+        }
+    #endif
+        break;
+    case 3:
+
+        break;
+    default:
+        break;
+    }
+#endif
+    
+}
+
+void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data)
+{
+#ifdef Exist_SPI
     /*
      * 写标志位
      * 写数据
      * 等忙位
      */
-#ifdef Exist_SPI
-    #ifdef SPI_Software
-    char temp;
-    for (int i = 0; i < 8; i++)
+    #ifdef SPI_SOFTWARE
+    int temp;
+    switch (Channel)
     {
-        SPI_SCK_L();           //预备Down沿
-        temp = (DATA << i) & 0x80;
-        if (temp)
-            SPI_MOSI_H();      //数据1
-        else
-            SPI_MOSI_L();      //数据0
-        SPI_SCK_H();           //完成Down沿
+    case 0:
+
+        break;
+    case 1:
+        #if Exist_SPI & OPEN_0010
+        for (int i = 0; i < SPI1_Width; i++)
+        {
+            SPI1_SCK_L();           //预备Down沿
+            temp = (Data << i) & (0x01 << (SPI1_Width - 1));
+            if (temp)
+                SPI1_MOSI_H();      //数据1
+            else
+                SPI1_MOSI_L();      //数据0
+            SPI1_SCK_H();           //完成Down沿
+        }
+        SPI1_MOSI_H();
+        #endif
+        break;
+    case 2:
+        #if Exist_SPI & OPEN_0100
+        for (int i = 0; i < SPI2_Width; i++)
+        {
+            SPI2_SCK_L();           //预备Down沿
+            temp = (Data << i) & ((u16)0x01 << (SPI2_Width - 1));
+            if (temp)
+                SPI2_MOSI_H();      //数据1
+            else
+                SPI2_MOSI_L();      //数据0
+            SPI2_SCK_H();           //完成Down沿
+        }
+        SPI2_MOSI_H();
+        #endif
+        break;
+    case 3:
+
+        break;
+    default:
+        break;
     }
-    SPI_MOSI_H();
-    //    SPI_SCK_H();              // 0 / 0不需要上升
     #else
 
-    spi_i2s_data_transmit(Temp_SPI, DATA);
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
-    
-//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_TDBE_FLAG) == RESET);   //发送缓冲区空了
-//    spi_i2s_data_transmit(Temp_SPI, DATA);
-//    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) != RESET);   //SPI忙就会 = 1，不忙就是0
-    
+    switch (Channel)
+    {
+    case 0:
+
+        break;
+    case 1:
+    #if Exist_SPI & OPEN_0010
+        spi_Temp = SPI1;
     #endif
+        break;
+    case 2:
+    #if Exist_SPI & OPEN_0100
+        spi_Temp = SPI2;
+    #endif
+        break;
+    case 3:
+
+        break;
+    default:
+        break;
+    }
+    // 等待发送缓冲区空
+    while(SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_TXE) == RESET);
+    // 发送字节
+    SPI_I2S_SendData(spi_Temp, Data);
+    // 等待发送完成
+    while(SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_BSY) == SET);
 	
-#endif
-}
-
-
-//    调用层      //
-
-//大量发送，Soft/Hard
-void SPI_Send_String(const void * DATA,int num)                 //这个会绑一个指针，在发送数据途中，不要让目标指针改变！
-{
-#ifdef Exist_SPI
-    #ifdef  SPI_DMA 
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_BF_FLAG) == 1);         //可以开始传输
-    while(SPI_complete_flag == 0);                                  //等SPI中断
-    SPI_complete_flag = 0;
-    
-    dma_channel_enable(SPI_Tx_DMA_Channel,FALSE);
-    SPI_CS_Set(1,TRUE);                 //开始片选
-        #if (SPIx == 1)
-        // dma_flag_clear(DMA1_FDT3_FLAG);
-        SPI1_DMA_Config (DATA,num);                                 //重新配置
-        #elif (SPIx == 2)
-        // dma_flag_clear(DMA1_FDT5_FLAG);
-        SPI2_DMA_Config (DATA,num);                                 //重新配置
-        #endif 
-                                                         
-        dma_channel_enable(SPI_Tx_DMA_Channel,TRUE);                        //开始DMA
-        spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);         //开SPI中断
-    
-    #else
-    SPI_CS_Set(1,1);                 //开始片选
-    for (int i = 0; i < num; i++)
-    {
-        SPI_Send_DATA(*((uint8_t *)DATA + i));
-    }
-        #ifdef SPI_Software
-    SPI_CS_Set(1,0);                    //关
-        #else
-    spi_i2s_interrupt_enable(Temp_SPI, SPI_I2S_TDBE_INT, TRUE);        //开中断，让他自己结束片选
-        #endif
     #endif
-    
-#endif
+
+#endif 
 }
 
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
+#ifdef SPI_DMA
+
+    #if Exist_SPI & OPEN_0010
+volatile char SPI1_DMA_Flag = 0;
+void SPI1_FINISH_HANDLERIT()
 {
-// Addr &= 0xBFFF;
-#ifdef Exist_SPI
-    SPI_CS_Set(Serial,1);      //SPI开始（片选）
-    SPI_Delay (1);
-
-    SPI_Send_DATA(Addr);
-//    SPI_Delay (1);
-    SPI_Send_DATA(DATA);
-
-    SPI_Delay (1);
-    
-#endif
-}
-
-uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr)
-{
-    /*
-     * 等能读
-     * 读
-     */
-    uint16_t temp = 0;
-    // Addr &= 0xBFFF;
-#ifdef Exist_SPI
-    #ifdef SPI_Software
-
-    #else
-    spi_type *Temp_SPI;
-        #if (SPIx == 1)
-        Temp_SPI = SPI1;
-        #elif (SPIx == 2)
-        Temp_SPI = SPI2;
-        #endif
-
-    SPI_CS_Set(Serial,TRUE);      //SPI开始（片选）
-    SPI_Delay (1);
-    
-    SPI_Send_DATA(Addr);
-
-    spi_i2s_data_receive(Temp_SPI);             //1
-    SPI_Send_DATA(0);
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_RDBF_FLAG) == RESET);
-    temp = spi_i2s_data_receive(Temp_SPI);      //2
-
-    SPI_Send_DATA(0);
-    while(spi_i2s_flag_get(Temp_SPI,SPI_I2S_RDBF_FLAG) == RESET);
-    temp = spi_i2s_data_receive(Temp_SPI);      //3
-
-    SPI_Delay (1);
-    
-    #endif
-#endif
-    return temp;
-}
-
-#ifdef Exist_SPI
-void SPI1_IRQHandler(void)
-{
-    if (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == 1)
+    if(DMA_GetITStatus(DMA1_IT_TC3))       // 传输完成
     {
-        if(SPI_I2S_GetFlagStatus(SPI1,SPI_I2S_FLAG_BSY) == 0)     //busy
-        {
-            SPI_I2S_ITConfig(SPI1, SPI_I2S_IT_TXE, DISABLE);
-            SPI_CS_Set(1,0);          //取消片选
-            SPI_complete_flag = 1;
-//            printf("SPI ok \r\n");
-        }
+		Base_SPI_CS_Set(m_SPI_CH1,1,0);
+		SPI1_DMA_Flag = 0;
+        DMA_ClearITPendingBit(DMA1_IT_TC3);
     }
 }
-
- void SPI2_IRQHandler(void)
+    #endif 
+    #if Exist_SPI & OPEN_0100
+volatile char SPI2_DMA_Flag = 0;
+void SPI2_FINISH_HANDLERIT()
 {
-    if (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_TXE) == 1)
+    if(DMA_GetITStatus(DMA1_IT_TC4))       // 传输完成
     {
-        if(SPI_I2S_GetFlagStatus(SPI2,SPI_I2S_FLAG_BSY) == 0)
-        {
-            SPI_I2S_ITConfig(SPI2, SPI_I2S_IT_TXE, DISABLE);    //关中断
-            SPI_CS_Set(1,0);          //取消片选
-            SPI_complete_flag = 1;
-        }
+        DMA_ClearITPendingBit(DMA1_IT_TC4);
+    }
+    if(DMA_GetITStatus(DMA1_IT_TC5))       // 传输完成
+    {
+		Base_SPI_CS_Set(m_SPI_CH2,1,0);
+		SPI2_DMA_Flag = 0;
+        DMA_ClearITPendingBit(DMA1_IT_TC5);
     }
 }
-#endif
+    #endif 
+#endif 
+
+
+
+void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
+{
+#ifdef SPI_DMA
+    DMA_Channel_TypeDef *Temp_DMA_Channel;
+    
+//    uint32_t DMAy_FLAG;
+    uint8_t *p_DMA_BUFF = NULL;
+    volatile char *SPI_DMA_Flag_Temp = 0;
+	
+    switch (Channel)
+    {
+    case 0:
+
+        break;
+    case 1:
+    #if Exist_SPI & OPEN_0010
+        spi_Temp = SPI1;
+        p_DMA_BUFF = DMA_SPI1_Buff;
+        SPI_DMA_Flag_Temp = &SPI1_DMA_Flag;
+        Temp_DMA_Channel = DMA1_Channel3;
+
+    #endif 
+        break;
+    case 2:
+    #if Exist_SPI & OPEN_0100
+        spi_Temp = SPI2;
+        p_DMA_BUFF = DMA_SPI2_Buff;
+        SPI_DMA_Flag_Temp = &SPI2_DMA_Flag;
+        Temp_DMA_Channel = DMA1_Channel5;
+
+    #endif 
+        break;
+    case 3:
+
+        break;
+    default:
+        break;
+    }
+    // 开始DMA
+    if (Data_array == NULL || p_DMA_BUFF == NULL || (size < 0)) {
+        return;
+    }
+
+    while((*SPI_DMA_Flag_Temp) != 0);
+    memcpy(p_DMA_BUFF,Data_array,size);             // 一定等上一个发送完成才能修改
+    *SPI_DMA_Flag_Temp = 1;
+
+    Base_SPI_CS_Set(Channel,1,1);
+    
+    DMA_SetCurrDataCounter(Temp_DMA_Channel, size);
+    DMA_Cmd(Temp_DMA_Channel, ENABLE);
+    SPI_I2S_DMACmd(spi_Temp, SPI_I2S_DMAReq_Tx, ENABLE);     /* begin dma transmitting */
+#endif 
+}
+
+void Base_SPI_ASK_Receive(SPI_mType Channel,uint16_t Data,uint16_t *Receive)
+{
+#ifdef Exist_SPI
+    
+#endif 
+}
 
