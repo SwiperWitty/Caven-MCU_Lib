@@ -21,6 +21,19 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.LCD.Set_TargetModel_pFun = LCD_Set_TargetModel;
 #endif
 
+#ifdef Exist_OLED
+    Mode_Use.OLED.Fill_pFun = OLED_Fill_Fun;
+	
+    Mode_Use.OLED.Draw_Point_pFun = OLED_Draw_Point;
+    Mode_Use.OLED.Draw_Line_pFun = OLED_Draw_Line;
+    Mode_Use.OLED.Draw_Circle_pFun = OLED_Draw_Circle;
+    Mode_Use.OLED.Draw_Rectangle_pFun = OLED_Draw_Rectangle;
+
+    Mode_Use.OLED.Show_String_pFun = OLED_Show_String;
+
+    Mode_Use.OLED.Set_Direction_pFun = OLED_Set_Horizontal;
+#endif
+
 #ifdef Exist_SYS_TIME
     Mode_Use.TIME.Delay_Us = MODE_Delay_Us;
     Mode_Use.TIME.Delay_Ms = MODE_Delay_Ms;
@@ -106,6 +119,9 @@ void Mode_Index(void)
 #endif
 #ifdef Exist_LCD
     Mode_Init.LCD = MODE_LCD_Init;
+#endif
+#ifdef Exist_OLED
+    Mode_Init.OLED = MODE_OLED_Init;
 #endif
 #ifdef Exist_BZZ
     Mode_Init.BZZ = MODE_BZZ_Init;

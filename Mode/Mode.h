@@ -12,7 +12,7 @@
     #include "MODE_LCD.h"            //显示输出
 #endif
 #ifdef Exist_OLED
-    #include "OLED.h"               //显示输出
+    #include "MODE_OLED.h"               //显示输出
 #endif
 
 #ifdef Exist_BZZ
@@ -85,6 +85,11 @@ struct _Mode_Init
 #ifdef Exist_LCD
     int (*LCD)(int SET);
 #endif
+	
+#ifdef Exist_OLED
+    int (*OLED)(int SET);
+#endif
+	
 #ifdef Exist_SYS_TIME
     int (*TIME)(int SET);
 #endif
@@ -148,6 +153,9 @@ struct _Mode_Use
 #endif 
 #ifdef Exist_LCD
     MODE_LCD_Way LCD;
+#endif
+#ifdef Exist_OLED
+    MODE_OLED_Way OLED;
 #endif
 #ifdef Exist_LED
     MODE_LED_Way LED;

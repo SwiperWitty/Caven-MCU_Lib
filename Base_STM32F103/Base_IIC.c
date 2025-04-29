@@ -4,49 +4,44 @@
 void IIC_SDA_Satar (char GPIO_Mode)
 {
 #ifdef Exist_IIC
-    gpio_init_type gpio_init_struct;
+    GPIO_InitTypeDef gpio_init_struct;
 
     if(GPIO_Mode == IIC_Mode_OUT)
     {
-        gpio_init_struct.gpio_mode = IIC_Mode_OUT;
+        gpio_init_struct.GPIO_Mode = IIC_Mode_OUT;
     }
     else
     {
-        gpio_init_struct.gpio_mode = IIC_Mode_IN;
+        gpio_init_struct.GPIO_Mode = IIC_Mode_IN;
     }
-    gpio_init_struct.gpio_pins = IIC_SDA;
-    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-    gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+    gpio_init_struct.GPIO_Pin = IIC_SDA;
+    gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
     
-    gpio_init_struct.gpio_pull = GPIO_PULL_UP;
-    gpio_init(GPIO_IIC, &gpio_init_struct);
+    GPIO_Init(GPIO_IIC, &gpio_init_struct);
 #endif
 }
 
 void IIC_Start_Init(int SET)
 {
 #ifdef Exist_IIC
-    gpio_init_type  gpio_init_struct;
-    gpio_default_para_init(&gpio_init_struct);
+    GPIO_InitTypeDef gpio_init_struct;
     if (SET)
     {
-        crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK,TRUE);
+        RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB,ENABLE);
         
-        gpio_init_struct.gpio_pins = IIC_SCL;
-        gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
-        gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
-        gpio_init_struct.gpio_mode = IIC_Mode_OUT;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIO_IIC, &gpio_init_struct);             //单纯启动SCL
+        gpio_init_struct.GPIO_Pin = IIC_SCL;
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = IIC_Mode_OUT;
+        GPIO_Init(GPIO_IIC, &gpio_init_struct);             //单纯启动SCL
 
         IIC_SDA_Satar (IIC_Mode_OUT);                       //启动SDA
     }
     else
     {
-        gpio_init_struct.gpio_pins = IIC_SCL|IIC_SDA;
-        gpio_init_struct.gpio_mode = GPIO_MODE_ANALOG;
-        gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-        gpio_init(GPIO_IIC, &gpio_init_struct);
+        gpio_init_struct.GPIO_Pin = IIC_SCL|IIC_SDA;
+        gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;
+        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+        GPIO_Init(GPIO_IIC, &gpio_init_struct);
     }
 #endif
 }
@@ -58,7 +53,10 @@ static void IIC_Delay (int time)
     for (int i = 0; i < time; ++i)
     {
         temp = IIC_Base_Speed;            //SET
-        while((--temp) > 0);
+        while((--temp) > 0)
+		{
+			NOP();
+		}
     }
 }
 
@@ -119,7 +117,7 @@ char IIC_WaitASK(void)  //一定要有从设备响应
     do {
         IIC_Delay(1);
         Time++;
-        if (IIC_SDA_IN() == 0)      //找到数据，即可跳出
+        if (IIC_SDA_R() == 0)      //找到数据，即可跳出
         {
             temp = 1;
             break;
@@ -158,7 +156,7 @@ char IIC_Read_DATA(char DATA,int Speed)
     for (int i = 0; i < 8; i++) {
         IIC_SCL_L();      //准备数据变更
         IIC_Delay(Speed);
-        temp = ((char)IIC_SDA_IN() << i);
+        temp = ((char)IIC_SDA_R() << i);
         IIC_Delay(Speed);
         IIC_SCL_H();      //数据变更完成
         IIC_Delay(Speed);
