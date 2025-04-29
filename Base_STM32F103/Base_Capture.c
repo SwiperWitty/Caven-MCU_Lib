@@ -491,7 +491,7 @@ void TIM1_HANDLERIT ()
 		}
         if(TIM1_Capture_Fun != NULL)
 		{
-			temp_Capture.Channel = 1;
+			temp_Capture.Channel = 2;
 			TIM1_Capture_Fun(&temp_Capture);
 		}
         TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC2);
