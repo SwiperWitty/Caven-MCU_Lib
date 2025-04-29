@@ -53,7 +53,7 @@ typedef enum
 //    #define SPI_SOFTWARE                    // 屏蔽就是硬件模式
     #define SPI_SPEED   SPI_BaudRatePrescaler_8     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
     #ifndef SPI_SOFTWARE
-        #define SPI_DMA			            // 屏蔽就是普通模式,注意nss
+//        #define SPI_DMA			            // 屏蔽就是普通模式,注意nss
         #define SPI1_FINISH_HANDLERIT() DMA1_Channel3_IRQHandler()
         #define SPI2_FINISH_HANDLERIT() DMA1_Channel5_IRQHandler()
     #endif

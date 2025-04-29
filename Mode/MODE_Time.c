@@ -7,6 +7,7 @@
 
 
 static Real_TIME_Type Real_TIME = {0};
+struct tm mode_date;
 static int time_enable = 0;
 static int SYNC_TIME_Fun (void);
 
@@ -16,6 +17,7 @@ int MODE_TIME_Init(int SET)
 #ifdef Exist_SYS_TIME
     SYS_Time_Init(SET);
 	Real_TIME.SYNC_Flag = 0;
+	Real_TIME.date = &mode_date;
     return 0;
 #else
     return 1;
@@ -55,7 +57,7 @@ struct tm MODE_TIME_Get_Date (void)
 {
     struct tm retval = {0};
 #ifdef Exist_SYS_TIME
-    if (time_enable == 0) {
+    if (time_enable == 0 || Real_TIME.date == NULL) {
         return retval;
     }
     struct tm *time_info;
@@ -64,10 +66,10 @@ struct tm MODE_TIME_Get_Date (void)
     Real_TIME.SYNC_Flag = 0;
     SYNC_TIME_Fun ();
     time_info = gmtime(&utc);
-    Real_TIME.date = *time_info;
-    Real_TIME.date.tm_year += 1900;
-    Real_TIME.date.tm_mon += 1;
-    retval = Real_TIME.date;
+	memcpy(Real_TIME.date,time_info,sizeof(struct tm));
+    Real_TIME.date->tm_year += 1900;
+    Real_TIME.date->tm_mon += 1;
+    retval = *Real_TIME.date;
 #endif
     return retval;
 }

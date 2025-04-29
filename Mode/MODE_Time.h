@@ -37,7 +37,7 @@ typedef struct
 {
 	volatile char SYNC_Flag;
 	Caven_BaseTIME_Type Time;
-    struct tm date;
+    struct tm *date;
 }Real_TIME_Type;
 
 typedef struct
