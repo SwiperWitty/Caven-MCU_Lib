@@ -31,7 +31,7 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 
     Mode_Use.OLED.Show_String_pFun = OLED_Show_String;
 
-    Mode_Use.OLED.Set_Direction_pFun = OLED_Set_Horizontal;
+    Mode_Use.OLED.Set_Direction_pFun = OLED_Set_Horizontal_addr;
     Mode_Use.OLED.Refresh = OLED_Refresh;
 #endif
 

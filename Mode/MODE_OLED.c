@@ -8,6 +8,7 @@ int OLED_PicSize = 0;
 
 #ifdef Exist_OLED
 
+uint8_t OLED_addr = 0x78;		// 0x3c 0x78 
 uint8_t OLED_GRAM[144][8];
 static char OLED_Horizontal = 0;
 
@@ -19,7 +20,10 @@ void OLED_WR_CMD(uint8_t data)
 	uint8_t array[4];
 	array[0] = 0x00;
 	array[1] = data;
-	Base_IIC_Send_DATA(OLED_ADDR,array,0,2,1,0);
+	if(OLED_PicSize)
+	{
+		Base_IIC_Send_DATA(OLED_addr,array,0,2,1,0);
+	}
 }
 
 // 开启OLED显示 
@@ -232,11 +236,11 @@ void OLED_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, 
 		{
 			if(temp&0x01)
 			{
-				OLED_Draw_Point(x,y,mode);
+				OLED_Draw_Point(x,y,1);
 			}
 			else 
 			{
-				OLED_Draw_Point(x,y,!mode);
+				OLED_Draw_Point(x,y,0);
 			}
 			temp >>= 1;
 			y++;
@@ -292,6 +296,10 @@ void OLED_Refresh(void)
 #ifdef Exist_OLED
 	uint16_t i,n,k;
 	uint8_t array[300];
+	if(OLED_PicSize == 0)
+	{
+		return;
+	}
 	for(i=0;i<8;i++)
 	{
 		OLED_WR_CMD(0xb0+i); // 设置行起始地址
@@ -304,7 +312,7 @@ void OLED_Refresh(void)
 		{
 			array[k++] = OLED_GRAM[n][i];
 		}
-		Base_IIC_Send_DATA(OLED_ADDR,array,0,k,5,0);
+		Base_IIC_Send_DATA(OLED_addr,array,0,k,5,0);
 	}
 #endif
 }
@@ -379,14 +387,16 @@ void OLED_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, 
 }
 
 /*
-	0 正常显示
-	1 反转显示
+	set 0 正常显示
+	set 1 反转显示
+	addr oled iic addr
 */
-int OLED_Set_Horizontal(char set)
+int OLED_Set_Horizontal_addr(char set,uint8_t addr)
 {
 	int retval = 0;
 #ifdef Exist_OLED
 	OLED_Horizontal = set;
+	OLED_addr = addr;
 	if(OLED_Horizontal == 0)
 	{
 		OLED_WR_CMD(0xC8);	// 正常显示
@@ -405,9 +415,7 @@ int MODE_OLED_Init(int set)
 {
 	int retval = 0;
 #ifdef Exist_OLED
-
 	// 1
-	OLED_Set_Horizontal(OLED_Horizontal);
 	OLED_W_Max = 128;
 	OLED_H_Max = 64;
 	OLED_PicSize = OLED_W_Max * OLED_H_Max;
