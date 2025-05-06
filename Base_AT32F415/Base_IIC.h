@@ -2,9 +2,9 @@
 #define _IIC__H_
 
 #if DEFAULT
-#include "Items.h"              //默认功能
+#include "Items.h"              // 默认功能
 #else
-#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
 /*

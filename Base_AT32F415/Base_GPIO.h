@@ -2,9 +2,9 @@
 #define __BASE_GPIO__H_
 
 #ifdef DEFAULT
-#include "items.h"              //默认功能
+#include "items.h"              // 默认功能
 #else
-#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
 
