@@ -53,7 +53,8 @@ Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
     return retval;
 }
 
-struct tm MODE_TIME_Get_Date (void)
+// timezone_s 为时区参数(s秒)，例如北京时间 timezone_s = 8 * 60 * 60
+struct tm MODE_TIME_Get_Date (int timezone_s)
 {
     struct tm retval = {0};
 #ifdef Exist_SYS_TIME
@@ -61,11 +62,15 @@ struct tm MODE_TIME_Get_Date (void)
         return retval;
     }
     struct tm *time_info;
-    time_t utc = Real_TIME.Time.SYS_Sec;
+    if(timezone_s >= 86400)
+    {
+        timezone_s = 86400;
+    }
+    time_t utc = Real_TIME.Time.SYS_Sec + timezone_s;
     while (Real_TIME.SYNC_Flag);
     Real_TIME.SYNC_Flag = 0;
     SYNC_TIME_Fun ();
-    time_info = gmtime(&utc);
+    time_info = localtime(&utc);
 	memcpy(Real_TIME.date,time_info,sizeof(struct tm));
     Real_TIME.date->tm_year += 1900;
     Real_TIME.date->tm_mon += 1;

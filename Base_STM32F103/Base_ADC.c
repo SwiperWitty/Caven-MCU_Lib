@@ -1,9 +1,11 @@
 #include "Base_adc.h"
 
+#ifdef Exist_ADC
 float VDDA_num = 3.30; 							//其实这个是动态的，ADC内部基准源
 static int Channel_NUMs;
 static u16 ADC1_DMA_list[20];
 int adc_enable_flag = 0;
+#endif
 
 void ADC_GPIO_Init(int Set)
 {

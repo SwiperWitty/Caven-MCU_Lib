@@ -27,7 +27,7 @@ typedef struct
     void (*Show_Picture_pFun)(uint16_t x, uint16_t y, uint16_t length, uint16_t width, const uint8_t pic[]);            // 显示图片
 
     int (*Set_Direction_pFun)(char set);
-    int (*Set_TargetModel_pFun)(char set);
+    void (*Refresh) (void);
 }MODE_OLED_Way;
 
 void OLED_Fill_Fun (uint16_t x_sta, uint16_t y_sta, uint16_t x_end, uint16_t y_end, uint16_t color);     // 指定区域填充颜色
@@ -40,6 +40,7 @@ void OLED_Show_String(uint16_t x, uint16_t y, const char *p, uint16_t coloer, ui
 //void OLED_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, const uint8_t pic[]);            // 显示图片
 
 int OLED_Set_Horizontal(char set);
+void OLED_Refresh (void);
 
 int MODE_OLED_Init(int set);
 

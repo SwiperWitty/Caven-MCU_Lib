@@ -44,7 +44,7 @@ typedef struct
 {
     void (*Set_BaseTIME_pFun)(Caven_BaseTIME_Type time);
     Caven_BaseTIME_Type (*Get_BaseTIME_pFun)(void);
-    struct tm (*Get_Date_pFun) (void);
+    struct tm (*Get_Date_pFun) (int timezone_s);
     
     void (*Delay_Us)(int num);
     void (*Delay_Ms)(int num);
@@ -56,7 +56,7 @@ int MODE_TIME_Init(int SET);
 
 void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time);
 Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void);
-struct tm MODE_TIME_Get_Date (void);
+struct tm MODE_TIME_Get_Date (int timezone_s);
 
 void MODE_Delay_Us(int num);
 void MODE_Delay_Ms(int num);

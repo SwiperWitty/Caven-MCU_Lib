@@ -1,5 +1,9 @@
 #ifndef _SYS_TIME_H__
 #define _SYS_TIME_H__
+#if __cplusplus
+extern "C"
+{
+#endif
 /*
  *
 本文件属于MCU专属文件，每个MCU不同，这里的内容就会不同 ———— 需要系统提供时钟
@@ -32,7 +36,9 @@ void SYS_Feed_Watchdog (void);
 #endif
 
 /*
-Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
+    Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
+    对于144M的Tick来说，只需要对其8分频（18m），Tick_Set_CMP为其一半（1/2s溢出一次）
+    对于72M的Tick来说，只需要对其8分频（9m），Tick_Set_CMP为其一半（1/2s溢出一次）
 */
 
 
@@ -41,9 +47,9 @@ Tick_Set_CMP 不可以大于 2的24次方 16,777,216；也就是16M最大
 
 #ifdef Exist_SYS_TIME
 
-    #define TICK_FREQUENCY (MCU_SYS_FREQ)       // 滴答分频（1分频）
-    #define TICK_SET_CMP (TICK_FREQUENCY / 8)   // 设置滴答初始值(/8 就是 1/8 s)
-    #define TICK_OVER_IT (8)                	// 定时器溢出时间1/8（24位滴答才有）
+    #define TICK_FREQUENCY (MCU_SYS_FREQ / 8)               // 滴答分频（8分频）
+    #define TICK_OVER_IT (2)                                // 定时器溢出时间（24位滴答才有）
+    #define TICK_SET_CMP (TICK_FREQUENCY / TICK_OVER_IT)    // 设置滴答初始值(/2 就是 1/2 s)
 
     #define SYSTICK_NUM (SysTick->VAL)
     #define SYS_TIME_INTERRUPT_GETFLAG()    SysTick->CTRL
@@ -81,5 +87,9 @@ void SYS_Delay_ms(int n);
 // dog
 void SYS_IWDG_Configuration(void);
 void SYS_Feed_Watchdog(void);
+
+#if __cplusplus
+}
+#endif
 
 #endif

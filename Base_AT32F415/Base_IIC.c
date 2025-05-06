@@ -10,7 +10,7 @@ static void IIC_Delay (int time)
 
 static void IIC_SDA_Satar (char GPIO_Mode)
 {
-    static char last_mode = -1;
+    static char last_mode = 6;
     if (GPIO_Mode != last_mode) {
         last_mode = GPIO_Mode;
         User_GPIO_config(GPIO_IIC,IIC_SDA,GPIO_Mode);

@@ -574,7 +574,7 @@ int fputc(int ch, FILE *f)
 {
 #ifdef DEBUG_OUT
 #ifdef Exist_UART
-    Base_UART_Send_Byte(DEBUG_OUT, (uint8_t)ch);
+    Base_UART_Send_Byte((UART_mType)DEBUG_OUT, (uint8_t)ch);
 #endif
 #endif // DEBUG
     return (ch);

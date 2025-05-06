@@ -22,9 +22,6 @@ typedef struct
     int Switch;
 }Task_Overtime_Type;
 
-
-int API_Hourly_to_Seconds(Caven_Watch_Type time);
-
 int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time);
 
 #endif

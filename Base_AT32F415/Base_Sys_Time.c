@@ -10,13 +10,16 @@ static uint32_t s_Frequency_CMP;    // 中断溢出需要的滴答值
 static uint32_t s_Frequency_us;     // 1us s_Tick_cnt 跑的数量
 static uint32_t s_Frequency_ms;     // 1ms s_Tick_cnt 跑的数量
 
-static SYS_Time_Type s_SYS_Time = {0};
+static volatile SYS_Time_Type s_SYS_Time = {0};
 
 #endif
 
-
+/*
+    system_clock_config 系统主频配置
+*/
 void SYS_Time_Init(int Set)
 {
+    system_clock_config();
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 #ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
     s_Frequency = TICK_FREQUENCY;
@@ -40,36 +43,40 @@ void SYS_Time_Init(int Set)
 void SYS_Time_Set(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
-    int temp = 0;
+    uint64_t temp = 0;
 
     s_Tick_cnt = time->SYS_Sec;
     s_Tick_cnt *= s_Frequency;
 
-    temp += time->SYS_Us;
+    temp += (time->SYS_Us % 1000000);
     s_Tick_cnt += (uint64_t)(temp * s_Frequency_us);
 	
 	temp = (s_Tick_cnt % s_Frequency_CMP);
 	SYSTICK_NUM = s_Frequency_CMP - temp;						// 载入寄存器
 	
     s_SYS_Time.SYS_Time_H = s_Tick_cnt / s_Frequency_CMP;		// 高位设置
-    s_SYS_Time.SYS_Time_L = temp;       						// 低位设置
+    s_SYS_Time.SYS_Time_L = temp & 0x00FFFFFF;                  // 低位设置
 #endif
 }
 
 void SYS_Time_Get(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
-    int temp = 0;
-
-    s_SYS_Time.SYS_Time_L = LLTIMER_REG;
-    if (s_SYS_Time.SYS_Time_H % 2)
-    {
-        temp += s_Frequency_CMP;
-    }
+    uint32_t temp = 0,cnt;
+    
+    cnt = s_SYS_Time.SYS_Time_H;
+    s_SYS_Time.SYS_Time_L = LLTIMER_REG & 0x00FFFFFF;
+    
+	temp = cnt % TICK_OVER_IT;
+    cnt -= temp;
+    if(temp)
+	{
+		temp = TICK_SET_CMP * temp;
+	}
     temp += s_SYS_Time.SYS_Time_L;
-
-    time->SYS_Us = temp / s_Frequency_us;
-    time->SYS_Sec = s_SYS_Time.SYS_Time_H >> 1;       // x/2,优化变成 x >> 1;
+    time->SYS_Sec = cnt >> 1;       // x/2,优化变成 x >> 1;
+//    time->SYS_Sec = cnt / TICK_OVER_IT;
+	time->SYS_Us = temp / s_Frequency_us;
 #endif
 }
 

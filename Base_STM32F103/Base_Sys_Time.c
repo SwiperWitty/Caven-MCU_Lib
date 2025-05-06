@@ -14,6 +14,9 @@ static SYS_Time_Type s_SYS_Time = {0};
 
 #endif
 
+/*
+    系统主频配置默认外部8m，倍频72m
+*/
 void SYS_Time_Init(int Set)
 {
 #ifdef Exist_SYS_TIME
@@ -24,8 +27,26 @@ void SYS_Time_Init(int Set)
     s_Frequency_us = (s_Frequency / 1000000);
     if (Set)
     {
-        if (SysTick_Config(TICK_SET_CMP)) // 系统使用滴答定时器
-        {while (1);}
+        // SysTick_Config(s_Frequency_CMP);
+        if (s_Frequency_CMP > SysTick_LOAD_RELOAD_Msk)
+        {
+            while (1); 
+        }
+        else
+        {
+            // 禁用SysTick
+            SysTick->CTRL = 0;
+            // 设置重装载值
+            SysTick->LOAD  = (s_Frequency_CMP & SysTick_LOAD_RELOAD_Msk) - 1;
+            // 清除当前值
+            SysTick->VAL = 0;
+            // 配置SysTick使用8分频
+            // 注意：HAL_SYSTICK_Config默认使用不分频时钟
+            // 所以我们需要直接操作寄存器
+            SysTick->CTRL = 0 << 2 |
+                SysTick_CTRL_TICKINT_Msk |
+                SysTick_CTRL_ENABLE_Msk;
+        }
     }
     else
         SYS_RESET();
@@ -36,35 +57,39 @@ void SYS_Time_Init(int Set)
 void SYS_Time_Set(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
-    int temp = 0;
+    uint64_t temp = 0;
 
     s_Tick_cnt = time->SYS_Sec;
     s_Tick_cnt *= s_Frequency;
 
-    temp += time->SYS_Us;
+    temp += (time->SYS_Us % 1000000);
     s_Tick_cnt += (uint64_t)(temp * s_Frequency_us);
 	
 	temp = (s_Tick_cnt % s_Frequency_CMP);
 	SYSTICK_NUM = s_Frequency_CMP - temp;						// 载入寄存器
 	
     s_SYS_Time.SYS_Time_H = s_Tick_cnt / s_Frequency_CMP;		// 高位设置
-    s_SYS_Time.SYS_Time_L = temp;       						// 低位设置
+    s_SYS_Time.SYS_Time_L = temp & 0x00FFFFFF;                  // 低位设置
 #endif
 }
 
 void SYS_Time_Get(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
-    int temp = 0;
-	float temp_f;
-    s_SYS_Time.SYS_Time_L = LLTIMER_REG;
-	temp = s_SYS_Time.SYS_Time_H % TICK_OVER_IT;
+    uint32_t temp = 0,cnt;
+    
+    cnt = s_SYS_Time.SYS_Time_H;
+    s_SYS_Time.SYS_Time_L = LLTIMER_REG & 0x00FFFFFF;
+    
+	temp = cnt % TICK_OVER_IT;
+    cnt -= temp;
     if(temp)
 	{
 		temp = TICK_SET_CMP * temp;
 	}
     temp += s_SYS_Time.SYS_Time_L;
-    time->SYS_Sec = s_SYS_Time.SYS_Time_H / TICK_OVER_IT;   // x/2,优化变成 x >> 1;
+    time->SYS_Sec = cnt >> 1;       // x/2,优化变成 x >> 1;
+//    time->SYS_Sec = cnt / TICK_OVER_IT;
 	time->SYS_Us = temp / s_Frequency_us;
 #endif
 }

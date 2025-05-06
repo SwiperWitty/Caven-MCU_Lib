@@ -1,9 +1,9 @@
 #include "Mode.h"
 
 struct _Mode_Init Mode_Init;
-struct _Mode_Use Mode_Use;    //结构体实体
+struct _Mode_Use Mode_Use;          // 结构体实体
 
-static void Mode_Use_index(void)		//索引 功能函数 本体
+static void Mode_Use_index(void)    // 索引 功能函数 本体
 {
     Mode_Use.Debug_Out_Way = Debug_Out;
 #ifdef Exist_LCD
@@ -32,6 +32,7 @@ static void Mode_Use_index(void)		//索引 功能函数 本体
     Mode_Use.OLED.Show_String_pFun = OLED_Show_String;
 
     Mode_Use.OLED.Set_Direction_pFun = OLED_Set_Horizontal;
+    Mode_Use.OLED.Refresh = OLED_Refresh;
 #endif
 
 #ifdef Exist_SYS_TIME
@@ -159,7 +160,7 @@ void Mode_Index(void)
 
 //--------------------------------//
 
-void Debug_Out(uint8_t *data,int Length)        //选一个通信接口为Debug
+void Debug_Out(uint8_t *data,int Length)    // 选一个通信接口为Debug
 {
 #ifdef Exist_UART
     #ifdef DEBUG_OUT

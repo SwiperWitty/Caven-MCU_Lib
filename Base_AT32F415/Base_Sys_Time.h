@@ -53,9 +53,9 @@ void SYS_Feed_Watchdog (void);
 
 #ifdef Exist_SYS_TIME
 
-    #define TICK_FREQUENCY (MCU_SYS_FREQ / 8)   // 滴答分频（8分频）
-    #define TICK_SET_CMP (TICK_FREQUENCY / 2)   // 设置滴答初始值(/2 就是 1/2 s)
-    #define TICK_OVER_IT (0.50)                 // 定时器溢出时间（24位滴答才有）
+    #define TICK_FREQUENCY (MCU_SYS_FREQ / 8)               // 滴答分频（8分频）
+    #define TICK_OVER_IT (2)                                // 定时器溢出时间（24位滴答才有）
+    #define TICK_SET_CMP (TICK_FREQUENCY / TICK_OVER_IT)    // 设置滴答初始值(/2 就是 1/2 s)
 
     #define SYSTICK_NUM (SysTick->VAL)
 

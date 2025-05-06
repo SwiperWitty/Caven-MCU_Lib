@@ -47,34 +47,10 @@
 
 #define BUFF_MAX 360
 
-
-/*
-	SYS_Day 是系统总天数 
-*/
-typedef struct
-{
-    U16 year;
-    U8 month;
-    U8 day;
-    U32 SYS_Day;
-}Caven_Date_Type;
-
-/*
-	[SYS_Sec]组合[time_us],就是系统主时钟 
-*/
-typedef struct
-{
-    U8 hour;
-    U8 minutes;
-    U8 second;
-    U32 time_us;            // 这里最大 1000 000
-    U32 SYS_Sec;            // UTC
-}Caven_Watch_Type;
-
 typedef struct
 {
     uint32_t SYS_Sec;
-    uint32_t SYS_Us;             // 这里最大 1000 000
+    uint32_t SYS_Us;        // 这里最大 1000 000
 }Caven_BaseTIME_Type;
 
 // 颜色 4byte
@@ -115,7 +91,7 @@ typedef struct
     char str_switch;
 	char *string;           // 输出字符
     void *p_Data;           // 输入指针
-    Caven_Watch_Type Watch; // 时间(里面有utc)
+    Caven_BaseTIME_Type Watch;  // 时间(里面有utc)
 }Caven_App_Type;
 
 /*

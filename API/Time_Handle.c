@@ -1,18 +1,6 @@
 #include "Time_Handle.h"
 
 /*
- * 这个是秒级的转换，基于Caven_Watch
- *
- */
-int API_Hourly_to_Seconds(Caven_Watch_Type time)
-{
-    int temp;
-    temp = time.second + (time.minutes * 60) + (time.hour * 3600); //设置的超时时差（秒级）
-    temp = MIN(temp,86400);        // 60 * 60 * 24 = 86400
-    return temp;
-}
-
-/*
  * API:时间触发的任务（指Task标志位）
  */
 int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
