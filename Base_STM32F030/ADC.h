@@ -42,7 +42,7 @@ struct ADC_
     float (*ADC_Get_Temperature) (void);
 };
 
-void ADCx_Init(int ADC_x, int SET);
+void ADCx_Init(int ADC_x, int Set);
 
 int Get_ADCx_Num (int Channel);
 

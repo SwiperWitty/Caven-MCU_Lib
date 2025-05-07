@@ -18,7 +18,7 @@ void usb_delay (int times)
 }
 #endif
 
-int USB_User_init (int SET)
+int USB_User_init (int Set)
 {
     int retval = 0;
 #ifdef Exist_USB

@@ -65,14 +65,14 @@
 #endif
 
 
-void SPI_Start_Init(int SET);
-void SPI1_Send_DATA(const uint16_t DATA);
-void SPI2_Send_DATA(const uint16_t DATA);
+void SPI_Start_Init(int Set);
+void SPI1_Send_DATA(const uint16_t Data);
+void SPI2_Send_DATA(const uint16_t Data);
 uint16_t SPI1_Read_DATA(char Serial);
 
 //    调用层      //
 
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA);
+void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t Data);
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr);
 
 

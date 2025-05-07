@@ -29,11 +29,11 @@
 
 /*  end */
 
-void Uart1_Init(int Baud,int SET);
-void Uart2_Init(int Baud,int SET);
+void Uart1_Init(int Baud,int Set);
+void Uart2_Init(int Baud,int Set);
 
 uint16_t UART_RXD_Receive(char Channel);
-void UART_TXD_Send(char Channel,uint16_t DATA);
+void UART_TXD_Send(char Channel,uint16_t Data);
 
 char UART_RXD_Flag(char Channel);
 void UART_RXD_Flag_Clear(char Channel);

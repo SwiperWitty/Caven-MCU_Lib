@@ -59,12 +59,12 @@
 
 /*  Init-Function    */
 
-void LCD_GPIO_Init(int SET);
+void LCD_GPIO_Init(int Set);
 
-void LED_GPIO_Init(int SET);
-void BZZ_GPIO_Init(int SET);
+void LED_GPIO_Init(int Set);
+void BZZ_GPIO_Init(int Set);
 
-void KEY_GPIO_Init(int SET);
-void GXIC_GPIO_Init(int SET);
+void KEY_GPIO_Init(int Set);
+void GXIC_GPIO_Init(int Set);
 
 #endif

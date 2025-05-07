@@ -91,7 +91,7 @@ static uint16_t UART_RXD_Receive(UART_mType Channel) // RXD 读取值
 
 // 驱动初始化及回调函数
 #if (Exist_UART & OPEN_0001)
-static void Uart0_Init(int Baud, int SET)
+static void Uart0_Init(int Baud, int Set)
 {
 }
 
@@ -328,7 +328,7 @@ void UART4_HANDLERIT()
 
 #endif
 
-int Base_UART_Init(UART_mType Channel, int Baud, int SET)
+int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 {
     int retval = -1;
 	
@@ -364,7 +364,7 @@ int Base_UART_Init(UART_mType Channel, int Baud, int SET)
 }
 
 // 发送
-void Base_UART_Send_Byte(UART_mType Channel, uint16_t Data)
+void Base_UART_Send_Data(UART_mType Channel, uint16_t Data)
 {
 #ifdef Exist_UART
     switch (Channel)
@@ -525,7 +525,7 @@ int fputc(int ch, FILE *f)
 {
 #ifdef DEBUG_OUT
 #ifdef Exist_UART
-    Base_UART_Send_Byte(DEBUG_OUT, (uint8_t)ch);
+    Base_UART_Send_Data(DEBUG_OUT, (uint8_t)ch);
 #endif
 #endif // DEBUG
     return (ch);

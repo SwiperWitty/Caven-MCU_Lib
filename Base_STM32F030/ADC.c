@@ -4,7 +4,7 @@ char ADC_State = 0;
 int Calibrattion_Val = 0;
 uint16_t ADC_Somes_NUM[2];
 
-void ADCx_Init(int ADC_x, int SET)
+void ADCx_Init(int ADC_x, int Set)
 {
 #ifdef Exist_ADC
 	GPIO_InitTypeDef GPIO_InitStructure = {0};

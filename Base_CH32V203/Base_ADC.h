@@ -31,7 +31,7 @@ struct ADC_
 	float (*Get_MCU_Temp)(void);
 };
 
-void ADCx_Init(char ADC_x, int SET);
+void ADCx_Init(char ADC_x, int Set);
 float Get_ADCx_Vol(uint8_t ADC_x);
 float Get_MCU_Temp(void);
 

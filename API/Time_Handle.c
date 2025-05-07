@@ -43,7 +43,7 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
         }
         else if (diff_time.SYS_Sec >= task->Set_time.SYS_Sec)
         {
-            if (diff_time.SYS_Us >= task->Set_time.SYS_Us)
+            if (diff_time.SYS_Us > task->Set_time.SYS_Us)
             {
                 temp_num = 2;
             }
@@ -52,7 +52,9 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
         {
             task->Flip_falg = !task->Flip_falg;
             task->Trigger_Flag = 1;
-            task->Begin_time = now_time;
+//            task->Begin_time = now_time;
+            task->Begin_time.SYS_Sec += task->Set_time.SYS_Sec;
+            task->Begin_time.SYS_Us += task->Set_time.SYS_Us;
             retval = 1;
         }
         else

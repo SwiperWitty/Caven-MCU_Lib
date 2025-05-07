@@ -79,51 +79,51 @@ struct _Mode_Init
 {
     char empty;
 #ifdef Exist_LCD
-    int (*LCD)(int SET);
+    int (*LCD)(int Set);
     int LCD_Init_State;
 #endif
 #ifdef Exist_SYS_TIME
-    int (*TIME)(int SET);
+    int (*TIME)(int Set);
     int TIME_Init_State;
 #endif
 
 #ifdef Exist_UART
-    int (*UART)(char Channel,int Baud,int SET);
+    int (*UART)(char Channel,int Baud,int Set);
     int UART_Init_State;
 #endif
 #ifdef Exist_USB
-    int (*USB)(int SET);
+    int (*USB)(int Set);
     int USB_Init_State;
 #endif
     
 #ifdef Exist_LED
-    void (*LED)(int SET);
+    void (*LED)(int Set);
     int LED_Init_State;
 #endif
 #ifdef Exist_BZZ
-    void (*BZZ)(int SET);
+    void (*BZZ)(int Set);
     int BZZ_Init_State;
 #endif
 #ifdef Exist_HC595
-    void (*HC_595)(int SET);
+    void (*HC_595)(int Set);
     int HC_595_Init_State;
 #endif
 #ifdef Exist_HC138
-    void (*HC_138)(int SET);
+    void (*HC_138)(int Set);
     int HC_138_Init_State;
 #endif
 
 #ifdef Exist_DS18B20
-    int (*DS18B20)(int SET);
+    int (*DS18B20)(int Set);
     int DS18B20_Init_State;
 #endif
 
 #ifdef Exist_BUTTON
-    void (*Button)(char Channel,int SET);
+    void (*Button)(char Channel,int Set);
     int Button_Init_State;
 #endif
 #ifdef Exist_Ultrasonic
-    int (*Ultrasonic)(int SET);
+    int (*Ultrasonic)(int Set);
     int Ultrasonic_Init_State;
 #endif
 

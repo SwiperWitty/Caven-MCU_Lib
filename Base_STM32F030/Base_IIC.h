@@ -2,24 +2,24 @@
 #define _IIC__H_
 
 #ifdef DEFAULT
-#include "items.h"              //Ä¬ÈÏ¹¦ÄÜ
+#include "items.h"              //Ä¬ï¿½Ï¹ï¿½ï¿½ï¿½
 #endif
 
 #ifndef DEFAULT
-#include "User_items.h"         //×ÔÐÐÉèÖÃ¹¦ÄÜ£¬Ò»°ã³öÏÖÔÚ±¾µØÎÄ¼þµÄUserÖÐ
+#include "User_items.h"         //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¹ï¿½ï¿½Ü£ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú±ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Userï¿½ï¿½
 #endif
 
 /****************/
 
 /*
- * ±ê×¼Èí¼þÄ£ÄâIIC
+ * ï¿½ï¿½×¼ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½IIC
  * MAX  36kHZ(8bit+ACK)
  * MAX  33kHZ(8bit+WaitASK-YES)
  * MAX  19kHZ(8bit+WaitASK-NO)
  * MAX-Pro  142kHZ(8bit+ACK)
  */
 
-//ÅäÖÃ
+//ï¿½ï¿½ï¿½ï¿½
 #ifdef Exist_IIC
 #define IIC_Base_Speed  12
 #define IIC_Mode_IN     GPIO_Mode_IN
@@ -32,16 +32,16 @@
 #define IIC_SDA        GPIO_Pin_11
 #define GPIO_IIC       GPIOB
 
-#define IIC_SDA_H() GPIO_IIC->BSRR = IIC_SDA         //ÖÃ¸ßµçÆ½
-#define IIC_SDA_L() GPIO_IIC->BRR = IIC_SDA         //ÖÃµÍµçÆ½
+#define IIC_SDA_H() GPIO_IIC->BSRR = IIC_SDA         //ï¿½Ã¸ßµï¿½Æ½
+#define IIC_SDA_L() GPIO_IIC->BRR = IIC_SDA         //ï¿½ÃµÍµï¿½Æ½
 #define IIC_SCL_H() GPIO_IIC->BSRR = IIC_SCL
 #define IIC_SCL_L() GPIO_IIC->BRR = IIC_SCL
 
-#define IIC_SDA_R() (GPIO_IIC->IDR & IIC_SDA)         //¶ÁÈ¡Òý½ÅµçÆ½
+#define IIC_SDA_R() (GPIO_IIC->IDR & IIC_SDA)         //ï¿½ï¿½È¡ï¿½ï¿½ï¿½Åµï¿½Æ½
 #endif
 //
 
-void IIC_Start_Init(int SET);
+void IIC_Start_Init(int Set);
 char IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed);
 char IIC_Receive_DATA(char Addr,char *Target,char ACK,int Length,int Speed);
 

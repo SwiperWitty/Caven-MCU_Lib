@@ -13,7 +13,7 @@ static void usb_gpio_config(void);
 static void usb_low_power_wakeup_config(void);
 #endif
 
-int MODE_USB_Init (int SET)  
+int MODE_USB_Init (int Set)  
 {
     int retval = 0;
 #ifdef Exist_USB

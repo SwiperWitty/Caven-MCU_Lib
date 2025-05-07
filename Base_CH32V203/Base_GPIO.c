@@ -162,7 +162,7 @@ char User_GPIO_get(int gpiox,int pin)
     return retval;
 }
 
-void LCD_GPIO_Init(int SET)
+void LCD_GPIO_Init(int Set)
 {
 #ifdef Exist_LCD
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -193,7 +193,7 @@ void LCD_GPIO_Init(int SET)
 #endif
 }
 
-void Button_GPIO_Init(int SET)
+void Button_GPIO_Init(int Set)
 {
 #ifdef Exist_BUTTON
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -218,7 +218,7 @@ void Button_GPIO_Init(int SET)
 #endif
 }
 
-void Custom_GPIO_Init(int SET)
+void Custom_GPIO_Init(int Set)
 {
 #ifdef Exist_CustomIO
     GPIO_InitTypeDef GPIO_InitStructure = {0};

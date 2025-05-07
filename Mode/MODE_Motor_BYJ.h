@@ -10,7 +10,7 @@
 */
 #define Reduction 512 
 
-void Motor_BYJ_Init(int SET);
+void Motor_BYJ_Init(int Set);
 char Motor_BYJ_Drive(char Rotation,char Mode,int Code);
 
 

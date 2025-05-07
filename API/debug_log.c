@@ -45,7 +45,6 @@ void debug_log (int type,const char *tag,const char * format,...)
 
 void debug_log_hex (uint8_t *data,int len)
 {
-    char array[10];
     if (data == NULL)
     {
         return;

@@ -29,7 +29,7 @@ typedef struct
 int USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
 #endif
 
-int USB_User_init (int SET);
+int USB_User_init (int Set);
 
 //keyboard
 int USB_Keyboard_Send_String (char *string);

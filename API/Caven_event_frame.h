@@ -16,9 +16,9 @@
 */
 typedef struct
 {
-    int events_num;
-    unsigned char events[CAVEN_EVENTS_MAX];
-    D_pFun events_pFun[CAVEN_EVENTS_MAX];
+    int events_num;                         // 事件总数量
+    unsigned char events[CAVEN_EVENTS_MAX]; // 事件处理标志位
+    D_pFun events_pFun[CAVEN_EVENTS_MAX];   // 事件执行函数
 
 }Caven_event_Type;
 

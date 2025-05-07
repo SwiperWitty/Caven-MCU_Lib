@@ -96,7 +96,7 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
     return res;
 }
 
-void Base_UART_Send_Byte(UART_mType Channel,uint16_t Data)
+void Base_UART_Send_Data(UART_mType Channel,uint16_t Data)
 {
     USART_TypeDef * uart_Temp;
     switch (Channel)
@@ -264,14 +264,14 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
 // 以下函数很重要，包括功能启动，功能中断处理
 
 #if (Exist_UART & OPEN_0001)
-void Uart0_Init(int Baud,int SET)
+void Uart0_Init(int Baud,int Set)
 {
 
 }
 #endif
 
 #if (Exist_UART & OPEN_0010)
-void Uart1_Init(int Baud,int SET)
+void Uart1_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 	USART_InitTypeDef USART_InitStructure = {0};
@@ -338,7 +338,7 @@ void UART1_HANDLERIT()
 #endif
 
 #if (Exist_UART & OPEN_0100)
-void Uart2_Init(int Baud,int SET)
+void Uart2_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     USART_InitTypeDef USART_InitStructure = {0};
@@ -405,7 +405,7 @@ void UART2_HANDLERIT()
 #endif
 
 #if (Exist_UART & OPEN_1000)
-void Uart3_Init(int Baud,int SET)
+void Uart3_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     USART_InitTypeDef USART_InitStructure = {0};
@@ -472,7 +472,7 @@ void UART3_HANDLERIT()
 #endif
 
 #if (Exist_UART & OPEN_10000)
-void Uart4_Init(int Baud,int SET)
+void Uart4_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     USART_InitTypeDef USART_InitStructure = {0};
@@ -537,7 +537,7 @@ void UART4_HANDLERIT()
 #endif
 
 
-int Base_UART_Init(UART_mType Channel,int Baud,int SET)
+int Base_UART_Init(UART_mType Channel,int Baud,int Set)
 {
     int retval = -1;
 #ifdef Exist_UART

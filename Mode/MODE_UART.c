@@ -1,7 +1,7 @@
 #include "MODE_UART.h"
 
 
-int MODE_UART_Init(char Channel,int Baud,int SET)
+int MODE_UART_Init(char Channel,int Baud,int Set)
 {
     int retavl = 1;
 #ifdef Exist_UART
@@ -19,7 +19,7 @@ void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 
     while (temp--)
     {
-        Base_UART_Send_Byte((UART_mType)Channel,Data[i++]);       //等待标志位在里面
+        Base_UART_Send_Data((UART_mType)Channel,Data[i++]);       //等待标志位在里面
     }
 #endif
 }

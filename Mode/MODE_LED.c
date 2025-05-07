@@ -1,7 +1,7 @@
 #include "MODE_LED.h"
 
 
-void MODE_LED_Init(int SET)
+void MODE_LED_Init(int Set)
 {
 #ifdef Exist_LED
     User_GPIO_config(1,LED_IO,1);
@@ -9,7 +9,7 @@ void MODE_LED_Init(int SET)
 #endif
 }
 
-void MODE_LED_SET_Fun(char Channel,int SET)
+void MODE_LED_SET_Fun(char Channel,int Set)
 {
 #ifdef Exist_LED
     switch (Channel) {
@@ -66,7 +66,7 @@ void WS2812_write_byte(char data)
 #endif
 }
 
-void MODE_LED_RGB_Fun(Caven_Color_Type Color,int SET)
+void MODE_LED_RGB_Fun(Caven_Color_Type Color,int Set)
 {
 //    NVIC_SETPRIMASK();
 	if(SET)

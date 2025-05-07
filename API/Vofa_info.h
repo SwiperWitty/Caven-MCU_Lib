@@ -8,14 +8,7 @@
 
 */
 
-#ifdef CAVEN    /* 预编译 */
 #include "Caven_Type.h"
-#else
-#include "stdint.h"
-#include "string.h"
-#include "stddef.h"
-#include "stdio.h"
-#endif
 
 int Vofa_JustFloat_Init_Fun (Send_pFun send_fun);
 int Vofa_JustFloat_Show_Fun (char ch_num,float *f_num);

@@ -28,7 +28,7 @@ typedef struct
 }MODE_UART_Way;
 
 
-int MODE_UART_Init(char Channel,int Baud,int SET);
+int MODE_UART_Init(char Channel,int Baud,int Set);
 
 
 void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length);

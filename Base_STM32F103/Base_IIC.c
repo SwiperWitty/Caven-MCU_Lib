@@ -91,14 +91,14 @@ char IIC_WaitASK(char num)  // 一定要有从设备响应
     return temp;
 }
 
-void IIC_Write_DATA(uint8_t DATA,int Speed)
+void IIC_Write_DATA(uint8_t Data,int Speed)
 {
     uint8_t temp;
     IIC_SDA_Satar (1);
     for (int i = 0; i < 8; i++) {
         User_GPIO_set(GPIO_IIC,IIC_SCL,0);      // 准备数据变更
         IIC_Delay(Speed);
-        temp = (DATA << i) & 0x80;
+        temp = (Data << i) & 0x80;
         if (temp)
             User_GPIO_set(GPIO_IIC,IIC_SDA,1);
         else

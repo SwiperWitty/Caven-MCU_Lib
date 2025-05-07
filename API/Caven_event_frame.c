@@ -59,7 +59,7 @@ int Caven_delete_event_Fun(Caven_event_Type *events,int *handle)
     {
         retval = (-2);
     }
-    else
+    else if(temp_events.events_num > 0)
     {
         temp_num = *handle;
         temp_num &= 0xff;
@@ -76,7 +76,7 @@ int Caven_delete_event_Fun(Caven_event_Type *events,int *handle)
 /*
  * handle的低8位是任务号，高8位是EE说明这个事件被初始化了，句柄有效。
  * (temp_events.events[temp_num] & 0x80) > 0,说明事件有绑定执行函数。
- * (temp_events.events[temp_num] & 0x40) > 0,说明事件被触发，想结束这个事件，只能由执行函数将其 & 0x80。
+ * (temp_events.events[temp_num] & 0x40) > 0,说明事件被触发，想结束这个事件，只能由触发的执行函数将其传入指针内容清0
  * data只有6位有效值,为0则无效
  */
 int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
@@ -97,9 +97,9 @@ int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
         temp_num &= 0xff;
         if (temp_events.events[temp_num] & 0x80)    // 有绑定函数
         {
-            temp_events.events[temp_num] = ((data & 0x3f) + 0x40 + 0x80);     // 触发事件并传递变量
-        memcpy(events,&temp_events,sizeof(Caven_event_Type));
-    }
+            temp_events.events[temp_num] = ((data & 0x3f) | 0x40 | 0x80);     // 触发事件并传递变量
+            memcpy(events,&temp_events,sizeof(Caven_event_Type));
+        }
     }
     else
     {
@@ -147,7 +147,7 @@ int Caven_handle_event_Fun(Caven_event_Type *events)
                 }
                 if (temp == 0)
                 {
-                    events->events[i] &= 0x80;              /* 清除触发标记  */
+                    events->events[i] = 0x80;               /* 清除触发标记  */
                     // printf("event[%d] exit\n",i);
                 }
             }

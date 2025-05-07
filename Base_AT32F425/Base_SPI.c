@@ -240,8 +240,8 @@ static void SPI_Delay (int time)
 }
 #endif
 
-//普通\软件 发送，只管SCLK、MOSI不管 NSS
-void SPI_Send_DATA(const uint16_t DATA)     
+// 普通\软件 发送，只管SCLK、MOSI不管 NSS
+void SPI_Send_DATA(const uint16_t Data)     
 {
     /*
      * 写标志位
@@ -280,7 +280,7 @@ void SPI_Send_DATA(const uint16_t DATA)
 
 //    调用层      //
 
-//大量发送，Soft/Hard
+// 大量发送，Soft/Hard
 void SPI_Send_String(const void * DATA,int num)                 //这个会绑一个指针，在发送数据途中，不要让目标指针改变！
 {
 #ifdef Exist_SPI
@@ -318,7 +318,7 @@ void SPI_Send_String(const void * DATA,int num)                 //这个会绑�
 #endif
 }
 
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
+void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t Data)
 {
 // Addr &= 0xBFFF;
 #ifdef Exist_SPI

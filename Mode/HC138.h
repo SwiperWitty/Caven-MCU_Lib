@@ -21,7 +21,7 @@ typedef struct
 }MODE_HC138_Way;
 #endif
 
-void MODE_HC138_Init (int SET);
+void MODE_HC138_Init (int Set);
 void HC138_Set_Data_Fun (int Data);
 
 #endif

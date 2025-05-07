@@ -11,7 +11,7 @@ struct tm mode_date;
 static int time_enable = 0;
 static int SYNC_TIME_Fun (void);
 
-int MODE_TIME_Init(int SET)
+int MODE_TIME_Init(int Set)
 {
     time_enable = SET;
 #ifdef Exist_SYS_TIME

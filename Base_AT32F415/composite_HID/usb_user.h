@@ -19,7 +19,7 @@ typedef struct
 extern otg_core_type otg_core_struct;
 
 
-int MODE_USB_Init (int SET);
+int MODE_USB_Init (int Set);
 //keyboard
 int USB_Keyboard_Send_String (char *string);
 int USB_Keyboard_Send_Data (char *data, int Sendlen);

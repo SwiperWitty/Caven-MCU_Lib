@@ -1,6 +1,6 @@
 #include "uart.h"
 
-void Uart1_Init(int Baud,int SET)
+void Uart1_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 	USART_InitTypeDef USART_InitStructure = {0};
@@ -57,7 +57,7 @@ void Uart1_Init(int Baud,int SET)
     
     USART_Cmd(UART_Temp,ENABLE);
 }
-void Uart2_Init(int Baud,int SET)
+void Uart2_Init(int Baud,int Set)
 {
     
 }
@@ -119,7 +119,7 @@ uint16_t UART_RXD_Receive(char Channel)     //RXD 读取值
     return res;
 }
 
-void UART_TXD_Send(char Channel,uint16_t DATA)
+void UART_TXD_Send(char Channel,uint16_t Data)
 {
     USART_TypeDef * Temp;
     switch (Channel)

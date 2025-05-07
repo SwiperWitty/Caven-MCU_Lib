@@ -43,7 +43,7 @@
 #endif
 //
 
-void IIC_Start_Init(int SET);
+void IIC_Start_Init(int Set);
 int IIC_Send_DATA(char Addr,const char *Data,char ACK,int Length,int Speed);
 int IIC_Receive_DATA(char Addr, char *Target,char ACK,int Length,int Speed);
 

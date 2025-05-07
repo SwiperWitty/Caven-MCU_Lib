@@ -95,7 +95,7 @@ static uint16_t UART_RXD_Receive(UART_mType Channel)     //RXD 读取值
 }
 
 // 发送
-void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
+void Base_UART_Send_Data(UART_mType Channel,uint16_t Data)
 {
     switch (Channel)
     {
@@ -139,10 +139,10 @@ void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA)
     
     while (USART_GetFlagStatus(uart_Temp, TXD_Falg) == 0);
     USART_ClearFlag(uart_Temp, TXD_Falg);
-    USART_SendData(uart_Temp, DATA);
+    USART_SendData(uart_Temp, Data);
 }
 
-void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
+void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
 {
     
 }
@@ -150,7 +150,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *DATA,int Length)
 #endif
 
 #if (Exist_UART & OPEN_0001)
-void Uart0_Init(int Baud,int SET)
+void Uart0_Init(int Baud,int Set)
 {
     uart0_enable = SET;
 }
@@ -383,7 +383,7 @@ void UART3_HANDLERIT()
 #endif
 
 #if (Exist_UART & OPEN_10000)
-void Uart4_Init(int Baud,int SET)
+void Uart4_Init(int Baud,int Set)
 {
     uart4_enable = SET;
 
@@ -406,7 +406,7 @@ void UART4_HANDLERIT()
 
 #endif
 
-int Base_UART_Init(UART_mType Channel, int Baud, int SET)
+int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 {
     int retval = -1;
 	
@@ -461,7 +461,7 @@ int fputc(int ch, FILE *f)      //printf
 {
 #ifdef DEBUG_OUT
     #ifdef Exist_UART
-    Base_UART_Send_Byte((UART_mType)DEBUG_OUT,(uint8_t)ch);
+    Base_UART_Send_Data((UART_mType)DEBUG_OUT,(uint8_t)ch);
     #endif
 #endif // DEBUG
     return (ch);

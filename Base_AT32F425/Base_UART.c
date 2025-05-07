@@ -373,7 +373,7 @@ void UART4_HANDLERIT()
 
 #endif
 
-int Base_UART_Init(UART_mType Channel, int Baud, int SET)
+int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 {
     int retval = -1;
 	
@@ -409,7 +409,7 @@ int Base_UART_Init(UART_mType Channel, int Baud, int SET)
 }
 
 // 发送
-void Base_UART_Send_Byte(UART_mType Channel, uint16_t Data)
+void Base_UART_Send_Data(UART_mType Channel, uint16_t Data)
 {
 #ifdef Exist_UART
     switch (Channel)
@@ -607,7 +607,7 @@ int fputc(int ch, FILE *f)
 {
 #ifdef DEBUG_OUT
 #ifdef Exist_UART
-    Base_UART_Send_Byte(DEBUG_OUT, (uint8_t)ch);
+    Base_UART_Send_Data(DEBUG_OUT, (uint8_t)ch);
 #endif
 #endif // DEBUG
     return (ch);

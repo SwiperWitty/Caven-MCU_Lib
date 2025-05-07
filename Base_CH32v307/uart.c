@@ -1,6 +1,6 @@
 #include "uart.h"
 
-void Uart1_Init(int Baud,int SET)
+void Uart1_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 	USART_InitTypeDef USART_InitStructure = {0};
@@ -51,7 +51,7 @@ void Uart1_Init(int Baud,int SET)
     
     USART_Cmd(UART_Temp, temp);
 }
-void Uart2_Init(int Baud,int SET)
+void Uart2_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -101,7 +101,7 @@ void Uart2_Init(int Baud,int SET)
     USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
     USART_Cmd(USART2, temp); //使能串口
 }
-void Uart3_Init(int Baud,int SET)
+void Uart3_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -146,7 +146,7 @@ void Uart3_Init(int Baud,int SET)
     USART_Cmd(USART3, temp);
 }
 #if UART_Channel_MAX >= 4
-void Uart4_Init(int Baud,int SET)
+void Uart4_Init(int Baud,int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -191,7 +191,7 @@ void Uart4_Init(int Baud,int SET)
 }
 #endif
 #if UART_Channel_MAX >= 5
-void Uart5_Init(int Baud,int SET)
+void Uart5_Init(int Baud,int Set)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure;
@@ -329,7 +329,7 @@ uint16_t UART_RXD_Receive(char Channel)     //RXD 读取值
     return res;
 }
 
-void UART_TXD_Send(char Channel,uint16_t DATA)
+void UART_TXD_Send(char Channel,uint16_t Data)
 {
     USART_TypeDef * Temp;
     switch (Channel)

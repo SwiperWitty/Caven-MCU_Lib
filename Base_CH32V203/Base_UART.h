@@ -5,8 +5,8 @@
  * 
 为了方便上层统一调用，本文件需要提供以下函数
 
-int Base_UART_Init(UART_mType Channel,int Baud,int SET);
-void Base_UART_Send_Byte(UART_mType Channel,uint16_t DATA);
+int Base_UART_Init(UART_mType Channel,int Baud,int Set);
+void Base_UART_Send_Data(UART_mType Channel, uint16_t Data)
 
 int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun);
 
@@ -64,8 +64,8 @@ void UART4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 #endif
 
 // fun
-int Base_UART_Init(UART_mType Channel,int Baud,int SET);
-void Base_UART_Send_Byte(UART_mType Channel,uint16_t Data);
+int Base_UART_Init(UART_mType Channel,int Baud,int Set);
+void Base_UART_Send_Data(UART_mType Channel,uint16_t Data);
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length);
 
 /*

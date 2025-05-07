@@ -1,6 +1,6 @@
 #include "Base_GPIO.h"
 
-void LCD_GPIO_Init(int SET)
+void LCD_GPIO_Init(int Set)
 {
 #ifdef Exist_LCD
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -22,7 +22,7 @@ void LCD_GPIO_Init(int SET)
 #endif
 }
 
-void LED_GPIO_Init(int SET)
+void LED_GPIO_Init(int Set)
 {
 #ifdef Exist_LED
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -53,7 +53,7 @@ void LED_GPIO_Init(int SET)
 #endif
 }
 
-void BZZ_GPIO_Init(int SET)
+void BZZ_GPIO_Init(int Set)
 {
 #ifdef Exist_BZZ
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -72,7 +72,7 @@ void BZZ_GPIO_Init(int SET)
 #endif
 }
 
-void KEY_GPIO_Init(int SET)
+void KEY_GPIO_Init(int Set)
 {
 #ifdef Exist_KEY
     GPIO_InitTypeDef GPIO_InitStructure = {0};
@@ -97,7 +97,7 @@ void KEY_GPIO_Init(int SET)
 #endif
 }
 
-void GXIC_GPIO_Init(int SET)
+void GXIC_GPIO_Init(int Set)
 {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
     if (SET) {

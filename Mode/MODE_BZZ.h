@@ -16,11 +16,11 @@
 
 typedef struct
 {
-    void (*SET_pFun)(int SET);
+    void (*SET_pFun)(int Set);
 }MODE_BZZ_Way;
 
 #endif
-void MODE_BZZ_Init(int SET);
-void MODE_BZZ_SET_Fun(int SET);
+void MODE_BZZ_Init(int Set);
+void MODE_BZZ_SET_Fun(int Set);
 
 #endif

@@ -59,17 +59,17 @@ void SYS_Feed_Watchdog (void);
 #endif
 
 
-// 很长的时间戳（一天）
+// 很长的时间戳
 typedef struct
 {
-    uint32_t SYS_Time_H; // 每Frequency进1
-    uint32_t SYS_Time_L; // 24bit 的
+    volatile uint32_t SYS_Time_H;   // 每Frequency进1
+    volatile uint32_t SYS_Time_L;   // 24bit 的
 }SYS_Time_Type;
 // 系统运行总时长 8byte
 typedef struct
 {
-    uint32_t SYS_Sec;
-    uint32_t SYS_Us;             // 这里最大 1000 000
+    volatile uint32_t SYS_Sec;
+    volatile uint32_t SYS_Us;       // 这里最大 1000 000
 }SYS_BaseTIME_Type;
 
 void SYS_Time_Init(int Set);

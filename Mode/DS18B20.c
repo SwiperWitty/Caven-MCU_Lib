@@ -19,12 +19,12 @@ char DS18B20_Start (void)
 {
 	char temp = 0;
 #ifdef Exist_DS18B20
-	DS18B20_IO_Config(WRITE_Config);
+	DS18B20_IO_Config(1);
 	DS18B20_IO_H();DS18B20_Delay (50);
 	DS18B20_IO_L();DS18B20_Delay (500);
 	
 	DS18B20_IO_H();DS18B20_Delay (5);
-    DS18B20_IO_Config(READ_Config);
+    DS18B20_IO_Config(0);
 	DS18B20_Delay (50);
     int time = 0;
     do{
@@ -32,12 +32,12 @@ char DS18B20_Start (void)
         time++;
         if(time > 6)
         {
-//            DS18B20_IO_Config(READ_Config);
+//            DS18B20_IO_Config(0);
             DS18B20_Exist_Flag = 0;
             return temp;                    //启动失败了
         }
     }while(DS18B20_IO_R() == 1);
-	DS18B20_IO_Config(WRITE_Config);
+	DS18B20_IO_Config(1);
 	DS18B20_IO_H();DS18B20_Delay (5);
 	temp = 1;
 #endif
@@ -50,7 +50,7 @@ int MODE_DS18B20_Init (int Set)
     DS18B20_Delay (1);
     
 #ifdef Exist_DS18B20
-    DS18B20_IO_Config(WRITE_Config);
+    DS18B20_IO_Config(1);
     DS18B20_Delay (1);
     DS18B20_Time = (MCU_SYS_FREQ/6000000);
 	DS18B20_Delay (500);
@@ -69,7 +69,7 @@ static void Write_Byte (char Data)
 {
 #ifdef Exist_DS18B20
     char Temp = Data;
-    DS18B20_IO_Config(WRITE_Config);
+    DS18B20_IO_Config(1);
     DS18B20_IO_H();
     DS18B20_Delay (10);
 	
@@ -102,7 +102,7 @@ static char Read_Byte (void)
 #ifdef Exist_DS18B20
     for (char i = 0; i < 8; i++)
     {
-        DS18B20_IO_Config(WRITE_Config);
+        DS18B20_IO_Config(1);
         DS18B20_IO_H();
         DS18B20_Delay (8);
         DS18B20_IO_L();         //低脉冲
@@ -117,7 +117,7 @@ static char Read_Byte (void)
 		DS18B20_Delay (40);
     }
 
-    DS18B20_IO_Config(WRITE_Config);
+    DS18B20_IO_Config(1);
 	DS18B20_IO_H();
 #endif
     return Data;

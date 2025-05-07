@@ -13,7 +13,7 @@ void IIC_SDA_Satar (char GPIO_Mode)
 #endif
 }
 
-void IIC_Init(int SET)
+void IIC_Init(int Set)
 {
 #ifdef Exist_IIC
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);

@@ -23,7 +23,7 @@
     #define LCD_RES_L() GPIO_ResetBits(GPIOB, GPIO_Pin_0)   //RES
     #define LCD_RES_H() GPIO_SetBits(GPIOB, GPIO_Pin_0)     //PB0
 
-    void LCD_GPIO_Init(int SET);
+    void LCD_GPIO_Init(int Set);
 #endif
 
 #ifdef Exist_OLED
@@ -59,7 +59,7 @@
     #define BUTTON2_STATE() GPIO_ReadInputDataBit(GPIOC,GPIO_Pin_15)     // Button
     #define BUTTON3_STATE() GPIO_ReadInputDataBit(GPIOD,GPIO_Pin_0)     // Button
     #define BUTTON4_STATE() GPIO_ReadInputDataBit(GPIOD,GPIO_Pin_1)     // Button
-    void Button_GPIO_Init(int SET);
+    void Button_GPIO_Init(int Set);
 #endif
 
 #ifdef Exist_HC595
@@ -94,7 +94,7 @@
     #define GPI1_STATE() GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_5)     // PB05
     #define GPI2_STATE() GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_6)     // PB06
 
-    void Custom_GPIO_Init(int SET);
+    void Custom_GPIO_Init(int Set);
 #endif
 
 

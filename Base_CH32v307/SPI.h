@@ -76,12 +76,12 @@
 //void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 //void SPI1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
-void SPIx_Init(char Channel,int SET);
-void SPI1_Send_DATA(char Serial,const uint16_t DATA);
-void SPI2_Send_DATA(char Serial,const uint16_t DATA);
+void SPIx_Init(char Channel,int Set);
+void SPI1_Send_DATA(char Serial,const uint16_t Data);
+void SPI2_Send_DATA(char Serial,const uint16_t Data);
 uint16_t SPI1_Read_DATA(char Serial);
 
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA);
+void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t Data);
 uint16_t SPI_SET_Addr_ReadData(char Serial,uint16_t Addr);
 
 

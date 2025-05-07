@@ -1,6 +1,6 @@
 #include "HC138.h"
 
-void MODE_HC138_Init (int SET)
+void MODE_HC138_Init (int Set)
 {
 #ifdef Exist_HC138
     User_GPIO_config(HC138_GPIO,HC138_D1_IO,1);

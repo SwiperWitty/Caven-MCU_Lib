@@ -58,17 +58,26 @@ void SYS_Time_Set(SYS_BaseTIME_Type * time)
 void SYS_Time_Get(SYS_BaseTIME_Type * time)
 {
 #ifdef Exist_SYS_TIME
-    int temp = 0;
-
-    s_SYS_Time.SYS_Time_L = LLTIMER_REG;
-    if (s_SYS_Time.SYS_Time_H % 2)
+    uint32_t temp,cnt,cnt_us;
+        
+    cnt = s_SYS_Time.SYS_Time_H;
+    s_SYS_Time.SYS_Time_L = LLTIMER_REG & 0x00FFFFFF;
+    cnt_us = s_SYS_Time.SYS_Time_L;
+    if(cnt < s_SYS_Time.SYS_Time_H)
     {
-        temp += s_Frequency_CMP;
+        cnt = s_SYS_Time.SYS_Time_H;
+        s_SYS_Time.SYS_Time_L = LLTIMER_REG & 0x00FFFFFF;
+        cnt_us = s_SYS_Time.SYS_Time_L;
     }
-    temp += s_SYS_Time.SYS_Time_L;
-
+    temp = cnt % TICK_OVER_IT;
+    if(temp)
+    {
+        temp = TICK_SET_CMP * temp;
+    }
+    temp += cnt_us;
+    time->SYS_Sec = cnt >> 1;       // x/2,优化变成 x >> 1;
+    //    time->SYS_Sec = cnt / TICK_OVER_IT;
     time->SYS_Us = temp / s_Frequency_us;
-    time->SYS_Sec = s_SYS_Time.SYS_Time_H >> 1;       // x/2,优化变成 x >> 1;
 #endif
 }
 

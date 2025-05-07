@@ -22,8 +22,8 @@
 #ifndef _SYS_TIME_H__
 typedef struct
 {
-    uint32_t SYS_Sec;
-    uint32_t SYS_Us;             // 这里最大 1000 000
+    volatile uint32_t SYS_Sec;
+    volatile uint32_t SYS_Us;       // 这里最大 1000 000
 }SYS_BaseTIME_Type;
 
 #endif
@@ -52,7 +52,7 @@ typedef struct
 }MODE_TIME_Way;
 
 
-int MODE_TIME_Init(int SET);
+int MODE_TIME_Init(int Set);
 
 void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time);
 Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void);

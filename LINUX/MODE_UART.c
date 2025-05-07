@@ -79,7 +79,7 @@ static int get_baud(int baud)
     }
 }
 
-int MODE_UART_Init(char Channel,int Baud,int SET)
+int MODE_UART_Init(char Channel,int Baud,int Set)
 {
     int retavl;
 #ifdef Exist_UART

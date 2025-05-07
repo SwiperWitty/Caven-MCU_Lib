@@ -2,7 +2,7 @@
 
 int SPI_State[3] = {0};
 
-void SPI1_GPIO_Init(int SET)
+void SPI1_GPIO_Init(int Set)
 {
 #if (SPI_X == 1)
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -34,7 +34,7 @@ void SPI1_GPIO_Init(int SET)
 #endif
 }
 
-void SPI2_GPIO_Init(int SET)
+void SPI2_GPIO_Init(int Set)
 {
 #if (SPI_X == 2)
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -59,7 +59,7 @@ void SPI2_GPIO_Init(int SET)
 #endif
 }
 
-void SPIx_Init(char Channel,int SET)
+void SPIx_Init(char Channel,int Set)
 {
 #ifdef Exist_SPI
     SPI_State[Channel] = SET;
@@ -186,7 +186,7 @@ void SPI_CS_Set(char Serial,char State)
 
 }
 
-void SPI1_Send_DATA(char Serial,const uint16_t DATA)
+void SPI1_Send_DATA(char Serial,const uint16_t Data)
 {
     /*
      * 写标志位
@@ -219,7 +219,7 @@ void SPI1_Send_DATA(char Serial,const uint16_t DATA)
 #endif
 }
 
-void SPI2_Send_DATA(char Serial,const uint16_t DATA)
+void SPI2_Send_DATA(char Serial,const uint16_t Data)
 {
 #if (SPI_X == 2)
     #if(SPI_MODE == HOST_MODE)
@@ -251,7 +251,7 @@ void SPI2_Send_DATA(char Serial,const uint16_t DATA)
 
 
 
-void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t DATA)
+void SPI_SET_Addr_SendData(char Serial,uint16_t Addr,uint16_t Data)
 {
     Addr &= 0xBFFF;
 

@@ -127,7 +127,7 @@ char User_GPIO_get(int gpiox,int pin)
     // crm_periph_clock_type value;
     gpio_type *gpio_x;
     uint16_t temp_num = 0x01;
-	char retval = 0;
+	char retval = -1;
 	switch (gpiox)
     {
     case 1:

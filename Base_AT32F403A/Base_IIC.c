@@ -22,7 +22,7 @@ void IIC_SDA_Satar (char GPIO_Mode)
 #endif
 }
 
-void IIC_Start_Init(int SET)
+void IIC_Start_Init(int Set)
 {
 #ifdef Exist_IIC
     gpio_init_type  gpio_init_struct;

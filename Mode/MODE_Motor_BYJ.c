@@ -1,7 +1,7 @@
 #include "MODE_Motor_BYJ.h"
 
 
-void Motor_BYJ_Init(int SET)
+void Motor_BYJ_Init(int Set)
 {
 #ifdef Exist_STEP_Motor
     STEP_Motor_GPIO_Init (SET);       // 初始GPIO
