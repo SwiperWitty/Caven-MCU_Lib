@@ -1,5 +1,5 @@
-#ifndef _MOTOR_H_
-#define _MOTOR_H_
+#ifndef _MODE_MOTOR_H_
+#define _MODE_MOTOR_H_
 
 #include "Base.h"
 #include "Caven_Type.h"

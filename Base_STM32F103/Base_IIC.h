@@ -16,7 +16,7 @@
  */
 
 // 配置
-#ifdef Exist_IIC
+#if Exist_IIC
 #include "Base_GPIO.h"
 
 #define IIC_Base_Speed  20

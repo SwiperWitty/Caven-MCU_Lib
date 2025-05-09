@@ -135,7 +135,7 @@ int TIMx_Encoder_Capture(char TIMx)
 
 void TIM1_Capture_GPIO_Init(int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -158,7 +158,7 @@ void TIM1_Capture_GPIO_Init(int Set)
 }
 void TIM2_Capture_GPIO_Init(int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -181,7 +181,7 @@ void TIM2_Capture_GPIO_Init(int Set)
 }
 void TIM3_Capture_GPIO_Init(int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -219,7 +219,7 @@ void TIM3_Capture_GPIO_Init(int Set)
 */
 void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -293,7 +293,7 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
 void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -367,7 +367,7 @@ void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
 void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -441,12 +441,12 @@ void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
 void TIM5_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
 
 #endif
 }
 
-#ifdef Exist_CAPTURE
+#if Exist_CAPTURE
 int time1_ch1_mode = 0;
 int time1_ch1_up = 0;
 int time1_ch1_down = 0;

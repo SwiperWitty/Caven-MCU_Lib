@@ -6,7 +6,7 @@ uint8_t tim8_enable = 0;
 
 void TIM3_PWM_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -37,7 +37,7 @@ void TIM3_PWM_GPIO_Init(int Set)
 }
 void TIM4_PWM_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -62,7 +62,7 @@ void TIM4_PWM_GPIO_Init(int Set)
 }
 void TIM8_PWM_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -89,7 +89,7 @@ void TIM8_PWM_GPIO_Init(int Set)
 //溢出时间T = (arr+1)*(psc+1)
 void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -136,7 +136,7 @@ void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 // 溢出时间 T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 20MS
 void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -182,7 +182,7 @@ void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 
 void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     // AT32f415没有定时器8，但是IO与定时器3的复用是一样的
 
 #endif
@@ -190,7 +190,7 @@ void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 
 void TIM3_PWMx_SetValue(int PWMx,void *data)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     TIM_TypeDef *Temp_TIM = TIM3;
     int value = 0;
     if(data == NULL)
@@ -225,7 +225,7 @@ void TIM3_PWMx_SetValue(int PWMx,void *data)
 
 void TIM4_PWMx_SetValue(int PWMx,void *data)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     TIM_TypeDef *Temp_TIM = TIM4;
     int value = 0;
     if(data == NULL)
@@ -260,7 +260,7 @@ void TIM4_PWMx_SetValue(int PWMx,void *data)
 
 void TIM8_PWMx_SetValue(int PWMx,void *data)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     TIM_TypeDef *Temp_TIM = TIM8;
     int value = 0;
     if(data == NULL)

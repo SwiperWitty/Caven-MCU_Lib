@@ -1,5 +1,5 @@
-#ifndef _HC138_H_
-#define _HC138_H_
+#ifndef _MODE_HC138_H_
+#define _MODE_HC138_H_
 
 #include "Base.h"
 #include "Caven_Type.h"

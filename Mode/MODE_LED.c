@@ -3,7 +3,7 @@
 
 void MODE_LED_Init(int Set)
 {
-#ifdef Exist_LED
+#if Exist_LED
     User_GPIO_config(1,LED_IO,1);
     User_GPIO_set(1,LED_IO,1);
 #endif
@@ -11,7 +11,7 @@ void MODE_LED_Init(int Set)
 
 void MODE_LED_SET_Fun(char Channel,int Set)
 {
-#ifdef Exist_LED
+#if Exist_LED
     switch (Channel) {
         case 1:
             if(SET)
@@ -34,7 +34,7 @@ void WS2812_Delay(int time)
 
 void WS2812_Reset (void)
 {
-#ifdef Exist_LED
+#if Exist_LED
 	User_GPIO_set(1,LED_IO,0);
 	WS2812_Delay(60);
 	User_GPIO_set(1,LED_IO,1);
@@ -43,7 +43,7 @@ void WS2812_Reset (void)
 
 void WS2812_write_byte(char data)
 {
-#ifdef Exist_LED
+#if Exist_LED
 	char temp = data;
 	for(char i = 0; i < 8; i++)
 	{

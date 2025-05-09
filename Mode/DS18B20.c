@@ -1,30 +1,38 @@
 #include "DS18B20.h"
 
-unsigned int Templ,Temp2,Temperature;  //Templ低八位，Temp2高八位
-unsigned char Minus_Flag=0;  //负温度标志位
+static int DS18B20_Exist_Flag = 0;
 
-
-int DS18B20_Time = 0;
-int DS18B20_Exist_Flag = 0;
+#if Exist_DS18B20
+static int DS18B20_Time = 0;
+static int DS18B20_gpiox = 0,DS18B20_pin = 0;
 static void Write_Byte (char Data);
+
+#endif
 
 static void DS18B20_Delay (int Num)
 {
-#ifdef Exist_DS18B20
-    SYS_Base_Delay(Num,1);
+#if Exist_DS18B20
+    int temp_speed = 1;
+    #ifdef MCU_SYS_FREQ
+    if(MCU_SYS_FREQ > 72000000)
+    {
+        temp_speed = 5;
+    }
+    #endif
+    SYS_Base_Delay(Num,temp_speed);
 #endif
 }
 
 char DS18B20_Start (void)
 {
 	char temp = 0;
-#ifdef Exist_DS18B20
-	DS18B20_IO_Config(1);
-	DS18B20_IO_H();DS18B20_Delay (50);
-	DS18B20_IO_L();DS18B20_Delay (500);
+#if Exist_DS18B20
+	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (50);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);DS18B20_Delay (500);
 	
-	DS18B20_IO_H();DS18B20_Delay (5);
-    DS18B20_IO_Config(0);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (5);
+    User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);
 	DS18B20_Delay (50);
     int time = 0;
     do{
@@ -32,25 +40,26 @@ char DS18B20_Start (void)
         time++;
         if(time > 6)
         {
-//            DS18B20_IO_Config(0);
             DS18B20_Exist_Flag = 0;
             return temp;                    //启动失败了
         }
-    }while(DS18B20_IO_R() == 1);
-	DS18B20_IO_Config(1);
-	DS18B20_IO_H();DS18B20_Delay (5);
+    }while(User_GPIO_get(DS18B20_gpiox,DS18B20_pin) == 1);
+	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (5);
 	temp = 1;
 #endif
 	return temp;
 }
 
-int MODE_DS18B20_Init (int Set)
+int MODE_DS18B20_Init (int gpiox,int pin,int Set)
 {
 	int temp = 0;
     DS18B20_Delay (1);
     
-#ifdef Exist_DS18B20
-    DS18B20_IO_Config(1);
+#if Exist_DS18B20
+    DS18B20_gpiox = gpiox;
+    DS18B20_pin = pin;
+    User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
     DS18B20_Delay (1);
     DS18B20_Time = (MCU_SYS_FREQ/6000000);
 	DS18B20_Delay (500);
@@ -67,20 +76,20 @@ int MODE_DS18B20_Init (int Set)
 
 static void Write_Byte (char Data)
 {
-#ifdef Exist_DS18B20
+#if Exist_DS18B20
     char Temp = Data;
-    DS18B20_IO_Config(1);
-    DS18B20_IO_H();
+    User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+    User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
     DS18B20_Delay (10);
 	
     for (char i = 8; i > 0; i--)
     {
-        DS18B20_IO_L();
+        User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);
         DS18B20_Delay (8);
 
         if(Temp & 0x01)             //与1按位与运算，Data最低位为1时DQ总线为1，Data最低位为0时DQ总线为0
         {
-            DS18B20_IO_H();
+            User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
             DS18B20_Delay (30);
         }
         else
@@ -88,7 +97,7 @@ static void Write_Byte (char Data)
             DS18B20_Delay (40);
         }
         Temp >>= 1;
-        DS18B20_IO_H();
+        User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
         DS18B20_Delay (10);
 
     }
@@ -99,26 +108,26 @@ static void Write_Byte (char Data)
 static char Read_Byte (void)
 {
     char Data = 0;
-#ifdef Exist_DS18B20
+#if Exist_DS18B20
     for (char i = 0; i < 8; i++)
     {
-        DS18B20_IO_Config(1);
-        DS18B20_IO_H();
+        User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+        User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
         DS18B20_Delay (8);
-        DS18B20_IO_L();         //低脉冲
+        User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);         // 低脉冲
 		DS18B20_Delay (1);
-        DS18B20_IO_Config(READ_Config);		//弱拉高
+        User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);  // 弱拉高
 
         DS18B20_Delay (20);
 		Data >>= 1;
-		if(DS18B20_IO_R())
+		if(User_GPIO_get(DS18B20_gpiox,DS18B20_pin))
 		{ Data |= 0x80; }
 		//else {0}
 		DS18B20_Delay (40);
     }
 
-    DS18B20_IO_Config(1);
-	DS18B20_IO_H();
+    User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
 #endif
     return Data;
 }

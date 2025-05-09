@@ -1,6 +1,6 @@
 #include "Base_SPI.h"
 
-#ifdef Exist_SPI
+#if Exist_SPI
 
 SPI_TypeDef *spi_Temp;
 char SPI1_Width = 0;
@@ -223,7 +223,7 @@ void Base_SPI2_Init (uint8_t Width,int Set)
 int Base_SPI_Init(SPI_mType Channel,uint8_t Width,int Set)
 {
     int retval = -1;
-#ifdef Exist_SPI
+#if Exist_SPI
 
     SPI_Delay (1);
     switch (Channel)
@@ -259,7 +259,7 @@ int Base_SPI_Init(SPI_mType Channel,uint8_t Width,int Set)
 
 void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State)
 {
-#ifdef Exist_SPI
+#if Exist_SPI
     
     switch (Channel)
     {
@@ -296,7 +296,7 @@ void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State)
 
 void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data)
 {
-#ifdef Exist_SPI
+#if Exist_SPI
     /*
      * 写标志位
      * 写数据
@@ -471,7 +471,7 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int size)
 
 void Base_SPI_ASK_Receive(SPI_mType Channel,uint16_t Data,uint16_t *Receive)
 {
-#ifdef Exist_SPI
+#if Exist_SPI
     
 #endif 
 }

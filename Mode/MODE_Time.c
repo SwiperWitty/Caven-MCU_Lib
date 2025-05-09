@@ -14,7 +14,7 @@ static int SYNC_TIME_Fun (void);
 int MODE_TIME_Init(int Set)
 {
     time_enable = SET;
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     SYS_Time_Init(SET);
 	Real_TIME.SYNC_Flag = 0;
 	Real_TIME.date = &mode_date;
@@ -26,7 +26,7 @@ int MODE_TIME_Init(int Set)
 
 void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0) {
         return ;
     }
@@ -40,7 +40,7 @@ void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time)
 Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
 {
     Caven_BaseTIME_Type retval = {0};
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0) {
         return retval;
     }
@@ -57,7 +57,7 @@ Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
 struct tm MODE_TIME_Get_Date (int timezone_s)
 {
     struct tm retval = {0};
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0 || Real_TIME.date == NULL) {
         return retval;
     }
@@ -88,7 +88,7 @@ struct tm MODE_TIME_Get_Date (int timezone_s)
 int SYNC_TIME_Fun (void)
 {
     int retval = 0;
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0) {
         return retval;
     }
@@ -114,7 +114,7 @@ int SYNC_TIME_Fun (void)
 #if 1
 void MODE_Delay_Us(int num)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0) {
         return ;
     }
@@ -123,7 +123,7 @@ void MODE_Delay_Us(int num)
 }
 void MODE_Delay_Ms(int num)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0) {
         return ;
     }
@@ -132,7 +132,7 @@ void MODE_Delay_Ms(int num)
 }
 void MODE_Delay_S(int num)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     if (time_enable == 0) {
         return ;
     }

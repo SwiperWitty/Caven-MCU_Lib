@@ -1,6 +1,6 @@
 #include "Base_UART.h" 
 
-#ifdef Exist_UART
+#if Exist_UART
 
 #define RXD_Falg    USART_IT_RXNE     //  接收标志
 #define TXD_Falg    USART_FLAG_TC		//  【USART_FLAG_TXE】这个只是说明，数据被cpu取走,【USART_FLAG_TC】这是完全发送完成
@@ -410,7 +410,7 @@ int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 {
     int retval = -1;
 	
-#ifdef Exist_UART
+#if Exist_UART
 //    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     switch (Channel)
     {
@@ -447,7 +447,7 @@ int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
 {
     int retval = -1;
-#ifdef Exist_UART
+#if Exist_UART
     if (UART_pFun == NULL)
     {
         return retval;
@@ -459,8 +459,8 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
 
 int fputc(int ch, FILE *f)      //printf
 {
-#ifdef DEBUG_OUT
-    #ifdef Exist_UART
+#if DEBUG_OUT
+    #if Exist_UART
     Base_UART_Send_Data((UART_mType)DEBUG_OUT,(uint8_t)ch);
     #endif
 #endif // DEBUG

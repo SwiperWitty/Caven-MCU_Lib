@@ -14,7 +14,7 @@
 
 #define UART_End    2     //最高通道数
 
-#ifdef Exist_UART
+#if Exist_UART
 /*  中断   */
 	#ifdef UART1_EXIST
     	#define UART1_Interrupt() USART1_IRQHandler()

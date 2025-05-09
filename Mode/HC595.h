@@ -1,5 +1,5 @@
-#ifndef _HC595_H_
-#define _HC595_H_
+#ifndef _MODE_HC595_H_
+#define _MODE_HC595_H_
 
 #include "Base.h"
 #include "Caven_Type.h"

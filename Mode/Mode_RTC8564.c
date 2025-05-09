@@ -1,7 +1,7 @@
 #include "MODE_RTC8564.h"
 #include "time.h"
 
-#ifdef Exist_RTC_Clock
+#if Exist_RTC8564
 struct tm timeinfo;
 static int RTC8564_Init_flag = 0;
 #endif
@@ -141,7 +141,7 @@ static void SYS_Base_Delay(int time,int Speed)
 int MODE_RTC8564_Init (int set)
 {
     int retval = 0;
-#ifdef Exist_RTC_Clock
+#if Exist_RTC8564
     uint32_t temp_time;
     RTC8564_Init_flag = 0;
     if(set)
@@ -168,7 +168,7 @@ int MODE_RTC8564_Init (int set)
     return retval;
 }
 
-#ifdef Exist_RTC_Clock
+#if Exist_RTC8564
 static uint8_t bcdTOdec(uint8_t val)
 {
     uint8_t retval = (val >> 4) * 10 + (val & 0x0f);
@@ -187,7 +187,7 @@ int MODE_RTC8564_Read_time (uint32_t *sec)
 {
     int retval = 0;
     time_t temp_time = 123;
-#ifdef Exist_RTC_Clock
+#if Exist_RTC8564
     uint8_t temp_array[10];
     if (RTC8564_Init_flag == 0)
     {
@@ -226,7 +226,7 @@ int MODE_RTC8564_Read_time (uint32_t *sec)
 int MODE_RTC8564_Write_time (uint32_t sec)
 {
     int retval = 0;
-#ifdef Exist_RTC_Clock
+#if Exist_RTC8564
     int temp_run = 0;
     time_t temp_time = sec;
     uint8_t temp_array[10];

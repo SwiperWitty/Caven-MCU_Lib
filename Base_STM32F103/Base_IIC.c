@@ -1,7 +1,7 @@
 #include "Base_IIC.h"
 
 
-#ifdef Exist_IIC
+#if Exist_IIC
 extern void SYS_Base_Delay(int time, int speed);
 static void IIC_Delay (int time)
 {
@@ -136,7 +136,7 @@ uint8_t IIC_Read_DATA(int Speed)
 char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Speed,char continuous)
 {
     char BK = 0;
-#ifdef Exist_IIC
+#if Exist_IIC
     IIC_StartBit();
     IIC_Write_DATA((Addr << 1) & 0xFE,Speed);      // 写模式
     if(ACK != 0)      // 需要使用ACK
@@ -184,7 +184,7 @@ char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Sp
 char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed)
 {
     char BK = 0;
-#ifdef Exist_IIC
+#if Exist_IIC
     IIC_StartBit();
     IIC_Write_DATA((Addr << 1) | 0x01,Speed);   // 读模式
     if(ACK != 0)        // 需要使用ACK
@@ -214,7 +214,7 @@ char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed
 
 void Base_IIC_Init(int set)
 {
-#ifdef Exist_IIC
+#if Exist_IIC
     if (set)
     {
         User_GPIO_config(GPIO_IIC,IIC_SCL,1);

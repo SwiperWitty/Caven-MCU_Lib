@@ -1,5 +1,5 @@
-#ifndef	__STEERING_ENGINE_H_
-#define	__STEERING_ENGINE_H_
+#ifndef	_MODE_STEERING_ENGINE_H_
+#define	_MODE_STEERING_ENGINE_H_
 
 #include "Base.h"
 #include "Caven_Type.h"

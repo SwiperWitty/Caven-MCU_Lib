@@ -3,7 +3,7 @@
 
 void Motor_BYJ_Init(int Set)
 {
-#ifdef Exist_STEP_Motor
+#if Exist_STEP_Motor
     STEP_Motor_GPIO_Init (SET);       // 初始GPIO
     if(SET)
     {
@@ -15,7 +15,7 @@ void Motor_BYJ_Init(int Set)
 #endif
 }
 
-#ifdef Exist_STEP_Motor
+#if Exist_STEP_Motor
 static void Motor_BYJ_delay(int time)
 {
     int j;
@@ -86,7 +86,7 @@ char Motor_BYJ_Drive(char Rotation,char Mode,int Code)
     Mode = 1: Code = 转动圈数
     */
     char Retval = 0;
-#ifdef Exist_STEP_Motor
+#if Exist_STEP_Motor
     if(Mode != 0 && Mode != 1)
     {
         return Retval;

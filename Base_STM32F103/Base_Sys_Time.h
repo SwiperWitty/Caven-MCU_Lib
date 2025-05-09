@@ -1,5 +1,5 @@
-#ifndef _SYS_TIME_H__
-#define _SYS_TIME_H__
+#ifndef BASE_SYS_TIME_H__
+#define BASE_SYS_TIME_H__
 #if __cplusplus
 extern "C"
 {
@@ -45,7 +45,7 @@ void SYS_Feed_Watchdog (void);
 
 /* 【宏函数群】   */
 
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
 
     #define TICK_FREQUENCY (MCU_SYS_FREQ / 8)               // 滴答分频（8分频）
     #define TICK_OVER_IT (2)                                // 定时器溢出时间（24位滴答才有）

@@ -6,7 +6,7 @@ uint16_t OLED_W_Max = 0;
 uint16_t OLED_H_Max = 0;
 int OLED_PicSize = 0;
 
-#ifdef Exist_OLED
+#if Exist_OLED
 
 uint8_t OLED_addr = 0x78;		// 0x3c 0x78 
 uint8_t OLED_GRAM[144][8];
@@ -14,7 +14,7 @@ static char OLED_Horizontal = 0;
 
 #endif
 
-#ifdef Exist_OLED
+#if Exist_OLED
 void OLED_WR_CMD(uint8_t data)
 {
 	uint8_t array[4];
@@ -53,7 +53,7 @@ void OLED_DisPlay_Off(void)
 */
 void OLED_Draw_Point(uint16_t x, uint16_t y, uint16_t color)
 {
-#ifdef Exist_OLED
+#if Exist_OLED
 	uint8_t i,m,n;
 	i =y/8;
 	m =y%8;
@@ -81,7 +81,7 @@ void OLED_Draw_Point(uint16_t x, uint16_t y, uint16_t color)
 */
 void OLED_Draw_Line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color)
 {
-#ifdef Exist_OLED
+#if Exist_OLED
 	uint16_t t;
 	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
 	int incx, incy, uRow, uCol;
@@ -198,7 +198,7 @@ void OLED_Draw_Circle(uint16_t x0, uint16_t y0, char r, uint16_t color)
 */
 void OLED_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, char sizey, char mode)
 {
-#ifdef Exist_OLED
+#if Exist_OLED
 	uint8_t i,m,temp,size2,chr1;
 	uint8_t x0=x,y0=y;
 	if(sizey == 8)
@@ -293,7 +293,7 @@ void OLED_Show_String(uint16_t x, uint16_t y, const char *p, uint16_t fc, uint16
 
 void OLED_Refresh(void)
 {
-#ifdef Exist_OLED
+#if Exist_OLED
 	uint16_t i,n,k;
 	uint8_t array[300];
 	if(OLED_PicSize == 0)
@@ -326,7 +326,7 @@ void OLED_Refresh(void)
 */
 void OLED_Fill_Fun(uint16_t x_sta, uint16_t y_sta, uint16_t x_end, uint16_t y_end, uint16_t color)
 {
-#ifdef Exist_OLED
+#if Exist_OLED
 	uint16_t i,n;
 	for(i=0;i<8;i++)
 	{
@@ -350,7 +350,7 @@ void OLED_Fill_Fun(uint16_t x_sta, uint16_t y_sta, uint16_t x_end, uint16_t y_en
 */
 void OLED_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, const uint8_t pic[])
 {
-#ifdef Exist_OLED
+#if Exist_OLED
 	int j = 0;
 	uint8_t i,n,temp,m;
 	uint8_t x0=x,y0=y;
@@ -394,7 +394,7 @@ void OLED_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, 
 int OLED_Set_Horizontal_addr(char set,uint8_t addr)
 {
 	int retval = 0;
-#ifdef Exist_OLED
+#if Exist_OLED
 	OLED_Horizontal = set;
 	OLED_addr = addr;
 	if(OLED_Horizontal == 0)
@@ -414,7 +414,7 @@ int OLED_Set_Horizontal_addr(char set,uint8_t addr)
 int MODE_OLED_Init(int set)
 {
 	int retval = 0;
-#ifdef Exist_OLED
+#if Exist_OLED
 	// 1
 	OLED_W_Max = 128;
 	OLED_H_Max = 64;

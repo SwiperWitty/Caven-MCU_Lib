@@ -2,7 +2,7 @@
 
 void MODE_HC138_Init (int Set)
 {
-#ifdef Exist_HC138
+#if Exist_HC138
     User_GPIO_config(HC138_GPIO,HC138_D1_IO,1);
     User_GPIO_config(HC138_GPIO,HC138_D2_IO,1);
     User_GPIO_config(HC138_GPIO,HC138_D3_IO,1);
@@ -16,7 +16,7 @@ void MODE_HC138_Init (int Set)
 //结果（构想）--动作--结果（实现）
 void HC138_Set_Data_Fun (int Data)
 {
-#ifdef Exist_HC138
+#if Exist_HC138
     if(Data < 1 || Data > 8)
         return ;
     Data--;

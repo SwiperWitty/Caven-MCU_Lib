@@ -1,5 +1,5 @@
-#ifndef _MP3_H_
-#define _MP3_H_
+#ifndef _MODE_MP3_H_
+#define _MODE_MP3_H_
 
 //	可以跨芯片移植	需要大改底层(UART)
 

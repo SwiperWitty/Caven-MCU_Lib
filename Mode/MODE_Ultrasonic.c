@@ -3,7 +3,7 @@
 int MODE_Ultrasonic_Init(int Set)
 {
     int retval = 0;
-#ifdef Exist_Ultrasonic
+#if Exist_Ultrasonic
     Ultrasonic_GPIO_Init(Set);
     retval = 1;
 #endif
@@ -13,7 +13,7 @@ int MODE_Ultrasonic_Init(int Set)
 float Distance(void)
 {
     float distance=0;
-#ifdef Exist_Ultrasonic
+#if Exist_Ultrasonic
 	int count=0;
 //	u32 num;
 //	while(SYS_Time.Watch.time_num > 70000);

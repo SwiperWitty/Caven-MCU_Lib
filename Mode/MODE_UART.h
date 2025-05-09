@@ -1,5 +1,5 @@
-#ifndef _UART_HANDLE__H_
-#define _UART_HANDLE__H_
+#ifndef _MODE_UART__H_
+#define _MODE_UART__H_
 
 #include "Base.h"
 #include "API.h"

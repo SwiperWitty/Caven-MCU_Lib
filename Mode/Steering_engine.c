@@ -6,7 +6,7 @@ ND_pFun PWM_Time_Control_Fun = NULL;
 
 void MODE_Steering_Engine_Bind_PWM_Time (ND_pFun Fun)
 {
-#ifdef Exist_Steering_Engine
+#if Exist_Steering_Engine
     PWM_Time_Control_Fun = Fun;
     
 #endif
@@ -51,7 +51,7 @@ int MODE_Steering_Engine_Init (int Set)
 /*  通道、设置角度  */
 void MODE_Steering_Engine_Angle_Fun (char Channel,float Angle)
 {
-#ifdef Exist_Steering_Engine
+#if Exist_Steering_Engine
     int temp_val = 0;
     if(PWM_Time_Control_Fun != NULL)
     {
@@ -64,7 +64,7 @@ void MODE_Steering_Engine_Angle_Fun (char Channel,float Angle)
 /*  通道、旋转方向、旋转的速度、保持的时间  */
 void MODE_Steering_Engine_360_Sport_Fun (char Channel,char Rotation,char Speed,int Time)
 {
-#ifdef Exist_Steering_Engine
+#if Exist_Steering_Engine
 	int Time_PWM = 150;
 	if(Speed > 100)	Speed = 100;
 	if(Rotation == 'r' || Rotation == 'R')

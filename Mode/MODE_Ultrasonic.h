@@ -1,5 +1,5 @@
-#ifndef _Ultrasonic__H_
-#define _Ultrasonic__H_
+#ifndef _MODE_Ultrasonic__H_
+#define _MODE_Ultrasonic__H_
 
 //	可以跨芯片移植	需要大改底层
 /* 

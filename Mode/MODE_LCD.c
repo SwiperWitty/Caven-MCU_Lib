@@ -9,7 +9,7 @@ uint16_t LCD_H_Max = 0;
 int LCD_PicSize = 0;
 
 
-#ifdef Exist_LCD
+#if Exist_LCD
 static char LCD_Target_Model = 0;
 static char LCD_Horizontal = 0;
 
@@ -28,7 +28,7 @@ static void (*s_LCD_Send_Data_pFun)(uint8_t *data, int num);
 */
 void LCD_Draw_Point(uint16_t x, uint16_t y, uint16_t color)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
 	s_LCD_Set_Address_pFun(x, y, x, y); // 设置光标位置
 	s_LCD_WR_Data_pFun(color);
 #endif
@@ -44,7 +44,7 @@ void LCD_Draw_Point(uint16_t x, uint16_t y, uint16_t color)
 */
 void LCD_Draw_Line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
 	uint16_t t;
 	int xerr = 0, yerr = 0, delta_x, delta_y, distance;
 	int incx, incy, uRow, uCol;
@@ -161,7 +161,7 @@ void LCD_Draw_Circle(uint16_t x0, uint16_t y0, char r, uint16_t color)
 */
 void LCD_Show_Char(uint16_t x, uint16_t y, char num, uint16_t fc, uint16_t bc, char sizey, char mode)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
 	#if LCD_LIB_ASCII
 	char temp, sizex, t, m = 0;
 	uint16_t i, TypefaceNum; // 一个字符所占字节大小
@@ -268,7 +268,7 @@ void LCD_Show_String(uint16_t x, uint16_t y, const char *p, uint16_t fc, uint16_
 */
 void LCD_Fill_Fun(uint16_t x_sta, uint16_t y_sta, uint16_t x_end, uint16_t y_end, uint16_t color)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
 	uint8_t pic_buff[650]; /* 一个y 320 * 2	*/
 	uint16_t x_len = (x_end - x_sta);
 	uint16_t y_len = (y_end - y_sta);
@@ -305,7 +305,7 @@ void LCD_Fill_Fun(uint16_t x_sta, uint16_t y_sta, uint16_t x_end, uint16_t y_end
 */
 void LCD_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, const uint8_t pic[])
 {
-#ifdef Exist_LCD
+#if Exist_LCD
 	int temp_run = 0;
 	// int temp_num = 0;
 	// uint8_t pic_buff[650]; /* 一个y 320 * 2	*/
@@ -340,7 +340,7 @@ void LCD_Show_Picture(uint16_t x, uint16_t y, uint16_t length, uint16_t width, c
 int LCD_Set_TargetModel(char set)
 {
 	int retval = 0;
-#ifdef Exist_LCD
+#if Exist_LCD
     retval = LCD_Target_Model;
 	if ((set > 0 && set < 10)) // MODE_
 	{
@@ -371,7 +371,7 @@ int LCD_Set_TargetModel(char set)
 int LCD_Set_Horizontal(char set)
 {
 	int retval = 0;
-#ifdef Exist_LCD
+#if Exist_LCD
 	if ((LCD_Target_Model > 0 && LCD_Target_Model < 10))
 	{
 
@@ -450,7 +450,7 @@ int LCD_Set_Horizontal(char set)
 int MODE_LCD_Init(int set)
 {
 	int retval = 0;
-#ifdef Exist_LCD
+#if Exist_LCD
 	// 1
 	if (LCD_Target_Model == 0)
 	{

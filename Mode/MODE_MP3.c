@@ -3,14 +3,14 @@
 
 void Voice_Init(int Set)
 {
-#ifdef Exist_Voice
+#if Exist_Voice
 	Uart2_Init(Voice_Baud,Set);
 #endif
 }
 
 void Voice(char Model,char Num)
 {
-#ifdef Exist_Voice
+#if Exist_Voice
     char Array_mp3[8];
 	if(Model == JQ8900)
 	{

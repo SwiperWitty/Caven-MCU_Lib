@@ -4,7 +4,7 @@
 int MODE_UART_Init(char Channel,int Baud,int Set)
 {
     int retavl = 1;
-#ifdef Exist_UART
+#if Exist_UART
     Base_UART_Init((UART_mType)Channel,Baud,SET);
 #endif
     return retavl;
@@ -13,7 +13,7 @@ int MODE_UART_Init(char Channel,int Baud,int Set)
 
 void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 {
-#ifdef Exist_UART
+#if Exist_UART
 	int temp = MIN(Length,UART_BUFF_MAX);
     int i = 0;
 
@@ -26,7 +26,7 @@ void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 
 void MODE_UART_DMA_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 {
-#ifdef Exist_UART
+#if Exist_UART
 //    int temp = MIN(Length,UART_BUFF_MAX);
 
 //    Base_UART_DMA_Send_Data((UART_mType)Channel,Data,temp);
@@ -43,7 +43,7 @@ void MODE_UART_Send_String_Fun(char Channel, const char *String)
 
 void MODE_UART_Receive_Bind_Fun(char Channel, D_pFun UART_pFun)
 {
-#ifdef Exist_UART
+#if Exist_UART
     State_Machine_Bind ((UART_mType)Channel,UART_pFun);
 #endif
 }

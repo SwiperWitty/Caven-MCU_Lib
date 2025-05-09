@@ -13,7 +13,7 @@
 
 /****************/
 
-#ifdef Exist_ADC
+#if Exist_ADC
     extern float VDDA_num;
     
     #define ADC_MAX                          4096   

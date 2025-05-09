@@ -1,6 +1,6 @@
 #include "Base_adc.h"
 
-#ifdef Exist_ADC
+#if Exist_ADC
 float VDDA_num = 3.30; 							//其实这个是动态的，ADC内部基准源
 static int Channel_NUMs;
 static u16 ADC1_DMA_list[20];
@@ -9,7 +9,7 @@ int adc_enable_flag = 0;
 
 void ADC_GPIO_Init(int Set)
 {
-#ifdef Exist_ADC
+#if Exist_ADC
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     adc_enable_flag = Set;
@@ -64,7 +64,7 @@ void ADC_GPIO_Init(int Set)
 
 void ADC1_DMA_Config (const void *DMA_Buffer,int BufferSize)
 {
-#ifdef Exist_ADC
+#if Exist_ADC
     DMA_InitTypeDef dma_init_struct;
     NVIC_InitTypeDef NVIC_InitStructure;
 
@@ -99,7 +99,7 @@ void ADC1_DMA_Config (const void *DMA_Buffer,int BufferSize)
 
 int Base_ADC_Init(int Set)
 {
-#ifdef Exist_ADC
+#if Exist_ADC
     FunctionalState set = DISABLE;
     if (Set)
     {
@@ -175,7 +175,7 @@ int Base_ADC_Init(int Set)
 float ADC_Conversion_Vol_Fun(int num)
 {
     float Temp = num;
-#ifdef Exist_ADC
+#if Exist_ADC
     Temp /= ADC_MAX;
     Temp *= ADC_VREF;
 #endif
@@ -210,7 +210,7 @@ void ADC_Quick_Get_Bind_Fun(D_pFun ADC_pFun)
     }
 }
 
-#ifdef Exist_ADC
+#if Exist_ADC
 void ADC_FINISH_HANDLERIT()
 {
 //    int *temp_p = ADC1_DMA_list;

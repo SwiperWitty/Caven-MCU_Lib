@@ -2,7 +2,7 @@
 
 void MODE_Button_Init (char Channel,int Set)
 {
-#ifdef Exist_BUTTON
+#if Exist_BUTTON
     switch (Channel) {
         case 0:
             break;
@@ -21,7 +21,7 @@ void MODE_Button_Init (char Channel,int Set)
 uint32_t MODE_Get_Button_State_Fun (char Channel)
 {
     uint32_t temp = 0;
-	#ifdef Exist_BUTTON
+#if Exist_BUTTON
     switch (Channel) {
         case 0:
             break;
@@ -33,6 +33,6 @@ uint32_t MODE_Get_Button_State_Fun (char Channel)
         default:
             break;
     }
-	#endif
+#endif
     return temp;
 }

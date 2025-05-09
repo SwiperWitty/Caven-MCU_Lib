@@ -2,7 +2,7 @@
 
 void MODE_HC595_Init (int Set)
 {
-#ifdef Exist_HC595
+#if Exist_HC595
     unsigned char temp_array[8];
     memset(temp_array,0,sizeof(temp_array));
     User_GPIO_config(HC595_GPIO,HC595_SCK_IO,1);
@@ -12,7 +12,7 @@ void MODE_HC595_Init (int Set)
 #endif
 }
 
-#ifdef Exist_HC595
+#if Exist_HC595
 static void HC595_Delay (int time)
 {
 //    SYS_Base_Delay (time,5);
@@ -21,7 +21,7 @@ static void HC595_Delay (int time)
 
 static void Send_HC595 (const unsigned char Dat)
 {
-#ifdef Exist_HC595
+#if Exist_HC595
 	char n;
     User_GPIO_set(HC595_GPIO,HC595_SCK_IO,0);
     User_GPIO_set(HC595_GPIO,HC595_Data_IO,0);
@@ -41,7 +41,7 @@ static void Send_HC595 (const unsigned char Dat)
 
 static void HC595_END (void)
 {
-#ifdef Exist_HC595
+#if Exist_HC595
     User_GPIO_set(HC595_GPIO,HC595_RCK_IO,0);
     HC595_Delay (10);
 	User_GPIO_set(HC595_GPIO,HC595_RCK_IO,1);

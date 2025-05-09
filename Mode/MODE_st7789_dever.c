@@ -1,12 +1,12 @@
 #include "MODE_st7789_dever.h"
 
-#ifdef Exist_LCD
+#if Exist_LCD
 static char LCD_Horizontal = 0;
 static char LCD_Target_Model = 0;
 static char flag_dc = 0;
 #endif
 
-#ifdef Exist_LCD
+#if Exist_LCD
 void st7789_dever_gpio_init(int set)
 {
     if (set)
@@ -179,7 +179,7 @@ void set_flag_dc(int n)
 */
 void MODE_st7789_dever_CS(uint8_t data)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
 	#if (PIN_LCD_CS != (-1))
     switch (LCD_Target_Model)
     {
@@ -200,7 +200,7 @@ void MODE_st7789_dever_CS(uint8_t data)
 */
 void MODE_st7789_dever_RST(uint8_t data)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
     switch (LCD_Target_Model)
     {
     case 11:
@@ -233,7 +233,7 @@ static void LCD_WR_CMD(uint8_t data)
 int MODE_st7789_dever_Set_TargetModel(char set)
 {
     int retval = 0;
-#ifdef Exist_LCD
+#if Exist_LCD
     if (set > 10 && set < 20) // MODE_st7789
     {
         LCD_Target_Model = set;
@@ -250,7 +250,7 @@ int MODE_st7789_dever_Set_TargetModel(char set)
 int MODE_st7789_dever_Set_Horizontal(char set)
 {
     int retval = 0;
-#ifdef Exist_LCD
+#if Exist_LCD
     if (set < 4) // 0 1 2 3
     {
         LCD_Horizontal = set;
@@ -268,7 +268,7 @@ int MODE_st7789_dever_Set_Horizontal(char set)
 */
 void MODE_st7789_dever_WR_Data(uint16_t data)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
     uint8_t temp_array[2];
     temp_array[0] = (data >> 8) & 0xff;
     temp_array[1] = data & 0xff;
@@ -283,7 +283,7 @@ void MODE_st7789_dever_WR_Data(uint16_t data)
  */
 void MODE_st7789_dever_Send_Data(uint8_t *data, int num)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
     MODE_st7789_dever_CS(1); // 写数据之前必然要写命令，所以不要开启片选
 #ifdef CONFIG_IDF_TARGET_ESP32
     EPS_SPI_SendData(data, num, 1);
@@ -296,7 +296,7 @@ void MODE_st7789_dever_Send_Data(uint8_t *data, int num)
 
 void MODE_st7789_dever_Display(int set)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
     if (set)
     {
         LCD_WR_CMD(0x29); // Display On
@@ -311,7 +311,7 @@ void MODE_st7789_dever_Display(int set)
 
 void MODE_st7789_dever_1_28_config(void)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
     LCD_WR_CMD(0xEF);
     LCD_WR_CMD(0xEB);
     MODE_st7789_dever_Writ_Bus(0x14);
@@ -527,7 +527,7 @@ void MODE_st7789_dever_1_28_config(void)
 */
 void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2)
 {
-#ifdef Exist_LCD
+#if Exist_LCD
     uint16_t x_sta = 0, y_sta = 0, x_end = 0, y_end = 0;
     uint8_t retval = 0;
     switch (LCD_Target_Model)
@@ -650,7 +650,7 @@ void MODE_st7789_dever_Set_Address(uint16_t x1, uint16_t y1, uint16_t x2, uint16
 int MODE_st7789_dever_Init(int set)
 {
     int retval = 0;
-#ifdef Exist_LCD
+#if Exist_LCD
     flag_dc = 0;
     if (LCD_Target_Model == 0 && set)
     {

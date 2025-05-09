@@ -59,7 +59,7 @@ typedef enum
 #define UART4_HANDLERIT() UART4_IRQHandler()
 #endif
 
-#ifdef Exist_UART
+#if Exist_UART
     #define DMA_UART
     #define UART_BUFF_MAX   500
 #endif

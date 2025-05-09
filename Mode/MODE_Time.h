@@ -1,6 +1,5 @@
-
-#ifndef _TIME_H__
-#define _TIME_H__
+#ifndef _MODE_TIME_H__
+#define _MODE_TIME_H__
 
 /*
     MODE_Time.h
@@ -17,9 +16,7 @@
 #include "time.h"
 #include "API.h"
 
-#define Exist_SYS_TIME
-
-#ifndef _SYS_TIME_H__
+#ifndef BASE_SYS_TIME_H__
 typedef struct
 {
     volatile uint32_t SYS_Sec;
