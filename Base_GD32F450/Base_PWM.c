@@ -101,15 +101,22 @@ void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 #endif
 }
 
-void TIM3_PWMx_SetValue(char PWMx,int value)
+void TIM3_PWMx_SetValue (int channel,void *data)
 {
 #ifdef Exist_PWM
     uint32_t timx = TIMER3;
-    if(tim3_enable == 0)
+    int value = 0;
+    if(data == NULL)
     {
         return;
     }
-    switch (PWMx)
+    if (tim3_enable == 0)
+    {
+        TIM3_PWM_Start_Init(2000-1,1200-1,1);
+    }
+    
+    value = *(int *)data;
+    switch (channel)
     {
     case (1):
         timer_channel_output_pulse_value_config(timx, TIMER_CH_0, value);
@@ -126,20 +133,6 @@ void TIM3_PWMx_SetValue(char PWMx,int value)
     default:
         break;
     }
-#endif
-}
-
-void TIM4_PWMx_SetValue(char PWMx,int value)
-{
-#ifdef Exist_PWM
-
-#endif
-}
-
-void TIM8_PWMx_SetValue(char PWMx,int value)
-{
-#ifdef Exist_PWM
-
 #endif
 }
 

@@ -1,49 +1,63 @@
 #include "Steering_engine.h"
 
-#define Angle_coefficient	1.11
+#define Angle_coefficient	1.11f
 
+ND_pFun PWM_Time_Control_Fun = NULL;
 
-int MODE_Steering_Engine_Init (int Set)
+void MODE_Steering_Engine_Bind_PWM_Time (ND_pFun Fun)
 {
-	int retval = 1;
 #ifdef Exist_Steering_Engine
-    TIM4_PWM_Start_Init(Arr_T4,Por_T4,Set);
-    MODE_Steering_Engine_Angle_Fun(1,0);
-    MODE_Steering_Engine_Angle_Fun(2,0);
-    MODE_Steering_Engine_Angle_Fun(3,0);
-    MODE_Steering_Engine_Angle_Fun(4,0);    // 默认0°
-	retval = 0;
+    PWM_Time_Control_Fun = Fun;
+    
 #endif
-	return retval;
 }
 
 /*
-舵机角度计算
-x = Angle_coefficient
-90° ->  (-90 * x) + 150 = 50  
-0°  ->  (0 * x) + 150   = 150 <set angle calculator>    
-90° ->  (90 * x) + 150  = 250  
-解得 Angle_coefficient = 1.11
+    舵机角度计算
+    x = Angle_coefficient
+    90° ->  (-90 * x) + 150 = 50  
+    0°  ->  (0 * x) + 150   = 150 <set angle calculator>    
+    90° ->  (90 * x) + 150  = 250  
+    解得 Angle_coefficient = 1.11
 */
-#ifdef Exist_Steering_Engine
 static int Set_Angle_Cal_180(float Angle)	
 {
     int Time_PWM = 150;
 	if(Angle <= 90 || Angle >= -90) 
     {
-        Time_PWM = (Angle * Angle_coefficient) + 150;       //符合范围
+        Time_PWM = (Angle * Angle_coefficient); // 符合范围
+        Time_PWM += 150;
     }
     return Time_PWM;
 }
-#endif
+
+int MODE_Steering_Engine_Init (int Set)
+{
+	int retval = 1;
+    
+    if(PWM_Time_Control_Fun != NULL)
+    {
+        int temp_val = Set_Angle_Cal_180(0.0);
+        PWM_Time_Control_Fun (1,&temp_val);
+        PWM_Time_Control_Fun (2,&temp_val);
+        PWM_Time_Control_Fun (3,&temp_val);
+        PWM_Time_Control_Fun (4,&temp_val);
+    }   
+    // 默认0°
+	retval = 0;
+	return retval;
+}
 
 /*  通道、设置角度  */
 void MODE_Steering_Engine_Angle_Fun (char Channel,float Angle)
 {
 #ifdef Exist_Steering_Engine
-
-    TIM4_PWMx_SetValue(Channel,Set_Angle_Cal_180(Angle));
-
+    int temp_val = 0;
+    if(PWM_Time_Control_Fun != NULL)
+    {
+        temp_val = Set_Angle_Cal_180(Angle);
+        PWM_Time_Control_Fun (Channel,&temp_val);
+    }
 #endif
 }
 
@@ -61,6 +75,6 @@ void MODE_Steering_Engine_360_Sport_Fun (char Channel,char Rotation,char Speed,i
 	{
 		Time_PWM = 150 + (Speed * 0.5);
 	}
-    TIM4_PWMx_SetValue(Channel,Time_PWM);
+    PWM_Time_Control_Fun(Channel,&Time_PWM);
 #endif
 }

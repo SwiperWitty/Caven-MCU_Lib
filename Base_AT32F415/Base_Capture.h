@@ -14,17 +14,17 @@
 /****************/
 
 #define TIM1_HANDLERIT() TIM1_CC_IRQHandler()
-#define TIM2_HANDLERIT() TIM2_IRQHandler()
-#define TIM3_HANDLERIT() TIM3_IRQHandler()
-#define TIM4_HANDLERIT() TIM4_IRQHandler()
-#define TIM5_HANDLERIT() TIM5_IRQHandler()
+#define TIM2_HANDLERIT() TMR2_GLOBAL_IRQHandler()
+#define TIM3_HANDLERIT() TMR3_GLOBAL_IRQHandler()
+#define TIM4_HANDLERIT() TMR4_GLOBAL_IRQHandler()
+
 
 typedef struct
 {
     char Channel;
 	char finish_flag;
+    int high_val;
 	int period_val;
-	int high_val;
 }TIM_Capture_Type;
 
 void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set);

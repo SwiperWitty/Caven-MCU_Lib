@@ -75,6 +75,10 @@ typedef void (*D_pFun) (void *data);
 	带数量传数据函数指针
 */
 typedef void (*Send_pFun) (U8 *data,int length);
+/*
+	有通道函数指针
+*/
+typedef void (*ND_pFun) (int num,void *data);
 
 /*
 	这个是给APP做的管理结构体

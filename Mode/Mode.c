@@ -90,6 +90,7 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 #ifdef Exist_Steering_Engine
     Mode_Use.Steering_Engine.Set_Angle = MODE_Steering_Engine_Angle_Fun;
     Mode_Use.Steering_Engine.Set_360_Sport = MODE_Steering_Engine_360_Sport_Fun;
+    Mode_Use.Steering_Engine.Bind_PWM_Time = MODE_Steering_Engine_Bind_PWM_Time;
 #endif  
 
 #ifdef Exist_ADC

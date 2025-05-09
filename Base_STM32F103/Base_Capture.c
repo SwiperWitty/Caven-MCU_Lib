@@ -1,4 +1,5 @@
 #include "Base_Capture.h"
+#include "Base_GPIO.h"
 
 D_pFun TIM1_Capture_Fun = NULL;
 D_pFun TIM2_Capture_Fun = NULL;
@@ -17,6 +18,12 @@ int TIM2_arr = 0;
 int TIM3_arr = 0;
 int TIM4_arr = 0;
 int TIM5_arr = 0;
+
+uint8_t TIM1_mode = 0x00;
+uint8_t TIM2_mode = 0x00;
+uint8_t TIM3_mode = 0x00;
+uint8_t TIM4_mode = 0x00;
+uint8_t TIM5_mode = 0x00;
 
 void TIMx_Capture_Callback_pFunBind(char TIMx,D_pFun pFun)
 {
@@ -64,6 +71,10 @@ int TIMx_Encoder_Capture(char TIMx)
 	{
 		case 1:
 		{
+            if(TIM1_mode == 0)
+            {
+                return 0;
+            }
 			lastCount = TIM1_lastCount;
 			currentCount = TIM_GetCounter(TIM1);
 			TIM1_lastCount = currentCount;
@@ -71,6 +82,10 @@ int TIMx_Encoder_Capture(char TIMx)
 		break;
 		case 2:
 		{
+            if(TIM2_mode == 0)
+            {
+                return 0;
+            }
 			lastCount = TIM2_lastCount;
 			currentCount = TIM_GetCounter(TIM2);
 			TIM2_lastCount = currentCount;
@@ -78,6 +93,10 @@ int TIMx_Encoder_Capture(char TIMx)
 		break;
 		case 3:
 		{
+            if(TIM3_mode == 0)
+            {
+                return 0;
+            }
 			lastCount = TIM3_lastCount;
 			currentCount = TIM_GetCounter(TIM3);
 			TIM3_lastCount = currentCount;
@@ -85,6 +104,10 @@ int TIMx_Encoder_Capture(char TIMx)
 		break;
 		case 4:
 		{
+            if(TIM4_mode == 0)
+            {
+                return 0;
+            }
 			lastCount = TIM4_lastCount;
 			currentCount = TIM_GetCounter(TIM4);
 			TIM4_lastCount = currentCount;
@@ -92,13 +115,19 @@ int TIMx_Encoder_Capture(char TIMx)
 		break;
 		case 5:
 		{
+            if(TIM5_mode == 0)
+            {
+                return 0;
+            }
 			lastCount = TIM5_lastCount;
 			currentCount = TIM_GetCounter(TIM5);
 			TIM5_lastCount = currentCount;
 		}
 		break;
 		default:
-			break;
+        {
+            return 0;
+        }
 	}
     int diff = (currentCount - lastCount);
     return diff;
@@ -106,7 +135,7 @@ int TIMx_Encoder_Capture(char TIMx)
 
 void TIM1_Capture_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#ifdef Exist_CAPTURE
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -129,7 +158,7 @@ void TIM1_Capture_GPIO_Init(int Set)
 }
 void TIM2_Capture_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#ifdef Exist_CAPTURE
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -152,7 +181,7 @@ void TIM2_Capture_GPIO_Init(int Set)
 }
 void TIM3_Capture_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#ifdef Exist_CAPTURE
     GPIO_InitTypeDef gpio_init_struct;
     GPIO_StructInit(&gpio_init_struct);
     if (Set)
@@ -184,13 +213,13 @@ void TIM3_Capture_GPIO_Init(int Set)
 
 /*
 	溢出时间 T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 20MS
-	Channel = 1-4
+	Channel = (1)-1Channel,(1<<1)-2Channel,(1<<2)-3Channel,(1<<3)-4Channel,
 	mode 0-输入捕获	1-编码捕获
 	set	0/1
 */
 void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
-#ifdef Exist_PWM
+#ifdef Exist_CAPTURE
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -206,7 +235,8 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
     TIM1_Capture_GPIO_Init(Set);
 	TIM1_arr = arr;
-
+    TIM1_mode = mode;
+    
     TIM_TimeBaseStructure.TIM_Period = arr;
 	TIM_TimeBaseStructure.TIM_Prescaler = psc;
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
@@ -228,7 +258,7 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 上升沿捕获
 		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
 		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
 		TIM_ICInitStructure.TIM_ICFilter = 0x0;
@@ -263,6 +293,7 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
 void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
+#ifdef Exist_CAPTURE
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -278,7 +309,8 @@ void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 
     TIM2_Capture_GPIO_Init(Set);
 	TIM2_arr = arr;
-
+    TIM2_mode = mode;
+    
     TIM_TimeBaseStructure.TIM_Period = arr;
 	TIM_TimeBaseStructure.TIM_Prescaler = psc;
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
@@ -300,7 +332,7 @@ void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 上升沿捕获
 		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
 		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
 		TIM_ICInitStructure.TIM_ICFilter = 0x0;
@@ -330,10 +362,12 @@ void TIM2_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		}
 	}
     TIM_Cmd(Temp_TIM, ENABLE); // 使能定时器
+#endif
 }
 
 void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 {
+#ifdef Exist_CAPTURE
     FunctionalState state = DISABLE;
     if (Set)
         state = ENABLE;
@@ -348,8 +382,9 @@ void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
     TIM_TypeDef *Temp_TIM = TIM2;
 
     TIM3_Capture_GPIO_Init(Set);
-	TIM2_arr = arr;
-
+	TIM3_arr = arr;
+    TIM3_mode = mode;
+    
     TIM_TimeBaseStructure.TIM_Period = arr;
 	TIM_TimeBaseStructure.TIM_Prescaler = psc;
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
@@ -371,7 +406,7 @@ void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_Rising;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 上升沿捕获
 		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
 		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
 		TIM_ICInitStructure.TIM_ICFilter = 0x0;
@@ -401,8 +436,17 @@ void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		}
 	}
     TIM_Cmd(Temp_TIM, ENABLE); // 使能定时器
+#endif
 }
 
+void TIM5_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
+{
+#ifdef Exist_CAPTURE
+
+#endif
+}
+
+#ifdef Exist_CAPTURE
 int time1_ch1_mode = 0;
 int time1_ch1_up = 0;
 int time1_ch1_down = 0;
@@ -417,26 +461,26 @@ int time1_ch4_up = 0;
 int time1_ch4_down = 0;
 void TIM1_HANDLERIT ()
 {
-	int temp_num = 0;
+	int temp_num = 0,temp_level = 0;
 	TIM_TypeDef *Temp_TIM = TIM1;
 	TIM_Capture_Type temp_Capture = {0};
     if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC1) != RESET)
     {
-		if (time1_ch1_mode == 0)
+        temp_level = User_GPIO_get(1,8);
+        temp_num = TIM_GetCapture1(Temp_TIM);
+		temp_Capture.finish_flag = 0;
+		if (time1_ch1_mode == 0 && temp_level == 1)
 		{
-			time1_ch1_up = TIM_GetCapture1(Temp_TIM);
-			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
+			time1_ch1_up = temp_num;
 			time1_ch1_mode ++;
 		}
-		else if (time1_ch1_mode == 1)
+		else if (time1_ch1_mode == 1 && temp_level == 0)
 		{
-			time1_ch1_down = TIM_GetCapture1(Temp_TIM);
-			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time1_ch1_down = temp_num;
 			time1_ch1_mode ++;
 		}
-		else if(time1_ch1_mode >= 2)
+		else if(time1_ch1_mode >= 2 && temp_level == 1)
 		{
-			temp_num = TIM_GetCapture1(Temp_TIM);
 			if (temp_num <= time1_ch1_up)
 			{
 				temp_num += (TIM1_arr + 1);
@@ -447,7 +491,6 @@ void TIM1_HANDLERIT ()
 				time1_ch1_down += (TIM1_arr + 1);
 			}
 			temp_Capture.high_val = time1_ch1_down - time1_ch1_up;
-			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
 			time1_ch1_mode = 0;
 			temp_Capture.finish_flag = 1;
 		}
@@ -460,21 +503,21 @@ void TIM1_HANDLERIT ()
     }
 	if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC2) != RESET)
     {
-		if (time1_ch2_mode == 0)
+        temp_level = User_GPIO_get(1,9);
+        temp_num = TIM_GetCapture2(Temp_TIM);
+		temp_Capture.finish_flag = 0;
+		if (time1_ch2_mode == 0 && temp_level == 1)
 		{
-			time1_ch2_up = TIM_GetCapture2(Temp_TIM);
-			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
+			time1_ch2_up = temp_num;
 			time1_ch2_mode ++;
 		}
-		else if (time1_ch2_mode == 1)
+		else if (time1_ch2_mode == 1 && temp_level == 0)
 		{
-			time1_ch2_down = TIM_GetCapture2(Temp_TIM);
-			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
+			time1_ch2_down = temp_num;
 			time1_ch2_mode ++;
 		}
-		else if(time1_ch2_mode >= 2)
+		else if(time1_ch2_mode >= 2 && temp_level == 1)
 		{
-			temp_num = TIM_GetCapture2(Temp_TIM);
 			if (temp_num <= time1_ch2_up)
 			{
 				temp_num += (TIM1_arr + 1);
@@ -485,7 +528,6 @@ void TIM1_HANDLERIT ()
 				time1_ch2_down += (TIM1_arr + 1);
 			}
 			temp_Capture.high_val = time1_ch2_down - time1_ch2_up;
-			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
 			time1_ch2_mode = 0;
 			temp_Capture.finish_flag = 1;
 		}
@@ -512,83 +554,10 @@ int time2_ch4_up = 0;
 int time2_ch4_down = 0;
 void TIM2_HANDLERIT ()
 {
-	int temp_num = 0;
+	int temp_num = 0,temp_level = 0;
 	TIM_TypeDef *Temp_TIM = TIM2;
 	TIM_Capture_Type temp_Capture = {0};
-    if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC1) != RESET)
-    {
-		if (time2_ch1_mode == 0)
-		{
-			time2_ch1_up = TIM_GetCapture1(Temp_TIM);
-			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
-			time2_ch1_mode ++;
-		}
-		else if (time2_ch1_mode == 1)
-		{
-			time2_ch1_down = TIM_GetCapture1(Temp_TIM);
-			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
-			time2_ch1_mode ++;
-		}
-		else if(time2_ch1_mode >= 2)
-		{
-			temp_num = TIM_GetCapture1(Temp_TIM);
-			if (temp_num <= time2_ch1_up)
-			{
-				temp_num += (TIM2_arr + 1);
-			}
-			temp_Capture.period_val = temp_num - time2_ch1_up;
-			if (time2_ch1_down < time2_ch1_up)
-			{
-				time2_ch1_down += (TIM2_arr + 1);
-			}
-			temp_Capture.high_val = time2_ch1_down - time2_ch1_up;
-			TIM_OC1PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
-			time2_ch1_mode = 0;
-			temp_Capture.finish_flag = 1;
-		}
-        if(TIM2_Capture_Fun != NULL)
-		{
-			temp_Capture.Channel = 1;
-			TIM2_Capture_Fun(&temp_Capture);
-		}
-        TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC1);
-    }
-	if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC2) != RESET)
-    {
-		if (time2_ch2_mode == 0)
-		{
-			time2_ch2_up = TIM_GetCapture2(Temp_TIM);
-			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Falling);
-			time2_ch2_mode ++;
-		}
-		else if (time2_ch2_mode == 1)
-		{
-			time2_ch2_down = TIM_GetCapture2(Temp_TIM);
-			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
-			time2_ch2_mode ++;
-		}
-		else if(time2_ch2_mode >= 2)
-		{
-			temp_num = TIM_GetCapture2(Temp_TIM);
-			if (temp_num <= time2_ch2_up)
-			{
-				temp_num += (TIM2_arr + 1);
-			}
-			temp_Capture.period_val = temp_num - time2_ch2_up;
-			if (time2_ch2_down < time2_ch2_up)
-			{
-				time2_ch2_down += (TIM2_arr + 1);
-			}
-			temp_Capture.high_val = time2_ch2_down - time2_ch2_up;
-			TIM_OC2PolarityConfig(Temp_TIM, TIM_ICPolarity_Rising);
-			time2_ch2_mode = 0;
-			temp_Capture.finish_flag = 1;
-		}
-        if(TIM2_Capture_Fun != NULL)
-		{
-			temp_Capture.Channel = 1;
-			TIM2_Capture_Fun(&temp_Capture);
-		}
-        TIM_ClearITPendingBit(Temp_TIM, TIM_IT_CC2);
-    }
+
 }
+
+#endif

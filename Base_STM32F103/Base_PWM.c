@@ -1,5 +1,9 @@
 #include "Base_PWM.h"
 
+uint8_t tim3_enable = 0;
+uint8_t tim4_enable = 0;
+uint8_t tim8_enable = 0;
+
 void TIM3_PWM_GPIO_Init(int Set)
 {
 #ifdef Exist_PWM
@@ -184,11 +188,21 @@ void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 #endif
 }
 
-void TIM3_PWMx_SetValue(char PWMx,int value)
+void TIM3_PWMx_SetValue(int PWMx,void *data)
 {
 #ifdef Exist_PWM
     TIM_TypeDef *Temp_TIM = TIM3;
-
+    int value = 0;
+    if(data == NULL)
+    {
+        return;
+    }
+    if (tim3_enable == 0)
+    {
+        TIM3_PWM_Start_Init(2000-1,(MCU_SYS_FREQ / 100000)-1,1);
+    }
+    
+    value = *(int *)data;
     switch (PWMx)
     {
     case (1):
@@ -209,11 +223,21 @@ void TIM3_PWMx_SetValue(char PWMx,int value)
 #endif
 }
 
-void TIM4_PWMx_SetValue(char PWMx,int value)
+void TIM4_PWMx_SetValue(int PWMx,void *data)
 {
 #ifdef Exist_PWM
     TIM_TypeDef *Temp_TIM = TIM4;
-
+    int value = 0;
+    if(data == NULL)
+    {
+        return;
+    }
+    if (tim4_enable == 0)
+    {
+        TIM4_PWM_Start_Init(2000-1,(MCU_SYS_FREQ / 100000)-1,1);
+    }
+    
+    value = *(int *)data;
     switch (PWMx)
     {
     case (1):
@@ -234,11 +258,21 @@ void TIM4_PWMx_SetValue(char PWMx,int value)
 #endif
 }
 
-void TIM8_PWMx_SetValue(char PWMx,int value)
+void TIM8_PWMx_SetValue(int PWMx,void *data)
 {
 #ifdef Exist_PWM
     TIM_TypeDef *Temp_TIM = TIM8;
-
+    int value = 0;
+    if(data == NULL)
+    {
+        return;
+    }
+    if (tim8_enable == 0)
+    {
+        TIM8_PWM_Start_Init(2000-1,(MCU_SYS_FREQ / 100000)-1,1);
+    }
+    
+    value = *(int *)data;
     switch (PWMx)
     {
     case (1):
