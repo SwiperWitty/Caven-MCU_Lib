@@ -184,23 +184,23 @@ void Uart1_Init(int Baud,int Set)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	USART_InitTypeDef USART_InitStructure; //
 	NVIC_InitTypeDef NVIC_InitStructure;
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 		//设置中断组，4位抢占优先级，4位响应优先级
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	//AFIO复用功能模块时钟
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 		// 设置中断组，4位抢占优先级，4位响应优先级
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	// AFIO复用功能模块时钟
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
     
-    #if 1
+    #if UART1_REMAP == OPEN_0000
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9; // TX；
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; // 复用推
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
     GPIO_Init(GPIOA, &GPIO_InitStructure);
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; // RX；
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; // 浮空输入
     GPIO_Init(GPIOA, &GPIO_InitStructure);
-    #else
+    #elif UART1_REMAP == OPEN_0001
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-    GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);		//串口1重映射
+    GPIO_PinRemapConfig(GPIO_Remap_USART1, ENABLE);		// 串口1重映射
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6; //TXD
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
@@ -211,17 +211,17 @@ void Uart1_Init(int Baud,int Set)
     GPIO_Init(GPIOB, &GPIO_InitStructure);
     #endif
     /***/
-    USART_InitStructure.USART_BaudRate = Baud; //波特率；
-    USART_InitStructure.USART_WordLength = USART_WordLength_8b; //数据位8位；
-    USART_InitStructure.USART_StopBits = USART_StopBits_1; //停止位1位；
-    USART_InitStructure.USART_Parity = USART_Parity_No ; //无校验位；
+    USART_InitStructure.USART_BaudRate = Baud; // 波特率；
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b; // 数据位8位；
+    USART_InitStructure.USART_StopBits = USART_StopBits_1; // 停止位1位；
+    USART_InitStructure.USART_Parity = USART_Parity_No ; // 无校验位；
     USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
     USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;					//
     USART_Init(uart_Temp, &USART_InitStructure);
     
     NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; //抢占优先级
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		  //响应优先级
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1; // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;		  // 响应优先级
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
     
@@ -324,7 +324,7 @@ void Uart3_Init(int Baud,int Set)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);	//AFIO复用功能模块时钟
     
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
-    #if 1
+    #if UART3_REMAP == OPEN_0000
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //USART3 TX；
@@ -334,9 +334,9 @@ void Uart3_Init(int Baud,int Set)
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11; //USART3 RX；
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING; //浮空输入
     GPIO_Init(GPIOB, &GPIO_InitStructure);
-    #else
+    #elif UART3_REMAP == OPEN_0001
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
-    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);		//串口3重映射，与串口4 IO一致（STM32F103RB版本只有串口3没有4）
+    GPIO_PinRemapConfig(GPIO_PartialRemap_USART3, ENABLE);		// 串口3重映射，与串口4 IO一致（STM32F103RB版本只有串口3没有4）
     
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10; //USART3 TX；
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP; //复用推

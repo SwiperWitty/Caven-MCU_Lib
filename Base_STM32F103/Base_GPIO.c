@@ -37,7 +37,7 @@ void User_GPIO_config(int gpiox,int pin,int set)
 		if (pin == 15)		// swd 不要用
 		{
             RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-            GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);    //支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
+            GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);    // 支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
 		}
         value = RCC_APB2Periph_GPIOA;
         gpio_x = GPIOA;
@@ -46,7 +46,7 @@ void User_GPIO_config(int gpiox,int pin,int set)
 		if (pin == 3 || pin == 4)
 		{
 			RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-            GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);    //支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
+            GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);    // 支持 SWD，禁用 JTAG，PA15/PB3/PB4 可作GPIO
 		}
         value = RCC_APB2Periph_GPIOB;
         gpio_x = GPIOB;

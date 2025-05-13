@@ -1,4 +1,4 @@
-#include "HC595.h"
+#include "IC_HC595.h"
 
 void MODE_HC595_Init (int Set)
 {

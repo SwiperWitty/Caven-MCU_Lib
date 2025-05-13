@@ -14,10 +14,8 @@ int MODE_UART_Init(char Channel,int Baud,int Set)
 void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 {
 #if Exist_UART
-	int temp = MIN(Length,UART_BUFF_MAX);
     int i = 0;
-
-    while (temp--)
+    while (Length-- > 0)
     {
         Base_UART_Send_Data((UART_mType)Channel,Data[i++]);       //等待标志位在里面
     }
@@ -26,11 +24,12 @@ void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 
 void MODE_UART_DMA_Send_Data_Fun(char Channel, const U8 *Data, int Length)
 {
-#if Exist_UART
-//    int temp = MIN(Length,UART_BUFF_MAX);
-
-//    Base_UART_DMA_Send_Data((UART_mType)Channel,Data,temp);
-
+    int temp = Length;
+#ifdef DMA_UART
+    temp = MIN(Length,UART_BUFF_MAX);
+    Base_UART_DMA_Send_Data((UART_mType)Channel,Data,temp);
+#else
+    MODE_UART_Send_Data_Fun(Channel,(U8 *)String,temp);
 #endif
 }
 

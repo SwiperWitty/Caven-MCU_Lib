@@ -100,7 +100,7 @@ void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 	
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, state);
     TIM_TypeDef *Temp_TIM = TIM3;
-
+    tim3_enable = Set;
     TIM4_PWM_GPIO_Init(Set);
 
     TIM_TimeBaseStructure.TIM_Period = arr;
@@ -147,7 +147,7 @@ void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 	
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM4, state);
     TIM_TypeDef *Temp_TIM = TIM4;
-
+    tim4_enable = Set;
     TIM4_PWM_GPIO_Init(Set);
 
     TIM_TimeBaseStructure.TIM_Period = arr;
@@ -184,7 +184,7 @@ void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 {
 #if Exist_PWM
     // AT32f415没有定时器8，但是IO与定时器3的复用是一样的
-
+    tim8_enable = Set;
 #endif
 }
 

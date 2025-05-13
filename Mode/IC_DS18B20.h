@@ -1,5 +1,5 @@
-#ifndef _MODE_DS18B20__H_
-#define _MODE_DS18B20__H_
+#ifndef _IC__DS18B20__H_
+#define _IC__DS18B20__H_
 
 #include "Base.h"
 

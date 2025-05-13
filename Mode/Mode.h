@@ -9,17 +9,17 @@
 #endif
 
 #if Exist_LCD
-    #include "MODE_LCD.h"            //显示输出
+    #include "MODE_LCD.h"           // 显示输出
 #endif
 #if Exist_OLED
-    #include "MODE_OLED.h"               //显示输出
+    #include "MODE_OLED.h"          // 显示输出
 #endif
 
 #if Exist_BZZ
-    #include "MODE_BZZ.h"            //BZZ输出
+    #include "MODE_BZZ.h"            // BZZ输出
 #endif
 #if Exist_LED
-    #include "MODE_LED.h"            //LED输出
+    #include "MODE_LED.h"            // LED输出
 #endif
 
 #if Exist_UART
@@ -27,32 +27,39 @@
 #endif
 
 #if Exist_HC595
-    #include "HC595.h"          //驱动输出
+    #include "IC_HC595.h"           // 驱动输出
 #endif
 #if Exist_HC138
-    #include "HC138.h"
+    #include "IC_HC138.h"
 #endif
 
 #if Exist_DS18B20
-    #include "DS18B20.h"
+    #include "IC_DS18B20.h"
+#endif
+
+#if Exist_Ultrasonic
+    #include "MODE_Ultrasonic.h"
 #endif
 
 #if Exist_Voice
     #include "MODE_MP3.h"
 #endif
-#if Exist_Steering_Engine            //动力输出
+#if Exist_Steering_Engine            // 动力输出
     #include "Steering_engine.h"
 #endif
-#if Exist_Motor
-    #include "MODE_motor.h"
+#if Exist_Motor_Engine
+    #include "Motor_engine.h"
+#endif
+#if Exist_Motor_BYJ
+    #include "Motor_BYJ.h"
 #endif
 
 #if Exist_BUTTON
-    #include "MODE_Button.h"            //按键输入
+    #include "MODE_Button.h"        // 按键输入
 #endif
 
 #if Exist_FindLine
-    #include "Tracing.h"        //外部需要模块才能输入的条件
+    #include "Tracing.h"            // 外部需要模块才能输入的条件
 #endif
 
 #if Exist_Ultrasonic
@@ -60,10 +67,11 @@
 #endif
 
 #if Exist_MLX90614
-    #include "mlx90614.h"
+    #include "IC_MLX90614.h"
 #endif
+
 #if Exist_RTC_Clock
-#include "Mode_RTC8564.h"
+#include "IC_RTC8564.h"
 #endif
 
 

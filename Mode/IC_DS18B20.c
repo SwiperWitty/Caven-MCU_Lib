@@ -1,6 +1,4 @@
-#include "DS18B20.h"
-
-static int DS18B20_Exist_Flag = 0;
+#include "IC_DS18B20.h"
 
 #if Exist_DS18B20
 static int DS18B20_Time = 0;
@@ -9,17 +7,12 @@ static void Write_Byte (char Data);
 
 #endif
 
+static int DS18B20_Exist_Flag = 0;
+
 static void DS18B20_Delay (int Num)
 {
 #if Exist_DS18B20
-    int temp_speed = 1;
-    #ifdef MCU_SYS_FREQ
-    if(MCU_SYS_FREQ > 72000000)
-    {
-        temp_speed = 5;
-    }
-    #endif
-    SYS_Base_Delay(Num,temp_speed);
+    SYS_Base_Delay(Num,DS18B20_Time);
 #endif
 }
 
@@ -54,14 +47,16 @@ char DS18B20_Start (void)
 int MODE_DS18B20_Init (int gpiox,int pin,int Set)
 {
 	int temp = 0;
-    DS18B20_Delay (1);
     
 #if Exist_DS18B20
     DS18B20_gpiox = gpiox;
     DS18B20_pin = pin;
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
-    DS18B20_Delay (1);
+    #ifdef MCU_SYS_FREQ
     DS18B20_Time = (MCU_SYS_FREQ/6000000);
+    #else
+    DS18B20_Time = 100;
+    #endif
 	DS18B20_Delay (500);
 	if(DS18B20_Start () == 1)
 	{

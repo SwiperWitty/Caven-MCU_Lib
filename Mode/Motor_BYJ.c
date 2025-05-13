@@ -1,4 +1,4 @@
-#include "MODE_Motor_BYJ.h"
+#include "Motor_BYJ.h"
 
 
 void Motor_BYJ_Init(int Set)

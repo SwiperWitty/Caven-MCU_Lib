@@ -1,5 +1,5 @@
-#ifndef _Control_Mode_h__
-#define _Control_Mode_h__
+#ifndef _MOTOR_ENGINE_H__
+#define _MOTOR_ENGINE_H__
 
 #include "Base.h"
 

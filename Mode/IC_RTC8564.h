@@ -1,5 +1,5 @@
-#ifndef _MODE_RTC8564_H_
-#define _MODE_RTC8564_H_
+#ifndef _IC__RTC8564_H_
+#define _IC__RTC8564_H_
 
 #include "stdint.h"
 #include "string.h"
