@@ -10,7 +10,7 @@
 #include "USB_User.h"
 #include "usbd_int.h"
 
-#ifdef Exist_USB
+#if Exist_USB
 otg_core_type otg_core_struct;      // USB全局控制量
 
 static void usb_low_power_wakeup_config(void);
@@ -28,7 +28,7 @@ void usb_delay (int times)
 int USB_User_init (int Set)
 {
     int retval = 0;
-#ifdef Exist_USB
+#if Exist_USB
     if(SET)
     {
         usb_gpio_config();
@@ -62,14 +62,14 @@ int USB_User_init (int Set)
 int USB_Buffer_Receive (uint8_t *data)
 {
     int len = 0;
-#ifdef Exist_USB 
+#if Exist_USB 
     len = usb_Data_get_rxdata(&otg_core_struct.dev, (uint8_t *)data);
 
 #endif
     return len;
 }
 
-#ifdef Exist_USB 
+#if Exist_USB 
 D_Callback_pFun USB_HID_Callback_Fun = NULL;
 void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
 {
@@ -80,7 +80,7 @@ void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
 int USB_Buffer_Send (const uint8_t *data,int size)
 {
     int temp = 0;
-#ifdef Exist_USB
+#if Exist_USB
     uint16_t Buff_MAX = 64;
     uint16_t temp2;
     uint8_t Buffer[64];
@@ -120,7 +120,7 @@ int USB_Buffer_Send (const uint8_t *data,int size)
 int USB_Keyboard_Send_String(char *string)
 {
     int length = 0;
-#ifdef Exist_USB
+#if Exist_USB
     uint8_t index = 0;
     length = strlen(string);
     if(length > 64)
@@ -158,7 +158,7 @@ int USB_Keyboard_Send_String(char *string)
 int USB_Keyboard_Send_Data (char *data, int Sendlen)
 {
     int length = 0;
-#ifdef Exist_USB
+#if Exist_USB
     uint16_t  i,j,k = 0;
     char u8SendBuffer[128];        // 转换区
     memset(u8SendBuffer,0,sizeof(u8SendBuffer));
@@ -186,7 +186,7 @@ int USB_Keyboard_Send_Data (char *data, int Sendlen)
 
 void OTG_IRQ_HANDLER(void)
 {
-#ifdef Exist_USB
+#if Exist_USB
 	usbd_irq_handler(&otg_core_struct);
 #endif
 }
@@ -196,7 +196,7 @@ void OTG_IRQ_HANDLER(void)
 
 void OTG_WKUP_HANDLER(void)
 {
-#ifdef Exist_USB
+#if Exist_USB
     exint_flag_clear(OTG_WKUP_EXINT_LINE);
 #endif
 }
@@ -209,7 +209,7 @@ void OTG_WKUP_HANDLER(void)
   */
 void usb_low_power_wakeup_config(void)
 {
-#ifdef Exist_USB
+#if Exist_USB
 	#ifdef USB_LOW_POWER_WAKUP
     exint_init_type exint_init_struct;
 
@@ -279,7 +279,7 @@ void usb_gpio_config(void)
 	gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
 	gpio_init(OTG_PIN_GPIO, &gpio_init_struct);
 
-#ifdef USB_SOF_OUTPUT_ENABLE
+#if USB_SOF_OUTPUT_ENABLE
 	crm_periph_clock_enable(OTG_PIN_SOF_GPIO_CLOCK, TRUE);
 	gpio_init_struct.gpio_pins = OTG_PIN_SOF;
 	gpio_init(OTG_PIN_SOF_GPIO, &gpio_init_struct);

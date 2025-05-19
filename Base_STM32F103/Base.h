@@ -13,7 +13,7 @@
 
 #include "Base_GPIO.h"      // items的附属（LED、BZZ之类的）
 
-#if Exist_SYS_TIME          //这种保护不占内存，所以尽可能写
+#if Exist_SYS_TIME          // 这种保护不占内存，所以尽可能写
 #include "Base_sys_time.h"
 #endif
 
@@ -57,5 +57,5 @@
 #include "Base_Flash.h"
 #endif
 
-//Base文件没有结构体索引
+// Base文件没有结构体索引
 #endif

@@ -7,7 +7,7 @@
 #include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
-#ifdef Exist_USB
+#if Exist_USB
 #include "usb_core.h"
 
 typedef void (*D_Callback_pFun) (void *data);

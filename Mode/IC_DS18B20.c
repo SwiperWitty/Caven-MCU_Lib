@@ -9,7 +9,7 @@ static void Write_Byte (char Data);
 
 static int DS18B20_Exist_Flag = 0;
 
-static void DS18B20_Delay (int Num)
+void DS18B20_Delay (int Num)
 {
 #if Exist_DS18B20
     SYS_Base_Delay(Num,DS18B20_Time);
