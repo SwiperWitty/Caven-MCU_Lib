@@ -6,7 +6,7 @@ uint8_t tim8_enable = 0;
 
 void TIM3_PWM_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
     if (Set)
@@ -33,7 +33,7 @@ void TIM3_PWM_GPIO_Init(int Set)
 }
 void TIM4_PWM_GPIO_Init(int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
     if (Set)
@@ -65,7 +65,7 @@ arr是run_cnt溢出值，psc是对时钟源的分频
 */
 void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     confirm_state state = FALSE;
     if (Set)
         state = TRUE;
@@ -111,7 +111,7 @@ void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 //溢出时间T = (arr+1)*(psc+1)
 void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     confirm_state state = FALSE;
     if (Set)
         state = TRUE;
@@ -159,7 +159,7 @@ void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 //溢出时间T = (arr+1)*(psc+1)
 void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 {
-#ifdef TIM8_PWM
+#if TIM8_PWM
     //AT32f415没有定时器8，但是IO与定时器3的复用是一样的
     tim8_enable = Set;
 #endif
@@ -167,7 +167,7 @@ void TIM8_PWM_Start_Init(int arr,int psc,int Set)
 
 void TIM3_PWMx_SetValue(int PWMx,void *data)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     tmr_type *Temp_TIM = TMR3;
     int value = 0;
     if(data == NULL)
@@ -202,7 +202,7 @@ void TIM3_PWMx_SetValue(int PWMx,void *data)
 
 void TIM4_PWMx_SetValue(int PWMx,void *data)
 {
-#ifdef Exist_PWM
+#if Exist_PWM
     tmr_type *Temp_TIM = TMR4;
     int value = 0;
     if(data == NULL)
