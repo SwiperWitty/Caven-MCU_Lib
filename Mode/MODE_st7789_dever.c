@@ -666,10 +666,11 @@ int MODE_st7789_dever_Init(int set)
     Base_SPI_Init(m_SPI_CH2, 8, set);
 #endif
     st7789_dever_delay(50);
-    // st7789_dever_gpio_init(set);
-    MODE_st7789_dever_Writ_Bus(0x00);
-
-    st7789_dever_delay(100);
+	MODE_st7789_dever_Writ_Bus(0x00);
+	st7789_dever_delay(10);
+//    LCD_WR_CMD(0x01);
+	LCD_WR_CMD(0x11);
+    st7789_dever_delay(500);
     MODE_st7789_dever_RST(1);
     st7789_dever_delay(50);
 
@@ -680,18 +681,18 @@ int MODE_st7789_dever_Init(int set)
         retval = 0;
         return retval;
     }
-
-    LCD_WR_CMD(0x36); // res
+    LCD_WR_CMD(0x36);
+	st7789_dever_delay(50);
     switch (LCD_Horizontal)
     {
     case 0:
-        MODE_st7789_dever_Writ_Bus(0x00);
+        MODE_st7789_dever_Writ_Bus(0x00);		// 默认
         break;
     case 1:
-        MODE_st7789_dever_Writ_Bus(0xC0);
+        MODE_st7789_dever_Writ_Bus(0xC0);		// 180
         break;
     case 2:
-        MODE_st7789_dever_Writ_Bus(0x70);
+        MODE_st7789_dever_Writ_Bus(0x70);		// 0x20 横屏，0x40 垂直镜像，0x80 水平镜像
         break;
     default:
         MODE_st7789_dever_Writ_Bus(0xA0);
