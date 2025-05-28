@@ -90,9 +90,10 @@ typedef void (*ND_pFun) (int num,void *data);
 typedef struct
 {
     int app_ID;             // APP任务
-	char type;
+	int type;
     char layer;             // 层级
     char cursor;            // 光标位置
+	int offset;
     char str_switch;
 	char *string;           // 输出字符
     void *p_Data;           // 输入指针
