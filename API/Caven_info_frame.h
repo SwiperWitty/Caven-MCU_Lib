@@ -50,12 +50,59 @@ typedef struct
 /*
  * CAVEN_CMD
  */
-enum CAVEN_CMD
+enum CAVEN_CMD1
 {
-    m_CAVEN_TEST_Order = 0x00,
-    m_CAVEN_SYS_Order,
-    m_CAVEN_BOOT_Order,
-    m_CAVEN_FEATURE_Order,
+    m_CAVEN_CMD1_TEST_Order = 0x00,
+    m_CAVEN_CMD1_Version_Order,
+    m_CAVEN_CMD1_Serial_Order,
+    m_CAVEN_CMD1_Bdtime_Order,
+    m_CAVEN_CMD1_UTCtime_Order,
+    m_CAVEN_CMD1_Addr_Order = 0x05,
+    m_CAVEN_CMD1_RS232Cfg_Order,
+    m_CAVEN_CMD1_RS485Cfg_Order,
+    m_CAVEN_CMD1_TCPHBT_Order,
+    m_CAVEN_CMD1_IPv4Cfg_Order,
+    m_CAVEN_CMD1_TCPServer_Order = 0x0A,
+    m_CAVEN_CMD1_TCPClient_Order,
+    m_CAVEN_CMD1_HTTPHBT_Order,
+    m_CAVEN_CMD1_HTTPCfg_Order,
+    m_CAVEN_CMD1_MQTTCfg_Order,
+    m_CAVEN_CMD1_GetMAC_Order,
+    m_CAVEN_CMD1_CANCfg_Order = 0x10,
+    m_CAVEN_CMD1_Reset_Order,
+    m_CAVEN_CMD1_GetWork_Order,
+    m_CAVEN_CMD1_GetNet_Order,
+    m_CAVEN_CMD1_BLECfg_Order,
+    m_CAVEN_CMD1_NetCardCfg_Order = 0x15,
+    m_CAVEN_CMD1_NetCardIP_Order,
+    m_CAVEN_CMD1_UDPCfg_Order,
+    m_CAVEN_CMD1_UDPMulticast_Order,
+    m_CAVEN_CMD1_UDPUpdata_Order,
+};
+
+enum CAVEN_CMD2
+{
+    m_CAVEN_CMD2_TEST_Order = 0x00,
+    m_CAVEN_CMD2_MACCfg_Order,
+    m_CAVEN_CMD2_BTLD_Order,
+    m_CAVEN_CMD2_OTA_Order,
+    m_CAVEN_CMD2_Reset_Order,
+    m_CAVEN_CMD2_DEBUG_Order = 0x05,
+    m_CAVEN_CMD2_Restore_Order,
+    
+};
+
+enum CAVEN_CMD3
+{
+    m_CAVEN_CMD3_TEST_Order = 0x00,
+    m_CAVEN_CMD3_BEEP_Order,
+    m_CAVEN_CMD3_GPOCfg_Order,
+    m_CAVEN_CMD3_GPIGet_Order,
+    m_CAVEN_CMD3_GPIUpdata_Order,
+    m_CAVEN_CMD3_GPIToCMD_Order = 0x05,
+    m_CAVEN_CMD3_Channel_Retell_Order,
+    m_CAVEN_CMD3_Channel_Updata_Order,
+
 };
 
 /*
@@ -81,12 +128,12 @@ typedef enum
     m_Result_Back_CMDS,
     m_Result_Back_Leng,
     m_Result_Back_CRC,
-    m_Result_Fail_Spoil,
-    m_Result_Back_Other,    // 执行失败了
-    m_Result_Back_Empty,    // 我可以发出去，但是你不可以返回
-    m_Result_Fail_Empty,    // 这条消息不返回
+    m_Result_Fail_Spoil,    // 消息损坏
+    m_Result_Back_ERROR,    // 执行失败了
+    m_Result_Back_Other,    // 我可以发出去，但是你不可以返回
+    m_Result_Fail_Empty,    // 执行操作，这条消息不返回
+    m_Result_SUCC = 0x50,   // 完整一帧
 }Caven_info_Result_mType;
-#define RESULT_DEFAULT  m_Result_Fail_Empty
 
 #ifndef BUFF_MAX
     #define BUFF_MAX  500

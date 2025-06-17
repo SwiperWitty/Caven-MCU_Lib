@@ -140,6 +140,7 @@ int TIMx_Encoder_Capture(char TIMx)
     return diff;
 }
 
+// PA8 PA9 PA10 PA11 
 void TIM1_Capture_GPIO_Init(int Set)
 {
 #if Exist_CAPTURE
@@ -163,6 +164,8 @@ void TIM1_Capture_GPIO_Init(int Set)
     }
 #endif
 }
+
+// PB3 PA15
 void TIM2_Capture_GPIO_Init(int Set)
 {
 #if Exist_CAPTURE
@@ -193,7 +196,7 @@ void TIM2_Capture_GPIO_Init(int Set)
         gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 		gpio_init_struct.GPIO_Pin = GPIO_Pin_15;
         GPIO_Init(GPIOA, &gpio_init_struct);
-        gpio_init_struct.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_10 | GPIO_Pin_11;
+        gpio_init_struct.GPIO_Pin = GPIO_Pin_3;
         GPIO_Init(GPIOB, &gpio_init_struct);
     }
     else
@@ -202,7 +205,7 @@ void TIM2_Capture_GPIO_Init(int Set)
         gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
         gpio_init_struct.GPIO_Pin = GPIO_Pin_15;
         GPIO_Init(GPIOA, &gpio_init_struct);
-        gpio_init_struct.GPIO_Pin = GPIO_Pin_3 | GPIO_Pin_10 | GPIO_Pin_11;
+        gpio_init_struct.GPIO_Pin = GPIO_Pin_3;
         GPIO_Init(GPIOB, &gpio_init_struct);
     #endif
     }

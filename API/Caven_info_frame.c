@@ -81,14 +81,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     case 3: /* Addr */
         tepm_pData[temp_packet.Get_num++] = data;
         temp_packet.Addr = data;
-        if (temp_packet.Addr == standard.Addr || temp_packet.Addr == 0 || temp_packet.Addr == 0xff)
-        {
-            temp_packet.Run_status++;
-        }
-        else
-        {
-            temp_packet.Run_status = -temp_packet.Run_status;
-        }
+		temp_packet.Run_status++;	// 地址并不在这里判读是否符合
         break;
     case 4: /* Cmd */
         tepm_pData[temp_packet.Get_num++] = data;
@@ -383,7 +376,8 @@ int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
     target->Result = 0;
     target->Run_status = 0;
     target->Get_num = 0;
-
+    target->end_crc = 0;
+    target->get_crc = 0;
     target->Comm_way = 0;
     return retval;
 }
