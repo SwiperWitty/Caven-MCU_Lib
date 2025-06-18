@@ -229,10 +229,10 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
  * retval = (-1):队列满载，拒绝载入
  * 这个函数需要快速响应
  */
-int Caven_Circular_queue_input (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num)
+int Caven_Circular_queue_input (Caven_info_packet_Type data,Caven_info_packet_Type *Buff_data,int Buff_Num)
 {
     int retval = 0;
-    if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
+    if (Buff_data == NULL || Buff_Num <= 0)
     {
         retval = -2;
         return retval;
@@ -274,7 +274,7 @@ int Caven_Circular_queue_output (Caven_info_packet_Type *data,Caven_info_packet_
     {
         if (Buff_data[i].Result & 0x50)
         {
-            Caven_packet_data_copy_Fun(data,&Buff_data[i]);    // 从队列提取数据
+            Caven_packet_data_copy_Fun(data,Buff_data[i]);    // 从队列提取数据
             Caven_info_packet_fast_clean_Fun(&Buff_data[i]);
             retval = i;
 
@@ -317,18 +317,18 @@ int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, uint8_t *data)
  * Caven_packet_data_copy_Fun
  * 把[target]内容给[source]
 */
-int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type *target)
+int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type target)
 {
     int retval = 0;
     Caven_info_packet_Type temp_packet;
 
-    if ((source != NULL) && (target != NULL))
+    if (source != NULL)
     {
-        if ((source->p_AllData != NULL) && (target->p_AllData != NULL))
+        if ((source->p_AllData != NULL) && (target.p_AllData != NULL))
         {
-            temp_packet = *target;      // 先拿框架
+            temp_packet = target;      // 先拿框架
             temp_packet.p_AllData = source->p_AllData;      // 还原指针
-            memcpy(temp_packet.p_AllData,target->p_AllData,target->Get_num);
+            memcpy(temp_packet.p_AllData,target.p_AllData,target.Get_num);
             if (temp_packet.dSize > 0)
             {
                 temp_packet.p_Data = temp_packet.p_AllData + 2 + 5 + 2;

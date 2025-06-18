@@ -137,9 +137,9 @@ void Base_UART_Send_Data(UART_mType Channel,uint16_t Data)
         return;
     }
     
-    while (USART_GetFlagStatus(uart_Temp, TXD_Falg) == 0);
+	while (USART_GetFlagStatus(uart_Temp, TXD_Falg) == 0);
     USART_ClearFlag(uart_Temp, TXD_Falg);
-    USART_SendData(uart_Temp, Data);
+	USART_SendData(uart_Temp, Data);
 }
 
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
