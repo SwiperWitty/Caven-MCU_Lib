@@ -2,22 +2,6 @@
 
 #include "Encrypt_crc.h"
 
-/*
-Caven_info_Make_packet_Fun
-** make packet
-** 将[data]数据转化成[packet]
-传参
-** standard ：标准要求(不需要指针索引)
-** target   : 目标包(指针，这个包内的指针必须要有索引)
-** data     ：数据来源（填入）
-return   : retval
-** 1.(-0x80 < retval < 0) 协议消息解析错误
-** 2.retval = -0x80 包里存在协议消息没处理
-** 3.retval = -0x8F 目标包的指针没有索引
-** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
-** 5.retval = 其他   获取中(包含没开始retval = 0)
-*/
-
 int GX_info_return_Fun (uint8_t cmd,uint8_t MID,uint8_t addr,uint8_t *data,uint16_t len,uint8_t *array)
 {
     int retval = 0;
@@ -57,6 +41,22 @@ int GX_info_return_Fun (uint8_t cmd,uint8_t MID,uint8_t addr,uint8_t *data,uint1
     return retval;
 }
 
+/*
+Caven_info_Make_packet_Fun
+** make packet
+** 将[data]数据转化成[packet]
+传参
+** standard ：标准要求(不需要指针索引)
+** target   : 目标包(指针，这个包内的指针必须要有索引)
+** data     ：数据来源（填入）
+return   : retval
+** 1.(-0x80 < retval < 0) 协议消息解析错误
+** 2.retval = -0x80 包里存在协议消息没处理
+** 3.retval = -0x8F 目标包的指针没有索引
+** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
+** 5.retval = 其他   获取中(包含没开始retval = 0)
+** 示例[5A 00 01 01 01 00 00 EB D5]
+*/
 int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_Type *target, unsigned char data)
 {
     int retval = 0;
@@ -229,7 +229,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
             temp_packet.p_Data = temp_packet.p_AllData + 1 + 4 + 2;
         }
         *target = temp_packet;
-        retval = 0xFF;
+        retval = temp_packet.Run_status;
     }
     else // doing
     {

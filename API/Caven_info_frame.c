@@ -16,7 +16,7 @@ return   : retval
 ** 3.retval = -0x8F 目标包的指针没有索引
 ** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
 ** 5.retval = 其他   获取中(包含没开始retval = 0)
-** 示例[FA 55 01 00 01 00 00 00 04 12 34 56 78 00 A1 CE]
+** 示例[FA 55 01 00 01 01 00 00 01 00 00 21 D2]
 */
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint8_t data)
 {
@@ -160,7 +160,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
         temp_packet.p_Data = tepm_pData + 2 + 5 + 2;
         *target = temp_packet;
-        retval = 0xFF;
+        retval = temp_packet.Run_status;
     }
     else // doing
     {
@@ -214,7 +214,7 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
         }
         array[getnum++] = (source.Result & 0x0F);
         
-        temp = getnum - 2;
+        temp = getnum - sizeof(source.Head);
         temp = Encrypt_XMODEM_CRC16_Fun(&array[sizeof(source.Head)], temp);
 
         array[getnum++] = (temp >> 8) & 0xff;
