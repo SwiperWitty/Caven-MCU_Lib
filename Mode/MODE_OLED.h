@@ -1,7 +1,11 @@
 #ifndef _MODE_OLED_H_
 #define _MODE_OLED_H_
 
-#include "Base.h"
+#include "stdint.h"
+#include "Items.h"
+#if Exist_OLED
+	#include "Base.h"
+#endif
 
 /*
     

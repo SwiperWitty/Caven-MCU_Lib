@@ -15,7 +15,7 @@
 extern "C" {
 #endif
 
-#define LOG_LEVEL   LOG_Warn
+#define LOG_LEVEL   LOG_Info
 
 #define LOG_View    0
 #define LOG_Info    1
@@ -24,6 +24,8 @@ extern "C" {
 
 void debug_log (int type,const char *tag,const char * format,...);
 void debug_log_hex (uint8_t *data,int len);
+int debug_log_canf_to_hex (uint8_t *data,int len);
+
 void my_system(const char *cmd,char *ret_str,int str_size);
 int my_systemd(const char *command);
 

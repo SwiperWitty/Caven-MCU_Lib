@@ -1,7 +1,10 @@
 #ifndef _MODE_H__
 #define _MODE_H__
 
-#include "Base.h"
+#include "Items.h"
+#ifdef MCU_SYS_FREQ
+	#include "Base.h"
+#endif
 #include "API.h"
 
 #if Exist_SYS_TIME
@@ -199,7 +202,7 @@ struct _Mode_Use
 #endif
 };
 
-void Mode_Index(void); //初始化Mode函数索引,真正功能的初始化请调用结构体中函数指针(Mode_Init)
+void Mode_Index(void);  // 初始化Mode函数索引,真正功能的初始化请调用结构体中函数指针(Mode_Init)
 void Debug_Out(uint8_t *data,int Length);
 
 #endif

@@ -182,7 +182,7 @@ return   : retval
 */
 int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned char *data)
 {
-    int retval;
+    int retval = 0;
     int temp;
     int getnum;
     unsigned char *array;

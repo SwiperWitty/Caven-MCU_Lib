@@ -20,10 +20,13 @@
     #define RTC_I2C_MASTER_FREQ_HZ  1000
     #define RTC_I2C_MASTER_NUM      I2C_NUM_0
 #else
-#include "Base.h"
+#include "Items.h"
+#if Exist_RTC8564
+    #include "Base.h"
+#endif
 #include "Caven_Type.h"
-    #define PIN_RTC_SDA    (16)
-    #define PIN_RTC_SCL    (17)
+    #define PIN_RTC_SCL    (10)
+    #define PIN_RTC_SDA    (11)
 #endif
 
 int MODE_RTC8564_Init (int set);

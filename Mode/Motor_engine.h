@@ -1,8 +1,10 @@
 #ifndef _MOTOR_ENGINE_H__
 #define _MOTOR_ENGINE_H__
 
-#include "Base.h"
-
+#include "Items.h"
+#if Exist_Motor_Engine
+    #include "Base.h"
+#endif
 /*
 
 

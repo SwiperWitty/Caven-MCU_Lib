@@ -13,11 +13,13 @@ static int SYNC_TIME_Fun (void);
 
 int MODE_TIME_Init(int Set)
 {
-    time_enable = SET;
+    time_enable = Set;
 #if Exist_SYS_TIME
-    SYS_Time_Init(SET);
+    #ifdef MCU_SYS_FREQ
+    SYS_Time_Init(Set);
 	Real_TIME.SYNC_Flag = 0;
 	Real_TIME.date = &mode_date;
+    #endif
     return 0;
 #else
     return 1;
@@ -89,6 +91,7 @@ int SYNC_TIME_Fun (void)
 {
     int retval = 0;
 #if Exist_SYS_TIME
+    #ifdef MCU_SYS_FREQ
     if (time_enable == 0) {
         return retval;
     }
@@ -104,6 +107,7 @@ int SYNC_TIME_Fun (void)
         memcpy(&Real_TIME.Time,&time,sizeof(SYS_BaseTIME_Type));
     }
     Real_TIME.SYNC_Flag = 0;
+    #endif
 #else
     retval = -1;
 #endif
@@ -115,24 +119,29 @@ int SYNC_TIME_Fun (void)
 void MODE_Delay_Us(int num)
 {
 #if Exist_SYS_TIME
+    #ifdef MCU_SYS_FREQ
     if (time_enable == 0) {
         return ;
     }
     SYS_Delay_us(num);
+    #endif
 #endif
 }
 void MODE_Delay_Ms(int num)
 {
 #if Exist_SYS_TIME
+    #ifdef MCU_SYS_FREQ
     if (time_enable == 0) {
         return ;
     }
     SYS_Delay_ms (num);
+    #endif
 #endif
 }
 void MODE_Delay_S(int num)
 {
 #if Exist_SYS_TIME
+    #ifdef MCU_SYS_FREQ
     if (time_enable == 0) {
         return ;
     }
@@ -140,8 +149,8 @@ void MODE_Delay_S(int num)
     {
         SYS_Delay_ms (1000);
     }
+    #endif
 #endif
 }
+
 #endif
-
-

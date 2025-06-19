@@ -8,8 +8,8 @@
     
 */
 
-extern uint16_t  LCD_Back_Color; // 背景色
-extern uint16_t  LCD_Word_Color; // 字体色
+extern uint16_t LCD_Back_Color; // 背景色
+extern uint16_t LCD_Word_Color; // 字体色
 
 extern uint16_t LCD_W_Max;
 extern uint16_t LCD_H_Max;

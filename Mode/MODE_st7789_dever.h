@@ -27,7 +27,10 @@
     #endif
     #define Exist_LCD
 #else
-#include "Base.h"
+#include "Items.h"
+#if Exist_LCD
+	#include "Base.h"
+#endif
 
     #define PIN_LCD_CS      (12)        /* PB12	*/
 

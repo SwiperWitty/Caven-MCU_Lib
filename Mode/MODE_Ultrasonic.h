@@ -12,7 +12,10 @@
 
 */
 
-#include "Base.h"
+#include "Items.h"
+#if Exist_Ultrasonic
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 // Trig	PB04

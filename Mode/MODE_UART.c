@@ -5,7 +5,7 @@ int MODE_UART_Init(char Channel,int Baud,int Set)
 {
     int retavl = 1;
 #if Exist_UART
-    Base_UART_Init((UART_mType)Channel,Baud,SET);
+    Base_UART_Init((UART_mType)Channel,Baud,Set);
 #endif
     return retavl;
 }
@@ -29,7 +29,7 @@ void MODE_UART_DMA_Send_Data_Fun(char Channel, const U8 *Data, int Length)
     temp = MIN(Length,UART_BUFF_MAX);
     Base_UART_DMA_Send_Data((UART_mType)Channel,Data,temp);
 #else
-    MODE_UART_Send_Data_Fun(Channel,(U8 *)String,temp);
+    MODE_UART_Send_Data_Fun(Channel,(U8 *)Data,temp);
 #endif
 }
 

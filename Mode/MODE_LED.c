@@ -9,12 +9,12 @@ void MODE_LED_Init(int Set)
 #endif
 }
 
-void MODE_LED_SET_Fun(char Channel,int Set)
+void MODE_LED_Set_Fun(char Channel,int Set)
 {
 #if Exist_LED
     switch (Channel) {
         case 1:
-            if(SET)
+            if(Set)
                 User_GPIO_set(1,LED_IO,0);
             else
                 User_GPIO_set(1,LED_IO,1);
@@ -29,7 +29,9 @@ void MODE_LED_SET_Fun(char Channel,int Set)
 
 void WS2812_Delay(int time)
 {
+#if Exist_LED
     SYS_Base_Delay(time, 10);
+#endif
 }
 
 void WS2812_Reset (void)
@@ -69,7 +71,7 @@ void WS2812_write_byte(char data)
 void MODE_LED_RGB_Fun(Caven_Color_Type Color,int Set)
 {
 //    NVIC_SETPRIMASK();
-	if(SET)
+	if(Set)
 	{
 		WS2812_write_byte(0xaa);
 		WS2812_write_byte(0x01);

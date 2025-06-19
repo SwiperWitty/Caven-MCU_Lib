@@ -1,7 +1,10 @@
 #ifndef	_MODE_STEERING_ENGINE_H_
 #define	_MODE_STEERING_ENGINE_H_
 
-#include "Base.h"
+#include "Items.h"
+#if Exist_Steering_Engine
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 

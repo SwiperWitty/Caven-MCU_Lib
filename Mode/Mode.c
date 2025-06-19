@@ -47,11 +47,11 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 
 #if Exist_LED
     Mode_Use.LED.RGB_pFun = MODE_LED_RGB_Fun;
-    Mode_Use.LED.SET_pFun = MODE_LED_SET_Fun;
+    Mode_Use.LED.Set_pFun = MODE_LED_Set_Fun;
 
 #endif
 #if Exist_BZZ
-    Mode_Use.BZZ.SET_pFun = MODE_BZZ_SET_Fun;
+    Mode_Use.BZZ.Set_pFun = MODE_BZZ_Set_Fun;
 #endif
 #if Exist_HC595
     Mode_Use.HC595.Set_DATA = HC595_Set_DATA_Fun;

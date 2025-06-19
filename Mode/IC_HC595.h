@@ -1,7 +1,11 @@
 #ifndef _IC__HC595_H_
 #define _IC__HC595_H_
 
-#include "Base.h"
+#include "stdint.h"
+#include "Items.h"
+#if Exist_HC595
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 /*

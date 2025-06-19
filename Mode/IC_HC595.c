@@ -15,7 +15,7 @@ void MODE_HC595_Init (int Set)
 #if Exist_HC595
 static void HC595_Delay (int time)
 {
-//    SYS_Base_Delay (time,5);
+    SYS_Base_Delay (time,5);
 }
 #endif
 

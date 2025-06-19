@@ -1,7 +1,10 @@
 #ifndef _MODE_UART__H_
 #define _MODE_UART__H_
 
-#include "Base.h"
+#include "Items.h"
+#if Exist_UART
+	#include "Base.h"
+#endif
 #include "API.h"
 
 /*

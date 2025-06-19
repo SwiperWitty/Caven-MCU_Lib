@@ -58,6 +58,88 @@ void debug_log_hex (uint8_t *data,int len)
     printf("](%d byte)\n",len);
 }
 
+int debug_log_canf_to_hex (uint8_t *data,int len)
+{
+    int retval = 0;
+    int temp_run = 0;
+    char ascii_input[500];  // +1 用于存储字符串结束符 '\0'
+
+    if (data == NULL)
+    {
+        return retval;
+    }
+
+    printf("enter hex:");
+    if (fgets(ascii_input, sizeof(ascii_input), stdin) == NULL) {
+        printf("Input error!\n");
+        return 1;
+    }
+
+    // 移除可能的换行符
+    ascii_input[strcspn(ascii_input, "\n")] = '\0';
+
+    // 检查输入长度是否合法
+    retval = strlen(ascii_input);
+    printf("get ascii [%d] len\n", retval);
+    if(retval % 2)
+    {
+        retval ++;
+    }
+    if(retval)
+    {
+        temp_run = 0;
+        for (int i = 0; i < retval; i++)
+        {
+            if(ascii_input[i] == ' ')
+            {
+                i++;
+            }
+            data[temp_run] = 0;
+            if(ascii_input[i] >= '0' && ascii_input[i] <= '9')
+            {
+                data[temp_run] |= ascii_input[i] - '0';
+            }
+            else if(ascii_input[i] >= 'a' && ascii_input[i] <= 'f')
+            {
+                data[temp_run] |= (ascii_input[i] - 'a') + 0x0a;
+            }
+            else if(ascii_input[i] >= 'A' && ascii_input[i] <= 'F')
+            {
+                data[temp_run] |= ascii_input[i] - 'A' + 0x0a;
+            }
+            else
+            {
+                printf("get hex error [%d][%02X]\n",temp_run,ascii_input[i]);
+                return 0;
+            }
+            data[temp_run] <<= 4;
+            i++;
+            if(ascii_input[i] >= '0' && ascii_input[i] <= '9')
+            {
+                data[temp_run] |= ascii_input[i] - '0';
+            }
+            else if(ascii_input[i] >= 'a' && ascii_input[i] <= 'f')
+            {
+                data[temp_run] |= (ascii_input[i] - 'a') + 0x0a;
+            }
+            else if(ascii_input[i] >= 'A' && ascii_input[i] <= 'F')
+            {
+                data[temp_run] |= ascii_input[i] - 'A' + 0x0a;
+            }
+            else
+            {
+                printf("get hex error [%d][%02X]\n",temp_run,ascii_input[i]);
+                return 0;
+            }
+            temp_run ++;
+        }
+    }
+    retval = temp_run;
+    printf("get hex [%d] len\n", retval);
+    // debug_log_hex (data,retval);
+    return retval;
+}
+
 void my_system(const char *cmd,char *ret_str,int str_size)
 {
     FILE *fp = NULL;

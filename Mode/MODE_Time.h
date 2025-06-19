@@ -12,7 +12,15 @@
     
 */
 
-#include "Base.h"
+#include "stdint.h"
+#include "Items.h"
+#if Exist_SYS_TIME
+    #ifdef MCU_SYS_FREQ
+        #include "Base.h"
+    #else
+        #include "sys/time.h"
+    #endif
+#endif
 #include "time.h"
 #include "API.h"
 

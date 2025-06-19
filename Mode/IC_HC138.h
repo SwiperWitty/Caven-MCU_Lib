@@ -1,7 +1,11 @@
 #ifndef _IC__HC138_H_
 #define _IC__HC138_H_
 
-#include "Base.h"
+#include "stdint.h"
+#include "Items.h"
+#if Exist_HC138
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 /*

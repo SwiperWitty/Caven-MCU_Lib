@@ -1,7 +1,11 @@
 #ifndef _MODE_BUTTON_H_
 #define _MODE_BUTTON_H_
 
-#include "Base.h"
+#include "stdint.h"
+#include "Items.h"
+#if Exist_BUTTON
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 #ifdef Exist_BUTTON

@@ -1,7 +1,11 @@
 #ifndef _IC__DS18B20__H_
 #define _IC__DS18B20__H_
 
-#include "Base.h"
+#include "stdint.h"
+#include "Items.h"
+#if Exist_DS18B20
+	#include "Base.h"
+#endif
 
 /*
 	// 30min  set 60max

@@ -3,7 +3,10 @@
 
 //	可以跨芯片移植	需要大改底层(UART)
 
-#include "Base.h"
+#include "Items.h"
+#if Exist_Voice
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 #define	JQ8900	1

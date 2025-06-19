@@ -1,7 +1,10 @@
 #ifndef _MODE_BYJ_H__
 #define _MODE_BYJ_H__
 
-#include "Base.h"
+#include "Items.h"
+#if Exist_Motor_BYJ
+	#include "Base.h"
+#endif
 #include "Caven_Type.h"
 
 /*

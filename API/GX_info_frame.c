@@ -42,7 +42,7 @@ int GX_info_return_Fun (uint8_t cmd,uint8_t MID,uint8_t addr,uint8_t *data,uint1
 }
 
 /*
-Caven_info_Make_packet_Fun
+GX_info_Make_packet_Fun
 ** make packet
 ** 将[data]数据转化成[packet]
 传参
@@ -80,7 +80,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
     }
     if (temp_packet.Run_status > 0 && temp_packet.Run_status < 8)   // 跳过头帧和crc校验帧
     {
-        temp_packet.End_crc = CRC16_XMODEM_Table_Byte(data, temp_packet.End_crc);
+        temp_packet.end_crc = CRC16_XMODEM_Table_Byte(data, temp_packet.end_crc);
     }
     switch (temp_packet.Run_status)
     {
@@ -89,7 +89,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
         if (temp_packet.Head == standard.Head)
         {
             temp_packet.get_crc = 0;
-            temp_packet.End_crc = 0;
+            temp_packet.end_crc = 0;
             temp_packet.Get_num = 0;
             tepm_pData[temp_packet.Get_num++] = temp_packet.Head;
 
@@ -198,7 +198,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
 
         if (temp_packet.Get_num >= temp)
         {
-            if (temp_packet.End_crc == temp_packet.get_crc)
+            if (temp_packet.end_crc == temp_packet.get_crc)
             {
                 temp_packet.Result |= 0x50; // crc successful
                 temp_packet.Run_status = 0xff;
@@ -240,7 +240,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
 }
 
 /*
-Caven_info_Split_packet_Fun
+GX_info_Split_packet_Fun
 ** split packet
 ** 将[packet]数据转化成[data]
 传参
@@ -249,41 +249,53 @@ Caven_info_Split_packet_Fun
 return   : retval
 ** retval = 返回数据目标split出的长度
 */
-int GX_info_rest_data_packet_Fun(GX_info_packet_Type *target, unsigned char *data,int Add_Num)
+int GX_info_Split_packet_Fun(GX_info_packet_Type const source, unsigned char *data)
 {
-    int retval;
-    int Offset_num;
+    int retval = 0;
     int temp;
-    if (data == NULL || (target->p_AllData == NULL))
+    int getnum;
+    unsigned char *array;
+
+    if (data == NULL || ((source.p_Data == NULL) && (source.dSize != 0)))
     {
         retval = (-1);
     }
     else
     {
-        if (target->Prot_W_485Type) {
-            Offset_num = 8;
+        array = data;
+        getnum = 0;
+
+        array[getnum++] = source.Head;
+        array[getnum++] = source.Prot_W_Type;
+        array[getnum++] = source.Prot_W_Versions;
+
+        if (source.Prot_W_485Type != 0) {
+            array[getnum++] = source.Prot_W_Class | 0x20;
         }
         else {
-            Offset_num = 7;
+            array[getnum++] = source.Prot_W_Class;
         }
-        memcpy(target->p_AllData + Offset_num,data,Add_Num);
-        if (target->Get_num < 9) {
-            target->Get_num = 9;
+        array[getnum++] = source.Prot_W_MID;
+        if (source.Addr != 0) {
+            array[getnum++] = source.Addr;
         }
-        temp = target->Get_num - target->dSize;
-        target->dSize = Add_Num;
-        target->Get_num = temp + target->dSize;
 
-        temp = target->dSize;
-        target->p_AllData[Offset_num - 2] = ((temp >> 8) & 0xff);
-        target->p_AllData[Offset_num - 1] = ((temp) & 0xff);
+        array[getnum++] = (source.dSize >> 8) & 0xff;
+        array[getnum++] = source.dSize & 0xff;
 
-        Offset_num = target->Get_num - 1 - 2;
-        temp = Encrypt_XMODEM_CRC16_Fun(target->p_AllData+1, Offset_num);
-        Offset_num = target->Get_num;
-        target->p_AllData[Offset_num - 2] = ((temp >> 8) & 0xff);
-        target->p_AllData[Offset_num - 1] = ((temp) & 0xff);
-        target->End_crc = temp;
+        if (source.dSize > 0)
+        {
+            memcpy(&array[getnum], source.p_Data, source.dSize);
+            getnum += source.dSize;
+        }
+
+        temp = getnum - sizeof(source.Head);;
+        temp = Encrypt_XMODEM_CRC16_Fun(&array[sizeof(source.Head)], temp);
+
+        array[getnum++] = (temp >> 8) & 0xff;
+        array[getnum++] = temp & 0xff;
+
+        retval = getnum;
     }
     return retval;
 }
@@ -292,12 +304,12 @@ int GX_info_rest_data_packet_Fun(GX_info_packet_Type *target, unsigned char *dat
 /*
  * 这个函数需要快速响应
  */
-int GX_Circular_queue_input (GX_info_packet_Type *data,GX_info_packet_Type *Buff_data,char Start_Num,char Buff_Num)
+int GX_Circular_queue_input (GX_info_packet_Type data,GX_info_packet_Type *Buff_data,char Buff_Num)
 {
     int retval = 0;
 
     GX_info_packet_Type temp_packet;
-    for (int i = Start_Num;i < Buff_Num;i++)
+    for (int i = 0;i < Buff_Num;i++)
     {
         temp_packet = Buff_data[i];
         if (temp_packet.Result & 0x50)
@@ -307,12 +319,10 @@ int GX_Circular_queue_input (GX_info_packet_Type *data,GX_info_packet_Type *Buff
         else
         {
             GX_packet_data_copy_Fun(&Buff_data[i],data);    // 载入数据到队列
-//            GX_info_packet_fast_clean_Fun(data);
             retval = i;
             break;
         }
     }
-    GX_info_packet_fast_clean_Fun(data);      // 无论是否能载入，都要清，否则影响下一帧接收
     return retval;
 }
 
@@ -324,14 +334,17 @@ int GX_Circular_queue_input (GX_info_packet_Type *data,GX_info_packet_Type *Buff
 int GX_Circular_queue_output (GX_info_packet_Type *data,GX_info_packet_Type *Buff_data,char Buff_Num)
 {
     int retval = 0;
-    GX_info_packet_Type *temp_packet;
+    
+    if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
+    {
+        retval = -2;
+        return retval;
+    }
     for (int i = 0;i < Buff_Num;i++)
     {
-        temp_packet = &Buff_data[i];
-
-        if (temp_packet->Result & 0x50)
+        if (Buff_data[i].Result & 0x50)
         {
-            GX_packet_data_copy_Fun(data,temp_packet);    // 从队列提取数据
+            GX_packet_data_copy_Fun(data,Buff_data[i]);    // 从队列提取数据
             GX_info_packet_fast_clean_Fun(&Buff_data[i]);
             retval = i;
 
@@ -362,18 +375,48 @@ int GX_info_packet_index_Fun(GX_info_packet_Type *target, unsigned char *data)
     return retval;
 }
 
-int GX_packet_data_copy_Fun(GX_info_packet_Type *source,GX_info_packet_Type *target)
+int GX_packet_data_copy_Fun(GX_info_packet_Type *source,GX_info_packet_Type target)
 {
     int retval = 0;
     GX_info_packet_Type temp_packet;
 
-    if ((source != NULL) && (target != NULL))
+    if (source != NULL)
     {
-        temp_packet = *target;                  // 抽离数据
+        temp_packet = target;                  // 抽离数据
         temp_packet.p_AllData = source->p_AllData;    // 保留指针
-        memcpy(temp_packet.p_AllData,target->p_AllData,target->Get_num);    // 复制指针内容,内容的长度依据是[Get_num]
+        memcpy(temp_packet.p_AllData,target.p_AllData,target.Get_num);    // 复制指针内容,内容的长度依据是[Get_num]
+        if (temp_packet.dSize > 0)
+        {
+            if (target.Prot_W_485Type)
+            {
+                temp_packet.p_Data = temp_packet.p_AllData + 1 + 5 + 2;
+            }
+            else
+            {
+                temp_packet.p_Data = temp_packet.p_AllData + 1 + 4 + 2;
+            }
+        }
+        else
+        {
+            temp_packet.p_Data = NULL;
+        }
         *source = temp_packet;                  // copy
     }
+    return retval;
+}
+
+/*
+ * fast 主要给中断，这样就不会循环套娃
+ */
+int GX_info_packet_fast_clean_Fun(GX_info_packet_Type *target)
+{
+    int retval = 0;
+    target->Result = 0;
+    target->Run_status = 0;
+    target->dSize = 0;
+    target->end_crc = 0;
+    target->get_crc = 0;
+    target->Comm_way = 0;
     return retval;
 }
 
@@ -449,17 +492,5 @@ void GX_info_add_addr (GX_info_packet_Type *target)
 
         target->Get_num = temp_run;
     }
-}
-
-/*
- * fast 主要给中断，这样就不会循环套娃
- */
-int GX_info_packet_fast_clean_Fun(GX_info_packet_Type *target)
-{
-    int retval = 0;
-    target->Result = 0;
-    target->Run_status = 0;
-    target->dSize = 0;
-    return retval;
 }
 
