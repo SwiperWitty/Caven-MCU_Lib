@@ -15,8 +15,11 @@ int MODE_TIME_Init(int Set)
 {
     time_enable = Set;
 #if Exist_SYS_TIME
-    #ifdef MCU_SYS_FREQ
+    #if defined(MCU_SYS_FREQ)
     SYS_Time_Init(Set);
+	Real_TIME.SYNC_Flag = 0;
+	Real_TIME.date = &mode_date;
+	#else
 	Real_TIME.SYNC_Flag = 0;
 	Real_TIME.date = &mode_date;
     #endif
@@ -29,6 +32,7 @@ int MODE_TIME_Init(int Set)
 void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time)
 {
 #if Exist_SYS_TIME
+	#if defined(MCU_SYS_FREQ)
     if (time_enable == 0) {
         return ;
     }
@@ -36,6 +40,10 @@ void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time)
     Real_TIME.SYNC_Flag = 1;
     Real_TIME.Time = time;
     SYNC_TIME_Fun ();
+	#else
+	Real_TIME.Time = time;
+	// linux
+	#endif
 #endif
 }
 
@@ -43,6 +51,7 @@ Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
 {
     Caven_BaseTIME_Type retval = {0};
 #if Exist_SYS_TIME
+	#if defined(MCU_SYS_FREQ)
     if (time_enable == 0) {
         return retval;
     }
@@ -51,6 +60,13 @@ Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
     SYNC_TIME_Fun ();
     
     retval = Real_TIME.Time;
+    #else
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    Real_TIME.Time.SYS_Sec = tv.tv_sec;
+    Real_TIME.Time.SYS_Us = tv.tv_usec % 1000000;
+	retval = Real_TIME.Time;
+    #endif
 #endif
     return retval;
 }
@@ -106,11 +122,11 @@ int SYNC_TIME_Fun (void)
         SYS_Time_Get(&time);
         memcpy(&Real_TIME.Time,&time,sizeof(SYS_BaseTIME_Type));
     }
-    Real_TIME.SYNC_Flag = 0;
     #endif
 #else
     retval = -1;
 #endif
+    Real_TIME.SYNC_Flag = 0;
     return retval;
 }
 
