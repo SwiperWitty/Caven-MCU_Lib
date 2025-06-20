@@ -180,12 +180,12 @@ Caven_info_Split_packet_Fun
 return   : retval
 ** retval = 返回数据目标split出的长度
 */
-int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned char *data)
+int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, uint8_t *data)
 {
     int retval = 0;
     int temp;
     int getnum;
-    unsigned char *array;
+    uint8_t *array;
 
     if (data == NULL || ((source.p_Data == NULL) && (source.dSize != 0)))
     {
@@ -221,6 +221,38 @@ int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, unsigned ch
         array[getnum++] = temp & 0xff;
 
         retval = getnum;
+    }
+    return retval;
+}
+
+int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uint8_t Cmd_sub,uint16_t len,uint8_t *data,uint8_t Result,uint8_t *array)
+{
+    int retval = 0;
+    int temp_num = 0;
+    if(array == NULL)
+    {
+        return retval = -1;
+    }
+    else
+    {
+        array[retval++] = 0xFA;
+        array[retval++] = 0x55;
+        array[retval++] = Ver;
+        array[retval++] = Type;
+        array[retval++] = Addr;
+        array[retval++] = Cmd;
+        array[retval++] = Cmd_sub;
+        array[retval++] = (len >> 8) & 0xFF;
+        array[retval++] = (len >> 0) & 0xFF;
+        if(len > 0 && len <= BUFF_MAX && data != NULL)
+        {
+            memcpy(&array[retval],data,len);
+            retval += len;
+        }
+        array[retval++] = Result;
+        temp_num = Encrypt_XMODEM_CRC16_Fun(&array[2], retval - 2);
+        array[retval++] = (temp_num >> 8) & 0xff;
+        array[retval++] = temp_num & 0xff;
     }
     return retval;
 }

@@ -150,7 +150,7 @@ int Caven_Circular_queue_output(Caven_info_packet_Type *data,Caven_info_packet_T
 
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint8_t data);
 int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, uint8_t *data);
-
+int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uint8_t Cmd_sub,uint16_t len,uint8_t *data,uint8_t Result,uint8_t *array);
 
 
 #endif

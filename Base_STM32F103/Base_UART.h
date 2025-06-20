@@ -24,7 +24,7 @@ int State_Machine_Bind (UART_mType Channel,D_pFun UART_pFun);
 
 typedef enum
 {
-//    m_UART_CH0 = 0,
+    m_UART_CH0 = 0,
     m_UART_CH1 = 1,
     m_UART_CH2,
     m_UART_CH3,
