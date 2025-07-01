@@ -2,7 +2,7 @@
 #define _BASE_H__
 
 #ifdef DEFAULT
-#include "items.h"          // 默认功能
+#include "Items.h"          // 默认功能
 #endif
 
 #ifndef DEFAULT
@@ -14,7 +14,7 @@
 #include "Base_GPIO.h"      // items的附属（LED、BZZ之类的）
 
 #if Exist_SYS_TIME          // 这种保护不占内存，所以尽可能写
-#include "Base_sys_time.h"
+#include "Base_Sys_Time.h"
 #endif
 
 #if Exist_UART

@@ -2,7 +2,7 @@
 #define BASE_ADC__H_
 
 #ifdef DEFAULT
-#include "items.h"              // 默认功能
+#include "Items.h"              // 默认功能
 #endif
 
 #ifndef DEFAULT
