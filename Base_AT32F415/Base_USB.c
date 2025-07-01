@@ -7,7 +7,7 @@
 
 #include "cdc_keyboard_class.h"
 #include "cdc_keyboard_desc.h"
-#include "USB_User.h"
+#include "usb_user.h"
 #include "usbd_int.h"
 
 #if Exist_USB
