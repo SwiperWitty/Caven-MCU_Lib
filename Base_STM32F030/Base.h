@@ -1,50 +1,61 @@
 #ifndef _BASE_H__
 #define _BASE_H__
 
-#include "items.h"
-
-#include "Base_GPIO.h"     //LED、BZZ、KEY...
-
-#ifdef Exist_UART
-#include "uart.h"
+#ifdef DEFAULT
+#include "Items.h"          // 默认功能
 #endif
 
-#ifdef Exist_SPI
-#include "spi.h"
+#ifndef DEFAULT
+#include "User_items.h"     // 自行设置功能，一般出现在本地文件的User中
 #endif
 
+/****************/
 
-#ifdef Exist_IIC
-#include "Base_IIC.h"
+#include "Base_GPIO.h"      // items的附属（LED、BZZ之类的）
+
+#if Exist_SYS_TIME          // 这种保护不占内存，所以尽可能写
+#include "Base_Sys_Time.h"
 #endif
 
-
-#ifdef Exist_ADC
-#include "adc.h"
+#if Exist_UART
+#include "Base_UART.h" 
 #endif
 
-
-#ifdef Exist_SYS_TIME
-#include "sys_time.h"
+#if Exist_SPI
+#include "Base_SPI.h" 
 #endif
 
-#ifdef Exist_PWM
-#include "PWM.h"
+#if Exist_IIC
+#include "Base_IIC.h" 
 #endif
 
+#if Exist_USB
+#include "Base_USB.h" 
+#endif
 
-/*
-    SDK->Items->GPIO(Exist_GPIO)->BASE->
-                                         \\
-                                          -->[XXX]->MODE
-                                         //
-                    C(Lib)->Caven->API->
-*/
-/*
-    底层（Base）中有不少东西让人迷惑，他们大致分布在 system_xx32xxx.c 以及 xx32xxxx_it.h 和 xx32xxxx.h
-    如果查阅这里，问题都没有解决，那么这就是一个不该由你解决的问题。
-  Base层只能和 MCU SDK有关
-*/
+#if Exist_CAN
+#include "Base_CAN.h" 
+#endif
 
+#if Exist_ADC
+#include "Base_ADC.h" 
+#endif
 
+#if Exist_DAC
+#include "Base_DAC.h" 
+#endif
+
+#if Exist_PWM
+#include "Base_PWM.h"
+#endif
+
+#if Exist_CAPTURE
+#include "Base_Capture.h"
+#endif
+
+#if Exist_FLASH
+#include "Base_Flash.h"
+#endif
+
+// Base文件没有结构体索引
 #endif

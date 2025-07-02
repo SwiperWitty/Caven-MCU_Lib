@@ -29,21 +29,6 @@
     #include "MODE_UART.h"
 #endif
 
-#if Exist_HC595
-    #include "IC_HC595.h"           // 驱动输出
-#endif
-#if Exist_HC138
-    #include "IC_HC138.h"
-#endif
-
-#if Exist_DS18B20
-    #include "IC_DS18B20.h"
-#endif
-
-#if Exist_Ultrasonic
-    #include "MODE_Ultrasonic.h"
-#endif
-
 #if Exist_Voice
     #include "MODE_MP3.h"
 #endif
@@ -67,6 +52,17 @@
 
 #if Exist_Ultrasonic
     #include "MODE_Ultrasonic.h"
+#endif
+
+#if Exist_HC595
+    #include "IC_HC595.h"           // 驱动输出
+#endif
+#if Exist_HC138
+    #include "IC_HC138.h"
+#endif
+
+#if Exist_DS18B20
+    #include "IC_DS18B20.h"
 #endif
 
 #if Exist_MLX90614
