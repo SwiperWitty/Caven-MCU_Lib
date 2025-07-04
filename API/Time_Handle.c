@@ -55,6 +55,11 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
 //            task->Begin_time = now_time;
             task->Begin_time.SYS_Sec += task->Set_time.SYS_Sec;
             task->Begin_time.SYS_Us += task->Set_time.SYS_Us;
+			if(task->Begin_time.SYS_Us > 1000000)
+			{
+				task->Begin_time.SYS_Sec += 1;
+				task->Begin_time.SYS_Us -= 1000000;
+			}
             retval = 1;
         }
         else
