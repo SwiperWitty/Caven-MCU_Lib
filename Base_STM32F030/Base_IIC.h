@@ -2,7 +2,7 @@
 #define _IIC__H_
 
 #ifdef DEFAULT
-#include "items.h"              //Ĭ�Ϲ���
+#include "Items.h"              //Ĭ�Ϲ���
 #endif
 
 #ifndef DEFAULT

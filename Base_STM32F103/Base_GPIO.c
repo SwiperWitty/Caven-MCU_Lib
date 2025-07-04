@@ -21,7 +21,8 @@ void User_GPIO_config(int gpiox,int pin,int set)
     }
     else
     {
-        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;                       // 输入
+//        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;                       // 输入
+		gpio_init_struct.GPIO_Mode = GPIO_Mode_IPU;                       // 输入
     }
     if (pin >= 16)
     {
@@ -59,6 +60,10 @@ void User_GPIO_config(int gpiox,int pin,int set)
         value = RCC_APB2Periph_GPIOD;
         gpio_x = GPIOD;
         break;
+    case 5:
+        value = RCC_APB2Periph_GPIOE;
+        gpio_x = GPIOE;
+        break;
     default:
         return;
 //        break;
@@ -91,6 +96,9 @@ void User_GPIO_set(int gpiox,int pin,int set)
         break;
     case 4:
         gpio_x = GPIOD;
+        break;
+    case 5:
+        gpio_x = GPIOE;
         break;
     default:
         return;
@@ -138,6 +146,9 @@ char User_GPIO_get(int gpiox,int pin)
         break;
     case 4:
         gpio_x = GPIOD;
+        break;
+    case 5:
+        gpio_x = GPIOE;
         break;
     default:
         return retval;

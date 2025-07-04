@@ -2,7 +2,7 @@
 #define _BASE_SPI_H__
 
 #ifdef DEFAULT
-#include "items.h"              //默认功能
+#include "Items.h"              //默认功能
 #endif
 
 #ifndef DEFAULT
