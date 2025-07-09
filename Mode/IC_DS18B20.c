@@ -21,24 +21,26 @@ char DS18B20_Start (void)
 	char temp = 0;
 #if Exist_DS18B20
 	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (50);
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);DS18B20_Delay (500);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (1);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);DS18B20_Delay (50);		// 480us-900us(600)
 	
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (5);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (2);		// 15-60us(30)
+	
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);
-	DS18B20_Delay (50);
+	
     int time = 0;
     do{
-        DS18B20_Delay (50);
+        DS18B20_Delay (2);
         time++;
-        if(time > 6)
+        if(time >= 8)	// 240us
         {
             DS18B20_Exist_Flag = 0;
             return temp;                    //启动失败了
         }
     }while(User_GPIO_get(DS18B20_gpiox,DS18B20_pin) == 1);
+	DS18B20_Delay (10);
 	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (5);
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
 	temp = 1;
 #endif
 	return temp;
@@ -53,7 +55,7 @@ int MODE_DS18B20_Init (int gpiox,int pin,int Set)
     DS18B20_pin = pin;
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
     #ifdef MCU_SYS_FREQ
-    DS18B20_Time = (MCU_SYS_FREQ/6000000);
+    DS18B20_Time = (MCU_SYS_FREQ/1000000);
     #else
     DS18B20_Time = 100;
     #endif
@@ -75,28 +77,28 @@ static void Write_Byte (char Data)
     char Temp = Data;
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
     User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
-    DS18B20_Delay (10);
+    DS18B20_Delay (1);		// 12us
 	
     for (char i = 8; i > 0; i--)
     {
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);
-        DS18B20_Delay (8);
+        DS18B20_Delay (1);			// 12us
 
-        if(Temp & 0x01)             //与1按位与运算，Data最低位为1时DQ总线为1，Data最低位为0时DQ总线为0
+        if(Temp & 0x01)             // 与1按位与运算，Data最低位为1时DQ总线为1，Data最低位为0时DQ总线为0
         {
             User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
-            DS18B20_Delay (30);
+            DS18B20_Delay (3);
         }
         else
         {
-            DS18B20_Delay (40);
+            DS18B20_Delay (3);
         }
         Temp >>= 1;
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
-        DS18B20_Delay (10);
+        DS18B20_Delay (1);
 
     }
-    DS18B20_Delay (50);
+    DS18B20_Delay (1);
 #endif
 }
 
@@ -108,21 +110,20 @@ static char Read_Byte (void)
     {
         User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
-        DS18B20_Delay (8);
+        DS18B20_Delay (1);
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);         // 低脉冲
-		DS18B20_Delay (1);
-        User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);  // 弱拉高
+		DS18B20_Delay (0);
+        User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);		// 弱拉高
 
-        DS18B20_Delay (20);
+        DS18B20_Delay (2);
 		Data >>= 1;
 		if(User_GPIO_get(DS18B20_gpiox,DS18B20_pin))
 		{ Data |= 0x80; }
 		//else {0}
-		DS18B20_Delay (40);
+		DS18B20_Delay (2);
     }
 
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
 #endif
     return Data;
 }
@@ -134,7 +135,7 @@ float DS18B20_Get_Temp_Fun (void)
 	{ 
 //        return 0;
         DS18B20_Exist_Flag = 1;
-    } 
+    }
 	
     if(DS18B20_Exist_Flag)      //  在DB18B20存在的情况下
     {
@@ -146,7 +147,7 @@ float DS18B20_Get_Temp_Fun (void)
         Write_Byte(0x44);	// convert		0100 0100
 
 		DS18B20_Start();
-        
+
         Write_Byte(0xcc);	// skip rom
         Write_Byte(0xbe);	// convert		10111110
 

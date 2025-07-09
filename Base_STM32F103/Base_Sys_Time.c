@@ -183,7 +183,7 @@ void SYS_Delay_ms(int n)
 */
 void SYS_Base_Delay (int time,int Speed)
 {
-#if NOP
+#if defined(NOP)
     volatile int temp;
     for (int i = 0; i < time; ++i)
     {

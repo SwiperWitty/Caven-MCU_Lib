@@ -54,7 +54,7 @@ void st7789_dever_delay(int time)
 #ifdef CONFIG_IDF_TARGET_ESP32
     vTaskDelay(time);
 #else
-#ifdef NOP
+#if defined(NOP)
     SYS_Base_Delay(time, 10000);
 #endif
 #endif
