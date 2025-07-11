@@ -65,6 +65,10 @@
     #include "IC_DS18B20.h"
 #endif
 
+#if Exist_DHT11
+    #include "IC_DHT11.h"
+#endif
+
 #if Exist_MLX90614
     #include "IC_MLX90614.h"
 #endif
@@ -125,6 +129,11 @@ struct _Mode_Init
     int (*DS18B20)(int gpiox,int pin,int Set);
 #endif
 
+#if Exist_DHT11
+    int (*DHT11)(int gpiox,int pin,int Set);
+	
+#endif
+
 #if Exist_BUTTON
     void (*Button)(char Channel,int Set);
 #endif
@@ -178,6 +187,9 @@ struct _Mode_Use
 #endif
 #if Exist_DS18B20
     MODE_DS18B20_Way DS18B20;
+#endif
+#if Exist_DHT11
+    MODE_DHT11_Way DHT11;
 #endif
 #if Exist_BUTTON
     MODE_Button_Way Button;

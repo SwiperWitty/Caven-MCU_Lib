@@ -17,11 +17,12 @@ void User_GPIO_config(int gpiox,int pin,int set)
 
     if (set)
     {
+		User_GPIO_set(gpiox,pin,1);
         gpio_init_struct.GPIO_Mode = GPIO_Mode_Out_PP;
     }
     else
     {
-//        gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;                       // 输入
+//		gpio_init_struct.GPIO_Mode = GPIO_Mode_IN_FLOATING;                       // 输入
 		gpio_init_struct.GPIO_Mode = GPIO_Mode_IPU;                       // 输入
     }
     if (pin >= 16)
@@ -69,7 +70,6 @@ void User_GPIO_config(int gpiox,int pin,int set)
 //        break;
     }
     RCC_APB2PeriphClockCmd(value,ENABLE);
-	User_GPIO_set(gpiox,pin,1);
     GPIO_Init(gpio_x, &gpio_init_struct);
 }
 /*

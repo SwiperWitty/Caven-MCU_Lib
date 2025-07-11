@@ -62,6 +62,9 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 #if Exist_DS18B20
     Mode_Use.DS18B20.Get_Temp = DS18B20_Get_Temp_Fun;
 #endif
+#if Exist_DHT11
+    Mode_Use.DHT11.Get_data = DHT11_Get_data_Fun;
+#endif
 
 #if Exist_UART
     Mode_Use.UART.Send_Data_pFun = MODE_UART_Send_Data_Fun;
@@ -137,6 +140,9 @@ void Mode_Index(void)
 #endif
 #if Exist_DS18B20
     Mode_Init.DS18B20 = MODE_DS18B20_Init;
+#endif
+#if Exist_DHT11
+    Mode_Init.DHT11 = MODE_DHT11_Init;
 #endif
 
 #if Exist_BUTTON

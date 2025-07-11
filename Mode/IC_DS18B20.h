@@ -8,8 +8,6 @@
 #endif
 
 /*
-	// 30min  set 60max
-	// 1-L  15min read (60min next)
 */
 
 

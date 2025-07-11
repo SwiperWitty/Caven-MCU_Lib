@@ -12,7 +12,8 @@ static int DS18B20_Exist_Flag = 0;
 void DS18B20_Delay (int Num)
 {
 #if Exist_DS18B20
-    SYS_Base_Delay(Num,DS18B20_Time);
+//    SYS_Base_Delay(Num,DS18B20_Time);
+	SYS_Delay_us(Num);
 #endif
 }
 
@@ -22,15 +23,15 @@ char DS18B20_Start (void)
 #if Exist_DS18B20
 	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
 	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (1);
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);DS18B20_Delay (50);		// 480us-900us(600)
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);DS18B20_Delay (600);		// 480us-900us(600)
 	
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (2);		// 15-60us(30)
+	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (40);		// 15-60us(40)
 	
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);
 	
     int time = 0;
     do{
-        DS18B20_Delay (2);
+        DS18B20_Delay (30);
         time++;
         if(time >= 8)	// 240us
         {
@@ -38,9 +39,10 @@ char DS18B20_Start (void)
             return temp;                    //启动失败了
         }
     }while(User_GPIO_get(DS18B20_gpiox,DS18B20_pin) == 1);
-	DS18B20_Delay (10);
+	DS18B20_Delay (400);
 	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
-	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
+	
+	DS18B20_Delay (30);
 	temp = 1;
 #endif
 	return temp;
@@ -77,34 +79,33 @@ static void Write_Byte (char Data)
     char Temp = Data;
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
     User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
-    DS18B20_Delay (1);		// 12us
+    DS18B20_Delay (1);		// 5us
 	
     for (char i = 8; i > 0; i--)
     {
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);
-        DS18B20_Delay (1);			// 12us
+        DS18B20_Delay (1);			// 5us
 
         if(Temp & 0x01)             // 与1按位与运算，Data最低位为1时DQ总线为1，Data最低位为0时DQ总线为0
         {
             User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
-            DS18B20_Delay (3);
         }
         else
         {
-            DS18B20_Delay (3);
         }
+		DS18B20_Delay (60);
         Temp >>= 1;
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
         DS18B20_Delay (1);
-
     }
-    DS18B20_Delay (1);
+	DS18B20_Delay (30);
 #endif
 }
 
 static char Read_Byte (void)
 {
     char Data = 0;
+	char gpi = 0;
 #if Exist_DS18B20
     for (char i = 0; i < 8; i++)
     {
@@ -112,26 +113,37 @@ static char Read_Byte (void)
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
         DS18B20_Delay (1);
         User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);         // 低脉冲
-		DS18B20_Delay (0);
-        User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);		// 弱拉高
-
-        DS18B20_Delay (2);
+		DS18B20_Delay (3);
+		User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);			// 拉高
+        User_GPIO_config(DS18B20_gpiox,DS18B20_pin,0);
+        DS18B20_Delay (1);
 		Data >>= 1;
-		if(User_GPIO_get(DS18B20_gpiox,DS18B20_pin))
-		{ Data |= 0x80; }
+		Data |= 0x80;
+		for(int k = 0;k < 5;k++)		// 50us内读到Low都算
+		{
+			gpi = User_GPIO_get(DS18B20_gpiox,DS18B20_pin);
+			DS18B20_Delay (10);
+			if(gpi == 0)
+			{
+				Data &= ~(0x80);
+			}
+		}
 		//else {0}
-		DS18B20_Delay (2);
     }
 
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+	DS18B20_Delay (30);
 #endif
     return Data;
 }
 
+/*
+stm32f103实测6.5ms一个周期
+*/
 float DS18B20_Get_Temp_Fun (void)
 {
     float Temp = 0;
-	if(DS18B20_Start () == 0)
+	if(DS18B20_Start () == 1)
 	{ 
 //        return 0;
         DS18B20_Exist_Flag = 1;
@@ -139,7 +151,7 @@ float DS18B20_Get_Temp_Fun (void)
 	
     if(DS18B20_Exist_Flag)      //  在DB18B20存在的情况下
     {
-        int Data;
+        int Data = 0;
         unsigned char Temp_H,Temp_L;
 		char t = 0;
 
@@ -157,19 +169,21 @@ float DS18B20_Get_Temp_Fun (void)
 		if(Temp_H > 7)
 		{
 			Temp_H = ~Temp_H;
-			Temp_L = ~Temp_L;
-			t = 1;
+			Temp_L = ~Temp_L; 
+			t = 0;			// 温度为负  
 		}
-        Data = Temp_H;
-        Data <<= 8;
-        Data += Temp_L;
-
+		else 
+			t = 1;			// 温度为正	  	  
+		Data = Temp_H;
+		Data <<= 8;    
+		Data += Temp_L;
 		Temp = Data;
-		Temp *= (float)0.0625;	
+		Temp = (float)Temp*0.0625;  
 		if(t)
-		{Temp = -Temp;}
-    }
-    return Temp;
+			return Temp;
+		else 
+			return -Temp;
+	}
+	return Temp;
 }
-
 
