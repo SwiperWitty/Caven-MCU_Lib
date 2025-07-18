@@ -27,7 +27,7 @@ typedef struct
     float (*Distance)(void);
 }MODE_Ultrasonic_Way;
 
-int MODE_Ultrasonic_Init (int Set);//初始化
-float Distance(void);//距离
+int MODE_Ultrasonic_Init (int Set);
+float MODE_Ultrasonic_Distance (void);
 
 #endif

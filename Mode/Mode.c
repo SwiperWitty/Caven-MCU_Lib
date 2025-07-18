@@ -84,7 +84,7 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
     Mode_Use.Button.State_pFun = MODE_Get_Button_State_Fun;
 #endif
 #if Exist_Ultrasonic
-    Mode_Use.Ultrasonic.Distance = Distance;
+    Mode_Use.Ultrasonic.Distance = MODE_Ultrasonic_Distance;
 #endif
 
 #if Exist_Voice
