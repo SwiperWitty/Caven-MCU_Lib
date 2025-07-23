@@ -94,8 +94,8 @@ float MODE_Ultrasonic_Distance (void)
 	}
 	while(temp_num == 1);	//等待信号发出，信号发出，计数器置0,信号发出，变为高电平，引脚置1
 	
-	//v = 340m/s = 34000cm/s = 34000cm/10^6us = 0.034cm/us
-	distance = (float)count*0.17;
+	//v = 340m/s = 34000cm/s = 34000cm/10^6us = 0.034cm/us ;distance = run_distance / 2
+	distance = (float)count*0.017;
 #endif
 	return distance;
 }
