@@ -95,6 +95,12 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
     Mode_Use.Steering_Engine.Set_360_Sport = MODE_Steering_Engine_360_Sport_Fun;
     Mode_Use.Steering_Engine.Bind_PWM_Time = MODE_Steering_Engine_Bind_PWM_Time;
 #endif  
+#if Exist_Motor_BYJ
+    Mode_Use.Motor_BYJ.Drive = Motor_BYJ_Drive;
+#endif 
+#if Exist_Motor_STEP
+    Mode_Use.Motor_Step.Drive = Motor_Step_Drive;
+#endif 
 
 #if Exist_ADC
     Mode_Use.USER_ADC.Get_MCU_Temperature_pFun = ADC_Get_MCU_Temperature_Fun;
@@ -158,6 +164,12 @@ void Mode_Index(void)
 #if Exist_Steering_Engine
     Mode_Init.Steering_Engine = MODE_Steering_Engine_Init;
 #endif  
+#if Exist_Motor_BYJ
+    Mode_Init.Motor_BYJ = Motor_BYJ_Init;
+#endif 
+#if Exist_Motor_STEP
+    Mode_Init.Motor_STEP = Motor_Step_Init;
+#endif 
 
 #if Exist_ADC
     Mode_Init.User_ADC = Base_ADC_Init;

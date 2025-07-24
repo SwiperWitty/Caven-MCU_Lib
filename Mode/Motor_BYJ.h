@@ -11,7 +11,11 @@
     28BJY48(28表示电机直径28毫米，B表示步进电机，Y表示永磁，J表示带减速箱48表示可以四拍和八拍运行)
     
 */
-#define Reduction 512 
+
+typedef struct
+{
+    char (*Drive) (char Rotation,char Mode,int Code);
+}MODE_Motor_BYJ_Way;
 
 void Motor_BYJ_Init(int Set);
 char Motor_BYJ_Drive(char Rotation,char Mode,int Code);

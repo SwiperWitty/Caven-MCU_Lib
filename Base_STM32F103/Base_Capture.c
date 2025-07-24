@@ -150,7 +150,7 @@ void TIM1_Capture_GPIO_Init(int Set)
     {
         RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA,ENABLE);
         
-		gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;                                         //复用模式
+		gpio_init_struct.GPIO_Speed = GPIO_Speed_50MHz;                                         // 复用模式
         gpio_init_struct.GPIO_Mode = GPIO_Mode_IPD;
 		gpio_init_struct.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11;
         GPIO_Init(GPIOA, &gpio_init_struct);
@@ -291,7 +291,7 @@ void TIM1_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 双边沿捕获
 		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
 		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
 		TIM_ICInitStructure.TIM_ICFilter = 0x0;
@@ -427,7 +427,7 @@ void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 	TIM_TimeBaseStructure.TIM_Prescaler = psc;
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);                    //向上计数
+	TIM_TimeBaseInit(Temp_TIM, &TIM_TimeBaseStructure);                    // 向上计数
 	if (mode)
 	{
 		TIM_EncoderInterfaceConfig(Temp_TIM, TIM_EncoderMode_TI12,TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
@@ -444,7 +444,7 @@ void TIM3_Capture_Start_Init(int arr,int psc,char Channel,char mode,int Set)
 		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 		NVIC_Init(&NVIC_InitStructure);
 		
-		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 上升沿捕获
+		TIM_ICInitStructure.TIM_ICPolarity = TIM_ICPolarity_BothEdge;		// 双边沿捕获
 		TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
 		TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
 		TIM_ICInitStructure.TIM_ICFilter = 0x0;
@@ -504,7 +504,7 @@ void TIM1_HANDLERIT ()
 	TIM_Capture_Type temp_Capture = {0};
     if(TIM_GetITStatus(Temp_TIM, TIM_IT_CC1) != RESET && TIM1_enable & 0x01)
     {
-        temp_level = User_GPIO_get(1,8);
+		temp_level = User_GPIO_get(1,8);
         temp_num = TIM_GetCapture1(Temp_TIM);
 		memset(&temp_Capture,0,sizeof(TIM_Capture_Type));
 		if (time1_ch1_mode == 0 && temp_level == 1)

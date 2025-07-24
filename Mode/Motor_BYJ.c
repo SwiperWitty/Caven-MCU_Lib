@@ -1,21 +1,25 @@
 #include "Motor_BYJ.h"
 
+static int Reduction = 512;
 
 void Motor_BYJ_Init(int Set)
 {
-#if Exist_STEP_Motor
-    STEP_Motor_GPIO_Init (Set);       // 初始GPIO
+#if Exist_Motor_BYJ
+    User_GPIO_config(1,0,Set);       // 初始GPIO
+	User_GPIO_config(1,1,Set);
+	User_GPIO_config(1,6,Set);
+	User_GPIO_config(1,7,Set);
     if(Set)
     {
-        STEP_OUT_L(0);
-        STEP_OUT_L(1);
-        STEP_OUT_L(2);
-        STEP_OUT_L(3); 
+        User_GPIO_set(1,0,0);
+        User_GPIO_set(1,1,0);
+		User_GPIO_set(1,6,0);
+		User_GPIO_set(1,7,0);
     }
 #endif
 }
 
-#if Exist_STEP_Motor
+#if Exist_Motor_BYJ
 static void Motor_BYJ_delay(int time)
 {
     int j;
@@ -24,9 +28,9 @@ static void Motor_BYJ_delay(int time)
         j = 1000;
         do
         {
-            __nop();
-            __nop();
-            __nop();
+            NOP();
+            NOP();
+            NOP();
         }
         while(j--);
     }
@@ -36,40 +40,40 @@ static void Motor_BYJ_delay(int time)
 void Motor_BYJ_Angle (char Step)
 {
     char temp = Step;
-    STEP_OUT_L(0);
-    STEP_OUT_L(1);
-    STEP_OUT_L(2);
-    STEP_OUT_L(3); 
+	User_GPIO_set(1,0,0);
+	User_GPIO_set(1,1,0);
+	User_GPIO_set(1,6,0);
+	User_GPIO_set(1,7,0);
     
     switch (temp)
     {
     case 0:
-        STEP_OUT_H(0);
+        User_GPIO_set(1,0,1);
         break;
     case 1:
-        STEP_OUT_H(0);
-        STEP_OUT_H(1);
+        User_GPIO_set(1,0,1);
+		User_GPIO_set(1,1,1);
         break;
     case 2:
-        STEP_OUT_H(1);
+        User_GPIO_set(1,1,1);
         break;
     case 3:
-        STEP_OUT_H(1);
-        STEP_OUT_H(2);
+        User_GPIO_set(1,1,1);
+        User_GPIO_set(1,6,1);
         break;
     case 4:
-        STEP_OUT_H(2);
+        User_GPIO_set(1,6,1);
         break;
     case 5:
-        STEP_OUT_H(2);
-        STEP_OUT_H(3);
+        User_GPIO_set(1,6,1);
+        User_GPIO_set(1,7,1);
         break;
     case 6:
-        STEP_OUT_H(3);
+        User_GPIO_set(1,7,1);
         break;
     case 7:
-        STEP_OUT_H(3);
-        STEP_OUT_H(0);
+        User_GPIO_set(1,7,1);
+        User_GPIO_set(1,0,1);
         break;
 
     default:
@@ -86,7 +90,7 @@ char Motor_BYJ_Drive(char Rotation,char Mode,int Code)
     Mode = 1: Code = 转动圈数
     */
     char Retval = 0;
-#if Exist_STEP_Motor
+#if Exist_Motor_BYJ
     if(Mode != 0 && Mode != 1)
     {
         return Retval;

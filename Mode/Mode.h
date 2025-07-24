@@ -41,6 +41,9 @@
 #if Exist_Motor_BYJ
     #include "Motor_BYJ.h"
 #endif
+#if Exist_Motor_STEP
+    #include "Motor_Step.h"
+#endif
 
 #if Exist_BUTTON
     #include "MODE_Button.h"        // 按键输入
@@ -147,6 +150,12 @@ struct _Mode_Init
 #if Exist_Steering_Engine
     int (*Steering_Engine) (int Set);
 #endif
+#if Exist_Motor_BYJ
+	void (*Motor_BYJ) (int Set);
+#endif
+#if Exist_Motor_STEP
+    void (*Motor_STEP) (int gpiox,int PUL_pin,int DIR_pin,int Set);
+#endif
 
 #if Exist_ADC
     int (*User_ADC) (int Set);
@@ -203,6 +212,12 @@ struct _Mode_Use
 #endif
 #if Exist_Steering_Engine
     MODE_Steering_Engine_Way Steering_Engine;
+#endif
+#if Exist_Motor_BYJ
+    MODE_Motor_BYJ_Way Motor_BYJ;
+#endif
+#if Exist_Motor_STEP
+    MODE_Motor_Step_Way Motor_Step;
 #endif
 
 #if Exist_ADC
