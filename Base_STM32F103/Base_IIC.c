@@ -2,6 +2,7 @@
 
 
 #if Exist_IIC
+static int iic_enable_flag  = 0;
 extern void SYS_Base_Delay(int time, int speed);
 static void IIC_Delay (int time)
 {
@@ -215,6 +216,11 @@ char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed
 void Base_IIC_Init(int set)
 {
 #if Exist_IIC
+	if(iic_enable_flag == set)
+	{
+		return;
+	}
+	iic_enable_flag = set;
     if (set)
     {
         User_GPIO_config(GPIO_IIC,IIC_SCL,1);

@@ -4,13 +4,12 @@
 #define TRIG_PIN	4
 #define ECHO_PIN	5
 
+#if Exist_Ultrasonic
 void Ultrasonic_Delay (int Num)
 {
-#if Exist_Ultrasonic
-//    SYS_Base_Delay(Num,DS18B20_Time);
 	SYS_Delay_us(Num);
-#endif
 }
+#endif
 
 int MODE_Ultrasonic_Init(int Set)
 {

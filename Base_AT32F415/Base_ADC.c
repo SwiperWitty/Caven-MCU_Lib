@@ -56,10 +56,10 @@ static void ADC1_DMA_Config (void)
     {
         dma_init_struct.buffer_size = Channel_NUMs;
         dma_init_struct.memory_base_addr = (uint32_t)ADC1_DMA_list;
+		dma_init_struct.peripheral_base_addr = (uint32_t)&(ADC1->odt);
         dma_init_struct.direction = DMA_DIR_PERIPHERAL_TO_MEMORY;
         dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_HALFWORD;
         dma_init_struct.memory_inc_enable = TRUE;
-        dma_init_struct.peripheral_base_addr = (uint32_t)&(ADC1->odt);
         dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_HALFWORD;
         dma_init_struct.peripheral_inc_enable = FALSE;
         dma_init_struct.priority = DMA_PRIORITY_HIGH;

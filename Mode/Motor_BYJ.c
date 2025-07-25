@@ -1,6 +1,6 @@
 #include "Motor_BYJ.h"
 
-static int Reduction = 512;
+int Reduction_BYJ = 512;
 
 void Motor_BYJ_Init(int Set)
 {
@@ -101,7 +101,7 @@ char Motor_BYJ_Drive(char Rotation,char Mode,int Code)
     {
         while(temp)
         {
-            for (int k = 0;k < Reduction;k++)   //转动一圈
+            for (int k = 0;k < Reduction_BYJ;k++)   //转动一圈
             {
                 for(int i = 0;i < 8;i++)        //转动一周
                 {
@@ -124,7 +124,7 @@ char Motor_BYJ_Drive(char Rotation,char Mode,int Code)
             return Retval;
         }
         float Angle = temp;
-        Angle = (Angle / 360) * Reduction;
+        Angle = (Angle / 360) * Reduction_BYJ;
         temp = Angle;
         for (int k = 0;k < temp;k++)   //转动一圈
         {

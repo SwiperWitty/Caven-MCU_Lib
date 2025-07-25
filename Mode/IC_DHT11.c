@@ -5,31 +5,12 @@
 static int DHT11_gpiox = 0,DHT11_pin = 0;
 static void Write_Byte (char Data);
 
-#endif
 
 static int DS18B20_Exist_Flag = 0;
 
 void DHT11_Delay (int Num)
 {
-#if Exist_DHT11
-//    SYS_Base_Delay(Num,DS18B20_Time);
-	SYS_Delay_us(Num);
-#endif                                                                                                                   
-}
-
-int MODE_DHT11_Init (int gpiox,int pin,int Set)
-{
-	int temp = 0;
-    
-#if Exist_DHT11
-    DHT11_gpiox = gpiox;
-    DHT11_pin = pin;
-    User_GPIO_config(DHT11_gpiox,DHT11_pin,1);
-	User_GPIO_set(DHT11_gpiox,DHT11_pin,1);
-	SYS_Delay_ms (2000);
-
-#endif
-	return temp; 
+	SYS_Delay_us(Num);                                                                                                            
 }
 
 /*
@@ -79,7 +60,7 @@ static char Read_Byte (void)
 {
 	unsigned char retry = 0;
 	unsigned char data = 0;
-#if Exist_DHT11
+
 	User_GPIO_config(DHT11_gpiox,DHT11_pin,0);
     for (char i = 0; i < 8; i++)
     {
@@ -108,8 +89,23 @@ static char Read_Byte (void)
 			break;
 		}
     }
-#endif
     return data;
+}
+#endif
+
+int MODE_DHT11_Init (int gpiox,int pin,int Set)
+{
+	int temp = 0;
+    
+#if Exist_DHT11
+    DHT11_gpiox = gpiox;
+    DHT11_pin = pin;
+    User_GPIO_config(DHT11_gpiox,DHT11_pin,1);
+	User_GPIO_set(DHT11_gpiox,DHT11_pin,1);
+	SYS_Delay_ms (2000);
+
+#endif
+	return temp; 
 }
 
 /*
@@ -120,6 +116,7 @@ static char Read_Byte (void)
 int DHT11_Get_data_Fun (int *temp,int *hum)
 {
 	int retval = 0;
+#if Exist_DHT11
 	unsigned int R_H,R_L,T_H,T_L;
 	unsigned char RH = 0,RL = 0,TH = 0,TL = 0,CHECK = 0;
 	
@@ -155,5 +152,6 @@ int DHT11_Get_data_Fun (int *temp,int *hum)
 		}
 		retval = 1;
 	}
+#endif
 	return retval;
 }

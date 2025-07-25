@@ -350,10 +350,10 @@ int LCD_Set_TargetModel(char set)
 	}
 	else if (set > 10 && set < 20) // MODE_st7789
 	{
-		s_LCD_Set_Address_pFun = MODE_st7789_dever_Set_Address;
-		s_LCD_WR_Data_pFun = MODE_st7789_dever_WR_Data;
-		s_LCD_Send_Data_pFun = MODE_st7789_dever_Send_Data;
-		LCD_Target_Model = MODE_st7789_dever_Set_TargetModel(set);
+		s_LCD_Set_Address_pFun = MODE_st7789_drive_Set_Address;
+		s_LCD_WR_Data_pFun = MODE_st7789_drive_WR_Data;
+		s_LCD_Send_Data_pFun = MODE_st7789_drive_Send_Data;
+		LCD_Target_Model = MODE_st7789_drive_Set_TargetModel(set);
 	}
 	else
 	{
@@ -378,7 +378,7 @@ int LCD_Set_Horizontal(char set)
 	}
 	else if (LCD_Target_Model > 10 && LCD_Target_Model < 20)
 	{
-		LCD_Horizontal = MODE_st7789_dever_Set_Horizontal(set);
+		LCD_Horizontal = MODE_st7789_drive_Set_Horizontal(set);
 	}
 	else
 	{
@@ -465,7 +465,7 @@ int MODE_LCD_Init(int set)
 	}
 	else if (LCD_Target_Model > 10 && LCD_Target_Model < 20)
 	{
-		retval = MODE_st7789_dever_Init(set);
+		retval = MODE_st7789_drive_Init(set);
 	}
 	else
 	{
@@ -473,7 +473,7 @@ int MODE_LCD_Init(int set)
 	}
 	// 4
 	LCD_Fill_Fun(0, 0, LCD_W_Max, LCD_H_Max, LCD_Back_Color);
-	MODE_st7789_dever_Display(1);
+	MODE_st7789_drive_Display(1);
 #endif
 	return retval;
 }

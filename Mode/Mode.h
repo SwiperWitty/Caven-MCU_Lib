@@ -158,7 +158,7 @@ struct _Mode_Init
 #endif
 
 #if Exist_ADC
-    int (*User_ADC) (int Set);
+    int (*Base_ADC) (int Set);
 #endif
 
 };
@@ -221,7 +221,7 @@ struct _Mode_Use
 #endif
 
 #if Exist_ADC
-    MODE_USER_ADC_Way USER_ADC;
+    MODE_USER_ADC_Way Base_ADC;
 #endif
 };
 

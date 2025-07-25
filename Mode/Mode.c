@@ -103,9 +103,9 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 #endif 
 
 #if Exist_ADC
-    Mode_Use.USER_ADC.Get_MCU_Temperature_pFun = ADC_Get_MCU_Temperature_Fun;
-    Mode_Use.USER_ADC.Conversion_Vol_pFun = ADC_Conversion_Vol_Fun; 
-    Mode_Use.USER_ADC.Receive_Bind_pFun = ADC_Quick_Get_Bind_Fun;
+    Mode_Use.Base_ADC.Get_MCU_Temperature_pFun = ADC_Get_MCU_Temperature_Fun;
+    Mode_Use.Base_ADC.Conversion_Vol_pFun = ADC_Conversion_Vol_Fun; 
+    Mode_Use.Base_ADC.Receive_Bind_pFun = ADC_Quick_Get_Bind_Fun;
 #endif
 
 }   //  Mode_Use 
@@ -172,7 +172,7 @@ void Mode_Index(void)
 #endif 
 
 #if Exist_ADC
-    Mode_Init.User_ADC = Base_ADC_Init;
+    Mode_Init.Base_ADC = Base_ADC_Init;
 #endif
 
 }   // Mode_Index

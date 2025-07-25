@@ -5,22 +5,17 @@ static int DS18B20_Time = 0;
 static int DS18B20_gpiox = 0,DS18B20_pin = 0;
 static void Write_Byte (char Data);
 
-#endif
 
 static int DS18B20_Exist_Flag = 0;
 
 void DS18B20_Delay (int Num)
 {
-#if Exist_DS18B20
-//    SYS_Base_Delay(Num,DS18B20_Time);
 	SYS_Delay_us(Num);
-#endif
 }
 
 char DS18B20_Start (void)
 {
 	char temp = 0;
-#if Exist_DS18B20
 	User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
 	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);DS18B20_Delay (1);
 	User_GPIO_set(DS18B20_gpiox,DS18B20_pin,0);DS18B20_Delay (600);		// 480us-900us(600)
@@ -44,38 +39,11 @@ char DS18B20_Start (void)
 	
 	DS18B20_Delay (30);
 	temp = 1;
-#endif
 	return temp;
-}
-
-int MODE_DS18B20_Init (int gpiox,int pin,int Set)
-{
-	int temp = 0;
-    
-#if Exist_DS18B20
-    DS18B20_gpiox = gpiox;
-    DS18B20_pin = pin;
-    User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
-    #ifdef MCU_SYS_FREQ
-    DS18B20_Time = (MCU_SYS_FREQ/1000000);
-    #else
-    DS18B20_Time = 100;
-    #endif
-	DS18B20_Delay (500);
-	if(DS18B20_Start () == 1)
-	{
-		DS18B20_Exist_Flag = 1;             //成功
-		temp = 1;
-        DS18B20_Delay (50);
-        DS18B20_Get_Temp_Fun();
-	}
-#endif
-	return temp; 
 }
 
 static void Write_Byte (char Data)
 {
-#if Exist_DS18B20
     char Temp = Data;
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
     User_GPIO_set(DS18B20_gpiox,DS18B20_pin,1);
@@ -99,14 +67,12 @@ static void Write_Byte (char Data)
         DS18B20_Delay (1);
     }
 	DS18B20_Delay (30);
-#endif
 }
 
 static char Read_Byte (void)
 {
     char Data = 0;
 	char gpi = 0;
-#if Exist_DS18B20
     for (char i = 0; i < 8; i++)
     {
         User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
@@ -133,8 +99,33 @@ static char Read_Byte (void)
 
     User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
 	DS18B20_Delay (30);
-#endif
     return Data;
+}
+#endif
+
+int MODE_DS18B20_Init (int gpiox,int pin,int Set)
+{
+	int temp = 0;
+    
+#if Exist_DS18B20
+    DS18B20_gpiox = gpiox;
+    DS18B20_pin = pin;
+    User_GPIO_config(DS18B20_gpiox,DS18B20_pin,1);
+    #ifdef MCU_SYS_FREQ
+    DS18B20_Time = (MCU_SYS_FREQ/1000000);
+    #else
+    DS18B20_Time = 100;
+    #endif
+	DS18B20_Delay (500);
+	if(DS18B20_Start () == 1)
+	{
+		DS18B20_Exist_Flag = 1;             //成功
+		temp = 1;
+        DS18B20_Delay (50);
+        DS18B20_Get_Temp_Fun();
+	}
+#endif
+	return temp; 
 }
 
 /*
@@ -143,6 +134,7 @@ stm32f103实测6.5ms一个周期
 float DS18B20_Get_Temp_Fun (void)
 {
     float Temp = 0;
+#if Exist_DS18B20
 	if(DS18B20_Start () == 1)
 	{ 
 //        return 0;
@@ -184,6 +176,7 @@ float DS18B20_Get_Temp_Fun (void)
 		else 
 			return -Temp;
 	}
+#endif
 	return Temp;
 }
 

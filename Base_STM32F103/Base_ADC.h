@@ -21,7 +21,7 @@
     #define ADC_TEMP_BASE                    (1.26)
     #define ADC_TEMP_SLOPE                   (-0.00423)
 
-    #define ADC_Speed ADC_SampleTime_55Cycles5
+    #define ADC_Speed ADC_SampleTime_239Cycles5
 
     #define ADC_IO_PA0  ADC_Channel_0   // tim5
     #define ADC_IO_PA1  ADC_Channel_1   // tim5 OPEN_0001
@@ -31,8 +31,9 @@
     #define ADC_IO_PA5  ADC_Channel_5   // ADC2 OPEN_0100
     #define ADC_IO_PA6  ADC_Channel_6   // tim3
     #define ADC_IO_PA7  ADC_Channel_7   // tim3 OPEN_1000
-
-    #define ADC_Temp    ADC_Channel_16  // 温传
+    #define ADC_IO_PB0  ADC_Channel_8   // 
+    #define ADC_IO_PB1  ADC_Channel_9   //	OPEN_10000
+//    #define ADC_Temp    ADC_Channel_16  // 温传
     
     #define ADC_FINISH_HANDLERIT() DMA1_Channel1_IRQHandler()
 #endif
