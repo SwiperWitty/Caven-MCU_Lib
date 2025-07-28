@@ -113,7 +113,7 @@ int MODE_DHT11_Init (int gpiox,int pin,int Set)
 20%~90%RH，误差±5%RH
 
 */
-int DHT11_Get_data_Fun (int *temp,int *hum)
+int MODE_DHT11_Get_data_Fun (int *temp,int *hum)
 {
 	int retval = 0;
 #if Exist_DHT11

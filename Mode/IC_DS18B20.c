@@ -122,7 +122,7 @@ int MODE_DS18B20_Init (int gpiox,int pin,int Set)
 		DS18B20_Exist_Flag = 1;             //成功
 		temp = 1;
         DS18B20_Delay (50);
-        DS18B20_Get_Temp_Fun();
+        MODE_DS18B20_Get_Temp_Fun();
 	}
 #endif
 	return temp; 
@@ -131,7 +131,7 @@ int MODE_DS18B20_Init (int gpiox,int pin,int Set)
 /*
 stm32f103实测6.5ms一个周期
 */
-float DS18B20_Get_Temp_Fun (void)
+float MODE_DS18B20_Get_Temp_Fun (void)
 {
     float Temp = 0;
 #if Exist_DS18B20

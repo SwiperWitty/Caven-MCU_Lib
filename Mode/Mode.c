@@ -60,10 +60,14 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
     Mode_Use.HC138.Set_DATA = HC138_Set_Data_Fun;
 #endif
 #if Exist_DS18B20
-    Mode_Use.DS18B20.Get_Temp = DS18B20_Get_Temp_Fun;
+    Mode_Use.DS18B20.Get_Temp = MODE_DS18B20_Get_Temp_Fun;
 #endif
 #if Exist_DHT11
-    Mode_Use.DHT11.Get_data = DHT11_Get_data_Fun;
+    Mode_Use.DHT11.Get_data = MODE_DHT11_Get_data_Fun;
+#endif
+#if Exist_HX711
+	Mode_Use.HX711.Calibrate = MODE_HX711_Calibrate;
+	Mode_Use.HX711.Get_Weight = MODE_HX711_Get_Weight;
 #endif
 
 #if Exist_UART
@@ -149,6 +153,9 @@ void Mode_Index(void)
 #endif
 #if Exist_DHT11
     Mode_Init.DHT11 = MODE_DHT11_Init;
+#endif
+#if Exist_HX711
+	Mode_Init.HX711 = MODE_IC_HX711_Init;
 #endif
 
 #if Exist_BUTTON

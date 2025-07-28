@@ -133,7 +133,12 @@ void TIM3_PWM_Start_Init(int arr,int psc,int Set)
 #endif
 }
 
-// 溢出时间 T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 20MS
+/* 
+arr是run_cnt溢出值，psc是对时钟源的分频
+溢出时间 T = ((arr + 1) * (por + 1)) / MCU_SYS_FREQ = 0.02s(20MS)
+arr = 2000
+por = (MCU_SYS_FREQ / 100000)-1
+*/
 void TIM4_PWM_Start_Init(int arr,int psc,int Set)
 {
 #if Exist_PWM

@@ -23,8 +23,8 @@ void SYS_Feed_Watchdog (void);
 
 */
 
-#ifndef _SYS_TIME_H__
-#define _SYS_TIME_H__
+#ifndef BASE_SYS_TIME_H__
+#define BASE_SYS_TIME_H__
 
 
 

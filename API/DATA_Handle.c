@@ -1,59 +1,6 @@
 #include "Data_Handle.h"
 #include "debug_log.h"
 
-/*
-
-*/
-int Data_Sign_atof_Handle (Sign_atof_Type *Item)
-{
-    char i,n,m = 0;
-    char flag = 1;                            //i是当前找的是 第几个 Sign
-	char Data_Array[12] = {0};                  //数字的str数
-    char str[50];                               //装source数据到这个缓存区，这个缓存区是可变的
-    char Find_Time = strlen(Item->Sign);        //要找多少个
-    char Length = strlen(Item->Source);         //源的长度
-    strcpy(str,Item->Source);
-    if(Length > 50)
-        Length = 50;
-    for (i = 0; i < Find_Time; i++)
-    {
-        flag = 0;
-        for(n = 0;n < Length;n++)
-        {
-            if(str[n] == Item->Sign[i])             //找到标志
-            {
-                str[n] = 0;
-                flag = 1;                           //开始识别str
-                m = 0;
-            }
-            if(flag)
-            {
-                if((str[n] <= '9' && str[n] >= '0') || str[n] == '.' || str[n] == '-')
-                {
-                    Data_Array[m] = str[n];         //把数字相关str的装起来
-                    m++;                            //m是数字在str的长度
-                }
-                else
-                {
-                    if(m > 0)                       //数字部分结束
-                    {
-                        if(Data_Array[m-1] == '.' || Data_Array[m-1] == '-')    //不让最后一位为 '.' and '-'
-                            Data_Array[m-1] = '\0';                             //防止 atof()函数出错
-                        else
-                            Data_Array[m] = '\0';
-                        break;
-                    }
-                }
-            }
-        
-        }
-        Item->NUM[i] = atof(Data_Array);
-        Item->flag = i;
-    }
-
-    return Item->flag;
-}
-
 int Caven_Hex_To_String (uint8_t *array,int len,char *ret_str)
 {
     int retval = 0,offset = 0;
@@ -102,7 +49,7 @@ int Caven_String_To_Hex (char *str)
 }
 
 /*
-
+	find substr in full_data,return pointer
 */
 char* memstr(void* full_data, char* substr,int full_data_len)
 {
@@ -115,10 +62,14 @@ char* memstr(void* full_data, char* substr,int full_data_len)
     }
     int sublen = strlen(substr);
  
-    int i;
     char* cur = full_data;
     int last_possible = full_data_len - sublen + 1;
-    for (i = 0; i < last_possible; i++) {
+    for (int i = 0; i < last_possible; i++) 
+	{
+		if (((char*)full_data - cur) + sublen > full_data_len)
+		{
+			return NULL;
+		}
         if (*cur == *substr) {
             //assert(full_data_len - i >= sublen);
             if (memcmp(cur, substr, sublen) == 0) {
@@ -132,7 +83,7 @@ char* memstr(void* full_data, char* substr,int full_data_len)
 }
 
 /*
-    retval = data_gain_str_by_sign
+    retval = Caven_gain_str_by_sign
     retval < 0:未获得
     retval > 0:获得,且为数据距file偏移
     retval = 0:获得,但是[sign]可能没找到
@@ -146,12 +97,12 @@ char* memstr(void* full_data, char* substr,int full_data_len)
     ret:
         777
     run:
-        data_gain_str_by_sign("caven:[996]",strlen("caven777"),temp_array,"caven",'[');
+        data_gain_str_by_sign("caven:[996]",strlen("caven[996]"),temp_array,"caven",'[');
         printf("%s",temp_array);
     ret:
         996
 */
-int data_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,char sign)
+int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,char sign)
 {
     int retval = -1;    // 未获得
     char *str_pointer = NULL;
@@ -234,6 +185,13 @@ int data_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,cha
     return retval;
 }
 
+/*
+	字符串转ip
+str:192.168.1.10,IpSize:4
+run
+retval = 0
+ip:c0 a8 01 0a
+*/
 int Caven_Str_To_ip (char *str,uint8_t *ip,int IpSize)
 {
     int retval = 1,offset,temp_num,temp_run;
@@ -247,7 +205,7 @@ int Caven_Str_To_ip (char *str,uint8_t *ip,int IpSize)
         for (int i = 0; i < (IpSize - 1); i++)
         {
             memset(temp_array,0,sizeof(temp_array));
-            offset = data_gain_str_by_sign(temp_pointer,strlen(temp_pointer),temp_array,".",0);
+            offset = Caven_gain_str_by_sign(temp_pointer,strlen(temp_pointer),temp_array,".",0);
             if (offset >= 0)
             {
                 ip[temp_run++] = atoi(temp_array) & 0xff;
@@ -265,10 +223,11 @@ int Caven_Str_To_ip (char *str,uint8_t *ip,int IpSize)
 }
 
 /*
-    data是要载入的，最终装载到array数组
-    如果得到结果，reverse会被改变（中值滤波结果），否则reverse不变
-    run在载入状态会自动++，超过array_num会置零
-    retval = 1则成功，retval = 0则正在运行，retval = (-1)失败
+	软件中值滤波
+data是要载入的，最终装载到array数组
+如果得到结果，reverse会被改变（中值滤波结果），否则reverse不变
+run在载入状态会自动++，超过array_num会置零
+retval = 1则成功，retval = 0则正在运行，retval = (-1)失败
 */
 int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,char *run,char array_num)
 {
@@ -323,6 +282,8 @@ int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,c
 
 /*
     近似值
+num:12,num_step:5,num_min:0,num_max:100
+retval:10
 */
 int Caven_math_approximate (int num,int num_step,int num_min,int num_max)
 {
@@ -348,6 +309,9 @@ int Caven_math_approximate (int num,int num_step,int num_min,int num_max)
     return retval;
 }
 
+/*
+四舍五入
+*/
 int Caven_math_approximate_float(float num)
 {
 	int retval = 0;

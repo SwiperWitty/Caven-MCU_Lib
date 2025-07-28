@@ -72,6 +72,10 @@
     #include "IC_DHT11.h"
 #endif
 
+#if Exist_HX711
+#include "IC_HX711.h"
+#endif
+
 #if Exist_MLX90614
     #include "IC_MLX90614.h"
 #endif
@@ -134,7 +138,10 @@ struct _Mode_Init
 
 #if Exist_DHT11
     int (*DHT11)(int gpiox,int pin,int Set);
-	
+#endif
+
+#if Exist_HX711
+	int (*HX711) (int gpiox,int SCK_pin,int DOUT_pin,int Set);
 #endif
 
 #if Exist_BUTTON
@@ -200,6 +207,10 @@ struct _Mode_Use
 #if Exist_DHT11
     MODE_DHT11_Way DHT11;
 #endif
+#if Exist_HX711
+	MODE_HX711_Way HX711;
+#endif
+
 #if Exist_BUTTON
     MODE_Button_Way Button;
 #endif

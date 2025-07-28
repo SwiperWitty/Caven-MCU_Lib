@@ -1,5 +1,5 @@
-#ifndef _SYS_TIME_H__
-#define _SYS_TIME_H__
+#ifndef BASE_SYS_TIME_H__
+#define BASE_SYS_TIME_H__
 
 /*
 本文件属于MCU专属文件，每个MCU不同，这里的内容就会不同 ———— 需要系统提供时钟

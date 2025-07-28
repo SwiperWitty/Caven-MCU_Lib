@@ -1,5 +1,5 @@
-#ifndef _SYS_TIME_H__
-#define _SYS_TIME_H__
+#ifndef BASE_SYS_TIME_H__
+#define BASE_SYS_TIME_H__
 #if __cplusplus
 extern "C"
 {

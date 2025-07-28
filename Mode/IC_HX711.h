@@ -14,9 +14,13 @@
 
 typedef struct
 {
-    void (*Set_DATA) (int Data);
-}MODE_HC138_Way;
+	void (*Calibrate)(u16 known_weight);
+    float (*Get_Weight) (u8 times);
+}MODE_HX711_Way;
 
-int MODE_IC_HX711_Init(int gpiox,int SCK_pin,int DOUT_pin,int Set); 
+int MODE_IC_HX711_Init(int gpiox,int SCK_pin,int DOUT_pin,int Set);
+
+void MODE_HX711_Calibrate(u16 known_weight);
+float MODE_HX711_Get_Weight(u8 times);
 
 #endif

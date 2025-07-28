@@ -18,7 +18,7 @@ typedef struct
 
 int MODE_DS18B20_Init (int gpiox,int pin,int Set);
 
-float DS18B20_Get_Temp_Fun (void);
+float MODE_DS18B20_Get_Temp_Fun (void);
 
 
 #endif

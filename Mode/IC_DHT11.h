@@ -19,6 +19,6 @@ typedef struct
 
 int MODE_DHT11_Init (int gpiox,int pin,int Set);
 
-int DHT11_Get_data_Fun (int *temp,int *hum);
+int MODE_DHT11_Get_data_Fun (int *temp,int *hum);
 
 #endif

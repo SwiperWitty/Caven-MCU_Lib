@@ -31,6 +31,9 @@ static int Set_Angle_Cal_180(float Angle)
     return Time_PWM;
 }
 
+/*
+需要20ms周期的PWM波
+*/
 int MODE_Steering_Engine_Init (int Set)
 {
 	int retval = 1;
