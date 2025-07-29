@@ -78,6 +78,8 @@ enum CAVEN_CMD1
     m_CAVEN_CMD1_UDPCfg_Order,
     m_CAVEN_CMD1_UDPMulticast_Order,
     m_CAVEN_CMD1_UDPUpdata_Order,
+	m_CAVEN_CMD1_TCPUpHtdata_Order = 0x1A,
+	m_CAVEN_CMD1_Worktime_Order,
 };
 
 enum CAVEN_CMD2
@@ -121,17 +123,17 @@ enum CAVEN_STATUS
 typedef enum
 {
     m_Result_Back_Succ = 0,
-    m_Result_Back_Vers,
+    m_Result_Fail_Vers,
     m_Result_Fail_Type,
     m_Result_Fail_Addr,
-    m_Result_Back_CMD,
-    m_Result_Back_CMDS,
-    m_Result_Back_Leng,
-    m_Result_Back_CRC,
+    m_Result_Fail_CMD,
+    m_Result_Fail_CMDS,
+    m_Result_Fail_Leng,
+    m_Result_Fail_CRC,
     m_Result_Fail_Spoil,    // 消息损坏
-    m_Result_Back_ERROR,    // 执行失败了
-    m_Result_Back_Other,    // 我可以发出去，但是你不可以返回
-    m_Result_Fail_Empty,    // 执行操作，这条消息不返回
+    m_Result_Fail_ERROR,    // 执行失败了
+    m_Result_Back_Other = 0x0A,
+    m_Result_Back_Empty = 0x0F,	// 静默执行
     m_Result_SUCC = 0x50,   // 完整一帧
 }Caven_info_Result_mType;
 
