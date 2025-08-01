@@ -350,6 +350,7 @@ int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, uint8_t *data)
 /*
  * Caven_packet_data_copy_Fun
  * 把[target]内容给[source]
+ * 核心参数 p_AllData，Get_num
 */
 int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type target)
 {
@@ -363,14 +364,8 @@ int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_
             temp_packet = target;      // 先拿框架
             temp_packet.p_AllData = source->p_AllData;      // 还原指针
             memcpy(temp_packet.p_AllData,target.p_AllData,target.Get_num);
-            if (temp_packet.dSize > 0)
-            {
-                temp_packet.p_Data = temp_packet.p_AllData + 2 + 5 + 2;
-            }
-            else
-            {
-                temp_packet.p_Data = NULL;
-            }
+			temp_packet.p_Data = temp_packet.p_AllData + 2 + 5 + 2;
+
             *source = temp_packet;
         }
     }
@@ -407,11 +402,14 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
 int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
 {
     int retval = 0;
-    target->Result = 0;
-    target->Run_status = 0;
-    target->Get_num = 0;
-    target->end_crc = 0;
-    target->get_crc = 0;
-    target->Comm_way = 0;
+	if (target != NULL)
+	{
+		target->Result = 0;
+		target->Run_status = 0;
+		target->Get_num = 0;
+		target->end_crc = 0;
+		target->get_crc = 0;
+		target->Comm_way = 0;
+	}
     return retval;
 }
