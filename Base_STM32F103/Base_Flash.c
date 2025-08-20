@@ -1,0 +1,92 @@
+#include "Base_Flash.h"
+
+int Base_Addr_Get_Area(int addr)
+{
+    int retval = 0;
+#ifdef Exist_FLASH 
+    if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
+    { 
+//        printf("S-ERROR\r\n"); 
+        retval = (-1);
+        return retval;
+    }
+    retval = (addr - FLASH_START_ADDR) / FLASH_PAGE_SIZE;
+	retval = FLASH_START_ADDR + retval * FLASH_PAGE_SIZE;
+#endif
+    return retval;
+}
+
+int Base_Flash_Read (void *data,int addr,int len)
+{
+    int retval = 0;
+#ifdef Exist_FLASH 
+    if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
+    {
+        retval = (-1);
+        return retval;
+    }
+    if((addr + len) >= FLASH_END_ADDR)
+    {
+        retval = (-1);
+        return retval;
+    }
+    // 直接内存拷贝，按32位读取
+    for (uint32_t i = 0; i < len; i++) {
+       *((uint8_t *)data + i) = *(__IO uint8_t*)(addr + i);
+    }
+#endif
+    return retval;
+}
+
+int Base_Flash_Write (void *data,int addr,int len)
+{
+    int retval = 0,flashStatus = 0;
+#ifdef Exist_FLASH 
+    u32 start_addr = 0,end_addr = 0,temp_data;
+    int temp_num = 0;
+    start_addr = Base_Addr_Get_Area(addr);
+    end_addr = Base_Addr_Get_Area(addr + len);
+    temp_num = (end_addr - start_addr) / FLASH_PAGE_SIZE;
+    FLASH_Unlock();
+    FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);  // 清除所有标志
+    for (int i = 0; i < temp_num; i++)
+    {
+        flashStatus |= FLASH_ErasePage(start_addr + (i * FLASH_PAGE_SIZE));
+    }
+    if (flashStatus == FLASH_COMPLETE)
+    {
+		retval = 0;
+        for (int i = 0; i < len;)
+        {
+            temp_data = 0;
+            temp_num = addr + len;
+            temp_num = temp_num - (start_addr + i);
+            if (temp_num > 4)
+            {
+                temp_num = 4;
+            }
+            for (int j = temp_num; j > 0; j--)
+            {
+                temp_data |= *((uint8_t *)data + i + j);
+				temp_data <<= 8;
+            }
+            flashStatus = FLASH_ProgramWord(start_addr + i, temp_data);
+            i += 4;
+            if(flashStatus != FLASH_COMPLETE)
+            {
+                break;
+            }
+        }
+    }
+    FLASH_Lock();
+#endif
+    if(flashStatus != FLASH_COMPLETE)
+    {
+		retval = 1;
+    }
+    else
+    {
+        retval = 0;
+    }
+	return retval;
+}
