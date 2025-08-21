@@ -1,9 +1,33 @@
 #include "Base_Flash.h"
 
+
+int Base_addr_check (int addr,int len)
+{
+	int retval = 0;
+#if Exist_FLASH 
+	if(len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
+    {
+        retval = (-1);
+        return retval;
+    }
+    if((addr + len) >= FLASH_END_ADDR)
+    {
+        retval = (-1);
+        return retval;
+    }
+#endif
+	return retval;
+}
+
 int Base_Addr_Get_Area(int addr)
 {
     int retval = 0;
-#ifdef Exist_FLASH 
+#if Exist_FLASH 
     if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
     { 
 //        printf("S-ERROR\r\n"); 
@@ -19,17 +43,17 @@ int Base_Addr_Get_Area(int addr)
 int Base_Flash_Read (void *data,int addr,int len)
 {
     int retval = 0;
-#ifdef Exist_FLASH 
-    if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
+#if Exist_FLASH 
+	if(data == NULL || len == 0)
     {
-        retval = (-1);
-        return retval;
+		retval = -2;
+		return retval;
     }
-    if((addr + len) >= FLASH_END_ADDR)
-    {
-        retval = (-1);
-        return retval;
-    }
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
     // 直接内存拷贝，按32位读取
     for (uint32_t i = 0; i < len; i++) {
        *((uint8_t *)data + i) = *(__IO uint8_t*)(addr + i);
@@ -41,12 +65,30 @@ int Base_Flash_Read (void *data,int addr,int len)
 int Base_Flash_Write (void *data,int addr,int len)
 {
     int retval = 0,flashStatus = 0;
-#ifdef Exist_FLASH 
+#if Exist_FLASH 
     u32 start_addr = 0,end_addr = 0,temp_data;
     int temp_num = 0;
+	if(data == NULL || len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
     start_addr = Base_Addr_Get_Area(addr);
-    end_addr = Base_Addr_Get_Area(addr + len);
-    temp_num = (end_addr - start_addr) / FLASH_PAGE_SIZE;
+    end_addr = addr + len;
+	temp_num = end_addr - start_addr;
+	if ((temp_num % FLASH_PAGE_SIZE) > 0)
+	{
+		temp_num = (temp_num / FLASH_PAGE_SIZE) + 1;
+	}
+	else
+	{
+		temp_num = (temp_num / FLASH_PAGE_SIZE);
+	}
     FLASH_Unlock();
     FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);  // 清除所有标志
     for (int i = 0; i < temp_num; i++)
@@ -67,8 +109,11 @@ int Base_Flash_Write (void *data,int addr,int len)
             }
             for (int j = temp_num; j > 0; j--)
             {
-                temp_data |= *((uint8_t *)data + i + j);
-				temp_data <<= 8;
+                temp_data |= *((uint8_t *)data + i + (j - 1));
+				if (j > 1)
+				{
+					temp_data <<= 8;
+				}
             }
             flashStatus = FLASH_ProgramWord(start_addr + i, temp_data);
             i += 4;

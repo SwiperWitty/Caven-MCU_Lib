@@ -7,7 +7,7 @@
 #include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
-#ifdef Exist_FLASH 
+#if Exist_FLASH 
 
 #define FLASH_START_ADDR        ((uint32_t)0x08008000)
 #define FLASH_END_ADDR          ((uint32_t)0x0800C000)       
