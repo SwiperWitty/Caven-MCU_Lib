@@ -62,6 +62,10 @@ int Base_Flash_Read (void *data,int addr,int len)
     return retval;
 }
 
+/*
+retval = 0,COMPLETE
+retval = x,error
+*/
 int Base_Flash_Write (void *data,int addr,int len)
 {
     int retval = 0,flashStatus = 0;
