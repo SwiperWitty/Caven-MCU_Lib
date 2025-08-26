@@ -1,7 +1,7 @@
 #include "IC_DS18B20.h"
 
 #if Exist_DS18B20
-static int DS18B20_Time = 0;
+int DS18B20_Time = 0;
 static int DS18B20_gpiox = 0,DS18B20_pin = 0;
 static void Write_Byte (char Data);
 
