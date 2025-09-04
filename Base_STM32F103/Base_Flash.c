@@ -1,5 +1,5 @@
 #include "Base_Flash.h"
-
+#include "string.h"
 
 int Base_addr_check (int addr,int len)
 {
@@ -40,39 +40,13 @@ int Base_Addr_Get_Area(int addr)
     return retval;
 }
 
-int Base_Flash_Read (void *data,int addr,int len)
+int Base_Flash_Erase (int addr,int len)
 {
-    int retval = 0;
+	int retval = 0,flashStatus = 0;
 #if Exist_FLASH 
-	if(data == NULL || len == 0)
-    {
-		retval = -2;
-		return retval;
-    }
-    retval = Base_addr_check (addr,len);
-	if (retval < 0)
-	{
-		return retval;
-	}
-    // 直接内存拷贝，按32位读取
-    for (uint32_t i = 0; i < len; i++) {
-       *((uint8_t *)data + i) = *(__IO uint8_t*)(addr + i);
-    }
-#endif
-    return retval;
-}
-
-/*
-retval = 0,COMPLETE
-retval = x,error
-*/
-int Base_Flash_Write (void *data,int addr,int len)
-{
-    int retval = 0,flashStatus = 0;
-#if Exist_FLASH 
-    u32 start_addr = 0,end_addr = 0,temp_data;
-    int temp_num = 0;
-	if(data == NULL || len == 0)
+	uint32_t start_addr,end_addr;
+	int temp_num = 0,temp_val;
+	if(len == 0)
     {
 		retval = -2;
 		return retval;
@@ -93,12 +67,76 @@ int Base_Flash_Write (void *data,int addr,int len)
 	{
 		temp_num = (temp_num / FLASH_PAGE_SIZE);
 	}
+	__disable_irq();
     FLASH_Unlock();
     FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);  // 清除所有标志
-    for (int i = 0; i < temp_num; i++)
+	for (int i = 0; i < temp_num; i++)
     {
-        flashStatus |= FLASH_ErasePage(start_addr + (i * FLASH_PAGE_SIZE));
+		temp_val = start_addr + (i * FLASH_PAGE_SIZE);
+		flashStatus |= FLASH_ErasePage(temp_val);
     }
+	__enable_irq();
+	FLASH_Lock();
+#endif
+    if(flashStatus != FLASH_COMPLETE)
+    {
+		retval = 1;
+    }
+    else
+    {
+        retval = 0;
+    }
+	return retval;
+}
+
+int Base_Flash_Read (void *data,int addr,int len)
+{
+    int retval = 0;
+#if Exist_FLASH 
+	if(data == NULL || len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
+    // 直接内存拷贝，按8位读取
+    for (uint32_t i = 0; i < len; i++) {
+       *((uint8_t *)data + i) = *(__IO uint8_t*)(addr + i);
+    }
+#endif
+    return retval;
+}
+
+/*
+retval = 0,COMPLETE
+retval = x,error
+*/
+int Base_Flash_Write (void *data,int addr,int len)
+{
+    int retval = 0,flashStatus = FLASH_COMPLETE;
+#if Exist_FLASH 
+    u32 start_addr = 0,temp_data;
+    int temp_num = 0;
+	if(data == NULL || len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
+    start_addr = addr;
+
+	__disable_irq();
+    FLASH_Unlock();
+    FLASH_ClearFlag(FLASH_FLAG_BSY | FLASH_FLAG_EOP | FLASH_FLAG_PGERR | FLASH_FLAG_WRPRTERR);  // 清除所有标志
+
     if (flashStatus == FLASH_COMPLETE)
     {
 		retval = 0;
@@ -127,6 +165,7 @@ int Base_Flash_Write (void *data,int addr,int len)
             }
         }
     }
+	__enable_irq();
     FLASH_Lock();
 #endif
     if(flashStatus != FLASH_COMPLETE)

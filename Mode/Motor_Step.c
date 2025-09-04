@@ -3,7 +3,7 @@
 int step_gpiox = 0;
 int step_DIR = 0;
 int step_PUL = 0;
-static int Reduction = 200;
+int Reduction = 200;
 
 void Motor_Step_Init(int gpiox,int PUL_pin,int DIR_pin,int Set)
 {
