@@ -18,7 +18,7 @@ typedef struct
     //custom
     int (*Custom_Send) (const uint8_t *data,int size);
     int (*Custom_Receive) (uint8_t *data);
-    int (*Custom_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
+    void (*Custom_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
 void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
