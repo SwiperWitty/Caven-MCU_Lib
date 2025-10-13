@@ -266,23 +266,23 @@ int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uin
 int Caven_Circular_queue_input (Caven_info_packet_Type data,Caven_info_packet_Type *Buff_data,int Buff_Num)
 {
     int retval = 0;
-    if (Buff_data == NULL || Buff_Num <= 0)
+	int temp_num = 0,temp_i = 0;
+	static int run_num = 0;
+    Caven_info_packet_Type temp_packet;
+	temp_num = run_num + Buff_Num;
+    for (int i = run_num;i < temp_num;i++)
     {
-        retval = -2;
-        return retval;
-    }
-
-    for (int i = 0;i < Buff_Num;i++)
-    {
-        if (Buff_data[i].Result & 0x50)
+		temp_i = i % Buff_Num;
+        temp_packet = Buff_data[temp_i];
+        if (temp_packet.Result & 0x50)
         {
             retval = (-1);
         }
         else
         {
-            Caven_packet_data_copy_Fun(&Buff_data[i],data); // 载入数据到队列
-//            Caven_info_packet_clean_Fun(data);
-            retval = i;
+            Caven_packet_data_copy_Fun(&Buff_data[temp_i],data);    // 载入数据到队列
+            retval = temp_i;
+			run_num = retval;
             break;
         }
     }
@@ -297,26 +297,24 @@ int Caven_Circular_queue_input (Caven_info_packet_Type data,Caven_info_packet_Ty
 int Caven_Circular_queue_output (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num)
 {
     int retval = 0;
-//    Caven_info_packet_Type temp_packet;
+    int temp_num = 0,temp_i = 0;
+	static int run_num = 0;
     if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
     {
         retval = -2;
         return retval;
     }
-    
-    for (int i = 0;i < Buff_Num;i++)
+	temp_num = run_num + Buff_Num;
+    for (int i = run_num;i < temp_num;i++)
     {
-        if (Buff_data[i].Result & 0x50)
+		temp_i = i % Buff_Num;
+        if (Buff_data[temp_i].Result & 0x50)
         {
-            Caven_packet_data_copy_Fun(data,Buff_data[i]);    // 从队列提取数据
-            Caven_info_packet_fast_clean_Fun(&Buff_data[i]);
-            retval = i;
-
+            Caven_packet_data_copy_Fun(data,Buff_data[temp_i]);    // 从队列提取数据
+            Caven_info_packet_fast_clean_Fun(&Buff_data[temp_i]);
+            retval = temp_i;
+			run_num = retval;
             break;
-        }
-        else
-        {
-            retval = (-1);
         }
     }
     return retval;

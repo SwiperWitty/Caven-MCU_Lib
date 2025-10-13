@@ -114,7 +114,7 @@ int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data)
  * 1.使用前需要先调用Caven_new_event_Fun
  * 2.Caven_handle_event_Fun函数应该放在状态机里面轮番调用
  * 3.events里面的events_pFun，必须无阻塞。
- * 4.通过Caven_trigger_event_Fun激活，data会将参数给events保存，events_pFun里面需要将data置0，结束当前触发。
+ * 4.通过Caven_trigger_event_Fun激活，data(前6位有效)会将参数给events保存，events_pFun里面需要将data置0，结束当前触发。
  */
 int Caven_handle_event_Fun(Caven_event_Type *events)
 {

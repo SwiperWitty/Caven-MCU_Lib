@@ -60,7 +60,7 @@ typedef enum
 #endif
 
 #if Exist_UART
-    #define DMA_UART
+    #define DMA_UART	1
     #define UART_BUFF_MAX   500
 #endif
 

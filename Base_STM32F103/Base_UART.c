@@ -142,9 +142,126 @@ void Base_UART_Send_Data(UART_mType Channel,uint16_t Data)
 	USART_SendData(uart_Temp, Data);
 }
 
+#if DMA_UART
+    #if Exist_UART & OPEN_0010
+uint8_t DMA_UART1_Buff[UART_BUFF_MAX];
+    #endif
+    #if Exist_UART & OPEN_0100
+uint8_t DMA_UART2_Buff[UART_BUFF_MAX];
+    #endif
+    #if Exist_UART & OPEN_1000
+uint8_t DMA_UART3_Buff[UART_BUFF_MAX];
+    #endif
+#endif
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
 {
+#if DMA_UART
+    static char dma_send_First = 0;
     
+    DMA_InitTypeDef dma_init_struct;
+    DMA_Channel_TypeDef *Temp_DMA_Channel;
+    uint32_t DMAy_FLAG;
+    uint8_t *p_DMA_BUFF = NULL;
+    
+    switch (Channel)
+    {
+        case 0:
+        {
+    #if Exist_UART & OPEN_0001
+
+    #endif
+        }break;
+        case 1:
+        {
+    #if Exist_UART & OPEN_0010
+            p_DMA_BUFF = DMA_UART1_Buff;
+            uart_Temp = USART1;
+            DMAy_FLAG = DMA1_FLAG_TC4;
+            Temp_DMA_Channel = DMA1_Channel4;
+            if (uart1_enable == 0)
+            {
+                return;
+            }
+    #endif
+        }break;
+        case 2:
+        {
+    #if Exist_UART & OPEN_0100
+            p_DMA_BUFF = DMA_UART2_Buff;
+            uart_Temp = USART2;
+            DMAy_FLAG = DMA1_FLAG_TC7;
+            Temp_DMA_Channel = DMA1_Channel7;
+            if (uart2_enable == 0)
+            {
+                return;
+            }
+    #endif
+        }break;
+        case 3:
+        {
+    #if Exist_UART & OPEN_1000
+            p_DMA_BUFF = DMA_UART3_Buff;
+            uart_Temp = USART3;
+            DMAy_FLAG = DMA1_FLAG_TC2;
+            Temp_DMA_Channel = DMA1_Channel2;   // usart3 tx
+            if (uart3_enable == 0)
+            {
+                return;
+            }
+    #endif
+        }break;
+        case 4:
+        {
+    #if Exist_UART & OPEN_10000
+            uart_Temp = UART4;
+            p_DMA_BUFF = NULL;
+            if (uart4_enable == 0)
+            {
+                return;
+            }
+    #endif
+        }break;
+    default:
+        return;
+    }
+    // 开始DMA
+    if (Data == NULL || p_DMA_BUFF == NULL || (Length <= 0) || Length > UART_BUFF_MAX) {
+        return;
+    }
+    if ((dma_send_First & (0x01 << Channel)) == 0)            // 当前通道首次DMA，不等
+    {
+        dma_send_First |= (0x01 << Channel);
+		DMA_DeInit(Temp_DMA_Channel);
+		DMA_ClearFlag(DMAy_FLAG);
+		
+		dma_init_struct.DMA_PeripheralBaseAddr = (uint32_t)&uart_Temp->DR;  // 外设地址，如&USART1->DR:cite[1]
+		dma_init_struct.DMA_MemoryBaseAddr = (uint32_t)p_DMA_BUFF;      // 内存源地址:cite[1]
+		dma_init_struct.DMA_DIR = DMA_DIR_PeripheralDST;    // 发送是方向是外设到内存，外设作为目的地
+		dma_init_struct.DMA_BufferSize = Length;         // 传输数据量:cite[1]
+		dma_init_struct.DMA_PeripheralInc = DMA_PeripheralInc_Disable; // 外设地址固定:cite[1]
+		dma_init_struct.DMA_MemoryInc = DMA_MemoryInc_Enable;          // 内存地址自增:cite[1]
+		dma_init_struct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte; // 外设数据宽度8位:cite[1]
+		dma_init_struct.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;         // 内存数据宽度8位:cite[1]
+		dma_init_struct.DMA_Mode = DMA_Mode_Normal;         // 正常模式（单次传输）:cite[1]/DMA_Mode_Circular
+		dma_init_struct.DMA_Priority = DMA_Priority_Medium; // 优先级：中:cite[1]
+		dma_init_struct.DMA_M2M = DMA_M2M_Disable;          // 非内存到内存模式:cite[1]
+		DMA_Init(Temp_DMA_Channel, &dma_init_struct);
+		
+		DMA_Cmd(Temp_DMA_Channel, DISABLE);
+		DMA_ITConfig(Temp_DMA_Channel, DMA_IT_TC, DISABLE);
+    }
+	else
+	{
+		while(DMA_GetFlagStatus(DMAy_FLAG) == 0);    /* Wait USART TX DMA1 Transfer Complete */
+		DMA_ClearFlag(DMAy_FLAG);
+	}
+    
+	DMA_Cmd(Temp_DMA_Channel, DISABLE);
+	memcpy(p_DMA_BUFF,Data,Length);                     // 一定等上一个发送完成才能修改
+	DMA_SetCurrDataCounter(DMA1_Channel4, Length);
+	USART_DMACmd(uart_Temp, USART_DMAReq_Tx, ENABLE);
+    DMA_Cmd(Temp_DMA_Channel, ENABLE);    /* usart tx begin dma transmitting */
+#endif  
 }
 
 #endif
@@ -409,7 +526,9 @@ void UART4_HANDLERIT()
 int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 {
     int retval = -1;
-	
+#if DMA_UART
+	RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
+#endif
 #if Exist_UART
 //    RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     switch (Channel)

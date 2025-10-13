@@ -128,11 +128,12 @@ static void Uart1_Init(int Baud, int Set)
     uart1_enable = Set;
     if (Set)
         set = TRUE;
-    crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
+    
     crm_periph_clock_enable(CRM_USART1_PERIPH_CLOCK, set);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
-
+	#if (UART1_REMAP & OPEN_0000)
+	crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
     gpio_init_struct.gpio_pins = GPIO_Pin_9; // Tx
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
     gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
@@ -144,7 +145,22 @@ static void Uart1_Init(int Baud, int Set)
     gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
     gpio_init_struct.gpio_pull = GPIO_PULL_UP;
     gpio_init(GPIOA, &gpio_init_struct);
+	#elif (UART1_REMAP & OPEN_0001)
+	crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+	gpio_pin_remap_config(USART1_GMUX_0001,TRUE);
+	crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK, TRUE);
+    gpio_init_struct.gpio_pins = GPIO_Pin_6; // Tx
+    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
+    gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
+    gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
+    gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+    gpio_init(GPIOB, &gpio_init_struct);
 
+    gpio_init_struct.gpio_pins = GPIO_Pin_7; // Rx
+    gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
+    gpio_init_struct.gpio_pull = GPIO_PULL_UP;
+    gpio_init(GPIOB, &gpio_init_struct);
+	#endif
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
     nvic_irq_enable(USART1_IRQn, 0, 1);                 //
 
@@ -256,10 +272,32 @@ void Uart3_Init(int Baud, int Set)
     uart3_enable = Set;
     if (Set)
         set = TRUE;
-
-    crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
-    crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
+	
     crm_periph_clock_enable(CRM_USART3_PERIPH_CLOCK, set);
+	#if (UART3_REMAP & OPEN_0000)
+    crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK, TRUE);
+    gpio_init_type gpio_init_struct;
+    gpio_default_para_init(&gpio_init_struct);
+
+    /* configure the TX pin */
+    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
+    gpio_init_struct.gpio_out_type = GPIO_OUTPUT_PUSH_PULL;
+    gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
+    gpio_init_struct.gpio_pins = GPIO_Pin_10;
+    gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+    gpio_init(GPIOB, &gpio_init_struct);
+    /* configure the RX pin */
+    gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_MODERATE;
+    gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
+    gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
+    gpio_init_struct.gpio_pins = GPIO_Pin_11;
+    gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+    gpio_init(GPIOB, &gpio_init_struct);
+    gpio_pin_remap_config(USART3_GMUX_0001, TRUE);
+	#elif (UART3_REMAP & OPEN_0001)
+    crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
+	gpio_pin_remap_config(USART3_GMUX_0001, TRUE);
+    crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
 
@@ -277,7 +315,7 @@ void Uart3_Init(int Baud, int Set)
     gpio_init_struct.gpio_pins = GPIO_Pin_11;
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOC, &gpio_init_struct);
-    gpio_pin_remap_config(USART3_GMUX_0001, TRUE);
+	#endif
     /* configure param */
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
     nvic_irq_enable(USART3_IRQn, 0, 3);                                 // 优先级
@@ -420,7 +458,7 @@ void Base_UART_Send_Data(UART_mType Channel, uint16_t Data)
     }
     while (usart_flag_get(uart_Temp, TXD_Falg) == RESET);
     usart_data_transmit(uart_Temp, Data);
-    // usart_flag_clear(uart_Temp, TXD_Falg);        //可以不要
+    usart_flag_clear(uart_Temp, TXD_Falg);        //可以不要
 #endif
 }
 

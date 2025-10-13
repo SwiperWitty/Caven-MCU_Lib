@@ -270,11 +270,26 @@ int GX_info_Split_packet_Fun(GX_info_packet_Type const source, unsigned char *da
         array[getnum++] = source.Prot_W_Versions;
 
         if (source.Prot_W_485Type != 0) {
-            array[getnum++] = source.Prot_W_Class | 0x20;
+			if(source.Prot_W_DFlag)
+			{
+				array[getnum++] = 0x10 | 0x20 | source.Prot_W_Class;
+			}
+			else
+			{
+				array[getnum++] = 0x00 | 0x20 | source.Prot_W_Class;
+			}
         }
         else {
-            array[getnum++] = source.Prot_W_Class;
+			if(source.Prot_W_DFlag)
+			{
+				array[getnum++] = 0x10 | 0x00 | source.Prot_W_Class;
+			}
+			else
+			{
+				array[getnum++] = 0x00 | 0x00 | source.Prot_W_Class;
+			}
         }
+
         array[getnum++] = source.Prot_W_MID;
         if (source.Addr != 0) {
             array[getnum++] = source.Addr;
@@ -307,19 +322,23 @@ int GX_info_Split_packet_Fun(GX_info_packet_Type const source, unsigned char *da
 int GX_Circular_queue_input (GX_info_packet_Type data,GX_info_packet_Type *Buff_data,char Buff_Num)
 {
     int retval = 0;
-
+	int temp_num = 0,temp_i = 0;
+	static int run_num = 0;
     GX_info_packet_Type temp_packet;
-    for (int i = 0;i < Buff_Num;i++)
+	temp_num = run_num + Buff_Num;
+    for (int i = run_num;i < temp_num;i++)
     {
-        temp_packet = Buff_data[i];
+		temp_i = i % Buff_Num;
+        temp_packet = Buff_data[temp_i];
         if (temp_packet.Result & 0x50)
         {
             retval = (-1);
         }
         else
         {
-            GX_packet_data_copy_Fun(&Buff_data[i],data);    // 载入数据到队列
-            retval = i;
+            GX_packet_data_copy_Fun(&Buff_data[temp_i],data);    // 载入数据到队列
+            retval = temp_i;
+			run_num = retval;
             break;
         }
     }
@@ -334,20 +353,23 @@ int GX_Circular_queue_input (GX_info_packet_Type data,GX_info_packet_Type *Buff_
 int GX_Circular_queue_output (GX_info_packet_Type *data,GX_info_packet_Type *Buff_data,char Buff_Num)
 {
     int retval = 0;
-    
+    int temp_num = 0,temp_i = 0;
+	static int run_num = 0;
     if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
     {
         retval = -2;
         return retval;
     }
-    for (int i = 0;i < Buff_Num;i++)
+	temp_num = run_num + Buff_Num;
+    for (int i = run_num;i < temp_num;i++)
     {
-        if (Buff_data[i].Result & 0x50)
+		temp_i = i % Buff_Num;
+        if (Buff_data[temp_i].Result & 0x50)
         {
-            GX_packet_data_copy_Fun(data,Buff_data[i]);    // 从队列提取数据
-            GX_info_packet_fast_clean_Fun(&Buff_data[i]);
-            retval = i;
-
+            GX_packet_data_copy_Fun(data,Buff_data[temp_i]);    // 从队列提取数据
+            GX_info_packet_fast_clean_Fun(&Buff_data[temp_i]);
+            retval = temp_i;
+			run_num = retval;
             break;
         }
     }
@@ -414,6 +436,7 @@ int GX_info_packet_fast_clean_Fun(GX_info_packet_Type *target)
     target->Result = 0;
     target->Run_status = 0;
     target->dSize = 0;
+	target->Get_num = 0;
     target->end_crc = 0;
     target->get_crc = 0;
     target->Comm_way = 0;

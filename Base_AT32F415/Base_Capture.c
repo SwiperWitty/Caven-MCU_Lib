@@ -278,7 +278,6 @@ int time1_ch4_up = 0;
 int time1_ch4_down = 0;
 void TIM1_HANDLERIT ()
 {
-	int temp_num = 0;
 
 }
 
