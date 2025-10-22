@@ -1,5 +1,10 @@
 #include "Mode.h"
 
+#ifdef STB_SPRINTF_IMPLEMENTATION
+#include "stb_sprintf.h"
+#include "stdarg.h"
+#endif
+
 struct _Mode_Init Mode_Init;
 struct _Mode_Use Mode_Use;          // 结构体实体
 
@@ -77,11 +82,8 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 #endif
 
 #if Exist_USB
-    Mode_Use.USB_HID.Keyboard_Send_Data = USB_Keyboard_Send_Data;
-    Mode_Use.USB_HID.Keyboard_Send_String = USB_Keyboard_Send_String;
-    Mode_Use.USB_HID.Custom_Send = USB_Buffer_Send;
-    Mode_Use.USB_HID.Custom_Receive = USB_Buffer_Receive;
-    Mode_Use.USB_HID.Custom_Callback_Bind = USB_Callback_Bind;
+    Mode_Use.USB_HID.Send_Data = USB_Send_Data;
+    Mode_Use.USB_HID.RX_Callback_Bind = USB_Callback_Bind;
 #endif
 
 #if Exist_BUTTON
@@ -190,8 +192,38 @@ void Debug_Out(uint8_t *data,int Length)    // 选一个通信接口为Debug
 {
 #if Exist_UART
     #if DEBUG_OUT
-    MODE_UART_Send_Data_Fun(DEBUG_OUT, data, Length);
+    MODE_UART_DMA_Send_Data_Fun(DEBUG_OUT, data, Length);
     #endif
 
+#endif
+}
+
+// 定义回调函数
+char *stb_callback(const char *buf, void *user, int len)
+{
+#ifdef STB_SPRINTF_IMPLEMENTATION
+    stbsp__context *c = (stbsp__context *)user;
+    //    (void) sizeof(buf);
+	Debug_Out((U8 *)buf,len);
+    c->length += len;
+    return c->tmp;  // go direct into buffer if you can
+#else
+	return 0;
+#endif
+}
+
+// 自定义 printf 函数
+int stb_printf(const char *fmt, ...)
+{
+#ifdef STB_SPRINTF_IMPLEMENTATION
+    stbsp__context c = {0};
+    va_list args;
+    va_start(args, fmt);                                  // 启动 va_list
+    stbsp_vsprintfcb(stb_callback, &c, c.tmp, fmt, args);  // 调用 stbsp_vsprintfcb
+    va_end(args);                                         // 结束 va_list
+
+    return c.length;  // 返回生成的字符长度
+#else
+	return 0;
 #endif
 }

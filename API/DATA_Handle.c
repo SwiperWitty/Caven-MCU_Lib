@@ -305,7 +305,6 @@ int Caven_math_approximate (int num,int num_step,int num_min,int num_max)
     }
     retval = MIN(num_max,retval);
     retval = MAX(num_min,retval);
-//    printf("num : %d ,retval : %d \n",num,retval);
     return retval;
 }
 

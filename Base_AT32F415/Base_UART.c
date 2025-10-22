@@ -391,16 +391,22 @@ int Base_UART_Init(UART_mType Channel, int Baud, int Set)
 		
         break;
     case 1:
+	#if (Exist_UART & OPEN_0010)
         Uart1_Init(Baud, SET);
         retval = 0;
+	#endif
         break;
     case 2:
+	#if (Exist_UART & OPEN_0100)
         Uart2_Init(Baud, SET);
         retval = 0;
+	#endif
         break;
     case 3:
+	#if (Exist_UART & OPEN_1000)
         Uart3_Init(Baud, SET);
         retval = 0;
+	#endif
         break;
     case 4:
 //        Uart4_Init(Baud, SET);
@@ -561,28 +567,28 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
     {
         dma_send_First |= (0x01 << Channel);
         dma_flag_clear(DMAy_FLAG);
+		
+		dma_init_struct.buffer_size = 0;                           //
+		dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;
+		dma_init_struct.memory_base_addr = (uint32_t)p_DMA_BUFF;        //
+		dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE; 
+		dma_init_struct.memory_inc_enable = TRUE;
+		dma_init_struct.peripheral_base_addr = (uint32_t)&uart_Temp->dt;    //
+		dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
+		dma_init_struct.peripheral_inc_enable = FALSE;
+		dma_init_struct.priority = DMA_PRIORITY_MEDIUM;
+		dma_init_struct.loop_mode_enable = FALSE;
+		dma_init(Temp_DMA_Channel, &dma_init_struct);
     }
     else
     {
         while(dma_flag_get(DMAy_FLAG) == RESET);    /* Wait until USART TX DMA1 Transfer Complete */
         dma_flag_clear(DMAy_FLAG);
     }
+	dma_channel_enable(Temp_DMA_Channel, FALSE);
     memcpy(p_DMA_BUFF,Data,Length);                     // 一定等上一个发送完成才能修改
     
-	dma_channel_enable(Temp_DMA_Channel, FALSE);
-	
-    dma_init_struct.buffer_size = Length;                           //
-    dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;
-    dma_init_struct.memory_base_addr = (uint32_t)p_DMA_BUFF;        //
-    dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE; 
-    dma_init_struct.memory_inc_enable = TRUE;
-    dma_init_struct.peripheral_base_addr = (uint32_t)&uart_Temp->dt;    //
-    dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
-    dma_init_struct.peripheral_inc_enable = FALSE;
-    dma_init_struct.priority = DMA_PRIORITY_MEDIUM;
-    dma_init_struct.loop_mode_enable = FALSE;
-    dma_init(Temp_DMA_Channel, &dma_init_struct);
-
+	dma_data_number_set(Temp_DMA_Channel, Length);
     /* config flexible dma for usartx tx */
     usart_dma_transmitter_enable(uart_Temp, TRUE); 
 //    dma_flexible_config(DMA_Temp, Temp_FLEX_Channel, DMA_FLEXIBLE_Temp);
@@ -612,9 +618,9 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
 int fputc(int ch, FILE *f)
 {
 #ifdef DEBUG_OUT
-#ifdef Exist_UART
+	#ifdef Exist_UART
     Base_UART_Send_Data((UART_mType)DEBUG_OUT, (uint8_t)ch);
-#endif
+	#endif
 #endif // DEBUG
     return (ch);
 }

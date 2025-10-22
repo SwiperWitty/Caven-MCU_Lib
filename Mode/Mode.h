@@ -238,5 +238,6 @@ struct _Mode_Use
 
 void Mode_Index(void);  // 初始化Mode函数索引,真正功能的初始化请调用结构体中函数指针(Mode_Init)
 void Debug_Out(uint8_t *data,int Length);
+int stb_printf(const char *fmt, ...);
 
 #endif

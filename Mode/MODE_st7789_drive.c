@@ -142,7 +142,6 @@ static void EPS_SPI_SendData(const uint8_t *data, int num, int cmd)
     assert(ret == ESP_OK);
     if (ret == ESP_OK)
     {
-        // printf("spi send run : %d \n",num);
     }
 }
 

@@ -148,7 +148,6 @@ int Caven_handle_event_Fun(Caven_event_Type *events)
                 if (temp == 0)
                 {
                     events->events[i] = 0x80;               /* 清除触发标记  */
-                    // printf("event[%d] exit\n",i);
                 }
             }
         }

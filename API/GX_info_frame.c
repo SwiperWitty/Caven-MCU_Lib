@@ -433,13 +433,17 @@ int GX_packet_data_copy_Fun(GX_info_packet_Type *source,GX_info_packet_Type targ
 int GX_info_packet_fast_clean_Fun(GX_info_packet_Type *target)
 {
     int retval = 0;
-    target->Result = 0;
-    target->Run_status = 0;
-    target->dSize = 0;
-	target->Get_num = 0;
-    target->end_crc = 0;
-    target->get_crc = 0;
-    target->Comm_way = 0;
+	if(target != NULL)
+	{
+		target->Head = 0;
+		target->Run_status = 0;
+		target->dSize = 0;
+		target->Get_num = 0;
+		target->end_crc = 0;
+		target->get_crc = 0;
+		target->Comm_way = 0;
+		target->Result = 0;
+	}
     return retval;
 }
 
@@ -456,6 +460,8 @@ int GX_info_packet_clean_Fun(GX_info_packet_Type *target)
 {
     int retval = 0;
     unsigned char *p_data;
+	if(target == NULL)
+		return retval;
     p_data = target->p_AllData;
     if (p_data != NULL && (target->Get_num > 0 && target->Get_num < BUFF_MAX))
     {

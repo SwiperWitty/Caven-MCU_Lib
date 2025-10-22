@@ -5,10 +5,17 @@
  */
 #include "Base_USB.h"
 
+#include "usbd_int.h"
+
+
+#if	USB_REMAP == OPEN_0000
 #include "cdc_keyboard_class.h"
 #include "cdc_keyboard_desc.h"
-#include "USB_User.h"
-#include "usbd_int.h"
+#elif USB_REMAP == OPEN_0001
+#include "cdc_class.h"
+#include "cdc_desc.h"
+#elif USB_REMAP == OPEN_0010
+#endif
 
 #if Exist_USB
 otg_core_type otg_core_struct;      // USB全局控制量
@@ -46,8 +53,16 @@ int USB_User_init (int Set)
         usbd_init(&otg_core_struct,
                 USB_FULL_SPEED_CORE_ID,
                 USB_ID,
+#if USB_REMAP	== OPEN_0000
+
+#elif USB_REMAP	== OPEN_0001
+				&cdc_class_handler,
+				&cdc_desc_handler
+#elif USB_REMAP	== OPEN_0010
                 &cdc_keyboard_class_handler,
-                &cdc_keyboard_desc_handler);
+                &cdc_keyboard_desc_handler
+#endif
+		);
         usb_delay_ms(500);
     }
     else
@@ -59,130 +74,62 @@ int USB_User_init (int Set)
     return retval;
 }
 
-int USB_Buffer_Receive (uint8_t *data)
-{
-    int len = 0;
 #if Exist_USB 
-    len = usb_Data_get_rxdata(&otg_core_struct.dev, (uint8_t *)data);
-
-#endif
-    return len;
-}
-
-#if Exist_USB 
-D_Callback_pFun USB_HID_Callback_Fun = NULL;
+extern D_Callback_pFun USB_HID_Callback_Fun;
 void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
 {
     USB_HID_Callback_Fun = USB_Callback_pFun;
 }
 #endif
 
-int USB_Buffer_Send (const uint8_t *data,int size)
+void USB_Send_Data (uint8_t *data,int size)
 {
-    int temp = 0;
 #if Exist_USB
-    uint16_t Buff_MAX = 64;
-    uint16_t temp2;
+    uint16_t Buff_MAX = 60;
     uint8_t Buffer[64];
-    temp = size,temp2 = 0;
+    int temp = 0,temp2 = 0,temp3;
+	temp = size;
+	memset(Buffer,0,Buff_MAX);
     usbd_core_type *pudev = &otg_core_struct.dev; 
-    
-    HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;      // USB-HID
+    cdc_struct_type *pcdc = (cdc_struct_type *)pudev->class_handler->pdata;
     do{
         if((temp - Buff_MAX) > 0)
         {
             memcpy(Buffer,(uint8_t*)data + temp2,Buff_MAX);
-            temp -= Buff_MAX;
             temp2 += Buff_MAX;
+			temp3 = Buff_MAX;
+			temp -= Buff_MAX;
         }
         else
         {
             memcpy(Buffer,(uint8_t*)data + temp2,temp);
-            temp = 0;
+			temp3 = temp;
+			temp = 0;
         }
-        while(1)
-        {
-            if(HID->g_custom_tx_completed == 1)       // 等上一个发送结束
-            {
-                HID->g_custom_tx_completed = 0;
-                custom_hid_class_send_report(pudev,Buffer,Buff_MAX); //!!!! 这是发送函数本体
-                break;
-            }
-        }
-        
+#if USB_REMAP	== OPEN_0000
+
+#elif USB_REMAP	== OPEN_0001
+		while(pcdc->g_tx_completed == 0)
+		{
+			usb_delay_ms(1);
+		};
+		usb_vcp_send_data(pudev,Buffer, temp3);
+#elif USB_REMAP	== OPEN_0010
+
+#endif
         memset(Buffer,0,Buff_MAX);
     }while(temp > 0);
 
 #endif
-    return temp;
 }
 
-int USB_Keyboard_Send_String(char *string)
+void USB_RX_Callback_Bind (D_Callback_pFun pFun)
 {
-    int length = 0;
-#if Exist_USB
-    uint8_t index = 0;
-    length = strlen(string);
-    if(length > 64)
-        length = 64;
-    
-    usbd_core_type *pudev = &otg_core_struct.dev; 
-    HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;
-    for(index = 0; index < length; index ++)
-    {
-        while(1)
-        {
-            if(HID->g_keyboard_tx_completed == 1)
-            {
-                HID->g_keyboard_tx_completed = 0;
-                usb_vcpkybrd_keyboard_send_char(&otg_core_struct.dev, string[index]);
-                break;
-            }
-        }
-        /* send 0x00 */
-        while(1)
-        {
-            if(HID->g_keyboard_tx_completed == 1)
-            {
-                HID->g_keyboard_tx_completed = 0;
-                usb_vcpkybrd_keyboard_send_char(&otg_core_struct.dev, 0x00);
-                break;
-            }
-        }
-    }
-#endif
-    return length;
+	if (pFun != NULL)
+	{
+		USB_HID_Callback_Fun = pFun;
+	}
 }
-
-
-int USB_Keyboard_Send_Data (char *data, int Sendlen)
-{
-    int length = 0;
-#if Exist_USB
-    uint16_t  i,j,k = 0;
-    char u8SendBuffer[128];        // 转换区
-    memset(u8SendBuffer,0,sizeof(u8SendBuffer));
-    length = Sendlen;
-    
-    for(i = 0;i < length;i++)
-    {
-        j = (data[i] >> 4) & 0x0f;
-        if(j <= 9)
-        {u8SendBuffer[k++] = j + '0'; }
-        else
-        {u8SendBuffer[k++] = j + ('A' - 0x0a); }
-        j = (data[i]) & 0x0f;
-        if(j <= 9)
-        {u8SendBuffer[k++] = j + '0'; }
-        else
-        {u8SendBuffer[k++] = j + ('A' - 0x0a); }
-    }
-    
-    USB_Keyboard_Send_String(u8SendBuffer);        // 这个不需要缓存区
-#endif
-    return length;
-}
-
 
 void OTG_IRQ_HANDLER(void)
 {
@@ -191,16 +138,12 @@ void OTG_IRQ_HANDLER(void)
 #endif
 }
 
-
-
-
 void OTG_WKUP_HANDLER(void)
 {
 #if Exist_USB
     exint_flag_clear(OTG_WKUP_EXINT_LINE);
 #endif
 }
-
 
 /**
   * @brief  usb low power wakeup interrupt config

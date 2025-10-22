@@ -7,18 +7,25 @@
 #include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
+#if	USB_REMAP == OPEN_0000
+
+#elif USB_REMAP == OPEN_0001
+#include "cdc_class.h"
+#include "cdc_desc.h"
+#elif USB_REMAP == OPEN_0010
+#endif
+
 #if Exist_USB
 #include "usb_core.h"
+extern otg_core_type otg_core_struct;
 
 typedef void (*D_Callback_pFun) (void *data);
 typedef struct
 {
-    int (*Keyboard_Send_String) (char *string);
     int (*Keyboard_Send_Data) (char *data, int size);
     //custom
-    int (*Custom_Send) (const uint8_t *data,int size);
-    int (*Custom_Receive) (uint8_t *data);
-    void (*Custom_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
+    void (*Send_Data) (uint8_t *data,int size);
+    void (*RX_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
 void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
@@ -26,12 +33,8 @@ void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
 
 int USB_User_init (int Set);
 
-//keyboard
-int USB_Keyboard_Send_String (char *string);
-int USB_Keyboard_Send_Data (char *data, int size);
-//custom
-int USB_Buffer_Send (const uint8_t *data,int size);        // 有缓冲的发送
-int USB_Buffer_Receive (uint8_t *data);
+void USB_Send_Data (uint8_t *data,int size);        // 有缓冲的发送
+void USB_RX_Callback_Bind (D_Callback_pFun pFun);
 
 #endif
 

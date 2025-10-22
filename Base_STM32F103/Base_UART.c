@@ -258,7 +258,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
     
 	DMA_Cmd(Temp_DMA_Channel, DISABLE);
 	memcpy(p_DMA_BUFF,Data,Length);                     // 一定等上一个发送完成才能修改
-	DMA_SetCurrDataCounter(DMA1_Channel4, Length);
+	DMA_SetCurrDataCounter(Temp_DMA_Channel, Length);
 	USART_DMACmd(uart_Temp, USART_DMAReq_Tx, ENABLE);
     DMA_Cmd(Temp_DMA_Channel, ENABLE);    /* usart tx begin dma transmitting */
 #endif  

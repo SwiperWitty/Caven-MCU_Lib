@@ -156,7 +156,6 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
         retval = temp_packet.Run_status;
         Caven_info_packet_fast_clean_Fun(target);
-        // printf("error code [%d] \n",retval);
     }
     else if (temp_packet.Run_status == 0xff) // Successful
     {
@@ -383,6 +382,8 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
 {
     int retval = 0;
     unsigned char *p_data;
+	if(target == NULL)
+		return retval;
     p_data = target->p_AllData;
 #ifdef BUFF_MAX
     if (p_data != NULL && (target->Get_num > 0 && target->Get_num < BUFF_MAX))
@@ -402,12 +403,13 @@ int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target)
     int retval = 0;
 	if (target != NULL)
 	{
-		target->Result = 0;
+		target->Head = 0;
 		target->Run_status = 0;
 		target->Get_num = 0;
 		target->end_crc = 0;
 		target->get_crc = 0;
 		target->Comm_way = 0;
+		target->Result = 0;
 	}
     return retval;
 }

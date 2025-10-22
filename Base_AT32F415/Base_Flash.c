@@ -34,7 +34,6 @@ int Base_Addr_Get_Area(int addr)
 #if Exist_FLASH 
     if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
     { 
-//        printf("S-ERROR\r\n"); 
         retval = (-1);
         return retval;
     }
@@ -76,24 +75,25 @@ int Base_Flash_Erase (int addr,int len)
 	for (int i = 0; i < temp_num; i++)
     {
 		temp_val = start_addr + (i * FLASH_PAGE_SIZE);
-        retval = flash_operation_wait_for(ERASE_TIMEOUT);
-        if((retval == FLASH_PROGRAM_ERROR) || (retval == FLASH_EPP_ERROR))
-        {flash_flag_clear(FLASH_PRGMERR_FLAG | FLASH_EPPERR_FLAG);}
-        else if(retval == FLASH_OPERATE_TIMEOUT)
-        {return ERROR;}
-        flashStatus |= flash_sector_erase(temp_val);
+        flashStatus = flash_operation_wait_for(ERASE_TIMEOUT);
+        if(flashStatus != FLASH_OPERATE_DONE)
+        {
+			flash_flag_clear(FLASH_PRGMERR_FLAG | FLASH_EPPERR_FLAG);
+			retval = 2;
+			break;
+		}
+
+        flashStatus = flash_sector_erase(temp_val);
+		if(flashStatus != FLASH_OPERATE_DONE)
+		{
+			retval = 1;
+			break;
+		}
     }
 	__enable_irq();
 	flash_lock();
 #endif
-    if(flashStatus != FLASH_OPERATE_DONE)
-    {
-		retval = 1;
-    }
-    else
-    {
-        retval = 0;
-    }
+
 	return retval;
 }
 
@@ -129,7 +129,7 @@ retval = x,error
 */
 int Base_Flash_Write (void *data,int addr,int len)
 {
-    int retval = 0,flashStatus = FLASH_OPERATE_DONE;
+	int retval = 0,flashStatus = 0;
 #if Exist_FLASH 
     u32 start_addr = 0,temp_data;
     int temp_num = 0;
@@ -148,7 +148,7 @@ int Base_Flash_Write (void *data,int addr,int len)
 	__disable_irq();
     flash_unlock();
 
-    if (flashStatus == FLASH_OPERATE_DONE)
+    if (flashStatus == 0)
     {
 		retval = 0;
         for (int i = 0; i < len;)
@@ -168,11 +168,6 @@ int Base_Flash_Write (void *data,int addr,int len)
 					temp_data <<= 8;
 				}
             }
-            retval = flash_operation_wait_for(ERASE_TIMEOUT);
-            if((retval == FLASH_PROGRAM_ERROR) || (retval == FLASH_EPP_ERROR))
-            {flash_flag_clear(FLASH_PRGMERR_FLAG | FLASH_EPPERR_FLAG);}
-            else if(retval == FLASH_OPERATE_TIMEOUT)
-            {return ERROR;}
             flashStatus = flash_word_program(start_addr + i, temp_data);
             i += 4;
             if(flashStatus != FLASH_OPERATE_DONE)
