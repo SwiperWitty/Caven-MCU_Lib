@@ -72,8 +72,8 @@ typedef struct
 // 系统运行总时长 8byte
 typedef struct
 {
-    volatile uint32_t SYS_Sec;
-    volatile uint32_t SYS_Us;       // 这里最大 1000 000
+    volatile int SYS_Sec;
+    volatile int SYS_Us;       // 这里最大 1000 000
 }SYS_BaseTIME_Type;
 
 // Init (systick(Set = 1/2)  dog(Set = 2))

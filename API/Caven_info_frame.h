@@ -92,7 +92,7 @@ enum CAVEN_CMD2
     m_CAVEN_CMD2_Reset_Order,
     m_CAVEN_CMD2_DEBUG_Order = 0x05,
     m_CAVEN_CMD2_Restore_Order,
-    m_CAVEN_CMD2_ERROR_Order,
+    m_CAVEN_CMD2_Serial_Order,
 };
 
 enum CAVEN_CMD3
