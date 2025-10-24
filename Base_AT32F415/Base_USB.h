@@ -7,13 +7,6 @@
 #include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
-#if	USB_REMAP == OPEN_0000
-
-#elif USB_REMAP == OPEN_0001
-#include "cdc_class.h"
-#include "cdc_desc.h"
-#elif USB_REMAP == OPEN_0010
-#endif
 
 #if Exist_USB
 #include "usb_core.h"

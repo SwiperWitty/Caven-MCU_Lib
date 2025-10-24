@@ -245,7 +245,6 @@ static usb_sts_type class_in_handler(void *udev, uint8_t ept_num)
   return status;
 }
 
-D_pFun USB_HID_Callback_Fun = NULL;
 /**
   * @brief  usb device endpoint receive data
   * @param  udev: to the structure of usbd_core_type

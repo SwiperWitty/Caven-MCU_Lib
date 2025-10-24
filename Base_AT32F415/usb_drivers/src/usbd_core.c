@@ -27,16 +27,20 @@
 #include "usb_core.h"
 #include "usbd_core.h"
 #include "usbd_sdr.h"
-#include "BASE.h"       //!!!!
 
 
+USB_Callback_pFun USB_HID_Callback_Fun = NULL;
 void usb_delay_ms(uint32_t num)
 {
-    #ifdef Exist_SYS_TIME
-    SYS_Delay_ms(num);
-    #else
-        usb_delay_ms(num);
-    #endif
+	int k = 0;
+	for(int i = 0;i < num;i++)
+	{
+		k = 1000;
+		while(k--)
+		{
+			__NOP();
+		}
+	}
 }
 
 /** @addtogroup AT32F415_middlewares_usbd_drivers

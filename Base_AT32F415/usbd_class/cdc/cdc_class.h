@@ -80,8 +80,6 @@ typedef struct
   __IO uint8_t g_tx_completed, g_rx_completed;
   linecoding_type linecoding;
 }cdc_struct_type;
-typedef void (*USB_pFun) (void *data);
-extern D_pFun USB_HID_Callback_Fun;
 
 /**
   * @}

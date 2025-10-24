@@ -118,7 +118,7 @@ ALIGNED_HEAD static uint8_t g_usbd_configuration[USBD_CUSHID_CONFIG_DESC_SIZE] A
   0x01,                                  /* bConfigurationValue: configuration value */
   0x00,                                  /* iConfiguration: index of string descriptor describing
                                             the configuration */
-  0xE0,                                  /* bmAttributes: self powered and support remote wakeup */
+  0xC0,                                  /* bmAttributes: self powered and support remote wakeup */
   0x32,                                  /* MaxPower 100 mA: this current is used for detecting vbus */
 
   USB_DEVICE_IF_DESC_LEN,                /* bLength: interface descriptor size */
@@ -169,91 +169,24 @@ ALIGNED_HEAD uint8_t g_usbd_custom_hid_report[USBD_CUSHID_SIZ_REPORT_DESC] ALIGN
   0x06, 0xFF, 0x00,                      /* USAGE_PAGE(Vendor Page:0xFF00) */
   0x09, 0x01,                            /* USAGE (Demo Kit)               */
   0xa1, 0x01,                            /* COLLECTION (Application)       */
-  /* 7 */
 
-  /* Led 2 */
-  0x85, HID_REPORT_ID_2,                 /*     REPORT_ID 2                */
-  0x09, 0x02,                            /*     USAGE (LED 2)              */
+  /* 6 */
   0x15, 0x00,                            /*     LOGICAL_MINIMUM (0)        */
-  0x25, 0x01,                            /*     LOGICAL_MAXIMUM (1)        */
+  0x25, 0xFF,                            /*     LOGICAL_MAXIMUM (255)        */
   0x75, 0x08,                            /*     REPORT_SIZE (8)            */
-  0x95, 0x3F,                            /*     REPORT_COUNT (1)           */
-  0xB1, 0x82,                            /*    FEATURE (Data,Var,Abs,Vol)  */
+  0x95, 0x40,                            /*     REPORT_COUNT (64)           */
 
-  0x85, 0x02,                            /*     REPORT_ID (2)              */
-  0x09, 0x02,                            /*     USAGE (LED 2)              */
-  0x91, 0x82,                            /*     OUTPUT (Data,Var,Abs,Vol)  */
-  /* 27 */
+  0x09, 0x01,
+  0x81, 0x02,
+  0x95, 0x40,
 
-  /* Led 3 */
-  0x85, HID_REPORT_ID_3,                 /*     REPORT_ID (3)              */
-  0x09, 0x03,                            /*     USAGE (LED 3)              */
-  0x15, 0x00,                            /*     LOGICAL_MINIMUM (0)        */
-  0x25, 0x01,                            /*     LOGICAL_MAXIMUM (1)        */
-  0x75, 0x08,                            /*     REPORT_SIZE (8)            */
-  0x95, 0x3F,                            /*     REPORT_COUNT (1)           */
-  0xB1, 0x82,                            /*     FEATURE (Data,Var,Abs,Vol) */
+  0x09, 0x01,
+  0x91, 0x02,
+  0x95, 0x01,
 
-  0x85, 0x03,                            /*     REPORT_ID (3)              */
-  0x09, 0x03,                            /*     USAGE (LED 3)              */
-  0x91, 0x82,                            /*     OUTPUT (Data,Var,Abs,Vol)  */
-  /* 47 */
-
-  /* Led 4 */
-  0x85, HID_REPORT_ID_4,                 /*     REPORT_ID 4)               */
-  0x09, 0x04,                            /*     USAGE (LED 4)              */
-  0x15, 0x00,                            /*     LOGICAL_MINIMUM (0)        */
-  0x25, 0x01,                            /*     LOGICAL_MAXIMUM (1)        */
-  0x75, 0x08,                            /*     REPORT_SIZE (8)            */
-  0x95, 0x3F,                            /*     REPORT_COUNT (1)           */
-  0xB1, 0x82,                            /*     FEATURE (Data,Var,Abs,Vol) */
-
-  0x85, 0x04,                            /*     REPORT_ID (4)              */
-  0x09, 0x04,                            /*     USAGE (LED 4)              */
-  0x91, 0x82,                            /*     OUTPUT (Data,Var,Abs,Vol)  */
-  /* 67 */
-
-  /* key Push Button */
-  0x85, HID_REPORT_ID_5,                 /*     REPORT_ID (5)              */
-  0x09, 0x05,                            /*     USAGE (Push Button)        */
-  0x15, 0x00,                            /*     LOGICAL_MINIMUM (0)        */
-  0x25, 0x01,                            /*     LOGICAL_MAXIMUM (1)        */
-  0x75, 0x01,                            /*     REPORT_SIZE (1)            */
-  0x81, 0x82,                            /*     INPUT (Data,Var,Abs,Vol)   */
-
-  0x09, 0x05,                            /*     USAGE (Push Button)        */
-  0x75, 0x01,                            /*     REPORT_SIZE (1)            */
-  0xb1, 0x82,                            /*     FEATURE (Data,Var,Abs,Vol) */
-
-  0x75, 0x07,                            /*     REPORT_SIZE (7)            */
-  0x81, 0x83,                            /*     INPUT (Cnst,Var,Abs,Vol)   */
-  0x85, 0x05,                            /*     REPORT_ID (5)              */
-
-  0x75, 0x07,                            /*     REPORT_SIZE (7)            */
-  0xb1, 0x83,                            /*     FEATURE (Cnst,Var,Abs,Vol) */
-  /* 95 */
-
-  /* Data OUT */
-  0x85, HID_REPORT_ID_6,                 /*     REPORT_ID (0xF0)           */
-  0x09, 0x06,                            /*     USAGE                      */
-  0x15, 0x00,                            /*     LOGICAL_MINIMUM (0)        */
-  0x26, 0xFF,0x00,                       /*     LOGICAL_MAXIMUM (255)      */
-  0x75, 0x08,                            /*     REPORT_SIZE (8)            */
-  0x95, 0x3F,                            /*     REPORT_COUNT (64)          */
-  0x91, 0x02,                            /*     OUTPUT(Data,Var,Abs,Vol)   */
-  /* 110 */
-
-  /* Data IN */
-  0x85, HID_REPORT_ID_6,                 /*     REPORT_ID (0xF0)           */
-  0x09, 0x07,                            /*     USAGE                      */
-  0x15, 0x00,                            /*     LOGICAL_MINIMUM (0)        */
-  0x26, 0xFF,0x00,                       /*     LOGICAL_MAXIMUM (255)      */
-  0x75, 0x08,                            /*     REPORT_SIZE (8)            */
-  0x95, 0x3F,                            /*     REPORT_COUNT (64)          */
-  0x81, 0x82,                            /*     INPUT(Data,Var,Abs,Vol)    */
-
-  /* 125 */
-  0xc0                                   /*     END_COLLECTION             */
+  0x09, 0x01,
+  0xB1, 0x02,
+  0xC0
 };
 
 /**

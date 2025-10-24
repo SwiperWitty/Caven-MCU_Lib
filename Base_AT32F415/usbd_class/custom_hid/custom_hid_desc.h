@@ -54,8 +54,6 @@ extern "C" {
 /**
   * @brief usb vendor id and product id define
   */
-//#define USBD_CUSHID_VENDOR_ID            0x2E3C
-//#define USBD_CUSHID_PRODUCT_ID           0x5745
 
 #define USBD_CUSHID_VENDOR_ID            0x03EB
 #define USBD_CUSHID_PRODUCT_ID           0x2421
@@ -63,19 +61,19 @@ extern "C" {
   * @brief usb descriptor size define
   */
 #define USBD_CUSHID_CONFIG_DESC_SIZE     41
-#define USBD_CUSHID_SIZ_REPORT_DESC      126
+#define USBD_CUSHID_SIZ_REPORT_DESC      32		// 32
 #define USBD_CUSHID_SIZ_STRING_LANGID    4
 #define USBD_CUSHID_SIZ_STRING_SERIAL    0x1A
 
 /**
   * @brief usb string define(vendor, product configuration, interface)
   */
-#define USBD_CUSHID_DESC_MANUFACTURER_STRING    "Artery"
-#define USBD_CUSHID_DESC_PRODUCT_STRING         "Custom HID"
-#define USBD_CUSHID_DESC_CONFIGURATION_STRING   "Custom HID Config"
-#define USBD_CUSHID_DESC_INTERFACE_STRING       "Custom HID Interface"
+#define USBD_CUSHID_DESC_MANUFACTURER_STRING    "Cavendish"
+#define USBD_CUSHID_DESC_PRODUCT_STRING         "Cavendish HID  "
+#define USBD_CUSHID_DESC_CONFIGURATION_STRING   "Cavendish HID Config"
+#define USBD_CUSHID_DESC_INTERFACE_STRING       "Cavendish HID Interface"
 
-#define CUSHID_BINTERVAL_TIME            0x0A
+#define CUSHID_BINTERVAL_TIME            0x01
 
 /**
   * @brief usb hid report id define

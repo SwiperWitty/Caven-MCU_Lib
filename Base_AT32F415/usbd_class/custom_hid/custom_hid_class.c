@@ -273,7 +273,7 @@ static usb_sts_type class_out_handler(void *udev, uint8_t ept_num)
   usb_hid_buf_process(udev, pcshid->g_rxhid_buff, recv_len);
 
   /* start receive next packet */
-  usbd_ept_recv(pudev, USBD_CUSTOM_HID_OUT_EPT, pcshid->g_rxhid_buff, recv_len);
+  usbd_ept_recv(pudev, USBD_CUSTOM_HID_OUT_EPT, pcshid->g_rxhid_buff, USBD_CUSTOM_OUT_MAXPACKET_SIZE);
 
   return status;
 }
@@ -317,6 +317,10 @@ static usb_sts_type class_event_handler(void *udev, usbd_event_type event)
       /* ...user code... */
 
       break;
+    case USBD_DISCONNECT_EVNET:
+      /* ...user code... */
+		status = 0;
+      break;
     default:
       break;
   }
@@ -345,8 +349,6 @@ usb_sts_type custom_hid_class_send_report(void *udev, uint8_t *report, uint16_t 
   return status;
 }
 
-typedef void (*D_Callback_pFun) (void *data);
-D_Callback_pFun USB_HID_Callback_Fun = NULL;
 /**
   * @brief  usb device report function
   * @param  udev: to the structure of usbd_core_type
@@ -362,38 +364,4 @@ static void usb_hid_buf_process(void *udev, uint8_t *report, uint16_t len)
 	{
 		USB_HID_Callback_Fun (&pcshid->g_rxhid_buff[i]);
 	}
-  switch(report[0])
-  {
-    case HID_REPORT_ID_2:
-	{
-//		pcshid->g_rxhid_buff
-
-	}
-      break;
-    case HID_REPORT_ID_3:
-
-      break;
-    case HID_REPORT_ID_4:
-
-      break;
-    case HID_REPORT_ID_6:
-
-      break;
-    default:
-      break;
-  }
-
 }
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-
-/**
-  * @}
-  */
-

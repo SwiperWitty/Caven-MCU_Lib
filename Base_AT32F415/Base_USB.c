@@ -8,18 +8,20 @@
 #include "usbd_int.h"
 
 
-#if	USB_REMAP == OPEN_0000
-#include "cdc_keyboard_class.h"
-#include "cdc_keyboard_desc.h"
-#elif USB_REMAP == OPEN_0001
+#if	USB_MODE == OPEN_0000
+#include "custom_hid_desc.h"
+#include "custom_hid_class.h"
+#elif USB_MODE == OPEN_0001
 #include "cdc_class.h"
 #include "cdc_desc.h"
-#elif USB_REMAP == OPEN_0010
+#elif USB_MODE == OPEN_0010
+#include "cdc_keyboard_class.h"
+#include "cdc_keyboard_desc.h"
 #endif
 
 #if Exist_USB
 otg_core_type otg_core_struct;      // USB全局控制量
-
+static uint16_t USB_Buff_MAX = 64;
 static void usb_low_power_wakeup_config(void);
 static void usb_clock48m_select(usb_clk48_s clk_s);
 static void usb_gpio_config(void);
@@ -50,19 +52,32 @@ int USB_User_init (int Set)
         nvic_irq_enable(OTG_IRQ, 0, 0);
         otg_core_struct.cfg.vbusig = 1;       // 关掉PA9
         /* init usb */
-        usbd_init(&otg_core_struct,
-                USB_FULL_SPEED_CORE_ID,
-                USB_ID,
-#if USB_REMAP	== OPEN_0000
 
-#elif USB_REMAP	== OPEN_0001
-				&cdc_class_handler,
-				&cdc_desc_handler
-#elif USB_REMAP	== OPEN_0010
-                &cdc_keyboard_class_handler,
-                &cdc_keyboard_desc_handler
-#endif
+#if USB_MODE	== OPEN_0000
+		usbd_init(&otg_core_struct,
+			USB_FULL_SPEED_CORE_ID,
+			USB_ID,
+			&custom_hid_class_handler,
+			&custom_hid_desc_handler
 		);
+		USB_Buff_MAX = 64;
+#elif USB_MODE	== OPEN_0001
+		usbd_init(&otg_core_struct,
+			USB_FULL_SPEED_CORE_ID,
+			USB_ID,
+			&cdc_class_handler,
+			&cdc_desc_handler
+		);
+		USB_Buff_MAX = 60;
+#elif USB_MODE	== OPEN_0010
+		usbd_init(&otg_core_struct,
+			USB_FULL_SPEED_CORE_ID,
+			USB_ID,
+			&cdc_keyboard_class_handler,
+			&cdc_keyboard_desc_handler
+		);
+		USB_Buff_MAX = 64;
+#endif
         usb_delay_ms(500);
     }
     else
@@ -75,6 +90,7 @@ int USB_User_init (int Set)
 }
 
 #if Exist_USB 
+#include "usbd_core.h"
 extern D_Callback_pFun USB_HID_Callback_Fun;
 void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
 {
@@ -85,41 +101,55 @@ void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
 void USB_Send_Data (uint8_t *data,int size)
 {
 #if Exist_USB
-    uint16_t Buff_MAX = 60;
+    
     uint8_t Buffer[64];
     int temp = 0,temp2 = 0,temp3;
 	temp = size;
-	memset(Buffer,0,Buff_MAX);
+	memset(Buffer,0,USB_Buff_MAX);
     usbd_core_type *pudev = &otg_core_struct.dev; 
-    cdc_struct_type *pcdc = (cdc_struct_type *)pudev->class_handler->pdata;
-    do{
-        if((temp - Buff_MAX) > 0)
-        {
-            memcpy(Buffer,(uint8_t*)data + temp2,Buff_MAX);
-            temp2 += Buff_MAX;
-			temp3 = Buff_MAX;
-			temp -= Buff_MAX;
-        }
-        else
-        {
-            memcpy(Buffer,(uint8_t*)data + temp2,temp);
-			temp3 = temp;
-			temp = 0;
-        }
-#if USB_REMAP	== OPEN_0000
-
-#elif USB_REMAP	== OPEN_0001
-		while(pcdc->g_tx_completed == 0)
-		{
-			usb_delay_ms(1);
-		};
-		usb_vcp_send_data(pudev,Buffer, temp3);
-#elif USB_REMAP	== OPEN_0010
-
-#endif
-        memset(Buffer,0,Buff_MAX);
-    }while(temp > 0);
-
+    if(usbd_connect_state_get(pudev) == USB_CONN_STATE_CONFIGURED)
+	{
+		do{
+			if((temp - USB_Buff_MAX) > 0)
+			{
+				memcpy(Buffer,(uint8_t*)data + temp2,USB_Buff_MAX);
+				temp2 += USB_Buff_MAX;
+				temp3 = USB_Buff_MAX;
+				temp -= USB_Buff_MAX;
+			}
+			else
+			{
+				memcpy(Buffer,(uint8_t*)data + temp2,temp);
+				temp3 = temp;
+				temp = 0;
+			}
+	#if USB_MODE	== OPEN_0000
+			custom_hid_type *pcshid = (custom_hid_type *)pudev->class_handler->pdata;
+			while(pcshid->send_state == 1)
+			{
+				usb_delay_ms(1);
+			};
+			temp3 = USB_Buff_MAX;
+			custom_hid_class_send_report(pudev,Buffer, temp3);
+	#elif USB_MODE	== OPEN_0001
+			cdc_struct_type *pcdc = (cdc_struct_type *)pudev->class_handler->pdata;
+			while(pcdc->g_tx_completed == 0)
+			{
+				usb_delay_ms(1);
+			};
+			usb_vcp_send_data(pudev,Buffer, temp3);
+	#elif USB_MODE	== OPEN_0010
+			HID_compilation_type *pcshid = (HID_compilation_type *)pudev->class_handler->pdata;
+			while(pcshid->g_custom_tx_completed == 1)
+			{
+				usb_delay_ms(1);
+			};
+			temp3 = USB_Buff_MAX;
+			rec_hid_class_send_report(pudev,Buffer, temp3);
+	#endif
+			memset(Buffer,0,USB_Buff_MAX);
+		}while(temp > 0);
+	}
 #endif
 }
 
@@ -234,6 +264,5 @@ void usb_gpio_config(void)
 	gpio_init_struct.gpio_pull = GPIO_PULL_DOWN;      //!!!!
 	gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
 	gpio_init(OTG_PIN_GPIO, &gpio_init_struct);
-
 }
 

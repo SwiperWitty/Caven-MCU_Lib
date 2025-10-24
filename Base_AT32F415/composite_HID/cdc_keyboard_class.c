@@ -215,8 +215,8 @@ static usb_sts_type class_init_handler(void *udev)
   /* set out endpoint to receive status */
   usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, HID->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
 
-  HID->g_custom_tx_completed = 1;
-  HID->g_keyboard_tx_completed = 1;
+  HID->g_custom_tx_completed = 0;
+  HID->g_keyboard_tx_completed = 0;
 
   return status;
 }
@@ -512,11 +512,11 @@ static usb_sts_type class_in_handler(void *udev, uint8_t ept_num)
   */
   if((ept_num & 0x7F) == (USBD_VCPKYBRD_CDC_BULK_IN_EPT & 0x7F))
   {
-    HID->g_custom_tx_completed = 1;                           
+    HID->g_custom_tx_completed = 0;                           
   }
   if((ept_num & 0x7F) == (USBD_VCPKYBRD_HID_IN_EPT & 0x7F))
   {
-    HID->g_keyboard_tx_completed = 1;
+    HID->g_keyboard_tx_completed = 0;
   }
 
   return status;
@@ -536,10 +536,11 @@ static usb_sts_type class_out_handler(void *udev, uint8_t ept_num)
 
   /* get endpoint receive data length  */
   HID->g_rxlen = usbd_get_recv_len(pudev, ept_num);
-
-  /*set recv flag*/
-  HID->g_custom_rx_completed = 1;    //!!!!
-
+	for(int i = 0;i < HID->g_rxlen;i++)
+	{
+		USB_HID_Callback_Fun (&HID->g_rx_buff[i]);
+	}
+  usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, HID->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
   return status;
 }
 
@@ -589,75 +590,24 @@ static usb_sts_type class_event_handler(void *udev, usbd_event_type event)
 }
 
 /**
-  * @brief  usb device class rx data process
-  * @param  udev: to the structure of usbd_core_type
-  * @param  recv_data: receive buffer
-  * @retval receive data len
-  */
-uint16_t usb_Data_get_rxdata(void *udev, uint8_t *recv_data)        //接收
-{
-  uint16_t i_index = 0;
-  usbd_core_type *pudev = (usbd_core_type *)udev;
-  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata; 
-  uint16_t tmp_len = 0;
-  if(HID->g_custom_rx_completed == 0)
-  {
-    return 0;
-  }
-  HID->g_custom_rx_completed = 0;
-
-  tmp_len = HID->g_rxlen;
-  for(i_index = 0; i_index < HID->g_rxlen; i_index ++)
-  {
-    recv_data[i_index] = HID->g_rx_buff[i_index];
-  }
-    
-  usbd_ept_recv(pudev, USBD_VCPKYBRD_CDC_BULK_OUT_EPT, HID->g_rx_buff, USBD_VCPKYBRD_OUT_MAXPACKET_SIZE);
-//usbd_ept_send(pudev, USBD_VCPKYBRD_CDC_BULK_IN_EPT, vcpkybrd->g_rx_buff, vcpkybrd->g_rxlen);
-  return tmp_len;
-}
-
-/**
-  * @brief  usb device class send data
-  * @param  udev: to the structure of usbd_core_type
-  * @param  send_data: send data buffer
-  * @param  len: send length
-  * @retval error status
-  */
-error_status usb_vcpkybrd_vcp_send_data(void *udev, uint8_t *send_data, uint16_t len)   //这个不好用
-{
-  error_status status = SUCCESS;
-  usbd_core_type *pudev = (usbd_core_type *)udev;
-  HID_compilation_type *HID = (HID_compilation_type *)pudev->class_handler->pdata;  
-  if(HID->g_custom_tx_completed)
-  {
-    HID->g_custom_tx_completed = 0;
-    usbd_ept_send(pudev, USBD_VCPKYBRD_CDC_BULK_IN_EPT, send_data, len);
-  }
-  else
-  {
-    status = ERROR;
-  }
-  return status;
-}
-
-
-/**
   * @brief  usb device class send report
   * @param  udev: to the structure of usbd_core_type
   * @param  report: report buffer
   * @param  len: report length
   * @retval status of usb_sts_type
   */
-
-usb_sts_type custom_hid_class_send_report(void *udev, uint8_t *report, uint16_t len)
+usb_sts_type rec_hid_class_send_report(void *udev, uint8_t *report, uint16_t len)
 {
-  usb_sts_type status = USB_OK;
+  usb_sts_type status = USB_FAIL;
   usbd_core_type *pudev = (usbd_core_type *)udev;
+  HID_compilation_type *pcshid = (HID_compilation_type *)pudev->class_handler->pdata;
 
-  if(usbd_connect_state_get(pudev) == USB_CONN_STATE_CONFIGURED)
-    usbd_ept_send(pudev, USBD_VCPKYBRD_CDC_BULK_IN_EPT, report, len);        //数据
-
+  if(usbd_connect_state_get(pudev) == USB_CONN_STATE_CONFIGURED && pcshid->g_custom_tx_completed == 0)
+  {
+    pcshid->g_custom_tx_completed = 1;
+    usbd_ept_send(pudev, USBD_VCPKYBRD_CDC_BULK_IN_EPT, report, len);
+    status = USB_OK;
+  }
   return status;
 }
 
@@ -665,10 +615,12 @@ usb_sts_type usb_vcpkybrd_class_send_report(void *udev, uint8_t *report, uint16_
 {
   usb_sts_type status = USB_OK;
   usbd_core_type *pudev = (usbd_core_type *)udev;
-
-  if(usbd_connect_state_get(pudev) == USB_CONN_STATE_CONFIGURED)
-    usbd_ept_send(pudev, USBD_VCPKYBRD_HID_IN_EPT, report, len);        //键盘
-
+  HID_compilation_type *pcshid = (HID_compilation_type *)pudev->class_handler->pdata;
+  if(usbd_connect_state_get(pudev) == USB_CONN_STATE_CONFIGURED && pcshid->g_keyboard_tx_completed == 0)
+  {
+	  usbd_ept_send(pudev, USBD_VCPKYBRD_HID_IN_EPT, report, len);        // 键盘
+		pcshid->g_keyboard_tx_completed = 1;
+  }
   return status;
 }
 
@@ -684,7 +636,8 @@ void usb_vcpkybrd_keyboard_send_char(void *udev, uint8_t ascii_code)
   uint8_t key_data = 0;
   static uint8_t temp = 0;
   static uint8_t keyboard_buf[8] = {0, 0, 6, 0, 0, 0, 0, 0};
-
+	usbd_core_type *pudev = (usbd_core_type *)udev;
+  
   if(ascii_code > 128)
   {
     ascii_code = 0;
@@ -703,20 +656,27 @@ void usb_vcpkybrd_keyboard_send_char(void *udev, uint8_t ascii_code)
       ascii_code &= 0x7F;
     }
   }
-
-  if((temp == ascii_code) && (ascii_code != 0))
-  {
-    keyboard_buf[0] = 0;
-    keyboard_buf[2] = 0;
-    usb_vcpkybrd_class_send_report(udev, keyboard_buf, 8);
-  }
-  else
-  {
-    keyboard_buf[0] = key_data;
-    keyboard_buf[2] = ascii_code;
-    usb_vcpkybrd_class_send_report(udev, keyboard_buf, 8);
-  }
-  //delay
+	HID_compilation_type *pcshid = (HID_compilation_type *)pudev->class_handler->pdata;
+	if(usbd_connect_state_get(pudev) == USB_CONN_STATE_CONFIGURED)
+	{
+		while(pcshid->g_keyboard_tx_completed == 1)
+		{
+			usb_delay_ms(100);
+		};
+		if((temp == ascii_code) && (ascii_code != 0))
+		{
+			keyboard_buf[0] = 0;
+			keyboard_buf[2] = 0;
+			usb_vcpkybrd_class_send_report(udev, keyboard_buf, 8);
+		}
+		else
+		{
+			keyboard_buf[0] = key_data;
+			keyboard_buf[2] = ascii_code;
+			usb_vcpkybrd_class_send_report(udev, keyboard_buf, 8);
+		}
+	}
+  // delay
 }
 
 

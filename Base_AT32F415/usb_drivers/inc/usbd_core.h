@@ -167,6 +167,9 @@ usb_sts_type usbd_core_init(usbd_core_type *udev,
                             usbd_class_handler *class_handler,
                             usbd_desc_handler *desc_handler,
                             uint8_t core_id);
+							
+typedef void (*USB_Callback_pFun) (void *data);
+extern USB_Callback_pFun USB_HID_Callback_Fun;
 #endif
 
 /**
