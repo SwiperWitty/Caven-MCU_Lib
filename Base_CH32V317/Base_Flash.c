@@ -1,17 +1,18 @@
-#include "Flash.h"
+#include "Base_Flash.h"
 #include "string.h"
 
 volatile FLASH_Status EraseStatus,SaveStatus = 0;   //擦除状态、保存状态
 
 int Read_Flash(int Address)
 {
+    int temp = 0;
 #ifdef Exist_FLASH
-    int temp;
+
     volatile FLASH_Status FLASHStatus = 0;
     RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
     __disable_irq();
     FLASH_Unlock();     //普通锁_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_PGERR|FLASH_FLAG_WRPRTERR);
+    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
 
     temp = *(__IO uint16_t*) Address;
 
@@ -20,8 +21,9 @@ int Read_Flash(int Address)
     while(FLASHStatus != FLASH_COMPLETE);       //等上一个状态完成
     RCC->CFGR0 &= ~(uint32_t)RCC_HPRE_DIV2;
     __enable_irq();
-    return temp;
+
 #endif
+    return temp;
 }
 
 /*
@@ -41,7 +43,7 @@ char Clear_Flash_Page(int Addr)
     RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
     __disable_irq();
     FLASH_Unlock_Fast();     //快速锁_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_PGERR|FLASH_FLAG_WRPRTERR);
+    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
 
     if (Address >= FLASH_DATA && Address < FLASH_END)   //防止过头
     {
@@ -82,7 +84,7 @@ char Clear_Flash_Area(int addr_start,int addr_end)
     RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
     __disable_irq();
     FLASH_Unlock();          //普通锁_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_PGERR|FLASH_FLAG_WRPRTERR);
+    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
 
     if (Area <= 16)
     {
@@ -169,7 +171,7 @@ char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
     RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;      //降频
     __disable_irq();                            //关中断
     FLASH_Unlock_Fast();        //快速模式_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_PGERR|FLASH_FLAG_WRPRTERR);
+    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
 
     if (Address >= FLASH_DATA && Address < FLASH_END)   //防止过头
     {

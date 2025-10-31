@@ -1,4 +1,4 @@
-#include "adc.h"
+#include "Base_adc.h"
 
 char ADC_State = 0;
 int Calibrattion_Val = 0;
@@ -10,7 +10,7 @@ void ADCx_Init(char ADC_x, int Set)
 	ADC_InitTypeDef ADC_InitStructure = {0};
 
     FunctionalState temp = DISABLE;
-    if (SET) temp = ENABLE;
+    if (SET) {temp = ENABLE;}
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);	  // ADC 时钟
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
@@ -88,7 +88,9 @@ float Get_ADCx_Vol(uint8_t ADC_x)
 {
 	float vol = 0;
 #ifdef Exist_ADC
-
+	if (ADC_State == 0) {
+	    return vol;
+    }
 	ADC_RegularChannelConfig(ADC1, ADC_x, 1, ADC_De_Time);
 	ADC_SoftwareStartConvCmd(ADC1, ENABLE); //使能指定的ADC1的软件转换启动功能
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
@@ -102,18 +104,21 @@ float Get_MCU_Temp(void)
 {
 	float temperate = 0;
 #ifdef Exist_ADC
+    if (ADC_State == 0) {
+        return temperate;
+    }
 	int temp,Refer_Volt, Refer_Temper;
     ADC_RegularChannelConfig(ADC1, MCU_Temp, 1, ADC_SampleTime_239Cycles5);
-    ADC_SoftwareStartConvCmd(ADC1, ENABLE); //使能指定的ADC1的软件转换启动功能
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);     // 使能指定的ADC1的软件转换启动功能
     while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
-    temp = ADC_GetConversionValue(ADC1); //读取ADC1通道
+    temp = ADC_GetConversionValue(ADC1);        // 读取ADC1通道
 
     if((temp + Calibrattion_Val) < 0)
         temp = 0;
     else if((Calibrattion_Val + temp) > 4095)
         temp = 4095;
     else
-        temp = (temp + Calibrattion_Val);       //  缝合
+        temp = (temp + Calibrattion_Val);       // 缝合
 
     temp = (temp * 3300 / 4096);
     Refer_Volt = (int)((*(int *)0x1FFFF720) & 0x0000FFFF);

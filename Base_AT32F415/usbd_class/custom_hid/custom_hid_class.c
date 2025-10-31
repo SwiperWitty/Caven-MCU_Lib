@@ -319,7 +319,6 @@ static usb_sts_type class_event_handler(void *udev, usbd_event_type event)
       break;
     case USBD_DISCONNECT_EVNET:
       /* ...user code... */
-		status = 0;
       break;
     default:
       break;
