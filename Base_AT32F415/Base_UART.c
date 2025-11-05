@@ -132,7 +132,7 @@ static void Uart1_Init(int Baud, int Set)
     crm_periph_clock_enable(CRM_USART1_PERIPH_CLOCK, set);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
-	#if (UART1_REMAP & OPEN_0000)
+	#if (UART1_REMAP == OPEN_0000)
 	crm_periph_clock_enable(CRM_GPIOA_PERIPH_CLOCK, TRUE);
     gpio_init_struct.gpio_pins = GPIO_Pin_9; // Tx
     gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
@@ -145,7 +145,7 @@ static void Uart1_Init(int Baud, int Set)
     gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
     gpio_init_struct.gpio_pull = GPIO_PULL_UP;
     gpio_init(GPIOA, &gpio_init_struct);
-	#elif (UART1_REMAP & OPEN_0001)
+	#elif (UART1_REMAP == OPEN_0001)
 	crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
 	gpio_pin_remap_config(USART1_GMUX_0001,TRUE);
 	crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK, TRUE);
@@ -274,7 +274,7 @@ void Uart3_Init(int Baud, int Set)
         set = TRUE;
 	
     crm_periph_clock_enable(CRM_USART3_PERIPH_CLOCK, set);
-	#if (UART3_REMAP & OPEN_0000)
+	#if (UART3_REMAP == OPEN_0000)
     crm_periph_clock_enable(CRM_GPIOB_PERIPH_CLOCK, TRUE);
     gpio_init_type gpio_init_struct;
     gpio_default_para_init(&gpio_init_struct);
@@ -294,7 +294,7 @@ void Uart3_Init(int Baud, int Set)
     gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
     gpio_init(GPIOB, &gpio_init_struct);
     gpio_pin_remap_config(USART3_GMUX_0001, TRUE);
-	#elif (UART3_REMAP & OPEN_0001)
+	#elif (UART3_REMAP == OPEN_0001)
     crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
 	gpio_pin_remap_config(USART3_GMUX_0001, TRUE);
     crm_periph_clock_enable(CRM_GPIOC_PERIPH_CLOCK, TRUE);
