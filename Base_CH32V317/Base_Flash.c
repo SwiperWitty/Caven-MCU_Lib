@@ -1,238 +1,186 @@
 #include "Base_Flash.h"
 #include "string.h"
 
-volatile FLASH_Status EraseStatus,SaveStatus = 0;   //擦除状态、保存状态
-
-int Read_Flash(int Address)
+int Base_addr_check (int addr,int len)
 {
-    int temp = 0;
-#ifdef Exist_FLASH
-
-    volatile FLASH_Status FLASHStatus = 0;
-    RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
-    __disable_irq();
-    FLASH_Unlock();     //普通锁_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
-
-    temp = *(__IO uint16_t*) Address;
-
-    FLASH_Lock();       //普通锁_OFF
-    FLASHStatus = FLASH_GetStatus();
-    while(FLASHStatus != FLASH_COMPLETE);       //等上一个状态完成
-    RCC->CFGR0 &= ~(uint32_t)RCC_HPRE_DIV2;
-    __enable_irq();
-
+	int retval = 0;
+#if Exist_FLASH 
+	if(len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
+    {
+        retval = (-1);
+        return retval;
+    }
+    if((addr + len) >= FLASH_END_ADDR)
+    {
+        retval = (-1);
+        return retval;
+    }
 #endif
-    return temp;
+	return retval;
 }
 
 /*
- * 清除256 byte只能使用快速的，快速的是不会有返回值的
- */
-char Clear_Flash_Page(int Addr)
+    符合地址大小 ≥ 0,且返回扇区
+    不符合 (-1)
+*/
+int Base_Addr_Get_Area(int addr)
 {
-    char Status = 0;
-#ifdef Exist_FLASH
-    volatile FLASH_Status FLASHStatus = 0;
-    int Address;
-    int Page = (Addr -0x08000000) / FLASH_PAGE_SIZE;
-    Address = 0x08000000 + (Page * FLASH_PAGE_SIZE);        //本页首地址(区倍数)
-
-//    printf("Address %x \r\n",Address);    //debug
-
-    RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
-    __disable_irq();
-    FLASH_Unlock_Fast();     //快速锁_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
-
-    if (Address >= FLASH_DATA && Address < FLASH_END)   //防止过头
-    {
-        FLASH_ErasePage_Fast(Address);   //擦256
+    int retval = 0;
+#if Exist_FLASH 
+    if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
+    { 
+        retval = (-1);
+        return retval;
     }
-
-    FLASH_Lock_Fast();      //快速锁_OFF
-    FLASHStatus = FLASH_GetStatus();
-    while(FLASHStatus != FLASH_COMPLETE);       //等上一个状态完成
-    RCC->CFGR0 &= ~(uint32_t)RCC_HPRE_DIV2;
-    __enable_irq();
-
-    Status = 1;
+    retval = (addr - FLASH_START_ADDR) / FLASH_PAGE_SIZE;
+	retval = FLASH_START_ADDR + retval * FLASH_PAGE_SIZE;
 #endif
-    EraseStatus = 0;
-    return Status;
+    return retval;
 }
 
-char Clear_Flash_Area(int addr_start,int addr_end)
+int Base_Flash_Erase (int addr,int len)
 {
-    char Status = 0;
-#ifdef Exist_FLASH
-    volatile FLASH_Status FLASHStatus = 0;
-    int Address;
-    int addr[2];
-    int Area = (addr_start -0x08000000) / FLASH_AREA_SIZE;
-    addr[0] = 0x08000000 + (Area * FLASH_AREA_SIZE);        //本页首地址(区倍数)
-    Area = (addr_end -0x08000000) / FLASH_AREA_SIZE;
-    if((addr_end -0x08000000) % FLASH_AREA_SIZE > 0)
-            Area++;
-    addr[1] = 0x08000000 + (Area * FLASH_AREA_SIZE);        //本页尾地址(区倍数)
-
-//    printf("Area_end %d \r\n",Area);    //debug
-//    if (Area > 16) {
-//        printf("ch32 over !!\r\n");
-//    }
-
-    RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;
-    __disable_irq();
-    FLASH_Unlock();          //普通锁_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
-
-    if (Area <= 16)
+	int retval = 0;
+    volatile FLASH_Status flashStatus = 0;
+#if Exist_FLASH 
+	uint32_t start_addr,end_addr;
+	int temp_num = 0,temp_val;
+	if(len == 0)
     {
-        int temp = 0;
-        do {
-            Address = addr[0] + temp * FLASH_AREA_SIZE;
-            if (Address >= FLASH_DATA && Address <= FLASH_END)  //防止过头
-            {
-                EraseStatus |= FLASH_ErasePage(Address);        //擦4K
-            }
-            temp++;
-        } while (temp <= ((addr[1] - addr[0]) / FLASH_AREA_SIZE) && (EraseStatus == FLASH_COMPLETE));
+		retval = -2;
+		return retval;
     }
-    else
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
+    start_addr = Base_Addr_Get_Area(addr);
+    end_addr = addr + len;
+	temp_num = end_addr - start_addr;
+	if ((temp_num % FLASH_PAGE_SIZE) > 0)
+	{
+		temp_num = (temp_num / FLASH_PAGE_SIZE) + 1;
+	}
+	else
+	{
+		temp_num = (temp_num / FLASH_PAGE_SIZE);
+	}
+	__disable_irq();
+    FLASH_Unlock();
+	for (int i = 0; i < temp_num; i++)
     {
-        EraseStatus |= FLASH_EraseAllPages();
-    }
+		temp_val = start_addr + (i * FLASH_PAGE_SIZE);
+        flashStatus = FLASH_ErasePage(temp_val); //Erase 4KB
 
-//    重置内存数据    //debug
-//    Address = addr[0];
-//    while((Address < addr[1]))
-//    {
-//        FLASH_ProgramHalfWord(Address, 0xaaaa);
-//        Address += 2;
-//    }
-
-    FLASH_Lock();                //普通锁_OFF
-    FLASHStatus = FLASH_GetStatus();
-    while(FLASHStatus != FLASH_COMPLETE);       //等上一个状态完成
-
-    RCC->CFGR0 &= ~(uint32_t)RCC_HPRE_DIV2;
-    __enable_irq();
-
-    if(EraseStatus != FLASH_COMPLETE)
-    {
-        printf("FLASH Erase Fail\r\n");
-    }
-    else
-    {
-        printf("FLASH Erase Suc\r\n");
-        Status = 1;
-    }
-
-#endif
-    EraseStatus = 0;
-    return Status;
-}
-
-/*
- * 清除256 byte只能使用快速的，快速的是不会有返回值的
- * 写数据也没有返回值
- * 但是会有效验
- * Save_Flash是严格按照页来储存的
- * Addr :0X00A06    程序会从 0x00A00区域起，到0x00B00止（严格按页），未写的区域会备份，相当于需要的区域【 &0x00】 再 【|data】
- * Data ：是数据的指针
- * Lenght ：是指针偏移的极限位（偏移结果不应大于止地址，否则保存失败）
- */
-char Save_Flash(int Addr,const uint16_t *Data,int Lenght)
-{
-    char Status = 0;
-#ifdef Exist_FLASH
-    volatile FLASH_Status FLASHStatus = 0;
-    int temp = 0;
-    int Address,Address_End;
-    int Page = (Addr - 0x08000000) / FLASH_PAGE_SIZE;
-
-    Address = 0x08000000 + (Page * FLASH_PAGE_SIZE);        //本页首地址(区倍数)
-    Address_End = Address + FLASH_PAGE_SIZE;
-    if ((Lenght + Addr) > Address_End) {                    //超长
-        Status = 0;         //仅覆盖一页，超的部分不管
-    }
-//    printf("Address %x,now: %x \r\n",Address,Addr);     //debug
-
-    uint16_t string[130];
-    memcpy(string,(uint16_t *)Address,FLASH_PAGE_SIZE); //备份
-    temp = (Lenght < FLASH_PAGE_SIZE)? Lenght : FLASH_PAGE_SIZE;
-    memcpy(string + (Addr-Address)/2,Data,temp);        //载入
-//    printf("string_start: [%d] %x \n",0,string[0]);
-//    printf("string [%d]: %x \n",(Addr-Address)/2,string[(Addr-Address)/2]);
-//    printf("string_end [%d]: %x \r\n",(FLASH_PAGE_SIZE-1)/2,string[(FLASH_PAGE_SIZE-1)/2]);
-//    int i = 10000;
-//    while(i--);
-
-    RCC->CFGR0 |= (uint32_t)RCC_HPRE_DIV2;      //降频
-    __disable_irq();                            //关中断
-    FLASH_Unlock_Fast();        //快速模式_ON
-    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
-
-    if (Address >= FLASH_DATA && Address < FLASH_END)   //防止过头
-    {
-        FLASH_ErasePage_Fast(Address);                      //擦256
-        FLASH_ProgramPage_Fast(Address,(uint32_t *)string); //写256
-    }
-    FLASH_Lock_Fast();     //快速模式_OFF
-    FLASHStatus = FLASH_GetStatus();
-    while(FLASHStatus != FLASH_COMPLETE);       //等上一个状态完成
-    RCC->CFGR0 &= ~(uint32_t)RCC_HPRE_DIV2;
-    __enable_irq();
-
-    int num = 0;
-    __IO uint16_t data;
-    temp = Address;
-    SaveStatus = PASSED;
-    while(temp < Address_End)                   //校验
-    {
-        data = Fast_Flash(temp);
-//        printf("flash addr: %x,data_r: %x \n",temp,data);
-//        printf("num :%d ,data :%x \n",num,string[num]);
-        if(data != string[num])
+        if(flashStatus != FLASH_COMPLETE)
         {
-            SaveStatus = FAILED;
-            break;
+            retval = 1;
+			break;
         }
-        temp += 2;
-        num += 1;
     }
-
-    if(SaveStatus == FAILED)
-    {
-//        printf("FLASH Save Fail addr:%x flash:%x--str:%x \n",temp,Fast_Flash(temp),string[num]);
-        Status = 0;
-    }
-    else {
-//        printf("ok !\r\n");
-        Status = 1;
-    }
-
+	__enable_irq();
+	FLASH_Lock();
 #endif
-    EraseStatus = 0;
-    return Status;
+
+	return retval;
 }
 
+/*
+retval = 0,COMPLETE
+retval = x,error
+*/
+int Base_Flash_Read (void *data,int addr,int len)
+{
+    int retval = 0;
+#if Exist_FLASH 
+	if(data == NULL || len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
+    // 直接内存拷贝，按32位读取
+    for (uint32_t i = 0; i < len; i++) {
+       *((uint8_t *)data + i) = *(__IO uint8_t*)(addr + i);
+    }
+#endif
+    return retval;
+}
 
 /*
- * 大致分为以下几步
- * 准备数据处理（栈内存备份Flash数据、确认内存区...）
- * 1.降频
- * 2.关中断
- * 3.解锁-
- * 4.擦除
- * 5.写入
- * 6.锁定-
- * 7.开中断
- * 8.倍频
- * 9.验证
- *
- * 不会有人降频之后再做数据处理吧....
- */
+retval = 0,COMPLETE
+retval = x,error
+*/
+int Base_Flash_Write (void *data,int addr,int len)
+{
+	int retval = 0;
+    volatile FLASH_Status flashStatus = 0;
+#if Exist_FLASH 
+    u32 start_addr = 0,temp_data;
+    int temp_num = 0;
+	if(data == NULL || len == 0)
+    {
+		retval = -2;
+		return retval;
+    }
+    retval = Base_addr_check (addr,len);
+	if (retval < 0)
+	{
+		return retval;
+	}
+    start_addr = addr;
 
+	__disable_irq();
+    FLASH_Unlock();
 
-
+    if (flashStatus == 0)
+    {
+		retval = 0;
+        for (int i = 0; i < len;)
+        {
+            temp_data = 0;
+            temp_num = addr + len;
+            temp_num = temp_num - (start_addr + i);
+            if (temp_num > 4)
+            {
+                temp_num = 4;
+            }
+            for (int j = temp_num; j > 0; j--)
+            {
+                temp_data |= *((uint8_t *)data + i + (j - 1));
+				if (j > 1)
+				{
+					temp_data <<= 8;
+				}
+            }
+            flashStatus = FLASH_ProgramWord(start_addr + i, temp_data);
+            i += 4;
+            if(flashStatus != FLASH_COMPLETE)
+            {
+                break;
+            }
+        }
+    }
+	__enable_irq();
+    FLASH_Lock();
+#endif
+    if(flashStatus != FLASH_COMPLETE)
+    {
+		retval = 1;
+    }
+    else
+    {
+        retval = 0;
+    }
+	return retval;
+}

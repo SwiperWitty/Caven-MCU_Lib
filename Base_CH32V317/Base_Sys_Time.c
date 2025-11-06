@@ -9,22 +9,21 @@
 //* 底层 *//
 
 #ifdef Exist_SYS_TIME
-static uint64_t s_Tick_cnt;
-static uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
-static uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
-static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
+static volatile uint64_t s_Tick_cnt;
+static volatile uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
+static volatile uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
+static volatile uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
 
 static uint32_t SysTick_Config(uint64_t ticks)
 {
-    // STK_CTLR = SysTick->CTLR
     SysTick->CTLR = (uint32_t)0x00; // 关闭系统计数器STK，计数器停止计数
 
     SysTick->SR = (uint32_t)0;
     SysTick->CNT = (uint64_t)0;
     SysTick->CMP = ticks;
-    //    NVIC_SetPriority(SysTicK_IRQn, 15);       //设置SysTick中断优先级
-    //    NVIC_EnableIRQ(SysTicK_IRQn);             //使能开启Systick中断
-    SysTick->CTLR = (uint32_t)(0x29); // [向上计数] [0x29:8分频  0x2D:不开中断] 0x2F:开中断
+    //    NVIC_SetPriority(SysTicK_IRQn, 15);       // 设置SysTick中断优先级
+    //    NVIC_EnableIRQ(SysTicK_IRQn);             // 使能开启Systick中断
+    SysTick->CTLR = (uint32_t)(0x29);
     //    SysTick->CTLR |= (uint32_t)(0x01 << 31);       // 中断触发使能
 
     s_Frequency = TICK_FREQUENCY;

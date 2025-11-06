@@ -653,7 +653,15 @@ int fputc(int ch, FILE *f)
 #endif // DEBUG
     return (ch);
 }
+/* SDI Printf Definition */
+#define SDI_PR_CLOSE   0
+#define SDI_PR_OPEN    1
 
+#ifndef SDI_PRINT
+#define SDI_PRINT   SDI_PR_CLOSE
+#endif
+#define DEBUG_DATA0_ADDRESS  ((volatile uint32_t*)0xE0000380)
+#define DEBUG_DATA1_ADDRESS  ((volatile uint32_t*)0xE0000384)
 /*********************************************************************
  * @fn      _write
  *

@@ -1,40 +1,27 @@
-/*
- * Base_Flash.h
- *
- */
+#ifndef BASE_FLASH_H__
+#define BASE_FLASH_H__
 
-#ifndef __FLASH_H_
-#define __FLASH_H_
-
-#if DEFAULT
-#include "Items.h"              //默认功能
+#ifdef DEFAULT
+#include "Items.h"              // 默认功能
 #else
-#include "User_items.h"         //自行设置功能，一般出现在本地文件的User中
+#include "User_items.h"         // 自行设置功能，一般出现在本地文件的User中
 #endif
 
-#ifdef Exist_FLASH
-    #define FLASH_PAGE_SIZE ((uint32_t)256)         //一页的大小
-    #define FLASH_AREA_SIZE (FLASH_PAGE_SIZE*16)    //区大小
-    #define FLASH_SIZE  ((uint32_t)(64*1024))       //Flash大小64K
+#if Exist_FLASH 
 
-    #define FLASH_DATA_END  ((uint32_t)0x08006000)              //掉电保存【数据区】结束地址
-    #define FLASH_DATA      (FLASH_DATA_END - FLASH_PAGE_SIZE)  //掉电保存【数据区】只有一页(请确保这个位置不在程序段)
-
-    #define FLASH_CODE      FLASH_DATA_END              //Flash存放【APP的代码区】
-    #define FLASH_CODE_END  (0x08000000 + FLASH_SIZE)   //Flash存放【APP的代码区】一直到最大Flash
-
-    #define FLASH_END       FLASH_CODE_END              //Flash最终地址
+#define FLASH_START_ADDR        ((uint32_t)0x08000000)
+#if defined(CH32V203)
+#define FLASH_PAGE_SIZE			((uint16_t)4096)
+#define FLASH_END_ADDR          ((uint32_t)0x08010000)
+#elif defined(CH32V317)
+#define FLASH_PAGE_SIZE			((uint16_t)4096)
+#define FLASH_END_ADDR          ((uint32_t)0x08040000)
 #endif
 
-typedef enum {FAILED = 0, PASSED = !FAILED} TestStatus;
-#define Fast_Flash(x)   *(__IO uint16_t*)(x)
-#define Fast_8_Flash(x)   *(__IO uint8_t*)(x)
+#endif
 
-
-int Read_Flash(int Address);
-char Clear_Flash_Page(int Addr);
-char Clear_Flash_Area(int addr_start,int addr_end);
-
-char Save_Flash(int Addr,const uint16_t *Data,int Lenght);
+int Base_Flash_Erase (int addr,int len);
+int Base_Flash_Read (void *data,int addr,int len);
+int Base_Flash_Write (void *data,int addr,int len);
 
 #endif

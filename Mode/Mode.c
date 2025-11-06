@@ -215,7 +215,7 @@ char *stb_callback(const char *buf, void *user, int len)
 // 自定义 printf 函数
 int stb_printf(const char *fmt, ...)
 {
-#ifdef STB_SPRINTF_IMPLEMENTATION
+#if defined (STB_SPRINTF_IMPLEMENTATION)
     stbsp__context c = {0};
     va_list args;
     va_start(args, fmt);                                  // 启动 va_list
@@ -223,7 +223,9 @@ int stb_printf(const char *fmt, ...)
     va_end(args);                                         // 结束 va_list
 
     return c.length;  // 返回生成的字符长度
+#elif defined (NO_SPRINTF)
+    return 0;
 #else
-	return 0;
+	return printf(fmt);
 #endif
 }
