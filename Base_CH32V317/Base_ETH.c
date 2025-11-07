@@ -2,7 +2,7 @@
 #include "API.h"
 #include "eth_driver.h"
 
-#ifdef Exist_ETH
+#if Exist_ETH
 
     #ifdef WIFI_LINK
 #define WIFI_SSID_SCAN_MAX_VALUE 20

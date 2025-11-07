@@ -76,6 +76,8 @@ int Base_Flash_Erase (int addr,int len)
 	for (int i = 0; i < temp_num; i++)
     {
 		temp_val = start_addr + (i * FLASH_PAGE_SIZE);
+        flashStatus = FLASH_GetStatus();
+        while(flashStatus != FLASH_COMPLETE);   // 等上一个状态完成
         flashStatus = FLASH_ErasePage(temp_val); //Erase 4KB
 
         if(flashStatus != FLASH_COMPLETE)
@@ -99,6 +101,7 @@ int Base_Flash_Read (void *data,int addr,int len)
 {
     int retval = 0;
 #if Exist_FLASH 
+    volatile FLASH_Status flashStatus = 0;
 	if(data == NULL || len == 0)
     {
 		retval = -2;
@@ -110,9 +113,14 @@ int Base_Flash_Read (void *data,int addr,int len)
 		return retval;
 	}
     // 直接内存拷贝，按32位读取
+    flashStatus = FLASH_GetStatus();
+    while(flashStatus != FLASH_COMPLETE);   // 等上一个状态完成
+    FLASH_Unlock();
+    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
     for (uint32_t i = 0; i < len; i++) {
        *((uint8_t *)data + i) = *(__IO uint8_t*)(addr + i);
     }
+    FLASH_Lock();
 #endif
     return retval;
 }
@@ -142,6 +150,7 @@ int Base_Flash_Write (void *data,int addr,int len)
 
 	__disable_irq();
     FLASH_Unlock();
+    FLASH_ClearFlag(FLASH_FLAG_BSY|FLASH_FLAG_EOP|FLASH_FLAG_WRPRTERR);
 
     if (flashStatus == 0)
     {
@@ -163,6 +172,8 @@ int Base_Flash_Write (void *data,int addr,int len)
 					temp_data <<= 8;
 				}
             }
+            flashStatus = FLASH_GetStatus();
+            while(flashStatus != FLASH_COMPLETE);   // 等上一个状态完成
             flashStatus = FLASH_ProgramWord(start_addr + i, temp_data);
             i += 4;
             if(flashStatus != FLASH_COMPLETE)

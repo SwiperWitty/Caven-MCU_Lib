@@ -12,8 +12,6 @@
 #define DEFAULT_WIFI_NAME "Cavendish"   // Cavendish
 #define DEFAULT_WIFI_PASS "1234567890"  // 
 
-typedef void (*D_Callback_pFun) (void *data);   // 数据回调类型
-
 int Base_ETH_Init(int Channel,int Set);
 void Base_ETH_Task (void);
 int Base_ETH_Task_CallBcak_Bind(V_pFun fun);

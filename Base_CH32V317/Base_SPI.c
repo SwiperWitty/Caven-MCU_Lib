@@ -1,10 +1,9 @@
 #include "Base_SPI.h"
 
-#ifdef Exist_SPI
 
-    SPI_TypeDef *spi_Temp;
-    char SPI1_Width = 0;
-    char SPI2_Width = 0;
+SPI_TypeDef *spi_Temp;
+char SPI1_Width = 0;
+char SPI2_Width = 0;
 
 static void SPI_Delay (int time)
 {
@@ -90,6 +89,7 @@ static void SPI2_GPIO_Init(int Set)
 */
 void Base_SPI1_Init (uint8_t Width,int Set)
 {
+#if Exist_SPI
     FunctionalState set = DISABLE;
     SPI_InitTypeDef spi_init_struct;
     SPI_StructInit(&spi_init_struct);
@@ -135,10 +135,12 @@ void Base_SPI1_Init (uint8_t Width,int Set)
     DMA_ITConfig(DMA1_Channel3,DMA_IT_TC, ENABLE);
     #endif
     SPI_Cmd(spi_Temp, set);
+#endif
 }
 
 void Base_SPI2_Init (uint8_t Width,int Set)
 {
+#if Exist_SPI
     FunctionalState set = DISABLE;
     SPI_InitTypeDef spi_init_struct;
     SPI_StructInit(&spi_init_struct);
@@ -184,8 +186,8 @@ void Base_SPI2_Init (uint8_t Width,int Set)
     DMA_ITConfig(DMA1_Channel5,DMA_IT_TC, ENABLE);
     #endif
     SPI_Cmd(spi_Temp, set);
-}
 #endif
+}
 
 int Base_SPI_Init(SPI_mType Channel,uint8_t Width,int Set)
 {

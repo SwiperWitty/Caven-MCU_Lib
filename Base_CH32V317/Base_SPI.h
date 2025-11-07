@@ -49,7 +49,7 @@ typedef enum
 }SPI_mType;
 
 // 选择输出模式
-#ifdef Exist_SPI
+#if Exist_SPI
 //    #define SPI_SOFTWARE                    // 屏蔽就是硬件模式
     #define SPI_SPEED   SPI_BaudRatePrescaler_2     // 16-9MHZ   8-18MHZ     4-36MHZ     2-72MHZ
     #ifndef SPI_SOFTWARE
