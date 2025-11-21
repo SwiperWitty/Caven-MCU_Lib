@@ -41,7 +41,7 @@ int Base_WIFI_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netm
     #endif
 
 static uint8_t SYS_MAC_addr[6] = {0};
-
+#define ETH_SOCK_NUM    2
 // 静态的ip
 static char eth_mode = 0;       // 0:dhcp   1:static
 static char eth_ip[30];
@@ -62,7 +62,41 @@ static int eth_flag = 0;        // 1:rj45建立连接
 static int eth_init_flag = 0;   // 1:初始化
 
 static u8 SocketId;
-static V_pFun WCHNET_HandleGlobalInt = NULL;
+static u8 server_sock = 0,client_sock = 0xff;
+static ETH_handle_pFun ETH_Clinet_pFun = NULL;
+static ETH_handle_pFun ETH_Server_pFun = NULL;
+static u8 base_socket[WCHNET_MAX_SOCKET_NUM];                //Save the currently connected socket
+static u8 base_SocketRecvBuf[WCHNET_MAX_SOCKET_NUM][RECE_BUF_LEN];  // socket receive buffer
+
+u8 * Base_ETH_SockBuff_Bind (void)
+{
+    return base_socket;
+}
+
+u8 (*Base_ETH_SockBuff_Bind_RecBuf(void))[RECE_BUF_LEN] 
+{
+    return base_SocketRecvBuf;
+}
+
+u8 * Base_ETH_Server_Bind (void)
+{
+    return &server_sock;
+}
+
+u8 * Base_ETH_Client_Bind (void)
+{
+    return &client_sock;
+}
+
+void Base_ETH_Server_pFun_Bind (ETH_handle_pFun fun)
+{
+    ETH_Server_pFun = fun;
+}
+
+void Base_ETH_Client_pFun_Bind (ETH_handle_pFun fun)
+{
+    ETH_Clinet_pFun = fun;
+}
 
 static u8 WCHNET_DHCPCallBack(u8 status, void *arg)
 {
@@ -338,20 +372,80 @@ void Base_ETH_Task (void)
     WCHNET_MainTask();
     /*Query the Ethernet global interrupt,
         * if there is an interrupt, call the global interrupt handler*/
-    if(WCHNET_QueryGlobalInt())
+    if(client_sock == 0)
     {
-        if (WCHNET_HandleGlobalInt != NULL)
+        if(ETH_Clinet_pFun != NULL)
         {
-            WCHNET_HandleGlobalInt();
+            ETH_Clinet_pFun (0, 0);
         }
     }
-#endif
-}
+    if(WCHNET_QueryGlobalInt())
+    {
+        u8 intstat;
+        u16 i;
+        u8 socketint;
+        intstat = WCHNET_GetGlobalInt();                              //get global interrupt flag
+        if (intstat & GINT_STAT_UNREACH)                              //Unreachable interrupt
+        {
+            printf("GINT_STAT_UNREACH\r\n");
+        }
+        if (intstat & GINT_STAT_IP_CONFLI)                            //IP conflict
+        {
+            printf("GINT_STAT_IP_CONFLI\r\n");
+        }
 
-int Base_ETH_Task_CallBcak_Bind(V_pFun fun)
-{
-#ifdef Exist_ETH
-    WCHNET_HandleGlobalInt = fun;
+        if (intstat & GINT_STAT_PHY_CHANGE)                           //PHY status change
+        {
+            i = WCHNET_GetPHYStatus();
+            if (i & PHY_Linked_Status)
+            {
+                printf("PHY Link Success\r\n");
+                eth_flag = 1;
+                client_sock = 0;
+                server_sock = 0;
+            }
+            else
+            {
+                printf("PHY Link down\r\n");
+                eth_flag = 0;
+                if(server_sock)
+                {
+                    printf("eth link_sock %d \r\n",server_sock);
+                    WCHNET_SocketClose(server_sock,TCP_CLOSE_ABANDON);
+                    server_sock = 0;
+                }
+                if(client_sock)
+                {
+                    printf("eth link_sock %d \r\n",client_sock);
+                    WCHNET_SocketClose(client_sock,TCP_CLOSE_ABANDON);
+                    client_sock = 0xff;
+                }
+            }
+        }
+        if (intstat & GINT_STAT_SOCKET) {                             //socket related interru
+            for (i = 0; i < WCHNET_MAX_SOCKET_NUM; i++) 
+            {
+                socketint = WCHNET_GetSocketInt(i);
+                if (socketint)
+                {
+                    if(i == client_sock)
+                    {
+                        if(ETH_Clinet_pFun != NULL)
+                        {
+                            ETH_Clinet_pFun (i, socketint);
+                        }
+                    }
+                    else
+                    {
+                        if(ETH_Server_pFun != NULL)
+                        {
+                            ETH_Server_pFun (i, socketint);
+                        }
+                    }
+                }
+            }
+        }
+    }
 #endif
 }
 
@@ -362,6 +456,7 @@ int Base_ETH_Init(int Channel,int Set)
     if (Channel == 1) {
         if(Set)
         {
+            memset(base_socket, 0xff, WCHNET_MAX_SOCKET_NUM);
             if (WCHNET_LIB_VER != WCHNET_GetVer()) {
                 eth_init_flag = 0;
             }

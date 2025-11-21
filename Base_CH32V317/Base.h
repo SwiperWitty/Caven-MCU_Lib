@@ -37,6 +37,14 @@
 #include "Base_CAN.h" 
 #endif
 
+#if Exist_ETH
+#include "Base_ETH.h"
+#include "Base_TCP_Client.h"
+#include "Base_TCP_Server.h"
+#include "Base_TCP_HTTP.h"
+#include "Base_TCP_MQTT.h"
+#endif
+
 #if Exist_ADC
 #include "Base_ADC.h" 
 #endif

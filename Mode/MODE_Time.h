@@ -24,14 +24,6 @@
 #include "time.h"
 #include "API.h"
 
-#ifndef BASE_SYS_TIME_H__
-typedef struct
-{
-    volatile uint32_t SYS_Sec;
-    volatile uint32_t SYS_Us;       // 这里最大 1000 000
-}SYS_BaseTIME_Type;
-
-#endif
 /*
  * (Date.Days + Watch) -> TIME -> Tick
  * 1.BaseTIME是所有TIME的基础，他的设置逻辑是 Days + Watch所有秒数+Watch.time_us
