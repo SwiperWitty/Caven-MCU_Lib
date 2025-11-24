@@ -123,7 +123,7 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                 }
             }
 
-            // Base_TCP_Server_Send ((u8 *) SocketInf[sock].RecvReadPoint, len);
+            // Base_TCP_Client_Send ((u8 *) SocketInf[sock].RecvReadPoint, len);
         }
         if (intstat & SINT_STAT_CONNECT)                                //connect successfully
         {

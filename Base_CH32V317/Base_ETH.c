@@ -367,6 +367,10 @@ int Base_ETH_get_SocketId (void)
 void Base_ETH_Task (void)
 {
 #ifdef Exist_ETH
+    if(eth_init_flag == 0)
+    {
+        return;
+    }
     /*Ethernet library main task function,
         * which needs to be called cyclically*/
     WCHNET_MainTask();
@@ -524,6 +528,7 @@ int Base_ETH_Init(int Channel,int Set)
     else {
     
     }
+    printf("ETH IP %s \r\n",eth_ip);
 #endif
     return retval;
 }

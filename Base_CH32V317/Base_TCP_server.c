@@ -30,7 +30,7 @@ int Base_TCP_Server_Config (char *port_str,int enable)
         TmpSocketInf.SourPort = port;
         TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
         WCHNET_SocketCreat(&SocketIdForListen, &TmpSocketInf);
-        printf("Server_Config %d\r\n", SocketIdForListen);
+        printf("Server_Config post %d,SocketId %d\r\n", port,SocketIdForListen);
         WCHNET_SocketListen(SocketIdForListen);             // listen for connections
 
         Base_ETH_Server_pFun_Bind (Base_TCP_Server_Task);
@@ -46,7 +46,7 @@ int Base_TCP_Server_Config (char *port_str,int enable)
     return retval;
 }
 
-int Base_TCP_Server_Send (uint8_t *data, int len)
+int Base_TCP_Server_Send (u8 *data, int len)
 {
     int retval = 0;
     u32 temp_num = len;
