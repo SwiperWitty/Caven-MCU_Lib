@@ -7,7 +7,7 @@
 #if Exist_ETH
 
 #define KEEPALIVE_ENABLE    1   // Enable keep alive function
-static u8 *p_client_sock;
+static u8 *p_client_sock = NULL;
 
 static u8 client_init_flag = 0;
 static u8 client_con = 0;
@@ -122,7 +122,10 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                     client_receive_fun (&temp_data);
                 }
             }
-
+            if (p_client_sock != NULL)
+            {
+                WCHNET_SocketRecv(*p_client_sock, NULL, &len);        //Clear sent data
+            }
             // Base_TCP_Client_Send ((u8 *) SocketInf[sock].RecvReadPoint, len);
         }
         if (intstat & SINT_STAT_CONNECT)                                //connect successfully
