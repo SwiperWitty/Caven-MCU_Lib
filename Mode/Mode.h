@@ -84,6 +84,7 @@
 #include "IC_RTC8564.h"
 #endif
 
+#include "IC_AS608.h"
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->
