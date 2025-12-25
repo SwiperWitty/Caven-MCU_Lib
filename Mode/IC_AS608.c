@@ -134,31 +134,35 @@ int AS608_info_Split_packet_Fun(AS608_Packet const source, uint8_t *data)
     uint16_t temp_sum = 0;
     if (data != NULL)
     {
+        data[temp_run ++] = (source.header >> 8) & 0xff;
         data[temp_run ++] = source.header & 0xff;
-        data[temp_run ++] = (source.header << 8) & 0xff;
 
-        data[temp_run ++] = source.address & 0xff;
-        data[temp_run ++] = (source.address << 8) & 0xff;
-        data[temp_run ++] = (source.address << 16) & 0xff;
-        data[temp_run ++] = (source.address << 24) & 0xff;
+        data[temp_run ++] = (source.address >> 24) & 0xff;
+        data[temp_run ++] = (source.address >> 16) & 0xff;
+        data[temp_run ++] = (source.address >> 8) & 0xff;
+        data[temp_run ++] = (source.address >> 0) & 0xff;
 
         data[temp_run ++] = source.type & 0xff;
         
-        data[temp_run ++] = (source.length << 8) & 0xff;
+        data[temp_run ++] = (source.length >> 8) & 0xff;
         data[temp_run ++] = source.length & 0xff;
 
         if (source.dSize == 0)
         {
             temp_val = source.length - 2;
         }
-        if (source.dSize > 0)
+		else
+		{
+			temp_val = source.dSize;
+		}
+        if (temp_val > 0)
         {
             memcpy(&data[temp_run],source.data,temp_val);
             temp_run += temp_val;
         }
-        temp_sum = calculate_checksum(&data[7], temp_run - 6);
+        temp_sum = calculate_checksum(&data[6], temp_run - 6);
+        data[temp_run ++] = (temp_sum >> 8) & 0xff;
         data[temp_run ++] = temp_sum & 0xff;
-        data[temp_run ++] = (temp_sum << 8) & 0xff;
         retval = temp_run;
     }
     return retval;
