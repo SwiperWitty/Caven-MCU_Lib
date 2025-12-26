@@ -6,7 +6,7 @@
 
 otg_core_type otg_core_struct;      //  USB全局控制量
 
-#ifdef Exist_USB
+#if Exist_USB
 static void usb_low_power_wakeup_config(void);
 static void usb_clock48m_select(usb_clk48_s clk_s);
 static void usb_gpio_config(void);
@@ -16,7 +16,7 @@ static void usb_low_power_wakeup_config(void);
 int MODE_USB_Init (int Set)  
 {
     int retval = 0;
-#ifdef Exist_USB
+#if Exist_USB
     if(SET)
     {
         usb_gpio_config();
@@ -50,7 +50,7 @@ int MODE_USB_Init (int Set)
 int USB_Buffer_Receive (char *Data)
 {
     int len = 0;
-#ifdef Exist_USB 
+#if Exist_USB 
     len = usb_Data_get_rxdata(&otg_core_struct.dev, (uint8_t *)Data);
 
 #endif
@@ -60,7 +60,7 @@ int USB_Buffer_Receive (char *Data)
 int USB_Buffer_send (const void *Data,int bufflen)
 {
     int temp = 0;
-#ifdef Exist_USB
+#if Exist_USB
     uint16_t Buff_MAX = 64;
     uint16_t temp2;
     uint8_t Buffer[64];
@@ -100,7 +100,7 @@ int USB_Buffer_send (const void *Data,int bufflen)
 int USB_Keyboard_Send_String(char *string)
 {
     int length = 0;
-#ifdef Exist_USB
+#if Exist_USB
     uint8_t index = 0;
     length = strlen(string);
     if(length > 64)
@@ -138,7 +138,7 @@ int USB_Keyboard_Send_String(char *string)
 int USB_Keyboard_Send_Data (char *data, int Sendlen)
 {
     int length = 0;
-#ifdef Exist_USB
+#if Exist_USB
     uint16_t  i,j,k = 0;
     char u8SendBuffer[128];        //转换区
     memset(u8SendBuffer,0,sizeof(u8SendBuffer));

@@ -150,8 +150,8 @@ void Mode_Index(void)
 void Debug_Out(uint8_t *data,int Length)        //选一个通信接口为Debug
 {
 #ifdef Exist_UART
-    #ifdef DEBUG_OUT
-    MODE_UART_Send_Data_Fun(DEBUG_OUT, data, Length);
+    #ifdef DEBUG_CH
+    MODE_UART_Send_Data_Fun(DEBUG_CH, data, Length);
     #endif
 
 #endif

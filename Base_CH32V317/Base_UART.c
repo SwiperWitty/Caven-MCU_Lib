@@ -646,9 +646,9 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
 // printf
 int fputc(int ch, FILE *f)
 {
-#ifdef DEBUG_OUT
+#ifdef DEBUG_CH
 	#ifdef Exist_UART
-    Base_UART_Send_Data((UART_mType)DEBUG_OUT, (uint8_t)ch);
+    Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)ch);
 	#endif
 #endif // DEBUG
     return (ch);
@@ -715,7 +715,7 @@ __attribute__((used)) int _write(int fd, char *buf, int size)
 #else
     for(i = 0; i < size; i++)
     {
-        Base_UART_Send_Data((UART_mType)DEBUG_OUT, (uint8_t)*buf++);
+        Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)*buf++);
     }
 #endif
     return size;

@@ -106,6 +106,7 @@ enum CAVEN_CMD3
     m_CAVEN_CMD3_Channel_Retell_Order,
     m_CAVEN_CMD3_Channel_Updata_Order,
 
+    m_CAVEN_CMD3_zhiwen_Order = 0x1B,
 };
 
 /*
