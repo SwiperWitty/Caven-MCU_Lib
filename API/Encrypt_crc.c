@@ -641,7 +641,7 @@ uint8_t Encrypt_AES_decrypt_Fun(uint8_t *data, uint16_t data_length, uint8_t *re
     uint8_t decrypt_result[300];
     uint8_t array[200];
     uint16_t decrypt_result_length = 0;
-    if ((decrypt_result != NULL) & (array != NULL))
+    if ((data != NULL) & (ret_data != NULL))
     {
         memset(decrypt_result, 0, sizeof(decrypt_result));
 
