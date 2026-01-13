@@ -212,7 +212,7 @@ char *stb_callback(const char *buf, void *user, int len)
 #endif
 }
 
-// 自定义 printf 函数
+// 自定义 ptf 函数
 int stb_printf(const char *fmt, ...)
 {
 #if defined (STB_SPRINTF_IMPLEMENTATION)

@@ -29,8 +29,7 @@ int Base_Addr_Get_Area(int addr)
     int retval = 0;
 #if Exist_FLASH 
     if((addr >= FLASH_END_ADDR) || (addr < FLASH_START_ADDR))
-    { 
-//        printf("S-ERROR\r\n"); 
+    {
         retval = (-1);
         return retval;
     }

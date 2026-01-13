@@ -576,7 +576,7 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
     return retval;
 }
 
-int fputc(int ch, FILE *f)      //printf
+int fputc(int ch, FILE *f)      // ptf
 {
 #if DEBUG_CH
     #if Exist_UART
