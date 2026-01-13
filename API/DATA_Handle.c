@@ -233,8 +233,8 @@ int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,c
 {
 	int retval = 0;
 	int temp_run = *run;
-	char max_sort = 0;
-	char min_sort = 0;
+	int max_sort = 0;
+	int min_sort = 0;
 	float temp_data_f;
     if (array == NULL && array_num <= 2)
     {
@@ -264,8 +264,8 @@ int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,c
 				min_sort = i;
 			}
 		}
-		array[max_sort] = 0;
-		array[min_sort] = 0;
+		array[max_sort] = 0.0;
+		array[min_sort] = 0.0;
 		temp_data_f = 0;
 		for(int i = 0;i < array_num;i++)
 		{
