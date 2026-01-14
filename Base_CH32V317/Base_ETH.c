@@ -15,7 +15,7 @@ static uint8_t s_WIFI_ip[4];
 static uint8_t s_WIFI_netmask[4];
 static uint8_t s_WIFI_gateway[4];
 
-static char wifi_mode = 0;      // 0:dhcp   1:static
+static char wifi_mode = 0;      // 0:static   1:dhcp
 static char wifi_ip[30];
 static char wifi_gw[30];
 static char wifi_netmask[30];
@@ -43,7 +43,7 @@ int Base_WIFI_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netm
 static uint8_t SYS_MAC_addr[6] = {0};
 #define ETH_SOCK_NUM    2
 // 静态的ip
-static char eth_mode = 0;       // 0:dhcp   1:static
+static char eth_mode = 0;       // 0:static   1:dhcp
 static char eth_ip[30];
 static char eth_gw[30];
 static char eth_netmask[30];
@@ -206,8 +206,54 @@ void ETH_IRQHandler(void)
 #endif
 
 /*
-    mode = 0,dhcp
-    mode = 1,static 
+    url:192.168.1.168:8160
+    ip:192.168.1.168
+    port:8160
+    retval:1
+
+    url:192.168.1.168
+    ip:192.168.1.168
+    port:NULL
+    retval:0
+*/
+int Base_ETH_IPprot (char *url,char *ip,char *port)
+{
+    int retval = -1;
+    int temp_num = 0;
+    char *str_pointer = NULL;
+    if (url == NULL || ip == NULL || port == NULL)
+    {
+        return retval;
+    }
+    if(url[0] >= '0' && url[0] <= '9')
+    {
+        retval = 0;
+        temp_num = strlen(url);
+        str_pointer = memstr(url,":",temp_num);
+        if(str_pointer != NULL)
+        {
+            temp_num = str_pointer-url;
+            memcpy(ip,url,temp_num);
+   
+            strcpy(port,&url[temp_num+1]);
+            retval = 1;
+            // ESP_LOGI(TAG, "IPprot ip: [%s] port: [%s]", ip,port);
+        }
+        else
+        {
+            strcpy(ip,url);
+        }
+    }
+    else
+    {
+        return retval;
+    }
+    return retval;
+}
+
+/*
+    mode = 0, static
+    mode = 1, dhcp
     mode = other    查询mode
     ip_str  ip地址
     gw_str  默认网关
@@ -326,8 +372,8 @@ void Base_ETH_get_MAC (uint8_t *mac)
 
 /*
     retval = 0,无网络
-    retval = 2,wifi连接
-    retval = 4,rj45连接
+    retval = 1,wifi连接
+    retval = 2,rj45连接
 */
 int Base_ETH_get_status (void)
 {
@@ -335,21 +381,21 @@ int Base_ETH_get_status (void)
 #ifdef WIFI_LINK
     if (Base_WIFI_get_local_ip_status(NULL,NULL,NULL))
     {
-        retval |= 0x01 << 1;
+        retval |= 0x01 << 0;
     }
     else
     {
-        temp = 0x01 << 1;
+        temp = 0x01 << 0;
         retval &= ~temp;
     }
 #endif
     if (Base_ETH_get_local_ip_status(NULL,NULL,NULL))
     {
-        retval |= 0x01 << 2;
+        retval |= 0x01 << 1;
     }
     else
     {
-        temp = 0x01 << 2;
+        temp = 0x01 << 1;
         retval &= ~temp;
     }
     return retval;
@@ -458,6 +504,18 @@ int Base_ETH_Init(int Channel,int Set)
     int retval = 0;
 #ifdef Exist_ETH
     if (Channel == 1) {
+    #ifdef WIFI_LINK
+        if(Set)
+        {
+            retval = wifi_init_flag;
+        }
+        else
+        {
+            retval = 1;
+        }
+    #endif
+    }
+    else if (Channel == 2) {
         if(Set)
         {
             memset(base_socket, 0xff, WCHNET_MAX_SOCKET_NUM);
@@ -468,7 +526,7 @@ int Base_ETH_Init(int Channel,int Set)
             {
                 WCHNET_GetMacAddr(SYS_MAC_addr);
                 TIM2_Init();
-                if(eth_mode == 0)
+                if(eth_mode == 1)
                 {
                     WCHNET_DHCPSetHostname("CAVEN_3.14 ETH");
                     memset(s_RJ45_ip,0,sizeof(s_RJ45_ip));
@@ -507,28 +565,16 @@ int Base_ETH_Init(int Channel,int Set)
                     WCHNET_ConfigKeepLive(&cfg);
                 }
             }
+            printf("WCH ETH IP %s,GW %s,MK %s \r\n",eth_ip,eth_gw,eth_netmask);
         }
         else 
         {
             retval = 1;
         }
     }
-    else if (Channel == 2) {
-    #ifdef WIFI_LINK
-        if(Set)
-        {
-            retval = wifi_init_flag;
-        }
-        else
-        {
-            retval = 1;
-        }
-    #endif
-    }
     else {
     
     }
-    printf("ETH IP %s \r\n",eth_ip);
 #endif
     return retval;
 }

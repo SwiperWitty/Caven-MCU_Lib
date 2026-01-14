@@ -10,13 +10,20 @@
 #include "Caven_Type.h"
 #include "eth_driver.h"
 
-#define DEFAULT_WIFI_NAME "Cavendish"   // Cavendish
-#define DEFAULT_WIFI_PASS "1234567890"  // 
+typedef struct{
+    int use_dhcp;
+    char ip[16];
+    char netmask[16];
+    char gateway[16];
+    char dns1[16];
+    char dns2[16];
+}net_cfg_Type;
 
 typedef void (*ETH_handle_pFun) (u8 sock,u8 intstat);
 
 int Base_ETH_Init(int Channel,int Set);
 void Base_ETH_Task (void);
+int Base_ETH_IPprot (char *url,char *ip,char *port);
 
 void Base_ETH_get_MAC (uint8_t *mac);
 void Base_ETH_set_MAC (uint8_t *mac);

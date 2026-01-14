@@ -10,7 +10,7 @@
 #include "Caven_Type.h"
 
 
-int Base_TCP_Server_Config (char *port_str,int enable);
+int Base_TCP_Server_Config (char *port_str,int break_off,int enable);
 int Base_TCP_Server_Send (uint8_t *data, int len);
 void Base_TCP_Server_Receive_Bind_Fun (D_pFun Fun);
 

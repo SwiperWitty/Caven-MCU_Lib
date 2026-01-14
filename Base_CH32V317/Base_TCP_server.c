@@ -12,17 +12,27 @@ static u8 SocketIdForListen;
 static u8 last_sock = 0;
 
 static u8 server_init_flag = 0;
+static u8 tcp_server_break_off = 0;
 static u8 *Socket_ptr;                      // socket receive buffer
 static u8 (*Socket_buff)[RECE_BUF_LEN];     // socket receive buffer
 static D_pFun server_receive_fun = NULL;
 
-int Base_TCP_Server_Config (char *port_str,int enable)
+/*
+    port_str:"8160"
+    break_off:是否允许新连接取代旧连接（port_str存在时才生效）
+    enable 0,会关闭当前sock，没有则不生效
+    enable 1,打开server_link,并重置str,若此时str为NULL，理解为询问tcp_server_sock
+    server 只能修改端口(改完请重启)，如果需要修改ip请修改[eth_config_ip]/[wifi_config_ip]
+
+    retval:当前是否有sock
+*/
+int Base_TCP_Server_Config (char *port_str,int break_off,int enable)
 {
     int retval = 0;
     if(port_str != NULL && enable != 0)
     {
         int port = atoi(port_str);
-
+        tcp_server_break_off = break_off;
         SOCK_INF TmpSocketInf;
         memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
         p_server_sock = Base_ETH_Server_Bind();
@@ -30,7 +40,7 @@ int Base_TCP_Server_Config (char *port_str,int enable)
         TmpSocketInf.SourPort = port;
         TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
         WCHNET_SocketCreat(&SocketIdForListen, &TmpSocketInf);
-        printf("Server_Config post %d,SocketId %d\r\n", port,SocketIdForListen);
+        printf("Server_Config post %d,break_off %d,SocketId %d\r\n", port,tcp_server_break_off,SocketIdForListen);
         WCHNET_SocketListen(SocketIdForListen);             // listen for connections
 
         Base_ETH_Server_pFun_Bind (Base_TCP_Server_Task);
@@ -42,6 +52,10 @@ int Base_TCP_Server_Config (char *port_str,int enable)
         WCHNET_SocketClose(*p_server_sock,TCP_CLOSE_ABANDON);
         *p_server_sock = 0xff;
         server_init_flag = 0;
+    }
+    if(*p_server_sock && *p_server_sock != 0xff && server_init_flag > 0)
+    {
+        retval = 1;
     }
     return retval;
 }
@@ -115,11 +129,22 @@ void Base_TCP_Server_Task (u8 sock,u8 intstat)
             WCHNET_SocketSetKeepLive(sock, ENABLE);
     #endif
             WCHNET_ModifyRecvBuf(sock, (u32) Socket_buff[sock],RECE_BUF_LEN);
-
-            if(last_sock != 0 && last_sock != sock)
+            if(tcp_server_break_off)
             {
-                printf("server socket[%d] has been abandon\r\n",last_sock);
-                WCHNET_SocketClose(last_sock,TCP_CLOSE_ABANDON);
+                if(last_sock != 0 && last_sock != sock)
+                {
+                    printf("break_off->server socket[%d] has been abandon\r\n",last_sock);
+                    WCHNET_SocketClose(last_sock,TCP_CLOSE_ABANDON);
+                }
+            }
+            else
+            {
+                if(last_sock != 0 && last_sock != sock)
+                {
+                    printf("new server socket,but keep last socket[%d] \r\n",last_sock);
+                    WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
+                    return;
+                }
             }
             last_sock = sock;
             *p_server_sock = sock;

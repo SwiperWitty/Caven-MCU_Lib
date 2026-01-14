@@ -43,7 +43,7 @@ int Base_TCP_Client_Config (char *ip_str,char *port_str,int enable)
         {
             WCHNET_SocketCreat(p_client_sock, &TmpSocketInf);
             WCHNET_SocketConnect(*p_client_sock);                        // make a TCP connection
-            printf("Client_Config ip[%s:%s] %d\r\n", client_ip,client_port,*p_client_sock);
+            printf("Client_Config ip[%s:%s] socket[%d]\r\n", client_ip,client_port,*p_client_sock);
         }
         client_init_flag = 1;
     }
@@ -54,6 +54,10 @@ int Base_TCP_Client_Config (char *ip_str,char *port_str,int enable)
         *p_client_sock = 0;
         client_init_flag = 0;
         client_con = 0;
+    }
+    if(client_con && *p_client_sock && *p_client_sock != 0xff && client_init_flag > 0)
+    {
+        retval = 1;
     }
     return retval;
 }
