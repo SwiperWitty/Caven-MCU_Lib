@@ -89,7 +89,7 @@ char* memstr(void* full_data, char* substr,int full_data_len)
     retval = 0:获得,但是[sign]可能没找到
     在[file]找[sign_str]，如果找到则继续匹配[sign]
     如果[sign] == 0，那就不找了，认为[sign_str]后是str_num，即atoi(str_num),再sprintf(pData,"%d",atoi(str_num))
-    如果[sign] == '['，那就认为是组合,即提取[xxx]中内容给 pData
+    如果[sign] == '<'，那就认为是组合,即提取<xxx>中内容给 pData
     如果[sign] == '#'，那就认为是##,即提取#xxx#中内容给 pData
     run:
         data_gain_str_by_sign("caven777",strlen("caven777"),temp_array,"caven",0);
@@ -97,7 +97,7 @@ char* memstr(void* full_data, char* substr,int full_data_len)
     ret:
         777
     run:
-        data_gain_str_by_sign("caven:[996]",strlen("caven[996]"),temp_array,"caven",'[');
+        data_gain_str_by_sign("caven:<996>",strlen("caven:<996>"),temp_array,"caven:",'<');
         printf("%s",temp_array);
     ret:
         996
@@ -125,14 +125,14 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
         else
         {
             char *temp_pointer = NULL;
-            if (sign == '[' || sign == ']')
+            if (sign == '<' || sign == '>')
             {
                 temp_num = file_len - (str_pointer+str_len-file);
-                temp_pointer = memstr(str_pointer+str_len,"[",temp_num);
+                temp_pointer = memstr(str_pointer+str_len,"<",temp_num);
                 if (temp_pointer != NULL)
                 {
                     temp_num = file_len - (temp_pointer+1-file);
-                    str_pointer = memstr(temp_pointer+1,"]",temp_num);
+                    str_pointer = memstr(temp_pointer+1,">",temp_num);
                     if (str_pointer != NULL)
                     {
                         temp_num = str_pointer-temp_pointer;
