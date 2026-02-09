@@ -7,7 +7,6 @@
 
 
 static Real_TIME_Type Real_TIME = {0};
-struct tm mode_date;
 static int time_enable = 0;
 static int SYNC_TIME_Fun (void);
 
@@ -18,7 +17,6 @@ int MODE_TIME_Init(int Set)
     #if defined(MCU_SYS_FREQ)
     SYS_Time_Init(Set);
 	Real_TIME.SYNC_Flag = 0;
-	Real_TIME.date = &mode_date;
 	#else
 	Real_TIME.SYNC_Flag = 0;
 	Real_TIME.date = &mode_date;
@@ -67,32 +65,6 @@ Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void)
     Real_TIME.Time.SYS_Us = tv.tv_usec % 1000000;
 	retval = Real_TIME.Time;
     #endif
-#endif
-    return retval;
-}
-
-// timezone_s 为时区参数(s秒)，例如北京时间 timezone_s = 8 * 60 * 60
-struct tm MODE_TIME_Get_Date (int timezone_s)
-{
-    struct tm retval = {0};
-#if Exist_SYS_TIME
-    if (time_enable == 0 || Real_TIME.date == NULL) {
-        return retval;
-    }
-    struct tm *time_info;
-    if(timezone_s >= 86400)
-    {
-        timezone_s = 86400;
-    }
-    time_t utc = Real_TIME.Time.SYS_Sec + timezone_s;
-    while (Real_TIME.SYNC_Flag);
-    Real_TIME.SYNC_Flag = 0;
-    SYNC_TIME_Fun ();
-    time_info = localtime(&utc);
-	memcpy(Real_TIME.date,time_info,sizeof(struct tm));
-    Real_TIME.date->tm_year += 1900;
-    Real_TIME.date->tm_mon += 1;
-    retval = *Real_TIME.date;
 #endif
     return retval;
 }

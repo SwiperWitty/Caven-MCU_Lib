@@ -11,7 +11,7 @@
 */
 
 #include "Caven_Type.h"
-
+#include "time.h"
 
 typedef struct
 {
@@ -23,5 +23,6 @@ typedef struct
 }Task_Overtime_Type;
 
 int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time);
+struct tm API_UTC_Get_Date (int Unix,int timezone_s);
 
 #endif

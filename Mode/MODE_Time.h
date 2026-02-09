@@ -21,7 +21,6 @@
         #include "sys/time.h"
     #endif
 #endif
-#include "time.h"
 #include "API.h"
 
 /*
@@ -34,14 +33,12 @@ typedef struct
 {
 	volatile char SYNC_Flag;
 	Caven_BaseTIME_Type Time;
-    struct tm *date;
 }Real_TIME_Type;
 
 typedef struct
 {
     void (*Set_BaseTIME_pFun)(Caven_BaseTIME_Type time);
     Caven_BaseTIME_Type (*Get_BaseTIME_pFun)(void);
-    struct tm (*Get_Date_pFun) (int timezone_s);
     
     void (*Delay_Us)(int num);
     void (*Delay_Ms)(int num);
@@ -53,7 +50,6 @@ int MODE_TIME_Init(int Set);
 
 void MODE_TIME_Set_BaseTIME (Caven_BaseTIME_Type time);
 Caven_BaseTIME_Type MODE_TIME_Get_BaseTIME (void);
-struct tm MODE_TIME_Get_Date (int timezone_s);
 
 void MODE_Delay_Us(int num);
 void MODE_Delay_Ms(int num);

@@ -47,7 +47,6 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 	
     Mode_Use.TIME.Set_BaseTIME_pFun = MODE_TIME_Set_BaseTIME;
     Mode_Use.TIME.Get_BaseTIME_pFun = MODE_TIME_Get_BaseTIME;
-    Mode_Use.TIME.Get_Date_pFun = MODE_TIME_Get_Date;
 #endif
 
 #if Exist_LED
@@ -82,8 +81,8 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 #endif
 
 #if Exist_USB
-    Mode_Use.USB_HID.Send_Data = USB_Send_Data;
-    Mode_Use.USB_HID.RX_Callback_Bind = USB_Callback_Bind;
+    Mode_Use.USB_HID.Send_Data_pFun = USB_Send_Data;
+    Mode_Use.USB_HID.Receive_Bind_pFun = USB_Callback_Bind;
 #endif
 
 #if Exist_BUTTON
@@ -195,6 +194,18 @@ void Debug_Out(uint8_t *data,int Length)    // 选一个通信接口为Debug
     MODE_UART_DMA_Send_Data_Fun(DEBUG_CH, data, Length);
     #endif
 
+#endif
+}
+
+void Debug_OutStr(char *data)
+{
+#if Exist_UART
+    #if DEBUG_CH
+    if(data != NULL)
+    {
+        Debug_Out((uint8_t *)data,strlen(data));
+    }
+    #endif
 #endif
 }
 

@@ -17,8 +17,8 @@ typedef struct
 {
     int (*Keyboard_Send_Data) (char *data, int size);
     //custom
-    void (*Send_Data_pFun) (uint8_t *data,int size);
-    void (*Receive_Bind_pFun) (D_Callback_pFun USB_Callback_pFun);
+    void (*Send_Data) (uint8_t *data,int size);
+    void (*RX_Callback_Bind) (D_Callback_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
 void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);

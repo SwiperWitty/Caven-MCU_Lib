@@ -9,7 +9,7 @@ static uint32_t s_Frequency;        // 1s s_Tick_cnt 跑的数量,也就是 tick
 static uint32_t s_Frequency_CMP;    // 中断溢出需要的滴答值
 static uint32_t s_Frequency_us;     // 1us s_Tick_cnt 跑的数量
 static uint32_t s_Frequency_ms;     // 1ms s_Tick_cnt 跑的数量
-
+static char s_Tick_init = 0;
 static volatile SYS_Time_Type s_SYS_Time = {0};
 
 #endif
@@ -21,12 +21,13 @@ void SYS_Time_Init(int Set)
 {
     system_clock_config();
     nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
-#ifdef Exist_SYS_TIME //这种保护不占内存，所以尽可能写
+    __enable_irq();
+#if Exist_SYS_TIME	// 这种保护不占内存，所以尽可能写
     s_Frequency = TICK_FREQUENCY;
     s_Frequency_CMP = TICK_SET_CMP;
     s_Frequency_ms = (s_Frequency / 1000);
     s_Frequency_us = (s_Frequency / 1000000);
-    
+	s_Tick_init = Set & 0xff;
     if (Set)
     {
         while(SysTick_Config(TICK_SET_CMP));
@@ -42,7 +43,7 @@ void SYS_Time_Init(int Set)
 
 void SYS_Time_Set(SYS_BaseTIME_Type * time)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     uint64_t temp = 0;
 
     s_Tick_cnt = time->SYS_Sec;
@@ -61,7 +62,7 @@ void SYS_Time_Set(SYS_BaseTIME_Type * time)
 
 void SYS_Time_Get(SYS_BaseTIME_Type * time)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     uint32_t temp,cnt,cnt_us;
         
     cnt = s_SYS_Time.SYS_Time_H;
@@ -85,7 +86,7 @@ void SYS_Time_Get(SYS_BaseTIME_Type * time)
 #endif
 }
 
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
 void SYS_TIME_HANDLER()
 {
     s_SYS_Time.SYS_Time_H ++;
@@ -95,14 +96,14 @@ void SYS_TIME_HANDLER()
 
 void SYS_IWDG_Configuration (void)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
 
 #endif
 }
 
 void SYS_Feed_Watchdog (void)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
 
 #endif
 } 
@@ -111,7 +112,7 @@ void SYS_Feed_Watchdog (void)
 
 void SYS_Delay_us(int n)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
     n = MIN(5000,n);
     uint32_t set_Tick_cnt = n * s_Frequency_us;
     uint64_t start_Tick_cnt;
@@ -138,7 +139,9 @@ void SYS_Delay_us(int n)
 
 void SYS_Delay_ms(int n)
 {
-#ifdef Exist_SYS_TIME
+#if Exist_SYS_TIME
+	if (s_Tick_init == 0)
+		return;
     n = MIN(5000,n);
     uint32_t set_Tick_cnt = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
     uint64_t start_Tick_cnt;

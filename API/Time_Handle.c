@@ -77,3 +77,19 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
     return retval;
 }
 
+// timezone_s 为时区参数(s秒)，例如北京时间 timezone_s = 8
+struct tm API_UTC_Get_Date (int Unix,int timezone_s)
+{
+    struct tm retval = {0};
+    struct tm *time_info;
+
+    timezone_s *= 3600;
+    time_t utc = Unix + timezone_s;
+    
+    time_info = localtime(&utc);
+    memcpy(&retval,time_info,sizeof(struct tm));
+    retval.tm_year += 1900;
+    retval.tm_mon += 1;
+
+    return retval;
+}

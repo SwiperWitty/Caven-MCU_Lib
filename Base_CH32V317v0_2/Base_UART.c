@@ -141,9 +141,6 @@ void Base_UART_Send_Data(UART_mType Channel,uint16_t Data)
 #endif
 
 #ifdef DMA_UART
-    #if Exist_UART & OPEN_0001
-uint8_t DMA_UART0_Buff[UART_BUFF_MAX];
-    #endif
     #if Exist_UART & OPEN_0010
 uint8_t DMA_UART1_Buff[UART_BUFF_MAX];
     #endif
@@ -281,7 +278,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
 #if (Exist_UART & OPEN_0001)
 void Uart0_Init(int Baud,int Set)
 {
-    uart0_enable = SET;
+
 }
 #endif
 
@@ -604,34 +601,22 @@ int Base_UART_Init(UART_mType Channel,int Baud,int Set)
     switch (Channel)
     {
     case 0:
-    #if (Exist_UART & OPEN_0001)
-        Uart0_Init(Baud,SET);
-        retval = 0;
-    #endif
         break;
     case 1:
-    #if (Exist_UART & OPEN_0010)
         Uart1_Init(Baud,SET);
         retval = 0;
-    #endif
         break;
     case 2:
-    #if (Exist_UART & OPEN_0100)
         Uart2_Init(Baud,SET);
         retval = 0;
-    #endif
         break;
     case 3:
-    #if (Exist_UART & OPEN_1000)
         Uart3_Init(Baud,SET);
         retval = 0;
-    #endif
         break;
     case 4:
-    #if (Exist_UART & OPEN_10000)
         Uart4_Init(Baud,SET);
         retval = 0;
-    #endif
         break;
     default:
         break;

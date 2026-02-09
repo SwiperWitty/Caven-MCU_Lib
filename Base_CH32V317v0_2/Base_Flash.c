@@ -43,10 +43,6 @@ int Base_Addr_Get_Area(int addr)
     return retval;
 }
 
-/*
-retval = 0,COMPLETE
-retval = x,error
-*/
 int Base_Flash_Erase (int addr,int len)
 {
 	int retval = 0;

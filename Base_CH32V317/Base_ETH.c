@@ -4,7 +4,7 @@
 
 #if Exist_ETH
 
-    #ifdef WIFI_LINK
+    #if WIFI_LINK
 #define WIFI_SSID_SCAN_MAX_VALUE 20
 static wifi_ap_record_t wifi_ap_info[WIFI_SSID_SCAN_MAX_VALUE];
 static uint16_t wifi_ap_num = WIFI_SSID_SCAN_MAX_VALUE;
@@ -262,7 +262,7 @@ int Base_ETH_IPprot (char *url,char *ip,char *port)
 int Base_ETH_config_local_ip (char mode,char *ip_str,char *gw_str,char *netmask_str)
 {
     int retval = 0;
-#ifdef Exist_ETH
+#if Exist_ETH
     if (mode == 0)
     {
         eth_mode = 0;
@@ -293,7 +293,7 @@ int Base_ETH_config_local_ip (char mode,char *ip_str,char *gw_str,char *netmask_
 int Base_ETH_config_local_DNS (char *DNS1,char *DNS2)
 {
     int retval = 0;
-#ifdef Exist_ETH
+#if Exist_ETH
     if (DNS1 == NULL || DNS2 == NULL)
     {
         return retval;
@@ -318,7 +318,7 @@ int Base_ETH_config_local_DNS (char *DNS1,char *DNS2)
 int Base_ETH_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netmask_str)
 {
     int retval = 0;
-#ifdef Exist_ETH
+#if Exist_ETH
     if (ip_str == NULL || gw_str == NULL || netmask_str == NULL)
     {
     }
@@ -336,7 +336,7 @@ int Base_ETH_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netma
 int Base_ETH_get_local_DNS (uint8_t *DNS1,uint8_t *DNS2)
 {
     int retval = 0;
-#ifdef Exist_ETH
+#if Exist_ETH
     if (DNS1 == NULL || DNS2 == NULL)
     {
     }
@@ -352,7 +352,7 @@ int Base_ETH_get_local_DNS (uint8_t *DNS1,uint8_t *DNS2)
 
 void Base_ETH_set_MAC (uint8_t *mac)
 {
-#ifdef Exist_ETH
+#if Exist_ETH
     if (mac != NULL)
     {
         memcpy(SYS_MAC_addr,mac,6);
@@ -362,7 +362,7 @@ void Base_ETH_set_MAC (uint8_t *mac)
 
 void Base_ETH_get_MAC (uint8_t *mac)
 {
-#ifdef Exist_ETH
+#if Exist_ETH
     if (mac != NULL)
     {
         memcpy(mac,SYS_MAC_addr,6);
@@ -378,7 +378,7 @@ void Base_ETH_get_MAC (uint8_t *mac)
 int Base_ETH_get_status (void)
 {
     int retval = 0,temp = 0;
-#ifdef WIFI_LINK
+#if WIFI_LINK
     if (Base_WIFI_get_local_ip_status(NULL,NULL,NULL))
     {
         retval |= 0x01 << 0;
@@ -404,7 +404,7 @@ int Base_ETH_get_status (void)
 int Base_ETH_get_SocketId (void)
 {
     int retval = 0;
-#ifdef Exist_ETH
+#if Exist_ETH
     retval = SocketId;
 #endif
     return retval;
@@ -412,7 +412,7 @@ int Base_ETH_get_SocketId (void)
 
 void Base_ETH_Task (void)
 {
-#ifdef Exist_ETH
+#if Exist_ETH
     if(eth_init_flag == 0)
     {
         return;
@@ -502,9 +502,9 @@ void Base_ETH_Task (void)
 int Base_ETH_Init(int Channel,int Set)
 {
     int retval = 0;
-#ifdef Exist_ETH
+#if Exist_ETH
     if (Channel == 1) {
-    #ifdef WIFI_LINK
+    #if WIFI_LINK
         if(Set)
         {
             retval = wifi_init_flag;
