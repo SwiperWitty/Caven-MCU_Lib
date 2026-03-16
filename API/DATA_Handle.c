@@ -53,29 +53,29 @@ int Caven_String_To_Hex (char *str)
     http://192.168.1.128
     http://192.168.1.128:9090
 */
-int Caven_http_To_url (char *http,char *url,char *path)
+int Caven_data_To_url (char *data,char *url,char *path)
 {
     int retval = 0;
     int http_len = 0,temp_num = 0;
     char array_url[200],array_port[20];
     char *p_temp = NULL,*p_temp_port = NULL,*p_temp_path = NULL;
     
-    if (http != NULL && url != NULL)
+    if (data != NULL && url != NULL)
     {
         memset(array_url,0,sizeof(array_url));
         memset(array_port,0,sizeof(array_port));
-        http_len = strlen(http);
-        p_temp = memstr(http, "http://",http_len);
+        http_len = strlen(data);
+        p_temp = memstr(data, "://",http_len);
         if (p_temp != NULL)
         {
-            p_temp = http + strlen("http://");
+            p_temp = p_temp + strlen("://");
             if (p_temp[0] < '0' || p_temp[0] > '9')    // Domain name
             {
                 // 暂不考虑
             }
             else
             {
-                http_len -= strlen("http://");
+                http_len = http_len - (p_temp - data);
             }
             p_temp_port = memstr(p_temp, ":",http_len);
             if (p_temp_port != NULL)
@@ -101,6 +101,7 @@ int Caven_http_To_url (char *http,char *url,char *path)
             {
                 if(path != NULL)
                 {
+                    p_temp_path += 1;
                     strcpy(path,p_temp_path);
                 }
             }
@@ -208,6 +209,7 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
                         if (temp_num > 0)
                         {
                             memcpy(pData,temp_pointer+1,temp_num-1);
+                            pData[temp_num-1] = '\0';
                             // debug_log(LOG_Info,TAG,"file gain 2 ->%s",temp_pointer);
                         }
                         retval = temp_pointer - file;
@@ -235,6 +237,7 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
                         if (temp_num > 0)
                         {
                             memcpy(pData,temp_pointer+1,temp_num-1);
+                            pData[temp_num-1] = '\0';
                             // debug_log(LOG_Info,TAG,"file gain 2 ->%s",temp_pointer);
                         }
                         retval = temp_pointer - file;

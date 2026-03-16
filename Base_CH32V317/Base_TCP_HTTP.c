@@ -18,6 +18,9 @@ static int cache_run = 0;
 static char client_get_cache[1024];
 static int cache_get = 0,cache_read = 0;
 
+/*
+接收函数回调
+*/
 static void Base_TCP_HTTP_GET_Fun (void *data)
 {
     #if Exist_ETH
@@ -35,7 +38,7 @@ int Base_TCP_HTTP_Config (char *http,int enable)
 {
     int retval = 0;
     #if Exist_ETH
-    if(enable)
+    if(http != NULL && enable)
     {
         int temp_num;
         char array_url[200],array_path[100];
@@ -43,10 +46,10 @@ int Base_TCP_HTTP_Config (char *http,int enable)
         memset(array_path,0,sizeof(array_path));
         memset(client_ip,0,sizeof(client_ip));
         memset(client_port,0,sizeof(client_port));
-        temp_num = Caven_http_To_url (http,array_url,array_path);
+        temp_num = Caven_data_To_url (http,array_url,array_path);
         if(temp_num)
         {
-            temp_num = Base_ETH_IPprot (array_url,client_ip,client_port);
+            temp_num = Base_ETH_IPprot (array_url,client_ip,client_port);   // url转换成ip+port
         }
         else
         {
@@ -65,11 +68,12 @@ int Base_TCP_HTTP_Config (char *http,int enable)
             printf("HTTP_Config:url to IPprot error\r\n");
         }
     }
-    else
+    else if(enable == 0)
     {
         Base_TCP_Client_Config (NULL,NULL,0);
         HTTP_init_flag = 0;
     }
+    retval = HTTP_init_flag;
     #endif
     return retval;
 }
@@ -110,6 +114,9 @@ int Base_TCP_HTTP_cache_Read_Fun (char *data,int len_max)
     return retval;
 }
 
+/*
+这个状态机运行在ETH主程序循环中
+*/
 void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
 {
     #if Exist_ETH
@@ -195,7 +202,7 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
             default:
             {
                 // printf("HTTP_Run task over \r\n");
-                Base_TCP_Client_Config (NULL,NULL,0);
+                Base_TCP_Client_Config (NULL,NULL,0);   // close client
                 http_task.Trigger_Flag = 0;
                 http_run = 0;
                 cache_run = 0;
