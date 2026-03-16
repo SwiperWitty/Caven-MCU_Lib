@@ -407,21 +407,14 @@ int GX_packet_data_copy_Fun(GX_info_packet_Type *source,GX_info_packet_Type targ
         temp_packet = target;                  // 抽离数据
         temp_packet.p_AllData = source->p_AllData;    // 保留指针
         memcpy(temp_packet.p_AllData,target.p_AllData,target.Get_num);    // 复制指针内容,内容的长度依据是[Get_num]
-        if (temp_packet.dSize > 0)
-        {
-            if (target.Prot_W_485Type)
-            {
-                temp_packet.p_Data = temp_packet.p_AllData + 1 + 5 + 2;
-            }
-            else
-            {
-                temp_packet.p_Data = temp_packet.p_AllData + 1 + 4 + 2;
-            }
-        }
-        else
-        {
-            temp_packet.p_Data = NULL;
-        }
+		if (target.Prot_W_485Type)
+		{
+			temp_packet.p_Data = temp_packet.p_AllData + 1 + 5 + 2;
+		}
+		else
+		{
+			temp_packet.p_Data = temp_packet.p_AllData + 1 + 4 + 2;
+		}
         *source = temp_packet;                  // copy
     }
     return retval;

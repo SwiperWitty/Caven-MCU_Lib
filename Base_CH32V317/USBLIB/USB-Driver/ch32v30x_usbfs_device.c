@@ -263,8 +263,9 @@ void USBFS_IRQHandler( void )
                                 {
                                     usb_callbk_pFun(&Data_Buffer[(RingBuffer_Comm.LoadPtr + a)]);
                                 }
+                                RingBuffer_Comm.LoadPtr = 0;
                             }
-                            RingBuffer_Comm.LoadPtr ++;
+                            // RingBuffer_Comm.LoadPtr ++;
                             if(RingBuffer_Comm.LoadPtr == DEF_Ring_Buffer_Max_Blks)
                             {
                                 RingBuffer_Comm.LoadPtr = 0;

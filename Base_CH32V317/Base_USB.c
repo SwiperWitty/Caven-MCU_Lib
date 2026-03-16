@@ -22,10 +22,7 @@ int USB_User_init (int Set)
 {
     int retval = 0;
 #ifdef Exist_USB
-    if(usb_init_flag)
-    {
-        return retval;
-    }
+
     // usb buff
     RingBuffer_Comm.LoadPtr = 0;
     RingBuffer_Comm.StopFlag = 0;
@@ -35,7 +32,7 @@ int USB_User_init (int Set)
     {
         RingBuffer_Comm.PackLen[i] = 0;
     }
-    if (SET) {
+    if (Set) {
         USBFS_RCC_Init();
         USBFS_Device_Init(ENABLE);
         NVIC_EnableIRQ(USBFS_IRQn);
@@ -45,7 +42,7 @@ int USB_User_init (int Set)
         NVIC_DisableIRQ(USBFS_IRQn);
     }
 
-    usb_init_flag = SET;
+    usb_init_flag = Set;
 #endif
     return retval;
 }
@@ -103,7 +100,6 @@ int USB_Keyboard_Send_String (char *string)
     return retval;
 }
 
-
 int USB_Send_Data (const uint8_t *data,int size)
 {
     int retval = 1;
@@ -113,6 +109,7 @@ int USB_Send_Data (const uint8_t *data,int size)
     if (USB_User_State_Get() == 0) {
         return retval;
     }
+    
     do {
         while(USBFS_Endp_Busy[DEF_UEP2])
         {
@@ -134,13 +131,13 @@ int USB_Send_Data (const uint8_t *data,int size)
         if (num)
         {
             USBFSD->UEP2_DMA = (uint16_t)(uint32_t)USBFS_EP2_Buf;
-            USBFS_EP2_Buf[0] = num;
             memset(USBFS_EP2_Buf,0,DEF_USB_EP2_FS_SIZE);
+            USBFS_EP2_Buf[0] = num;
             memcpy(USBFS_EP2_Buf + 1,data + temp_run,num);
-            USBFSD->UEP2_TX_LEN = num + 1;
+            USBFSD->UEP2_TX_LEN = DEF_USB_EP2_FS_SIZE;
+            USBFSD->UEP2_TX_CTRL = (USBFSD->UEP2_TX_CTRL & ~USBFS_UEP_T_RES_MASK) | USBFS_UEP_T_RES_ACK;    // Start Upload
             USBFS_Endp_Busy[DEF_UEP2] = 1;
             temp_run += num;
-            USBFSD->UEP2_TX_CTRL = (USBFSD->UEP2_TX_CTRL & ~USBFS_UEP_T_RES_MASK) | USBFS_UEP_T_RES_ACK;    // Start Upload
             temp -= num;
         }
         temp_time = 0;

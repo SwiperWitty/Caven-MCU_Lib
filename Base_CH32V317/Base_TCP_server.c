@@ -8,42 +8,52 @@
 
 #define KEEPALIVE_ENABLE    1   // Enable keep alive function
 static u8 *p_server_sock = NULL;
+static u8 *p_last_sock = NULL;
 static u8 SocketIdForListen;
-static u8 last_sock = 0;
 
 static u8 server_init_flag = 0;
 static u8 tcp_server_break_off = 0;
+static int server_port = 0;
 static u8 *Socket_ptr;                      // socket receive buffer
 static u8 (*Socket_buff)[RECE_BUF_LEN];     // socket receive buffer
 static D_pFun server_receive_fun = NULL;
 
+
+void Base_TCP_Server_link (void)
+{
+    if(server_port && p_server_sock == NULL)
+    {
+        SOCK_INF TmpSocketInf;
+        memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
+        p_server_sock = Base_ETH_Server_Bind();
+        p_last_sock = Base_ETH_Serlast_Bind ();
+        TmpSocketInf.SourPort = server_port;
+        TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
+        WCHNET_SocketCreat(&SocketIdForListen, &TmpSocketInf);
+        printf("Server open port:%d ,SocketId:%d\n",server_port,SocketIdForListen);
+        WCHNET_SocketListen(SocketIdForListen);             // listen for connections
+    }
+}
+
 /*
     port_str:"8160"
-    break_off:ÊÇ·ñÔÊÐíÐÂÁ¬½ÓÈ¡´ú¾ÉÁ¬½Ó£¨port_str´æÔÚÊ±²ÅÉúÐ§£©
-    enable 0,»á¹Ø±Õµ±Ç°sock£¬Ã»ÓÐÔò²»ÉúÐ§
-    enable 1,´ò¿ªserver_link,²¢ÖØÖÃstr,Èô´ËÊ±strÎªNULL£¬Àí½âÎªÑ¯ÎÊtcp_server_sock
-    server Ö»ÄÜÐÞ¸Ä¶Ë¿Ú(¸ÄÍêÇëÖØÆô)£¬Èç¹ûÐèÒªÐÞ¸ÄipÇëÐÞ¸Ä[eth_config_ip]/[wifi_config_ip]
+    break_off:ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½port_strï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
+    enable 0,ï¿½ï¿½Ø±Õµï¿½Ç°sockï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð§
+    enable 1,ï¿½ï¿½server_link,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½str,ï¿½ï¿½ï¿½ï¿½Ê±strÎªNULLï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªÑ¯ï¿½ï¿½tcp_server_sock
+    server Ö»ï¿½ï¿½ï¿½Þ¸Ä¶Ë¿ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Þ¸ï¿½ipï¿½ï¿½ï¿½Þ¸ï¿½[eth_config_ip]/[wifi_config_ip]
 
-    retval:µ±Ç°ÊÇ·ñÓÐsock
+    retval:ï¿½ï¿½Ç°ï¿½Ç·ï¿½ï¿½ï¿½sock
 */
 int Base_TCP_Server_Config (char *port_str,int break_off,int enable)
 {
     int retval = 0;
     if(port_str != NULL && enable != 0)
     {
-        int port = atoi(port_str);
+        server_port = atoi(port_str);
         tcp_server_break_off = break_off;
-        SOCK_INF TmpSocketInf;
-        memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
-        p_server_sock = Base_ETH_Server_Bind();
-
-        TmpSocketInf.SourPort = port;
-        TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
-        WCHNET_SocketCreat(&SocketIdForListen, &TmpSocketInf);
-        printf("Server_Config post %d,break_off %d,SocketId %d\r\n", port,tcp_server_break_off,SocketIdForListen);
-        WCHNET_SocketListen(SocketIdForListen);             // listen for connections
-
+        printf("Server_Config post %d,break_off %d\r\n", server_port,tcp_server_break_off);
         Base_ETH_Server_pFun_Bind (Base_TCP_Server_Task);
+        Base_TCP_Server_link();
         server_init_flag = 1;
     }
     else if(enable == 0)
@@ -51,11 +61,15 @@ int Base_TCP_Server_Config (char *port_str,int break_off,int enable)
         p_server_sock = Base_ETH_Server_Bind();
         WCHNET_SocketClose(*p_server_sock,TCP_CLOSE_ABANDON);
         *p_server_sock = 0xff;
+        *p_last_sock = 0xff;
+        p_server_sock = NULL;
+        p_last_sock = NULL;
         server_init_flag = 0;
     }
-    if(*p_server_sock && *p_server_sock != 0xff && server_init_flag > 0)
+    if(p_server_sock != NULL && server_init_flag > 0)
     {
-        retval = 1;
+        if(*p_server_sock != 0XFF)
+        {retval = 1;}
     }
     return retval;
 }
@@ -65,14 +79,20 @@ int Base_TCP_Server_Send (u8 *data, int len)
     int retval = 0;
     u32 temp_num = len;
     u8 i;
-    if(*p_server_sock && *p_server_sock != 0xff && server_init_flag > 0)
+    if(p_server_sock != NULL && server_init_flag > 0)
     {
-        i = WCHNET_SocketSend(*p_server_sock, data, &temp_num);        //send data
-        if (i == WCHNET_ERR_SUCCESS) {
-            WCHNET_SocketRecv(*p_server_sock, NULL, &temp_num);        //Clear sent data
-        }
-        else
+        if(*p_server_sock != 0XFF)
         {
+            i = WCHNET_SocketSend(*p_server_sock, data, &temp_num);        //send data
+            if (i == WCHNET_ERR_SUCCESS) {
+                WCHNET_SocketRecv(*p_server_sock, NULL, &temp_num);        //Clear sent data
+            }
+            else
+            {
+                retval = 1;
+            }
+        }
+        else {
             retval = 1;
         }
     }
@@ -91,7 +111,18 @@ void Base_TCP_Server_Receive_Bind_Fun (D_pFun Fun)
 void Base_TCP_Server_Task (u8 sock,u8 intstat)
 {
     u8 i;
-    if(server_init_flag)
+    if(p_server_sock == NULL)   // once
+    {
+        if(server_init_flag && Base_ETH_get_local_ip_status (NULL,NULL,NULL) == 2)
+        {
+            Base_TCP_Server_link ();
+        }
+    }
+    if(intstat == 0)
+    {
+        return;
+    }
+    if(server_init_flag && p_server_sock != NULL)
     {
         u8 temp_data = 0;
         Socket_ptr = Base_ETH_SockBuff_Bind ();
@@ -117,7 +148,7 @@ void Base_TCP_Server_Task (u8 sock,u8 intstat)
                     server_receive_fun (&temp_data);
                 }
             }
-            if (p_server_sock != NULL)
+            if (*p_server_sock != 0XFF)
             {
                 WCHNET_SocketRecv(*p_server_sock, NULL, &len);        //Clear sent data
             }
@@ -131,22 +162,22 @@ void Base_TCP_Server_Task (u8 sock,u8 intstat)
             WCHNET_ModifyRecvBuf(sock, (u32) Socket_buff[sock],RECE_BUF_LEN);
             if(tcp_server_break_off)
             {
-                if(last_sock != 0 && last_sock != sock)
+                if(*p_last_sock != 0XFF && *p_last_sock != sock)
                 {
-                    printf("break_off->server socket[%d] has been abandon\r\n",last_sock);
-                    WCHNET_SocketClose(last_sock,TCP_CLOSE_ABANDON);
+                    printf("break_off->server socket[%d] has been abandon\r\n",*p_last_sock);
+                    WCHNET_SocketClose(*p_last_sock,TCP_CLOSE_ABANDON);
                 }
             }
             else
             {
-                if(last_sock != 0 && last_sock != sock)
+                if(*p_last_sock != 0XFF && *p_last_sock != sock)
                 {
-                    printf("new server socket,but keep last socket[%d] \r\n",last_sock);
+                    printf("new server socket,but keep last socket[%d] \r\n",*p_last_sock);
                     WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
                     return;
                 }
             }
-            last_sock = sock;
+            *p_last_sock = sock;
             *p_server_sock = sock;
             printf("server socket[%d] con\r\n",sock);
             for (i = 0; i < WCHNET_MAX_SOCKET_NUM; i++) {
@@ -166,7 +197,8 @@ void Base_TCP_Server_Task (u8 sock,u8 intstat)
                 }
             }
             printf("server socket[%d] discon \r\n",sock);
-            *p_server_sock = 0;
+            *p_server_sock = 0XFF;
+            *p_last_sock = 0XFF;        // no chance
         }
         if (intstat & SINT_STAT_TIM_OUT)                              //timeout disconnect
         {
@@ -176,9 +208,8 @@ void Base_TCP_Server_Task (u8 sock,u8 intstat)
                     break;
                 }
             }
-            WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
-            printf("server socket[%d] over time\r\n",sock);
-            *p_server_sock = 0;
+            // WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
+            printf("server maybe socket[%d] over time\r\n",sock);
         }
     }
 }

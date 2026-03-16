@@ -18,44 +18,65 @@ static D_pFun client_receive_fun = NULL;
 static char client_ip[40];
 static char client_port[40];
 
+void Base_TCP_Client_link (void)
+{
+    if(strlen(client_ip) > 0 && strlen(client_port) > 0)
+    {
+        int port = atoi(client_port);
+        SOCK_INF TmpSocketInf;
+        u8 ip_array[10];
+        Caven_Str_To_ip (client_ip,ip_array,4);
+        memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
+        memcpy((void *) TmpSocketInf.IPAddr, ip_array, 4);
+        TmpSocketInf.DesPort = port;
+        TmpSocketInf.SourPort = port++;
+        TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
+        TmpSocketInf.RecvBufLen = RECE_BUF_LEN;
+        p_client_sock = Base_ETH_Client_Bind();
+        if(*p_client_sock == 0xff)
+        {
+            WCHNET_SocketCreat(p_client_sock, &TmpSocketInf);
+            WCHNET_SocketConnect(*p_client_sock);                        // make a TCP connection
+            printf("Client to ip[%s:%s] socket[%d]\r\n", client_ip,client_port,*p_client_sock);
+        }
+    }
+}
+
+void Base_TCP_Client_Restart (void)
+{
+    if(client_init_flag)
+    {
+        if(*p_client_sock != 0XFF)
+        {
+            Base_TCP_Client_Config (NULL,NULL,0);
+        }
+        client_init_flag = 1;
+        Base_TCP_Client_link();
+    }
+}
+
 int Base_TCP_Client_Config (char *ip_str,char *port_str,int enable)
 {
     int retval = 0;
     if(ip_str != NULL && port_str != NULL && enable != 0)
     {
-        int port = atoi(port_str);
-        SOCK_INF TmpSocketInf;
-        u8 ip_array[10];
-
         strcpy(client_ip,ip_str);
         strcpy(client_port,port_str);
         Base_ETH_Client_pFun_Bind (Base_TCP_Client_Task);
 
-        Caven_Str_To_ip (ip_str,ip_array,4);
-        memset((void *) &TmpSocketInf, 0, sizeof(SOCK_INF));
-        memcpy((void *) TmpSocketInf.IPAddr, ip_array, 4);
-        TmpSocketInf.DesPort = port;
-        TmpSocketInf.SourPort = port;
-        TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
-        TmpSocketInf.RecvBufLen = RECE_BUF_LEN;
-        p_client_sock = Base_ETH_Client_Bind();
-        if(*p_client_sock == 0)
-        {
-            WCHNET_SocketCreat(p_client_sock, &TmpSocketInf);
-            WCHNET_SocketConnect(*p_client_sock);                        // make a TCP connection
-            printf("Client_Config ip[%s:%s] socket[%d]\r\n", client_ip,client_port,*p_client_sock);
-        }
         client_init_flag = 1;
+        printf("Client_Config running... \r\n");
     }
     else if(enable == 0)
     {
         p_client_sock = Base_ETH_Client_Bind();
         WCHNET_SocketClose(*p_client_sock,TCP_CLOSE_ABANDON);
-        *p_client_sock = 0;
+        *p_client_sock = 0xff;
         client_init_flag = 0;
         client_con = 0;
+        printf("Client_Config close \r\n");
     }
-    if(client_con && *p_client_sock && *p_client_sock != 0xff && client_init_flag > 0)
+    if(client_con && *p_client_sock != 0xff && client_init_flag > 0)
     {
         retval = 1;
     }
@@ -67,7 +88,7 @@ int Base_TCP_Client_Send (uint8_t *data, int len)
     int retval = 0;
     u32 temp_num = len;
     u8 i;
-    if(client_con && *p_client_sock && *p_client_sock != 0xff && client_init_flag > 0)
+    if(client_con && *p_client_sock != 0xff && client_init_flag > 0)
     {
         i = WCHNET_SocketSend(*p_client_sock, data, &temp_num);        //send data
         if (i == WCHNET_ERR_SUCCESS) {
@@ -93,14 +114,19 @@ void Base_TCP_Client_Receive_Bind_Fun (D_pFun Fun)
 void Base_TCP_Client_Task (u8 sock,u8 intstat)
 {
     u8 i;
-    if (*p_client_sock == 0)
+    p_client_sock = Base_ETH_Client_Bind();
+    if (*p_client_sock == 0xff)     // dislink
     {
-        if(client_init_flag)
+        if(client_init_flag && Base_ETH_get_local_ip_status (NULL,NULL,NULL) == 2)
         {
-            Base_TCP_Client_Config (client_ip,client_port,1);
+            Base_TCP_Client_link ();
         }
     }
-    if(sock > 0 && *p_client_sock > 0 && client_init_flag)
+    if(intstat == 0)
+    {
+        return;
+    }
+    if(*p_client_sock != 0xff && client_init_flag)
     {
         u8 temp_data = 0;
         Socket_ptr = Base_ETH_SockBuff_Bind ();
@@ -126,10 +152,7 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                     client_receive_fun (&temp_data);
                 }
             }
-            if (p_client_sock != NULL)
-            {
-                WCHNET_SocketRecv(*p_client_sock, NULL, &len);        //Clear sent data
-            }
+            WCHNET_SocketRecv(*p_client_sock, NULL, &len);        //Clear sent data
             // Base_TCP_Client_Send ((u8 *) SocketInf[sock].RecvReadPoint, len);
         }
         if (intstat & SINT_STAT_CONNECT)                                //connect successfully
@@ -140,7 +163,7 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
             WCHNET_ModifyRecvBuf(sock, (u32) Socket_buff[sock],RECE_BUF_LEN);
 
             printf("clinet socket[%d] con\r\n",sock);
-            client_con ++;
+            client_con = 1;
             for (i = 0; i < WCHNET_MAX_SOCKET_NUM; i++) {
                 if (Socket_ptr[i] == 0xff)                  // save connected socket id
                 {
@@ -158,8 +181,8 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                 }
             }
             printf("clinet socket[%d] discon \r\n",sock);
-            WCHNET_SocketClose(*p_client_sock,TCP_CLOSE_ABANDON);
-            *p_client_sock = 0;
+            // WCHNET_SocketClose(*p_client_sock,TCP_CLOSE_ABANDON);
+            *p_client_sock = 0xff;
             client_con = 0;
         }
         if (intstat & SINT_STAT_TIM_OUT)                              //timeout disconnect
@@ -171,8 +194,8 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                 }
             }
             printf("clinet socket[%d] over time\r\n",sock);
-            WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
-            *p_client_sock = 0;
+            // WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
+            *p_client_sock = 0xff;
             client_con = 0;
         }
     }

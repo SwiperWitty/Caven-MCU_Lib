@@ -247,12 +247,12 @@ void usb_gpio_config(void)
 
 	crm_periph_clock_enable(OTG_PIN_GPIO_CLOCK, TRUE);
 	gpio_default_para_init(&gpio_init_struct);
-
+	
+	gpio_init_struct.gpio_pins = OTG_PIN_VBUS;
 	gpio_init_struct.gpio_drive_strength = GPIO_DRIVE_STRENGTH_STRONGER;
 	gpio_init_struct.gpio_out_type  = GPIO_OUTPUT_PUSH_PULL;
 	gpio_init_struct.gpio_mode = GPIO_MODE_MUX;
 	gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
-	gpio_init(OTG_PIN_GPIO, &gpio_init_struct);
 
 #if USB_SOF_OUTPUT_ENABLE
 	crm_periph_clock_enable(OTG_PIN_SOF_GPIO_CLOCK, TRUE);

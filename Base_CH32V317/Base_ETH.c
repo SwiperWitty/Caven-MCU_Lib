@@ -4,13 +4,17 @@
 
 #if Exist_ETH
 
+void ETH_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void EXTI9_5_IRQHandler(void) __attribute__((interrupt()));
+
     #if WIFI_LINK
 #define WIFI_SSID_SCAN_MAX_VALUE 20
 static wifi_ap_record_t wifi_ap_info[WIFI_SSID_SCAN_MAX_VALUE];
 static uint16_t wifi_ap_num = WIFI_SSID_SCAN_MAX_VALUE;
 static char WIFI_name[30] = {0};
 static char WIFI_pass[30] = {0};
-// ÕâÀïÊÇ±¾´ÎÉè±¸·ÖÅäµ½µÄip£¬ºÜ¿ÉÄÜÊÇ¶¯Ì¬µÄ
+// ï¿½ï¿½ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½äµ½ï¿½ï¿½ipï¿½ï¿½ï¿½Ü¿ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½Ì¬ï¿½ï¿½
 static uint8_t s_WIFI_ip[4];
 static uint8_t s_WIFI_netmask[4];
 static uint8_t s_WIFI_gateway[4];
@@ -20,8 +24,8 @@ static char wifi_ip[30];
 static char wifi_gw[30];
 static char wifi_netmask[30];
 
-static int wifi_flag = 0;               // 1:wifi½¨Á¢Á¬½Ó
-static int wifi_init_flag = 0;          // 1:³õÊ¼»¯
+static int wifi_flag = 0;               // 1:wifiï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+static int wifi_init_flag = 0;          // 1:ï¿½ï¿½Ê¼ï¿½ï¿½
 
 int Base_WIFI_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netmask_str)
 {
@@ -42,7 +46,7 @@ int Base_WIFI_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netm
 
 static uint8_t SYS_MAC_addr[6] = {0};
 #define ETH_SOCK_NUM    2
-// ¾²Ì¬µÄip
+// ï¿½ï¿½Ì¬ï¿½ï¿½ip
 static char eth_mode = 0;       // 0:static   1:dhcp
 static char eth_ip[30];
 static char eth_gw[30];
@@ -50,7 +54,7 @@ static char eth_netmask[30];
 static char eth_DNS1_str[30];
 static char eth_DNS2_str[30];
 
-// ÕâÀïÊÇ±¾´ÎÉè±¸·ÖÅäµ½µÄip£¬ºÜ¿ÉÄÜÊÇ¶¯Ì¬µÄ
+//
 static uint8_t s_RJ45_ip[4];
 static uint8_t s_RJ45_netmask[4];
 static uint8_t s_RJ45_gateway[4];
@@ -58,13 +62,15 @@ static uint8_t s_RJ45_gateway[4];
 static char s_eth_DNS1[4];
 static char s_eth_DNS2[4];
 
-static int eth_flag = 0;        // 1:rj45½¨Á¢Á¬½Ó
-static int eth_init_flag = 0;   // 1:³õÊ¼»¯
+static int eth_flag = 0;        //
+static int eth_init_flag = 0;   //
 
 static u8 SocketId;
-static u8 server_sock = 0,client_sock = 0xff;
+static u8 server_sock = 0xff,serlast_sock = 0xff,client_sock = 0xff;
 static ETH_handle_pFun ETH_Clinet_pFun = NULL;
 static ETH_handle_pFun ETH_Server_pFun = NULL;
+static ETH_handle_pFun ETH_HTTP_pFun = NULL;
+static ETH_handle_pFun ETH_MQTT_pFun = NULL;
 static u8 base_socket[WCHNET_MAX_SOCKET_NUM];                //Save the currently connected socket
 static u8 base_SocketRecvBuf[WCHNET_MAX_SOCKET_NUM][RECE_BUF_LEN];  // socket receive buffer
 
@@ -83,6 +89,11 @@ u8 * Base_ETH_Server_Bind (void)
     return &server_sock;
 }
 
+u8 * Base_ETH_Serlast_Bind (void)
+{
+    return &serlast_sock;
+}
+
 u8 * Base_ETH_Client_Bind (void)
 {
     return &client_sock;
@@ -96,6 +107,16 @@ void Base_ETH_Server_pFun_Bind (ETH_handle_pFun fun)
 void Base_ETH_Client_pFun_Bind (ETH_handle_pFun fun)
 {
     ETH_Clinet_pFun = fun;
+}
+
+void Base_ETH_HTTP_pFun_Bind (ETH_handle_pFun fun)
+{
+    ETH_HTTP_pFun = fun;
+}
+
+void Base_ETH_MQTT_pFun_Bind (ETH_handle_pFun fun)
+{
+    ETH_MQTT_pFun = fun;
 }
 
 static u8 WCHNET_DHCPCallBack(u8 status, void *arg)
@@ -121,17 +142,30 @@ static u8 WCHNET_DHCPCallBack(u8 status, void *arg)
         memcpy(s_RJ45_netmask, &p[8], 4);
         memcpy(s_eth_DNS1, &p[12], 4);
         memcpy(s_eth_DNS2, &p[16], 4);
+        //
+        memset(eth_ip,0,sizeof((eth_ip)));
+        memset(eth_gw,0,sizeof((eth_gw)));
+        memset(eth_netmask,0,sizeof((eth_netmask)));
+        memset(eth_DNS1_str,0,sizeof((eth_DNS1_str)));
+        memset(eth_DNS2_str,0,sizeof((eth_DNS2_str)));
+        sprintf(eth_ip,"%d.%d.%d.%d",s_RJ45_ip[0],s_RJ45_ip[1],s_RJ45_ip[2],s_RJ45_ip[3]);
+        sprintf(eth_gw,"%d.%d.%d.%d",s_RJ45_gateway[0],s_RJ45_gateway[1],s_RJ45_gateway[2],s_RJ45_gateway[3]);
+        sprintf(eth_netmask,"%d.%d.%d.%d",s_RJ45_netmask[0],s_RJ45_netmask[1],s_RJ45_netmask[2],s_RJ45_netmask[3]);
+        sprintf(eth_DNS1_str,"%d.%d.%d.%d",s_eth_DNS1[0],s_eth_DNS1[1],s_eth_DNS1[2],s_eth_DNS1[3]);
+        sprintf(eth_DNS2_str,"%d.%d.%d.%d",s_eth_DNS2[0],s_eth_DNS2[1],s_eth_DNS2[2],s_eth_DNS2[3]);
+        printf("WCH ETH DHCP OK,IP %s,GW %s,MK %s \r\n",eth_ip,eth_gw,eth_netmask);
 
-        eth_init_flag = 1;
+        eth_flag = 2;
         return READY;
     }
     else
     {
-        eth_init_flag = 0;
+        printf("DHCP Fail %02x \r\n", status);
         if(memcmp(s_RJ45_ip, tmp ,sizeof(s_RJ45_ip))){
             /*The obtained IP is different from the last value*/
             WCHNET_SocketClose(SocketId, TCP_CLOSE_NORMAL);
         }
+        eth_init_flag = 2;
         return NoREADY;
     }
 }
@@ -160,10 +194,6 @@ void TIM2_Init(void)
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
     NVIC_EnableIRQ(TIM2_IRQn);
 }
-
-void ETH_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void EXTI9_5_IRQHandler(void) __attribute__((interrupt()));
 
 /*********************************************************************
  * @fn      TIM2_IRQHandler
@@ -254,10 +284,10 @@ int Base_ETH_IPprot (char *url,char *ip,char *port)
 /*
     mode = 0, static
     mode = 1, dhcp
-    mode = other    ²éÑ¯mode
-    ip_str  ipµØÖ·
-    gw_str  Ä¬ÈÏÍø¹Ø
-    netmask_str ÑÚÂë
+    mode = other    ï¿½ï¿½Ñ¯mode
+    ip_str  ipï¿½ï¿½Ö·
+    gw_str  Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    netmask_str ï¿½ï¿½ï¿½ï¿½
 */
 int Base_ETH_config_local_ip (char mode,char *ip_str,char *gw_str,char *netmask_str)
 {
@@ -311,9 +341,10 @@ int Base_ETH_config_local_DNS (char *DNS1,char *DNS2)
 }
 
 /*
-    ip_str = NULL,Àí½âÎª²éÑ¯ÍøÂç×´Ì¬
-    retval = 1£¬ÔÚÏß
-    retval = 0£¬µôÏß
+    ip_str = NULL,ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½×´Ì¬
+    retval = 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    retval = 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,PHY Link Success
+    retval = 2ï¿½ï¿½Static/DHCP OK
 */
 int Base_ETH_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netmask_str)
 {
@@ -371,9 +402,9 @@ void Base_ETH_get_MAC (uint8_t *mac)
 }
 
 /*
-    retval = 0,ÎÞÍøÂç
-    retval = 1,wifiÁ¬½Ó
-    retval = 2,rj45Á¬½Ó
+    retval = 0,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    retval = 1,wifiï¿½ï¿½ï¿½ï¿½
+    retval = 2,rj45ï¿½ï¿½ï¿½ï¿½
 */
 int Base_ETH_get_status (void)
 {
@@ -422,11 +453,23 @@ void Base_ETH_Task (void)
     WCHNET_MainTask();
     /*Query the Ethernet global interrupt,
         * if there is an interrupt, call the global interrupt handler*/
-    if(client_sock == 0)
+    if(eth_flag == 2)        // net init
     {
         if(ETH_Clinet_pFun != NULL)
         {
             ETH_Clinet_pFun (0, 0);
+        }
+        if(ETH_Server_pFun != NULL)
+        {
+            ETH_Server_pFun (0, 0);
+        }
+        if(ETH_HTTP_pFun != NULL)
+        {
+            ETH_HTTP_pFun (0, 0);
+        }
+        if(ETH_MQTT_pFun != NULL)
+        {
+            ETH_MQTT_pFun (0, 0);
         }
     }
     if(WCHNET_QueryGlobalInt())
@@ -450,23 +493,34 @@ void Base_ETH_Task (void)
             if (i & PHY_Linked_Status)
             {
                 printf("PHY Link Success\r\n");
-                eth_flag = 1;
-                client_sock = 0;
-                server_sock = 0;
+                eth_init_flag = 1;
+                if(eth_flag == 0)    // Reply
+                {
+                    eth_flag = 2;
+                    printf("PHY Link again\r\n");
+                }
+                if(eth_mode == 0)
+                {
+                    eth_flag = 2;
+                }
+                client_sock = 0xff;
+                server_sock = 0xff;
+                serlast_sock = 0xff;
             }
             else
             {
                 printf("PHY Link down\r\n");
                 eth_flag = 0;
-                if(server_sock)
+                if(server_sock != 0xff)
                 {
-                    printf("eth link_sock %d \r\n",server_sock);
+                    printf("eth link server sock %d \r\n",server_sock);
                     WCHNET_SocketClose(server_sock,TCP_CLOSE_ABANDON);
-                    server_sock = 0;
+                    server_sock = 0xff;
+                    serlast_sock = 0xff;
                 }
-                if(client_sock)
+                if(client_sock != 0xff)
                 {
-                    printf("eth link_sock %d \r\n",client_sock);
+                    printf("eth link client sock %d \r\n",client_sock);
                     WCHNET_SocketClose(client_sock,TCP_CLOSE_ABANDON);
                     client_sock = 0xff;
                 }
@@ -521,23 +575,36 @@ int Base_ETH_Init(int Channel,int Set)
             memset(base_socket, 0xff, WCHNET_MAX_SOCKET_NUM);
             if (WCHNET_LIB_VER != WCHNET_GetVer()) {
                 eth_init_flag = 0;
+                return 0;
             }
             else
             {
                 WCHNET_GetMacAddr(SYS_MAC_addr);
+                printf("mac addr:");
+                for(int i = 0; i < 6; i++) 
+                    printf("%x ", SYS_MAC_addr[i]);
+                printf("\n");
                 TIM2_Init();
                 if(eth_mode == 1)
                 {
-                    WCHNET_DHCPSetHostname("CAVEN_3.14 ETH");
+                    WCHNET_DHCPSetHostname("WCHNET");
                     memset(s_RJ45_ip,0,sizeof(s_RJ45_ip));
                     memset(s_RJ45_gateway,0,sizeof(s_RJ45_gateway));
                     memset(s_RJ45_netmask,0,sizeof(s_RJ45_netmask));
                     retval = ETH_LibInit(s_RJ45_ip, s_RJ45_gateway, s_RJ45_netmask, SYS_MAC_addr);
                     if(retval == WCHNET_ERR_SUCCESS)
                     {
-                        WCHNET_DHCPStart(WCHNET_DHCPCallBack);  // Start DHCP
                         eth_init_flag = 1;
+                        eth_flag = 1;
+                        printf("WCH ETH WCHNET_ERR_SUCCESS,DHCP IP Start ...\r\n");
+                        WCHNET_DHCPStart(WCHNET_DHCPCallBack);  // Start DHCP
                         retval = 1;
+                    }
+                    else
+                    {
+                        printf("WCH ETH DHCP IP error: %d\r\n",retval);
+                        eth_init_flag = 2;
+                        eth_flag = 1;
                     }
                 }
                 else
@@ -552,8 +619,10 @@ int Base_ETH_Init(int Channel,int Set)
                     Caven_Str_To_ip (eth_gw,s_RJ45_gateway,4);
                     Caven_Str_To_ip (eth_netmask,s_RJ45_netmask,4);
                     retval = ETH_LibInit(s_RJ45_ip, s_RJ45_gateway, s_RJ45_netmask, SYS_MAC_addr);
+                    eth_flag = 1;
                     if(retval == WCHNET_ERR_SUCCESS)
                     {
+                        printf("WCH ETH WCHNET_ERR_SUCCESS \r\n");
                         eth_init_flag = 1;
                         retval = 1;
                     }
@@ -563,9 +632,9 @@ int Base_ETH_Init(int Channel,int Set)
                     cfg.KLIntvl = 15000;
                     cfg.KLCount = 9;
                     WCHNET_ConfigKeepLive(&cfg);
+                    printf("WCH ETH static IP %s,GW %s,MK %s \r\n",eth_ip,eth_gw,eth_netmask);
                 }
             }
-            printf("WCH ETH IP %s,GW %s,MK %s \r\n",eth_ip,eth_gw,eth_netmask);
         }
         else 
         {

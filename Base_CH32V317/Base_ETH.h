@@ -33,10 +33,13 @@ int Base_ETH_get_status (void);
 u8 * Base_ETH_SockBuff_Bind (void);
 u8 (*Base_ETH_SockBuff_Bind_RecBuf(void))[RECE_BUF_LEN];
 u8 * Base_ETH_Server_Bind (void);
+u8 * Base_ETH_Serlast_Bind (void);
 u8 * Base_ETH_Client_Bind (void);
 
 void Base_ETH_Server_pFun_Bind (ETH_handle_pFun fun);
 void Base_ETH_Client_pFun_Bind (ETH_handle_pFun fun);
+void Base_ETH_HTTP_pFun_Bind (ETH_handle_pFun fun);
+void Base_ETH_MQTT_pFun_Bind (ETH_handle_pFun fun);
 //
 
 int Base_WIFI_config_local_ip (char mode,char *ip_str,char *gw_str,char *netmask_str);

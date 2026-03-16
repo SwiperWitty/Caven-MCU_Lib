@@ -48,6 +48,75 @@ int Caven_String_To_Hex (char *str)
     return retval; 
 }
 
+/* 测试项：
+    http://192.168.1.128:9090/api/user?id=123
+    http://192.168.1.128
+    http://192.168.1.128:9090
+*/
+int Caven_http_To_url (char *http,char *url,char *path)
+{
+    int retval = 0;
+    int http_len = 0,temp_num = 0;
+    char array_url[200],array_port[20];
+    char *p_temp = NULL,*p_temp_port = NULL,*p_temp_path = NULL;
+    
+    if (http != NULL && url != NULL)
+    {
+        memset(array_url,0,sizeof(array_url));
+        memset(array_port,0,sizeof(array_port));
+        http_len = strlen(http);
+        p_temp = memstr(http, "http://",http_len);
+        if (p_temp != NULL)
+        {
+            p_temp = http + strlen("http://");
+            if (p_temp[0] < '0' || p_temp[0] > '9')    // Domain name
+            {
+                // 暂不考虑
+            }
+            else
+            {
+                http_len -= strlen("http://");
+            }
+            p_temp_port = memstr(p_temp, ":",http_len);
+            if (p_temp_port != NULL)
+            {
+                retval = p_temp_port - p_temp;
+                memcpy(array_url,p_temp,retval);
+                p_temp_port ++;
+                temp_num = atoi(p_temp_port);
+                if(temp_num)
+                {
+                    sprintf(array_port,"%d",temp_num);
+                    strcat(array_url,":");
+                    strcat(array_url,array_port);
+                }
+            }
+            else
+            {
+                retval = http_len;
+                memcpy(array_url,p_temp,retval);
+            }
+            p_temp_path = memstr(p_temp, "/",http_len);
+            if (p_temp_path != NULL)
+            {
+                if(path != NULL)
+                {
+                    strcpy(path,p_temp_path);
+                }
+            }
+            else if(path != NULL)
+            {
+                path[0] = 0;
+            }
+        }
+    }
+    if(retval)
+    {
+        strcpy(url, array_url);
+    }
+    return retval;      // 大于0即成功解析
+}
+
 /*
 	find substr in full_data,return pointer
 */

@@ -72,6 +72,10 @@ typedef void (*V_pFun) (void);
 */
 typedef void (*D_pFun) (void *data);
 /*
+	有传参和返回值函数指针
+*/
+typedef int (*iD_pFun) (void *data);
+/*
 	带数量传数据函数指针
 */
 typedef void (*Send_pFun) (U8 *data,int length);

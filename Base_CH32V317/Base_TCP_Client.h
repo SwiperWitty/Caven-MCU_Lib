@@ -14,6 +14,7 @@ int Base_TCP_Client_Config (char *ip,char *port_str,int enable);
 int Base_TCP_Client_Send (uint8_t *data, int len);
 void Base_TCP_Client_Receive_Bind_Fun (D_pFun Fun);
 
+void Base_TCP_Client_Restart (void);
 void Base_TCP_Client_Task (u8 sock,u8 intstat);
 
 #endif

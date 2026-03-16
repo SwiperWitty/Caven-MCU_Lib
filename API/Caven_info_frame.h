@@ -105,7 +105,12 @@ enum CAVEN_CMD3
     m_CAVEN_CMD3_GPIToCMD_Order = 0x05,
     m_CAVEN_CMD3_Channel_Retell_Order,
     m_CAVEN_CMD3_Channel_Updata_Order,
-
+    m_CAVEN_CMD3_RST_Time_Order,
+    m_CAVEN_CMD3_Sensor_temp_Order,
+    m_CAVEN_CMD3_Sensor_temp_Set_Order,
+    m_CAVEN_CMD3_SK_Control_Order,
+    m_CAVEN_CMD3_SK_Status_Order,
+    m_CAVEN_CMD3_Light_Control_Order,
     m_CAVEN_CMD3_zhiwen_Order = 0x1B,
 };
 
