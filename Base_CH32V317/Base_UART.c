@@ -659,15 +659,15 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
 }
 
 // printf
-int fputc(int ch, FILE *f)
-{
-#ifdef DEBUG_CH
-	#ifdef Exist_UART
-    Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)ch);
-	#endif
-#endif // DEBUG
-    return (ch);
-}
+// int fputc(int ch, FILE *f)
+// {
+// #ifdef DEBUG_CH
+// 	#ifdef Exist_UART
+//     Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)ch);
+// 	#endif
+// #endif // DEBUG
+//     return (ch);
+// }
 /* SDI Printf Definition */
 #define SDI_PR_CLOSE   0
 #define SDI_PR_OPEN    1

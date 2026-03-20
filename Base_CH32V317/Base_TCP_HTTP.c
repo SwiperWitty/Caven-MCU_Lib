@@ -8,18 +8,25 @@
 #define HTTP_POST_METHOD    "POST / HTTP/1.1\r\nHOST: %s:%s\r\nAccept: */*\r\n" \
     "Content-Type:application/json\r\nContent-Length: %d\r\n\r\n%s"
 
+#define HTTP_STATE_LINK         0
+#define HTTP_STATE_SEND         1
+#define HTTP_STATE_RCV          2
+#define HTTP_STATE_CHECKOUT     3
+
 #if Exist_ETH
 static u8 HTTP_init_flag = 0;
 
+static char client_url[100] = {0};
+static char client_path[100];
 static char client_ip[40];
 static char client_port[40];
-static char client_send_cache[1024];
+static char client_send_cache[0x1000];
 static int cache_run = 0;
 static char client_get_cache[1024];
 static int cache_get = 0,cache_read = 0;
 
 /*
-½ÓÊÕº¯Êý»Øµ÷
+ï¿½ï¿½ï¿½Õºï¿½ï¿½ï¿½ï¿½Øµï¿½
 */
 static void Base_TCP_HTTP_GET_Fun (void *data)
 {
@@ -38,39 +45,22 @@ int Base_TCP_HTTP_Config (char *http,int enable)
 {
     int retval = 0;
     #if Exist_ETH
+
     if(http != NULL && enable)
     {
-        int temp_num;
-        char array_url[200],array_path[100];
-        memset(array_url,0,sizeof(array_url));
-        memset(array_path,0,sizeof(array_path));
+        memset(client_url,0,sizeof(client_url));
+        memset(client_path,0,sizeof(client_path));
         memset(client_ip,0,sizeof(client_ip));
         memset(client_port,0,sizeof(client_port));
-        temp_num = Caven_data_To_url (http,array_url,array_path);
-        if(temp_num)
-        {
-            temp_num = Base_ETH_IPprot (array_url,client_ip,client_port);   // url×ª»»³Éip+port
-        }
-        else
-        {
-            printf("HTTP_Config:http error\r\n");
-        }
-        if (temp_num)
-        {
-            Base_ETH_HTTP_pFun_Bind (Base_TCP_HTTP_Task);
-            Base_TCP_Client_Receive_Bind_Fun (Base_TCP_HTTP_GET_Fun);
-            Base_TCP_Client_Config (client_ip,client_port,enable);
-            HTTP_init_flag = 1;
-            printf("HTTP_Config url:%s:%s/%s,running... \r\n",client_ip,client_port,array_path);
-        }
-        else
-        {
-            printf("HTTP_Config:url to IPprot error\r\n");
-        }
+        Base_ETH_HTTP_pFun_Bind (Base_TCP_HTTP_Task);
+        Base_TCP_Client_Receive_Bind_Fun (Base_TCP_HTTP_GET_Fun);
+        Base_ETH_data_To_url (http,client_url,client_path);
     }
     else if(enable == 0)
     {
         Base_TCP_Client_Config (NULL,NULL,0);
+        memset(client_url,0,sizeof(client_url));
+        memset(client_path,0,sizeof(client_path));
         HTTP_init_flag = 0;
     }
     retval = HTTP_init_flag;
@@ -82,13 +72,14 @@ int Base_TCP_HTTP_cache_Send_Fun (char *data, int len)
 {
     int retval = 0;
     #if Exist_ETH
-    if (data != NULL && HTTP_init_flag)
+    if (data != NULL && HTTP_init_flag && len > 0)
     {
         if ((len + cache_run) < sizeof(client_send_cache))
         {
             memcpy(&client_send_cache[cache_run],data,len);
             cache_run += len;
             client_send_cache[cache_run] = 0;
+            retval = 1;
         }
     }
     #endif
@@ -115,7 +106,7 @@ int Base_TCP_HTTP_cache_Read_Fun (char *data,int len_max)
 }
 
 /*
-Õâ¸ö×´Ì¬»úÔËÐÐÔÚETHÖ÷³ÌÐòÑ­»·ÖÐ
+ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ETHï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½
 */
 void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
 {
@@ -130,32 +121,42 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
     SYS_BaseTIME_Type base_time;
     Caven_BaseTIME_Type http_time;
     int temp_num = 0;
-    char http_send_buff[2048];
+    char http_send_buff[0x1200];
+    if(strlen(client_url) > 0)
+    {
+        HTTP_init_flag = 1;
+        Caven_URL_IPprot (client_url,client_ip,client_port);
+    }
+    else
+    {
+        HTTP_init_flag = 0;
+    }
     if(HTTP_init_flag == 0)
     {
         return;
     }
     if(cache_run || http_run)
     {
-        switch (http_run) 
+        switch (http_run)
         {
-            case 0:     // client link
+            case HTTP_STATE_LINK:     // client link
             {
                 Base_TCP_Client_Config (NULL,NULL,0);
                 Base_TCP_Client_Config (client_ip,client_port,1);
                 http_run ++;
             }
             break;
-            case 1:     // send data
+            case HTTP_STATE_SEND:     // send data
             {
                 if(Base_TCP_Client_Config (NULL,NULL,1) == 1)
                 {
-                    sprintf(http_send_buff,HTTP_POST_METHOD,client_ip,client_port,strlen(client_send_cache),client_send_cache);
+                    memset(http_send_buff,0,10);
+                    snprintf(http_send_buff,sizeof(http_send_buff),
+                    HTTP_POST_METHOD,client_ip,client_port,strlen(client_send_cache),client_send_cache);
                     temp_num = Base_TCP_Client_Send ((uint8_t *)http_send_buff, strlen(http_send_buff));
                     if(temp_num == 0)
                     {
                         http_run ++;
-                        // printf("HTTP_Run post over \r\n");
                         SYS_Time_Get(&base_time);
                         http_time.SYS_Sec = base_time.SYS_Sec;
                         http_time.SYS_Us = base_time.SYS_Us;
@@ -165,7 +166,7 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
                 }
             }
             break;
-            case 2:     // wait Receive
+            case HTTP_STATE_RCV:     // wait Receive
             {
                 SYS_Time_Get(&base_time);
                 http_time.SYS_Sec = base_time.SYS_Sec;
@@ -181,7 +182,6 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
                     {
                         http_run = 0;
                         resend ++;
-                        // printf("HTTP_Run over time try again !\r\n");
                         if(resend >= 2)
                         {
                             http_run = 0xff;
@@ -190,18 +190,17 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
                     }
                 }
             }
-            case 3:
+            case HTTP_STATE_CHECKOUT:
             {
                 if(cache_read)      // app read over
                 {
-                    // printf("HTTP_Run get over \r\n");
+                    Debug_OutStr("HTTP APP get server,Task over \r\n");
                     http_run = 0xff;
                 }
             }
             break;
             default:
             {
-                // printf("HTTP_Run task over \r\n");
                 Base_TCP_Client_Config (NULL,NULL,0);   // close client
                 http_task.Trigger_Flag = 0;
                 http_run = 0;

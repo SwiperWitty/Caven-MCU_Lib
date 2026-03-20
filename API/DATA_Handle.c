@@ -8,9 +8,10 @@ int Caven_Hex_To_String (uint8_t *array,int len,char *ret_str)
     {
         for (int i = 0; i < len; i++)
         {
-            sprintf(&ret_str[offset],"%02X ",array[i]);
-            offset += 3;
+            sprintf(&ret_str[offset],"%02X",array[i]);
+            offset += 2;
         }
+        retval = offset;
     }
     return retval; 
 }
@@ -48,74 +49,50 @@ int Caven_String_To_Hex (char *str)
     return retval; 
 }
 
-/* 测试项：
-    http://192.168.1.128:9090/api/user?id=123
-    http://192.168.1.128
-    http://192.168.1.128:9090
+/*
+    url:192.168.1.168:8160
+    ip:192.168.1.168
+    port:8160
+    retval:1
+
+    url:192.168.1.168
+    ip:192.168.1.168
+    port:NULL
+    retval:0
 */
-int Caven_data_To_url (char *data,char *url,char *path)
+int Caven_URL_IPprot (char *url,char *ip,char *port)
 {
-    int retval = 0;
-    int http_len = 0,temp_num = 0;
-    char array_url[200],array_port[20];
-    char *p_temp = NULL,*p_temp_port = NULL,*p_temp_path = NULL;
-    
-    if (data != NULL && url != NULL)
+    int retval = -1;
+    int temp_num = 0;
+    char *str_pointer = NULL;
+    if (url == NULL || ip == NULL || port == NULL)
     {
-        memset(array_url,0,sizeof(array_url));
-        memset(array_port,0,sizeof(array_port));
-        http_len = strlen(data);
-        p_temp = memstr(data, "://",http_len);
-        if (p_temp != NULL)
+        return retval;
+    }
+    if(url[0] >= '0' && url[0] <= '9')
+    {
+        retval = 0;
+        temp_num = strlen(url);
+        str_pointer = memstr(url,":",temp_num);
+        if(str_pointer != NULL)
         {
-            p_temp = p_temp + strlen("://");
-            if (p_temp[0] < '0' || p_temp[0] > '9')    // Domain name
-            {
-                // 暂不考虑
-            }
-            else
-            {
-                http_len = http_len - (p_temp - data);
-            }
-            p_temp_port = memstr(p_temp, ":",http_len);
-            if (p_temp_port != NULL)
-            {
-                retval = p_temp_port - p_temp;
-                memcpy(array_url,p_temp,retval);
-                p_temp_port ++;
-                temp_num = atoi(p_temp_port);
-                if(temp_num)
-                {
-                    sprintf(array_port,"%d",temp_num);
-                    strcat(array_url,":");
-                    strcat(array_url,array_port);
-                }
-            }
-            else
-            {
-                retval = http_len;
-                memcpy(array_url,p_temp,retval);
-            }
-            p_temp_path = memstr(p_temp, "/",http_len);
-            if (p_temp_path != NULL)
-            {
-                if(path != NULL)
-                {
-                    p_temp_path += 1;
-                    strcpy(path,p_temp_path);
-                }
-            }
-            else if(path != NULL)
-            {
-                path[0] = 0;
-            }
+            temp_num = str_pointer-url;
+            memcpy(ip,url,temp_num);
+   
+            strcpy(port,&url[temp_num+1]);
+            retval = 1;
+            // ESP_LOGI(TAG, "IPprot ip: [%s] port: [%s]", ip,port);
+        }
+        else
+        {
+            strcpy(ip,url);
         }
     }
-    if(retval)
+    else
     {
-        strcpy(url, array_url);
+        return retval;
     }
-    return retval;      // 大于0即成功解析
+    return retval;
 }
 
 /*

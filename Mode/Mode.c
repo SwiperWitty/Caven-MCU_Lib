@@ -223,6 +223,25 @@ char *stb_callback(const char *buf, void *user, int len)
 #endif
 }
 
+#if DEBUG_CH
+#include <stdarg.h>
+char Debug_array[1024];
+int Debug_printf(const char *fmt, ...)
+{
+    va_list args;
+    va_start(args, fmt);
+    
+    // 安全地格式化字符串，最多写入 sizeof(Debug_array) 字节（包含 '\0'）
+    vsnprintf(Debug_array, sizeof(Debug_array), fmt, args);
+    
+    va_end(args);
+    
+    Debug_OutStr(Debug_array);
+    
+    return 0; // 或返回实际写入字符数
+}
+#endif
+
 // 自定义 ptf 函数
 int stb_printf(const char *fmt, ...)
 {

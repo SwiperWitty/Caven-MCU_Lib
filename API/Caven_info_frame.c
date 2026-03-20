@@ -70,15 +70,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     case 2: /* Type 网络接口板+传感器，请使用混合类型 Type = 0 */
         tepm_pData[temp_packet.Get_num++] = data;
         temp_packet.Type = data;
-        if (temp_packet.Type == standard.Type || temp_packet.Type == 0)
-        {
-            temp_packet.Run_status++;
-        }
-        else
-        {
-            temp_packet.Run_status = -temp_packet.Run_status;
-			temp_packet.Result = m_Result_Fail_Type;
-        }
+        temp_packet.Run_status++;
         break;
     case 3: /* Addr */
         tepm_pData[temp_packet.Get_num++] = data;

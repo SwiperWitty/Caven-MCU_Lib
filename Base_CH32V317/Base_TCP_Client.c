@@ -33,11 +33,13 @@ void Base_TCP_Client_link (void)
         TmpSocketInf.ProtoType = PROTO_TYPE_TCP;
         TmpSocketInf.RecvBufLen = RECE_BUF_LEN;
         p_client_sock = Base_ETH_Client_Bind();
-        if(*p_client_sock == 0xff)
+        u8 sock = *p_client_sock;
+        if(sock == 0xff)
         {
-            WCHNET_SocketCreat(p_client_sock, &TmpSocketInf);
-            WCHNET_SocketConnect(*p_client_sock);                        // make a TCP connection
-            printf("Client to ip[%s:%s] socket[%d]\r\n", client_ip,client_port,*p_client_sock);
+            WCHNET_SocketCreat(&sock, &TmpSocketInf);
+            WCHNET_SocketConnect(sock);                        // make a TCP connection
+            *p_client_sock = sock;
+            Debug_printf("Client_link to ip[%s:%s] socket[%d]\r\n", client_ip,client_port,sock);
         }
     }
 }
@@ -65,16 +67,22 @@ int Base_TCP_Client_Config (char *ip_str,char *port_str,int enable)
         Base_ETH_Client_pFun_Bind (Base_TCP_Client_Task);
 
         client_init_flag = 1;
-        printf("Client_Config running... \r\n");
+        Debug_OutStr("Client_Config running... \r\n");
+        
     }
     else if(enable == 0)
     {
         p_client_sock = Base_ETH_Client_Bind();
-        WCHNET_SocketClose(*p_client_sock,TCP_CLOSE_ABANDON);
-        *p_client_sock = 0xff;
+        u8 sock = *p_client_sock;
+        if(sock != 0XFF)
+        {
+            Debug_printf("Client_Config kill sock [%d] \r\n",sock);
+            WCHNET_SocketClose(sock,TCP_CLOSE_RST);     // TCP_CLOSE_ABANDON TCP_CLOSE_RST
+            *p_client_sock = 0xff;
+        }
         client_init_flag = 0;
         client_con = 0;
-        printf("Client_Config close \r\n");
+        Debug_OutStr("Client_Config close \r\n");
     }
     if(client_con && *p_client_sock != 0xff && client_init_flag > 0)
     {
@@ -134,7 +142,6 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
 
         if (intstat & SINT_STAT_RECV)                                   //receive data
         {
-            // printf("client socket[%d] stat recv\r\n",sock);
             u32 len;
             u32 endAddr = SocketInf[sock].RecvStartPoint + SocketInf[sock].RecvBufLen;       //Receive buffer end address
 
@@ -161,8 +168,7 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
             WCHNET_SocketSetKeepLive(sock, ENABLE);
     #endif
             WCHNET_ModifyRecvBuf(sock, (u32) Socket_buff[sock],RECE_BUF_LEN);
-
-            printf("clinet socket[%d] con\r\n",sock);
+            Debug_printf("clinet socket[%d] con\r\n",sock);
             client_con = 1;
             for (i = 0; i < WCHNET_MAX_SOCKET_NUM; i++) {
                 if (Socket_ptr[i] == 0xff)                  // save connected socket id
@@ -180,8 +186,8 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                     break;
                 }
             }
-            printf("clinet socket[%d] discon \r\n",sock);
-            // WCHNET_SocketClose(*p_client_sock,TCP_CLOSE_ABANDON);
+            Debug_printf("clinet socket[%d] discon \r\n",sock);
+            WCHNET_SocketClose(sock,TCP_CLOSE_RST);
             *p_client_sock = 0xff;
             client_con = 0;
         }
@@ -193,8 +199,7 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
                     break;
                 }
             }
-            printf("clinet socket[%d] over time\r\n",sock);
-            // WCHNET_SocketClose(sock,TCP_CLOSE_ABANDON);
+            Debug_printf("clinet socket[%d] over time\r\n",sock);
             *p_client_sock = 0xff;
             client_con = 0;
         }

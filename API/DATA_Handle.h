@@ -16,7 +16,7 @@
 int Caven_String_To_Hex (char *str);
 int Caven_Hex_To_String (uint8_t *array,int len,char *ret_str);
 int Caven_Str_To_ip (char *str,uint8_t *ip,int IpSize);
-int Caven_data_To_url (char *data,char *url,char *path);
+int Caven_URL_IPprot (char *url,char *ip,char *port);
 
 char *memstr(void* full_data, char* substr,int full_data_len);
 int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,char sign);
