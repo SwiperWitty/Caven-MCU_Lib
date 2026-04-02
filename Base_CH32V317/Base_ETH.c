@@ -14,7 +14,7 @@ static wifi_ap_record_t wifi_ap_info[WIFI_SSID_SCAN_MAX_VALUE];
 static uint16_t wifi_ap_num = WIFI_SSID_SCAN_MAX_VALUE;
 static char WIFI_name[30] = {0};
 static char WIFI_pass[30] = {0};
-// �����Ǳ����豸���䵽��ip���ܿ����Ƕ�̬��
+// 
 static uint8_t s_WIFI_ip[4];
 static uint8_t s_WIFI_netmask[4];
 static uint8_t s_WIFI_gateway[4];
@@ -24,24 +24,8 @@ static char wifi_ip[30];
 static char wifi_gw[30];
 static char wifi_netmask[30];
 
-static int wifi_flag = 0;               // 1:wifi��������
-static int wifi_init_flag = 0;          // 1:��ʼ��
-
-int Base_WIFI_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netmask_str)
-{
-    int retval = 0;
-    if (ip_str == NULL || gw_str == NULL || netmask_str == NULL)
-    {
-    }
-    else
-    {
-        memcpy(ip_str,s_WIFI_ip,4);
-        memcpy(gw_str,s_WIFI_netmask,4);
-        memcpy(netmask_str,s_WIFI_gateway,4);
-    }
-    retval = wifi_flag;
-    return retval;
-}
+static int wifi_flag = 0;               //
+static int wifi_init_flag = 0;          // 
     #endif
 
 static uint8_t SYS_MAC_addr[6] = {0};
@@ -78,53 +62,102 @@ static ETH_handle_pFun ETH_MQTT_pFun = NULL;
 static u8 base_socket[WCHNET_MAX_SOCKET_NUM];                //Save the currently connected socket
 static u8 base_SocketRecvBuf[WCHNET_MAX_SOCKET_NUM][RECE_BUF_LEN];  // socket receive buffer
 
-u8 * Base_ETH_SockBuff_Bind (void)
+#endif
+
+int Base_WIFI_get_local_ip_status (uint8_t *ip_str,uint8_t *gw_str,uint8_t *netmask_str)
 {
+    int retval = 0;
+    #if WIFI_LINK
+    if (ip_str == NULL || gw_str == NULL || netmask_str == NULL)
+    {
+    }
+    else
+    {
+        memcpy(ip_str,s_WIFI_ip,4);
+        memcpy(gw_str,s_WIFI_netmask,4);
+        memcpy(netmask_str,s_WIFI_gateway,4);
+    }
+    retval = wifi_flag;
+    #endif
+    return retval;
+}
+
+u8 *Base_ETH_SockBuff_Bind (void)
+{
+#if Exist_ETH
     return base_socket;
+#else
+    return NULL;
+#endif
 }
 
 u8 (*Base_ETH_SockBuff_Bind_RecBuf(void))[RECE_BUF_LEN] 
 {
+#if Exist_ETH
     return base_SocketRecvBuf;
+#else
+    return NULL;
+#endif
 }
 
 u8 * Base_ETH_Server_Bind (void)
 {
+#if Exist_ETH
     return &server_sock;
+#else
+    return NULL;
+#endif
 }
 
 u8 * Base_ETH_Serlast_Bind (void)
 {
+#if Exist_ETH
     return &serlast_sock;
+#else
+    return NULL;
+#endif
 }
 
 u8 * Base_ETH_Client_Bind (void)
 {
+#if Exist_ETH
     return &client_sock;
+#else
+    return NULL;
+#endif
 }
 
 void Base_ETH_Server_pFun_Bind (ETH_handle_pFun fun)
 {
+#if Exist_ETH
     ETH_Server_pFun = fun;
+#endif
 }
 
 void Base_ETH_Client_pFun_Bind (ETH_handle_pFun fun)
 {
+#if Exist_ETH
     ETH_Clinet_pFun = fun;
+#endif
 }
 
 void Base_ETH_HTTP_pFun_Bind (ETH_handle_pFun fun)
 {
+#if Exist_ETH
     ETH_HTTP_pFun = fun;
+#endif
 }
 
 void Base_ETH_MQTT_pFun_Bind (ETH_handle_pFun fun)
 {
+#if Exist_ETH
     ETH_MQTT_pFun = fun;
+#endif
 }
 
 void WCHNET_DNSCallBack(const char *name, u8 *ipaddr, void *callback_arg)
 {
+#if Exist_ETH
     if(p_eth_DNS_IP == NULL)
     {
         return;
@@ -148,6 +181,7 @@ void WCHNET_DNSCallBack(const char *name, u8 *ipaddr, void *callback_arg)
         Debug_printf("callback_arg: %02x\r\n", (*(u8 *)callback_arg));
     }
     WCHNET_DNSStop();                                                          //stop DNS,and release socket
+#endif
 }
 
 /* 测试项：
@@ -162,6 +196,7 @@ void WCHNET_DNSCallBack(const char *name, u8 *ipaddr, void *callback_arg)
 int Base_ETH_data_To_url (char *data,char *g_url,char *path)
 {
     int retval = 0;
+#if Exist_ETH
     int http_len = 0,temp_num = 0;
     char array_url[200],array_port[20];
     char *p_temp = NULL,*p_temp_port = NULL,*p_temp_path = NULL;
@@ -235,9 +270,11 @@ int Base_ETH_data_To_url (char *data,char *g_url,char *path)
             }
         }
     }
+#endif
     return retval;      // 大于0即成功解析
 }
 
+#if Exist_ETH
 static u8 WCHNET_DHCPCallBack(u8 status, void *arg)
 {
     u8 *p;

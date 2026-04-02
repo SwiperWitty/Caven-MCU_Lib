@@ -440,7 +440,7 @@ int LCD_Set_Horizontal(char set)
 		break;
 	}
 	LCD_PicSize = LCD_W_Max * LCD_H_Max;
-    if (LCD_PicSize) {
+    if (LCD_PicSize == 0) {
 	    LCD_Horizontal = 0;
     }
 #endif

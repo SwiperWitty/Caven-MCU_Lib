@@ -67,6 +67,7 @@ static void Base_TCP_MQTT_GET_Fun(void *data)
     #endif
 }
 
+#if Exist_ETH
 // ����CONNECT����
 static int build_connect_packet(uint8_t *buffer, const char *client_id,
                                 const char *username, const char *password)
@@ -188,6 +189,7 @@ static int parse_received_packet(u8 *packet_type, u16 *packet_id)
     mqtt_cache_get -= total;
     return 1;
 }
+#endif
 
 // ����MQTT�ͻ���
 int Base_TCP_MQTT_Config(char *config, int enable)

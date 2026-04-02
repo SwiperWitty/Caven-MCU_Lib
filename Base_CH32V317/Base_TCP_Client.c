@@ -4,7 +4,6 @@
 #include "API.h"
 #include "eth_driver.h"
 
-#if Exist_ETH
 
 #define KEEPALIVE_ENABLE    1   // Enable keep alive function
 static u8 *p_client_sock = NULL;
@@ -205,5 +204,3 @@ void Base_TCP_Client_Task (u8 sock,u8 intstat)
         }
     }
 }
-
-#endif

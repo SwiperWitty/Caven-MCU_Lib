@@ -160,6 +160,7 @@ uint8_t DMA_UART4_Buff[UART_BUFF_MAX];
 /*
  *
  */
+
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
 {
 #ifdef DMA_UART
@@ -274,6 +275,22 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
     USART_DMACmd(Temp_USART,USART_DMAReq_Tx, ENABLE);
     DMA_Cmd(Temp_DMA_Channel, ENABLE);
 #endif
+}
+
+void Base_UART_DMA_Send_Buff(UART_mType Channel,const uint8_t *Data,int Length)
+{
+    uint8_t *temp_buff = (uint8_t *)Data;
+    int temp_num = 0,temp_run = Length;
+    while(temp_run > 0)
+    {
+        temp_num = Length - 0;
+        if(temp_num > UART_BUFF_MAX)
+        {
+            temp_num = UART_BUFF_MAX;
+        }
+        Base_UART_DMA_Send_Data(Channel,temp_buff,temp_num);
+        temp_run -= temp_num;
+    }
 }
 
 // 以下函数很重要，包括功能启动，功能中断处理
@@ -656,104 +673,6 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
     retval = 0;
 #endif
     return retval;
-}
-
-// printf
-// int fputc(int ch, FILE *f)
-// {
-// #ifdef DEBUG_CH
-// 	#ifdef Exist_UART
-//     Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)ch);
-// 	#endif
-// #endif // DEBUG
-//     return (ch);
-// }
-/* SDI Printf Definition */
-#define SDI_PR_CLOSE   0
-#define SDI_PR_OPEN    1
-
-#ifndef SDI_PRINT
-#define SDI_PRINT   SDI_PR_CLOSE
-#endif
-#define DEBUG_DATA0_ADDRESS  ((volatile uint32_t*)0xE0000380)
-#define DEBUG_DATA1_ADDRESS  ((volatile uint32_t*)0xE0000384)
-/*********************************************************************
- * @fn      _write
- *
- * @brief   Support Printf Function
- *
- * @param   *buf - UART send Data.
- *          size - Data length
- *
- * @return  size: Data length
- */
-__attribute__((used)) int _write(int fd, char *buf, int size)
-{
-    int i = 0;
-
-#if (SDI_PRINT == SDI_PR_OPEN)
-    int writeSize = size;
-
-    do
-    {
-
-        /**
-         * data0  data1 8 bytes
-         * data0 The lowest byte storage length, the maximum is 7
-         *
-         */
-
-        while( (*(DEBUG_DATA0_ADDRESS) != 0u))
-        {
-
-        }
-
-        if(writeSize>7)
-        {
-            *(DEBUG_DATA1_ADDRESS) = (*(buf+i+3)) | (*(buf+i+4)<<8) | (*(buf+i+5)<<16) | (*(buf+i+6)<<24);
-            *(DEBUG_DATA0_ADDRESS) = (7u) | (*(buf+i)<<8) | (*(buf+i+1)<<16) | (*(buf+i+2)<<24);
-
-            i += 7;
-            writeSize -= 7;
-        }
-        else
-        {
-            *(DEBUG_DATA1_ADDRESS) = (*(buf+i+3)) | (*(buf+i+4)<<8) | (*(buf+i+5)<<16) | (*(buf+i+6)<<24);
-            *(DEBUG_DATA0_ADDRESS) = (writeSize) | (*(buf+i)<<8) | (*(buf+i+1)<<16) | (*(buf+i+2)<<24);
-
-            writeSize = 0;
-        }
-
-    } while (writeSize);
-
-
-#else
-    for(i = 0; i < size; i++)
-    {
-        Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)*buf++);
-    }
-#endif
-    return size;
-}
-
-/*********************************************************************
- * @fn      _sbrk
- *
- * @brief   Change the spatial position of data segment.
- *
- * @return  size: Data length
- */
-__attribute__((used)) void *_sbrk(ptrdiff_t incr)
-{
-    extern char _end[];
-    extern char _heap_end[];
-    static char *curbrk = _end;
-
-    if ((curbrk + incr < _end) || (curbrk + incr > _heap_end))
-    return NULL - 1;
-
-    curbrk += incr;
-    return curbrk - incr;
 }
 
 // 你找中断？UART的中断通过函数回调给MODE了！

@@ -17,8 +17,8 @@ void st7789_drive_gpio_init(int set)
         gpio_set_direction(PIN_LCD_DC, GPIO_MODE_OUTPUT);
         gpio_set_level(PIN_LCD_DC, 1);
 #else
-        User_GPIO_config(1, PIN_LCD_DC, 1); // PA10 out DC
-        User_GPIO_set(1, PIN_LCD_DC, 1);
+        User_GPIO_config(GPIO_LCD_DC, PIN_LCD_DC, 1); // PA10 out DC
+        User_GPIO_set(GPIO_LCD_DC, PIN_LCD_DC, 1);
 #endif
 #endif
 
@@ -28,8 +28,8 @@ void st7789_drive_gpio_init(int set)
         gpio_set_direction(PIN_LCD_RST, GPIO_MODE_OUTPUT);
         gpio_set_level(PIN_LCD_RST, 1);
 #else
-        User_GPIO_config(2, PIN_LCD_RST, 1); // PB0  out RES
-        User_GPIO_set(2, PIN_LCD_RST, 1);
+        User_GPIO_config(GPIO_LCD_RST, PIN_LCD_RST, 1); // PB0  out RES
+        User_GPIO_set(GPIO_LCD_RST, PIN_LCD_RST, 1);
 #endif
 #endif
 
@@ -39,8 +39,8 @@ void st7789_drive_gpio_init(int set)
         gpio_set_direction(PIN_LCD_CS, GPIO_MODE_OUTPUT);
         gpio_set_level(PIN_LCD_CS, 0);
 #else
-        User_GPIO_config(2, PIN_LCD_CS, 1);
-        User_GPIO_set(2, PIN_LCD_CS, 1);
+        User_GPIO_config(GPIO_LCD_CS, PIN_LCD_CS, 1);
+        User_GPIO_set(GPIO_LCD_CS, PIN_LCD_CS, 1);
 #endif
 #endif
     }
@@ -160,9 +160,9 @@ static void LCD_Writ_Bus(uint8_t data)
 
 #else
 #define MODE_st7789_drive_Writ_Bus(x) Base_SPI_Send_Data(m_SPI_CH2, x)
-#define MODE_st7789_drive_GPIO_CS(x) Base_SPI_CS_Set(m_SPI_CH2, 1, x);
-#define MODE_st7789_drive_GPIO_DC(x) User_GPIO_set(1, PIN_LCD_DC, x);
-#define MODE_st7789_drive_GPIO_RST(x) User_GPIO_set(0, PIN_LCD_RST, x);
+#define MODE_st7789_drive_GPIO_CS(x,y) Base_SPI_CS_Set(m_SPI_CH2, x, y);
+#define MODE_st7789_drive_GPIO_DC(x) User_GPIO_set(GPIO_LCD_DC, PIN_LCD_DC, x);
+#define MODE_st7789_drive_GPIO_RST(x) User_GPIO_set(GPIO_LCD_RST, PIN_LCD_RST, x);
 #endif
 
 void set_flag_dc(int n)
@@ -180,14 +180,12 @@ void MODE_st7789_drive_CS(uint8_t data)
 {
 #if Exist_LCD
 	#if (PIN_LCD_CS != (-1))
-    switch (LCD_Target_Model)
+    if(data == 1)
     {
-    case 11:
-        MODE_st7789_drive_GPIO_CS(data);
-        break;
-    default:
-        MODE_st7789_drive_GPIO_CS(data);
-        break;
+        MODE_st7789_drive_GPIO_CS(1,1);
+    }
+    else{
+        MODE_st7789_drive_GPIO_CS(0,1);
     }
 	#endif
 #endif
@@ -223,7 +221,6 @@ static void LCD_WR_CMD(uint8_t data)
     set_flag_dc(0);
     MODE_st7789_drive_Writ_Bus(data);
     set_flag_dc(1);
-    // MODE_st7789_drive_CS(0); // 写命令之后必然要写数据，所以不要取消片选
 }
 
 #endif
@@ -274,7 +271,6 @@ void MODE_st7789_drive_WR_Data(uint16_t data)
     MODE_st7789_drive_CS(1); // 写数据之前必然要写命令，所以不要开启片选
     MODE_st7789_drive_Writ_Bus(temp_array[0]);
     MODE_st7789_drive_Writ_Bus(temp_array[1]);
-    MODE_st7789_drive_CS(0);
 #endif
 }
 
@@ -287,9 +283,15 @@ void MODE_st7789_drive_Send_Data(uint8_t *data, int num)
 #ifdef CONFIG_IDF_TARGET_ESP32
     EPS_SPI_SendData(data, num, 1);
 #else
-    Base_SPI_DMA_Send_Data(m_SPI_CH2, data, num);
+    #if 1
+    Base_SPI_DMA_Send_Buff(m_SPI_CH2, data, num);
+    #else
+    for(int i = 0; i < num; i++)
+    {
+        MODE_st7789_drive_Writ_Bus(data[i]);
+    }
+    #endif
 #endif
-//	MODE_st7789_drive_CS (0);   // 应该被中断处理了
 #endif
 }
 
@@ -664,7 +666,9 @@ int MODE_st7789_drive_Init(int set)
 #else
     Base_SPI_Init(m_SPI_CH2, 8, set);
 #endif
-    st7789_drive_delay(50);
+    MODE_st7789_drive_CS(1);
+    MODE_st7789_drive_CS(0);
+    st7789_drive_delay(10);
 	MODE_st7789_drive_Writ_Bus(0x00);
 	st7789_drive_delay(10);
 //    LCD_WR_CMD(0x01);
@@ -926,7 +930,6 @@ int MODE_st7789_drive_Init(int set)
         retval = 1;
         break;
     }
-    MODE_st7789_drive_CS(0); // important
     st7789_drive_delay(100);
 #endif
     return retval;

@@ -32,9 +32,12 @@
 	#include "Base.h"
 #endif
 
+    #define GPIO_LCD_CS     (2)
     #define PIN_LCD_CS      (12)        /* PB12	*/
 
-    #define PIN_LCD_DC      (10)        // PA10
+    #define GPIO_LCD_DC     (2)
+    #define PIN_LCD_DC      (1)         // PB1
+    #define GPIO_LCD_RST    (2)
     #define PIN_LCD_RST     (0)         // PB0
     #define PIN_LCD_BCKL    (-1)        /* 直接接到vdd */
 

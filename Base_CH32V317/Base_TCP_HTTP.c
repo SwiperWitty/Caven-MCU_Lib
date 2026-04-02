@@ -24,9 +24,9 @@ static char client_send_cache[0x1000];
 static int cache_run = 0;
 static char client_get_cache[1024];
 static int cache_get = 0,cache_read = 0;
-
+#endif
 /*
-���պ����ص�
+
 */
 static void Base_TCP_HTTP_GET_Fun (void *data)
 {
@@ -39,7 +39,7 @@ static void Base_TCP_HTTP_GET_Fun (void *data)
     #endif
 }
 
-#endif
+
 
 int Base_TCP_HTTP_Config (char *http,int enable)
 {
@@ -106,7 +106,7 @@ int Base_TCP_HTTP_cache_Read_Fun (char *data,int len_max)
 }
 
 /*
-���״̬��������ETH������ѭ����
+
 */
 void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
 {
