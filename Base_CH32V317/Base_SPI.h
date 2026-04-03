@@ -53,7 +53,7 @@ typedef enum
     #define SPI_DMA_SIZE    500
     #define HOST_MODE   1
     #define SPI_SOFTWARE    0
-    #define SPI_SPEED   SPI_BaudRatePrescaler_16     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
+    #define SPI_SPEED   SPI_BaudRatePrescaler_2     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
     #if SPI_SOFTWARE
         #define SPI_MODE_IN    GPIO_Mode_IPU
         #define SPI_MODE_OUT   GPIO_Mode_Out_PP

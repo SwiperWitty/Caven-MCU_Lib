@@ -47,7 +47,7 @@
 /*
 
 */
-
+void st7789_drive_delay(int time);
 int MODE_st7789_drive_Init(int set);
 void MODE_st7789_drive_Display(int set);
 

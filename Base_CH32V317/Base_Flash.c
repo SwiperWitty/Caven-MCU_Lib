@@ -1,6 +1,8 @@
 #include "Base_Flash.h"
 #include "string.h"
 
+static int Flash_Demarcation = 0;
+
 int Base_addr_check (int addr,int len)
 {
 	int retval = 0;
@@ -19,6 +21,14 @@ int Base_addr_check (int addr,int len)
     {
         retval = (-1);
         return retval;
+    }
+    if(Flash_Demarcation > 0)
+    {
+        if(addr < Flash_Demarcation)    // Crossing the boundary
+        {
+            retval = (-2);
+            return retval;
+        }
     }
 #endif
 	return retval;
@@ -39,6 +49,22 @@ int Base_Addr_Get_Area(int addr)
     }
     retval = (addr - FLASH_START_ADDR) / FLASH_PAGE_SIZE;
 	retval = FLASH_START_ADDR + retval * FLASH_PAGE_SIZE;
+#endif
+    return retval;
+}
+
+int Base_Flash_Demarcation (int addr)
+{
+    int retval = 0;
+#if Exist_FLASH 
+    if(addr == 0)
+    {
+        retval = Flash_Demarcation;
+    }
+    else
+    {
+        Flash_Demarcation = addr;
+    }
 #endif
     return retval;
 }

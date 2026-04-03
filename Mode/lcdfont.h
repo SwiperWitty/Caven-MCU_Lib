@@ -2,7 +2,7 @@
 #define __LCDFONT_H_
 
 #ifndef LVGL_LIB
-    #define LCD_LIB_ASCII	0
+    #define LCD_LIB_ASCII	1
     #define LCD_LIB_CN		0
 #endif
 

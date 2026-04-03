@@ -1,7 +1,7 @@
 #include "MODE_LCD.h"
 #include "lcdfont.h" // 字库
 
-uint16_t LCD_Back_Color = 0xFFFB; // 背景色
+uint16_t LCD_Back_Color = 0xFFFF; // 背景色
 uint16_t LCD_Word_Color = LCD_GRAY;
 
 uint16_t LCD_W_Max = 0;
@@ -474,6 +474,7 @@ int MODE_LCD_Init(int set)
 	// 4
 	LCD_Fill_Fun(0, 0, LCD_W_Max, LCD_H_Max, LCD_Back_Color);
 	MODE_st7789_drive_Display(1);
+	st7789_drive_delay(100);
 #endif
 	return retval;
 }
