@@ -84,6 +84,7 @@ int USB_Keyboard_Send_Data (char *data, int size)
         // USBD_HID_Keyboard_Updata();
         // retval = 0;
     } while (temp);
+    (void) num;
 #endif
     return retval;
 }

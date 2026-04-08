@@ -8,7 +8,7 @@ char SPI2_Width = 0;
 char SPI1_Init = 0;
 char SPI2_Init = 0;
 
-static void SPI_Delay (int time)
+void SPI_Delay (int time)
 {
     int temp;
     for (int i = 0; i < time; ++i)
