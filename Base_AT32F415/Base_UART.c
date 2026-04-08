@@ -596,6 +596,22 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
 #endif
 }
 
+void Base_UART_DMA_Send_Buff(UART_mType Channel,const uint8_t *Data,int Length)
+{
+    uint8_t *temp_buff = (uint8_t *)Data;
+    int temp_num = 0,temp_run = Length;
+    while(temp_run > 0)
+    {
+        temp_num = Length - 0;
+        if(temp_num > UART_BUFF_MAX)
+        {
+            temp_num = UART_BUFF_MAX;
+        }
+        Base_UART_DMA_Send_Data(Channel,temp_buff,temp_num);
+        temp_run -= temp_num;
+    }
+}
+
 /*
  *  Successful : return 0
  *
@@ -612,17 +628,6 @@ int State_Machine_Bind(UART_mType Channel, D_pFun UART_pFun)
     retval = 0;
 #endif
     return retval;
-}
-
-// printf
-int fputc(int ch, FILE *f)
-{
-#ifdef DEBUG_CH
-	#ifdef Exist_UART
-    Base_UART_Send_Data((UART_mType)DEBUG_CH, (uint8_t)ch);
-	#endif
-#endif // DEBUG
-    return (ch);
 }
 
 // 你找中断？UART的中断通过函数回调给MODE了！

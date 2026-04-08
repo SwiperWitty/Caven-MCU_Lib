@@ -209,20 +209,6 @@ void Debug_OutStr(char *data)
 #endif
 }
 
-// 定义回调函数
-char *stb_callback(const char *buf, void *user, int len)
-{
-#ifdef STB_SPRINTF_IMPLEMENTATION
-    stbsp__context *c = (stbsp__context *)user;
-    //    (void) sizeof(buf);
-	Debug_Out((U8 *)buf,len);
-    c->length += len;
-    return c->tmp;  // go direct into buffer if you can
-#else
-	return 0;
-#endif
-}
-
 #if DEBUG_CH
 #include <stdarg.h>
 char Debug_array[1024];
@@ -241,21 +227,3 @@ int Debug_printf(const char *fmt, ...)
     return 0; // 或返回实际写入字符数
 }
 #endif
-
-// 自定义 ptf 函数
-int stb_printf(const char *fmt, ...)
-{
-#if defined (STB_SPRINTF_IMPLEMENTATION)
-    stbsp__context c = {0};
-    va_list args;
-    va_start(args, fmt);                                  // 启动 va_list
-    stbsp_vsprintfcb(stb_callback, &c, c.tmp, fmt, args);  // 调用 stbsp_vsprintfcb
-    va_end(args);                                         // 结束 va_list
-
-    return c.length;  // 返回生成的字符长度
-#elif defined (NO_SPRINTF)
-    return 0;
-#else
-	return printf(fmt);
-#endif
-}
