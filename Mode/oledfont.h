@@ -2,7 +2,7 @@
 #define __OLEDFONT_H
 
 #ifndef LVGL_LIB
-    #define OLDE_LIB_ASCII	0
+    #define OLDE_LIB_ASCII	1
     #define OLDE_LIB_CN		0
 #endif
 

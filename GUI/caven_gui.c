@@ -210,7 +210,6 @@ int Caven_GUI_Draw_Circle(U16 x0, U16 y0, U16 radius, char wide, char percent, U
         radius++;
     } while (wide--);
     return retval;
-    //    printf("x : %d %%,quadrant: %d,x: %5.2f -> sin x = %5.3f,cos y = %5.3f \n",percent,quadrant,f_temp_percent,x_point,y_point);
     //    sprintf(send_array,"%3d%% ",percent);
     //    Mode_Use.LCD.Show_String_pFun (8,0,send_array,LCD_BLACK,LCD_Back_Color,24);
 }
