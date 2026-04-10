@@ -245,5 +245,4 @@ extern void Debug_Out(uint8_t *data,int Length);
 extern void Debug_OutStr(char *data);
 extern int Debug_printf(const char *fmt, ...);
 
-extern int stb_printf(const char *fmt, ...);
 #endif
