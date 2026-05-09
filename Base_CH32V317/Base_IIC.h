@@ -30,7 +30,7 @@
 #endif
 //
 
-void Base_IIC_Init(int set);
+int Base_IIC_Init(int set);
 char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Speed,char continuous);
 char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed);
 

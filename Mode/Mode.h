@@ -84,6 +84,10 @@
 #include "IC_RTC8564.h"
 #endif
 
+#if Exist_QMI8658
+#include "IC_QMI8658.h"
+#endif
+
 #include "IC_AS608.h"
 
 /*

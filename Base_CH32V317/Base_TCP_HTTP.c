@@ -161,7 +161,7 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
                         http_time.SYS_Sec = base_time.SYS_Sec;
                         http_time.SYS_Us = base_time.SYS_Us;
                         http_task.Begin_time = http_time;
-                        http_task.Trigger_Flag = 0;
+                        http_task.Trigger_flag = 0;
                     }
                 }
             }
@@ -178,7 +178,7 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
                 }
                 else
                 {
-                    if(http_task.Trigger_Flag)      // wait Receive overtime
+                    if(http_task.Trigger_flag)      // wait Receive overtime
                     {
                         http_run = 0;
                         resend ++;
@@ -202,7 +202,7 @@ void Base_TCP_HTTP_Task (u8 noway,u8 nobady)
             default:
             {
                 Base_TCP_Client_Config (NULL,NULL,0);   // close client
-                http_task.Trigger_Flag = 0;
+                http_task.Trigger_flag = 0;
                 http_run = 0;
                 cache_run = 0;
                 cache_get = 0;

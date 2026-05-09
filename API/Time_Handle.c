@@ -19,10 +19,12 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
     if (task->Switch == 1)
     {
         temp_num = now_time.SYS_Sec - task->Begin_time.SYS_Sec;
+        task->error_code = 0;
         if (temp_num < 0)
         {
             retval = 3;
             task->Begin_time = now_time;
+            task->error_code = 1;
             return retval;
         }
         else
@@ -50,11 +52,12 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
         }
         if (temp_num > 0)
         {
-            task->Flip_falg = !task->Flip_falg;
-            task->Trigger_Flag = 1;
-            if(diff_time.SYS_Sec >= (task->Set_time.SYS_Sec << 1))
+            task->Flip_flag = !task->Flip_flag;
+            task->Trigger_flag = 1;
+            if(task->Set_time.SYS_Sec > 0 && diff_time.SYS_Sec >= (task->Set_time.SYS_Sec << 1))
             {
                 task->Begin_time = now_time;
+                task->error_code = 2;
             }
             else
             {
@@ -64,20 +67,20 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
 			if(task->Begin_time.SYS_Us > 1000000)
 			{
 				task->Begin_time.SYS_Sec += 1;
-				task->Begin_time.SYS_Us -= 1000000;
+				task->Begin_time.SYS_Us = task->Begin_time.SYS_Us % 1000000;
 			}
             retval = 1;
         }
         else
         {
-            task->Trigger_Flag = 0;
+            task->Trigger_flag = 0;
         }
     }
 
     return retval;
 }
 
-// timezone_s 为时区参数(s秒)，例如北京时间 timezone_s = 8
+// timezone_s 为时区参数(h)，例如北京时间 timezone_s = 8
 struct tm API_UTC_Get_Date (int Unix,int timezone_s)
 {
     struct tm retval = {0};

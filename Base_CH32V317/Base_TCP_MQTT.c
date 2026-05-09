@@ -333,7 +333,7 @@ void Base_TCP_MQTT_Task(u8 noway, u8 nobady)
                 {
                     state = MQTT_STATE_WAIT_CONNACK;
                     task_timer.Begin_time = timer_now;
-                    task_timer.Trigger_Flag = 0;
+                    task_timer.Trigger_flag = 0;
                 }
             }
             break;
@@ -361,7 +361,7 @@ void Base_TCP_MQTT_Task(u8 noway, u8 nobady)
                     }
                 }
             }
-            if (task_timer.Trigger_Flag) // ��ʱ
+            if (task_timer.Trigger_flag) // ��ʱ
             {
                 state = MQTT_STATE_CONNECTING;
                 Debug_printf("MQTT_CONNACK fuck NACK \n");
@@ -380,7 +380,7 @@ void Base_TCP_MQTT_Task(u8 noway, u8 nobady)
                     {
                         state = MQTT_STATE_WAIT_PINGRESP;
                         task_timer.Begin_time = timer_now;
-                        task_timer.Trigger_Flag = 0;
+                        task_timer.Trigger_flag = 0;
                         ping_outstanding = 1;
                     }
                 }
@@ -399,7 +399,7 @@ void Base_TCP_MQTT_Task(u8 noway, u8 nobady)
             {
                 state = MQTT_STATE_WAIT_PUBACK;
                 task_timer.Begin_time = timer_now;
-                task_timer.Trigger_Flag = 0;
+                task_timer.Trigger_flag = 0;
             }
             else
             {
@@ -426,7 +426,7 @@ void Base_TCP_MQTT_Task(u8 noway, u8 nobady)
                     // �������ģ���������·��������ڻ����У��ϲ�ɶ�ȡ
                 }
             }
-            if (task_timer.Trigger_Flag)
+            if (task_timer.Trigger_flag)
             {
                 // ��ʱ����
                 state = MQTT_STATE_CONNECTING;
@@ -455,7 +455,7 @@ void Base_TCP_MQTT_Task(u8 noway, u8 nobady)
                     }
                 }
             }
-            if (task_timer.Trigger_Flag)
+            if (task_timer.Trigger_flag)
             {
                 // PING��ʱ����Ϊ���ӶϿ�
                 state = MQTT_STATE_CONNECTING;

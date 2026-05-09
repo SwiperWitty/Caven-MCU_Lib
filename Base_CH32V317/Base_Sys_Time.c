@@ -13,6 +13,7 @@ static volatile uint64_t s_Tick_cnt;
 static volatile uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
 static volatile uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
 static volatile uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
+static uint32_t s_Tick_flag = 0;
 
 static uint32_t SysTick_Config(uint64_t ticks)
 {
@@ -49,6 +50,7 @@ void SYS_Time_Init(int Set)
     {
         SysTick->CTLR = (uint32_t)0x00;
     }
+    s_Tick_flag = MIN(Set,1);
 #endif
 }
 
@@ -103,6 +105,10 @@ void SYS_Base_Delay(int time, int speed)
 {
 #ifdef NOP
     volatile int temp;
+    if(s_Tick_flag == 0)
+    {
+        return;
+    }
     for (int i = 0; i < time; ++i)
     {
         temp = speed; // SET
@@ -117,6 +123,10 @@ void SYS_Base_Delay(int time, int speed)
 void SYS_Delay_us(int n)
 {
 #ifdef Exist_SYS_TIME
+    if(s_Tick_flag == 0)
+    {
+        return;
+    }
     n = MIN(5000,n);
     uint32_t set_time = n * s_Frequency_us;
     s_Tick_cnt = SYSTICK_NUM;
@@ -140,6 +150,10 @@ void SYS_Delay_us(int n)
 void SYS_Delay_ms(int n)
 {
 #ifdef Exist_SYS_TIME
+    if(s_Tick_flag == 0)
+    {
+        return;
+    }
     n = MIN(5000,n);
     uint32_t set_time = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
     s_Tick_cnt = SYSTICK_NUM;
@@ -162,6 +176,10 @@ void SYS_Delay_ms(int n)
 
 void SYS_Delay_S(int n)
 {
+    if(s_Tick_flag == 0)
+    {
+        return;
+    }
     for (int var = 0; var < n; ++var)
     {
         SYS_Delay_ms(1000);
