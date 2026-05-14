@@ -15,6 +15,7 @@ void IIC_SDA_Satar (char GPIO_Mode)
 // **   //
 #ifdef Exist_IIC
 
+int IIC_delay_num = 0;
 static void IIC_Delay (int time)
 {
     int n = IIC_Base_Speed * 10;
@@ -42,11 +43,9 @@ void IIC_StartBit(void)//  开始
 
 void IIC_StopBit(void)//  停止
 {
-    // 先确保 SDA 为输入（释放总线），让上拉电阻拉高
-    IIC_SDA_Satar(0);      // 设为输入
-    IIC_Delay(1);
-    // 为产生停止条件，主机要主动拉低 SDA，故需改为输出并拉低
     IIC_SDA_Satar(1);      // 输出模式
+    User_GPIO_set(GPIO_IIC,IIC_SCL,0);  // 拉高 SCL
+    IIC_Delay(1);
     User_GPIO_set(GPIO_IIC,IIC_SDA,0);  // 拉低 SDA
     IIC_Delay(1);
     User_GPIO_set(GPIO_IIC,IIC_SCL,1);  // 拉高 SCL
@@ -54,17 +53,30 @@ void IIC_StopBit(void)//  停止
     User_GPIO_set(GPIO_IIC,IIC_SDA,1);  // 拉高 SDA -> 产生停止条件
 }
 
+void IIC_DummyClock(int Speed)
+{
+    IIC_SDA_Satar(1);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
+    IIC_Delay(Speed);
+    User_GPIO_set(GPIO_IIC,IIC_SDA,0);
+    IIC_Delay(Speed);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 1);
+    IIC_Delay(Speed);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
+    IIC_Delay(1);
+}
+
 void IIC_ASK(void)      //主机应答
 {
-    User_GPIO_set(GPIO_IIC,IIC_SCL,0);
-    IIC_SDA_Satar(1);                       // SDA 设为输出模式
-    User_GPIO_set(GPIO_IIC, IIC_SDA, 0);    // 拉低 SDA（应答）
+    IIC_SDA_Satar(1);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
+    IIC_Delay(IIC_delay_num);
+    User_GPIO_set(GPIO_IIC,IIC_SDA,0);
+    IIC_Delay(IIC_delay_num);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 1);
+    IIC_Delay(IIC_delay_num);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
     IIC_Delay(1);
-    User_GPIO_set(GPIO_IIC, IIC_SCL, 1);    // 产生第9个时钟：拉高 SCL
-    IIC_Delay(1);
-    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);    // 拉低 SCL，结束应答位
-    IIC_Delay(1);
-    IIC_SDA_Satar(0);                       // 释放 SDA
 }
 
 void IIC_NASK(void)     //主机不应答
@@ -86,11 +98,11 @@ void IIC_NASK(void)     //主机不应答
 char IIC_WaitASK(char num)
 {
     char ack = 0;  // 默认无应答
+    IIC_Delay(IIC_delay_num);
     User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
     IIC_SDA_Satar(0);           // 释放 SDA（输入）
     IIC_Delay(1);
     do {
-        User_GPIO_set(GPIO_IIC, IIC_SCL, 1);   // 拉高 SCL，产生第9个时钟
         IIC_Delay(1);
         // 读取 SDA 电平（低=应答，高=非应答）
         int sda_val = User_GPIO_get(GPIO_IIC, IIC_SDA);
@@ -98,23 +110,13 @@ char IIC_WaitASK(char num)
         {
             ack = 1;
         }
-        IIC_Delay(3);
+        IIC_Delay(2);
         if (ack == 1) break;        // 收到应答，成功退出
     } while ((num--) > 0);
+    User_GPIO_set(GPIO_IIC, IIC_SCL, 1);   // 拉高 SCL，产生第9个时钟
+    IIC_Delay(IIC_delay_num);
     User_GPIO_set(GPIO_IIC, IIC_SCL, 0);   // 拉低 SCL，结束时钟
     return ack;
-}
-
-void IIC_DummyClock(int Speed)
-{
-    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
-    IIC_SDA_Satar(0);           // 释放 SDA（输入）
-    IIC_Delay(Speed);
-    User_GPIO_set(GPIO_IIC, IIC_SCL, 1);
-    IIC_Delay(Speed);
-    User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
-    IIC_Delay(1);
-    IIC_SDA_Satar(1);
 }
 
 #endif
@@ -123,6 +125,7 @@ void IIC_Write_DATA(uint8_t Data,int Speed)
 {
 #ifdef Exist_IIC
     uint8_t temp;
+    IIC_delay_num = Speed;
     IIC_SDA_Satar (1);
     for (int i = 0; i < 8; i++) {
         User_GPIO_set(GPIO_IIC,IIC_SCL,0);      //准备数据变更
@@ -144,13 +147,16 @@ uint8_t IIC_Read_DATA(int Speed)
 {
     uint8_t temp = 0;
 #ifdef Exist_IIC
+    IIC_delay_num = Speed;
     User_GPIO_set(GPIO_IIC,IIC_SCL,0);      //准备数据变更
     IIC_SDA_Satar (0);
+    IIC_Delay(Speed);
     for (int i = 0; i < 8; i++) {
         User_GPIO_set(GPIO_IIC, IIC_SCL, 1);   // 拉高 SCL
-        IIC_Delay(Speed);
+        IIC_Delay(1);
         if (User_GPIO_get(GPIO_IIC, IIC_SDA))
             temp |= (1 << (7 - i));   // MSB first
+        IIC_Delay(Speed);
         User_GPIO_set(GPIO_IIC, IIC_SCL, 0);
         IIC_Delay(Speed);
     }
@@ -222,7 +228,7 @@ char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char NeedAck,int Length,int S
     }
     else
     {
-        IIC_ASK();
+        IIC_DummyClock(Speed);
         BK = 1;
     }
     for (int i = 0; i < Length; i++)
