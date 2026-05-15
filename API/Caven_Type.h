@@ -47,20 +47,6 @@
 
 #define BUFF_MAX 360
 
-typedef struct
-{
-    uint32_t SYS_Sec;
-    uint32_t SYS_Us;        // 这里最大 1000 000
-}Caven_BaseTIME_Type;
-
-// 颜色 4byte
-typedef struct
-{
-    U8 REG;
-    U8 GREEN;
-    U8 BULE;
-}Caven_Color_Type;
-
 
 // Function
 /*
@@ -84,6 +70,20 @@ typedef void (*Send_pFun) (U8 *data,int length);
 */
 typedef void (*ND_pFun) (int num,void *data);
 
+typedef struct
+{
+    uint32_t SYS_Sec;
+    int SYS_Us;        // 这里最大 1000 000
+}Caven_BaseTIME_Type;
+
+// 颜色 4byte
+typedef struct
+{
+    U8 REG;
+    U8 GREEN;
+    U8 BULE;
+}Caven_Color_Type;
+
 /*
 	这个是给APP做的管理结构体
 1)app_ID 任务ID;layer当前的app的界面;cursor当前界面的光标坐落的选项
@@ -105,9 +105,9 @@ typedef struct
 }Caven_App_Type;
 
 /*
-	x,y 是输入量
-	botton 是按键量
-	value 是其他数据输入 
+	x,y 是输入量;
+	botton 是按键量;
+	value 是其他数据输入;
 */
 typedef struct
 {
@@ -116,5 +116,14 @@ typedef struct
     int Control_botton;
     void *Control_value;
 }Caven_Control_Type;
+
+/*
+	
+*/
+typedef struct
+{
+    void *cache;
+    int len;
+}Caven_Cache_Type;
 
 #endif

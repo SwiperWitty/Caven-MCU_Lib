@@ -25,5 +25,5 @@ typedef struct
 
 int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time);
 struct tm API_UTC_Get_Date (int Unix,int timezone_s);
-
+int Caven_BaseTIME_Diff (Caven_BaseTIME_Type a,Caven_BaseTIME_Type b);
 #endif

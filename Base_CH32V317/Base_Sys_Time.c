@@ -27,9 +27,9 @@ static uint32_t SysTick_Config(uint64_t ticks)
     SysTick->CTLR = (uint32_t)(0x29);
     //    SysTick->CTLR |= (uint32_t)(0x01 << 31);       // 中断触发使能
 
-    s_Frequency = TICK_FREQUENCY;
-    s_Frequency_us = s_Frequency / 1000000;
-    s_Frequency_ms = s_Frequency / 1000;
+    s_Frequency = TICK_FREQUENCY;               // 96m s_Frequency=12000000
+    s_Frequency_us = s_Frequency / 1000000;     // 96m s_Frequency_us=12
+    s_Frequency_ms = s_Frequency / 1000;        // 96m s_Frequency_ms=12000
     return (0);
 }
 
