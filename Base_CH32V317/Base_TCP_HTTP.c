@@ -24,21 +24,17 @@ static char client_send_cache[0x1000];
 static int cache_run = 0;
 static char client_get_cache[1024];
 static int cache_get = 0,cache_read = 0;
-#endif
-/*
 
-*/
 static void Base_TCP_HTTP_GET_Fun (void *data)
 {
-    #if Exist_ETH
     char temp_data = *(char *)data;
     if(cache_get < sizeof(client_get_cache))
     {
         client_get_cache[cache_get ++] = temp_data;
     }
-    #endif
 }
 
+#endif
 
 
 int Base_TCP_HTTP_Config (char *http,int enable)

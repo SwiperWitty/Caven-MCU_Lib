@@ -36,15 +36,17 @@ typedef struct
 
     uint16_t dSize;   //2byte 9
     uint8_t *p_AllData;   // min 12byte buff
-    uint8_t *p_Data;      //
+    uint8_t *p_Data;    //
+    uint8_t Result;   //1byte
     uint16_t get_crc; //2byte
     uint16_t end_crc; //2byte
 
-    uint8_t Result;   //1byte
     int Run_status;
     uint16_t Get_num;
-
     uint8_t Comm_way;
+    uint8_t Occupy;
+
+    Caven_BaseTIME_Type Time;
 }Caven_info_packet_Type;
 
 /*
@@ -149,10 +151,11 @@ typedef enum
 #endif // !BUFF_MAX
 
 int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target);
-int Caven_info_packet_fast_clean_Fun(Caven_info_packet_Type *target);
 
 int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, uint8_t *data);
 int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type target);
+
+Caven_info_packet_Type *Caven_Buff_Request_Occupy_Data (Caven_info_packet_Type *Buff_data,int Buff_Num);
 
 int Caven_Circular_queue_input (Caven_info_packet_Type data,Caven_info_packet_Type *Buff_data,int Buff_Num);
 int Caven_Circular_queue_output(Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num);
@@ -160,6 +163,5 @@ int Caven_Circular_queue_output(Caven_info_packet_Type *data,Caven_info_packet_T
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint8_t data);
 int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, uint8_t *data);
 int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uint8_t Cmd_sub,uint16_t len,uint8_t *data,uint8_t Result,uint8_t *array);
-
 
 #endif
