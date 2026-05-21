@@ -53,7 +53,7 @@ return   : retval
 ** 1.(-0x80 < retval < 0) 协议消息解析错误
 ** 2.retval = -0x80 包里存在协议消息没处理
 ** 3.retval = -0x8F 目标包的指针没有索引
-** 4.retval & 0x50 >= 0 获取到协议消息,可以开始解析，同时(Result & 0x50 > 1)
+** 4.retval = 0xFF获取到协议消息,可以开始解析
 ** 5.retval = 其他   获取中(包含没开始retval = 0)
 ** 示例[5A 00 01 01 01 00 00 EB D5]
 */
@@ -70,7 +70,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
     GX_info_packet_Type temp_packet = *target;
     unsigned char *tepm_pData = temp_packet.p_AllData;
 
-    if (temp_packet.Result & 0x50) /* 目标有数据没处理 */
+    if (temp_packet.Run_status == 0xFF) /* 目标有数据没处理 */
     {
         return (-0x80);
     }
@@ -200,7 +200,6 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
         {
             if (temp_packet.end_crc == temp_packet.get_crc)
             {
-                temp_packet.Result |= 0x50; // crc successful
                 temp_packet.Run_status = 0xff;
             }
             else
@@ -216,7 +215,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
     if (temp_packet.Run_status < 0) // error
     {
         retval = temp_packet.Run_status;
-        GX_info_packet_fast_clean_Fun(target);
+        GX_info_packet_clean_Fun(target);
     }
     else if (temp_packet.Run_status == 0xff) // Successful
     {
@@ -315,6 +314,25 @@ int GX_info_Split_packet_Fun(GX_info_packet_Type const source, unsigned char *da
     return retval;
 }
 
+GX_info_packet_Type *GX_Buff_Request_Occupy_Data (GX_info_packet_Type *Buff_data,int Buff_Num)
+{
+    GX_info_packet_Type *retval = NULL;
+    int temp_num = 1;
+    if(Buff_data == NULL)
+    {
+        return retval;
+    }
+    for(int i = 0; i < Buff_Num; i++)
+    {
+        temp_num = Buff_data[i].Occupy;
+        if(temp_num == 0)
+        {
+            retval = &Buff_data[i];
+            break;
+        }
+    }
+    return retval;
+}
 
 /*
  * 这个函数需要快速响应
@@ -330,7 +348,7 @@ int GX_Circular_queue_input (GX_info_packet_Type data,GX_info_packet_Type *Buff_
     {
 		temp_i = i % Buff_Num;
         temp_packet = Buff_data[temp_i];
-        if (temp_packet.Result & 0x50)
+        if (temp_packet.Run_status == 0XFF)
         {
             retval = (-1);
         }
@@ -364,10 +382,10 @@ int GX_Circular_queue_output (GX_info_packet_Type *data,GX_info_packet_Type *Buf
     for (int i = run_num;i < temp_num;i++)
     {
 		temp_i = i % Buff_Num;
-        if (Buff_data[temp_i].Result & 0x50)
+        if (Buff_data[temp_i].Run_status == 0xFF)
         {
             GX_packet_data_copy_Fun(data,Buff_data[temp_i]);    // 从队列提取数据
-            GX_info_packet_fast_clean_Fun(&Buff_data[temp_i]);
+            GX_info_packet_clean_Fun(&Buff_data[temp_i]);
             retval = temp_i;
 			run_num = retval;
             break;
@@ -423,48 +441,25 @@ int GX_packet_data_copy_Fun(GX_info_packet_Type *source,GX_info_packet_Type targ
 /*
  * fast 主要给中断，这样就不会循环套娃
  */
-int GX_info_packet_fast_clean_Fun(GX_info_packet_Type *target)
+int GX_info_packet_clean_Fun(GX_info_packet_Type *target)
 {
     int retval = 0;
 	if(target != NULL)
 	{
 		target->Head = 0;
 		target->Run_status = 0;
-		target->dSize = 0;
 		target->Get_num = 0;
 		target->end_crc = 0;
 		target->get_crc = 0;
 		target->Comm_way = 0;
 		target->Result = 0;
+        target->Occupy = 0;
+        target->Time.SYS_Sec = 0;
+        target->Time.SYS_Us = 0;
 	}
     return retval;
 }
 
-/*
-Caven_info_packet_clean_Fun
-** clean function
-** 将数据[target]清除，但不解除指针绑定的数据
-传参
-** target ：数据源包(这个包内有指针变量)
-return   : retval
-** retval = 0 索引成功
-*/
-int GX_info_packet_clean_Fun(GX_info_packet_Type *target)
-{
-    int retval = 0;
-    unsigned char *p_data;
-	if(target == NULL)
-		return retval;
-    p_data = target->p_AllData;
-    if (p_data != NULL && (target->Get_num > 0 && target->Get_num < BUFF_MAX))
-    {
-        memset(p_data, 0, target->Get_num);    // 清除指针内容,内容的长度依据是[Get_num]
-    }
-    GX_info_packet_fast_clean_Fun(target);
-    // memset(target, 0, sizeof(GX_info_packet_Type));
-    // target->p_AllData = p_data;
-    return retval;
-}
 /*
  * 1此函数
  */
