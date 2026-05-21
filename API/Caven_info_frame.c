@@ -45,8 +45,6 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         if (temp_packet.Head == standard.Head)
         {
             temp_packet.Get_num = 0;
-            temp_packet.dSize = 0;
-            temp_packet.get_crc = 0;
             temp_packet.end_crc = 0;
             temp_packet.p_Data = NULL;
             tepm_pData[temp_packet.Get_num++] = (temp_packet.Head >> 8) & 0x00ff;
@@ -153,7 +151,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         *target = temp_packet;
         retval = temp_packet.Run_status;
     }
-    else // doing
+    else if(temp_packet.Run_status >= 0) // doing
     {
         *target = temp_packet;
         retval = temp_packet.Run_status;

@@ -88,7 +88,6 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
         temp_packet.Head = data;
         if (temp_packet.Head == standard.Head)
         {
-            temp_packet.get_crc = 0;
             temp_packet.end_crc = 0;
             temp_packet.Get_num = 0;
             tepm_pData[temp_packet.Get_num++] = temp_packet.Head;
@@ -230,7 +229,7 @@ int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_T
         *target = temp_packet;
         retval = temp_packet.Run_status;
     }
-    else // doing
+    else if(temp_packet.Run_status > 0) // doing(x0)
     {
         *target = temp_packet;
         retval = temp_packet.Run_status;
