@@ -147,13 +147,11 @@ int GX_info_packet_clean_Fun(GX_info_packet_Type *target);
 int GX_info_packet_index_Fun(GX_info_packet_Type *target, unsigned char *data);
 int GX_packet_data_copy_Fun(GX_info_packet_Type *source,GX_info_packet_Type target);
 
-int GX_Circular_queue_input (GX_info_packet_Type data,GX_info_packet_Type *Buff_data,char Buff_Num);
-int GX_Circular_queue_output(GX_info_packet_Type *data,GX_info_packet_Type *Buff_data,char Buff_Num);
-
 int GX_info_Make_packet_Fun(GX_info_packet_Type const standard, GX_info_packet_Type *target, unsigned char data);
 int GX_info_Split_packet_Fun(GX_info_packet_Type const source, unsigned char *data);
 int GX_info_return_Fun (uint8_t cmd,uint8_t MID,uint8_t addr,uint8_t *data,uint16_t len,uint8_t *array);
 GX_info_packet_Type *GX_Buff_Request_Occupy_Data (GX_info_packet_Type *Buff_data,int Buff_Num);
+GX_info_packet_Type *GX_Buff_Request_Full_Data (GX_info_packet_Type *Buff_data,int Buff_Num);
 
 void GX_info_remove_addr (GX_info_packet_Type *target);
 void GX_info_add_addr (GX_info_packet_Type *target);

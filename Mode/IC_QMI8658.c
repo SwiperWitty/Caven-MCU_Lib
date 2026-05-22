@@ -4,7 +4,9 @@
 
 
 //#define QMI8658_UINT_MG_DPS
+#ifndef  M_PI
 #define M_PI			(3.14159265358979323846f)
+#endif
 #define ONE_G			(9.807f)
 #define QFABS(x)		(((x)<0.0f)?(-1.0f*(x)):(x))
 
@@ -27,7 +29,7 @@ uint8_t qmi8658_write_reg(unsigned char reg, unsigned char value)
 uint8_t qmi8658_write_regs(unsigned char reg, unsigned char *value, unsigned char len)
 {
 	int retval = 0;
-	Base_IIC_Send_DATA(QMI8658_SLAVE_ADDR,reg,1,sizeof(reg),10,1);
+	Base_IIC_Send_DATA(QMI8658_SLAVE_ADDR,&reg,1,sizeof(reg),10,1);
     Base_IIC_Send_DATA(QMI8658_SLAVE_ADDR,value,1,len,10,0);
 	return retval;
 }

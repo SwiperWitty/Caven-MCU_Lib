@@ -105,14 +105,15 @@ struct tm API_UTC_Get_Date (int Unix,int timezone_s)
 int Caven_BaseTIME_Diff (Caven_BaseTIME_Type a,Caven_BaseTIME_Type b)
 {
     int retval = 0;
-    int diff_time = a.SYS_Sec - b.SYS_Sec;
-    if(diff_time)
+    uint32_t diff_time = 0;
+    if(a.SYS_Sec < b.SYS_Sec)
     {
         retval = -1;
         return retval;
     }
     else
     {
+        diff_time = a.SYS_Sec - b.SYS_Sec;
         if(diff_time > 1000)
         {
             diff_time = 1000;
@@ -121,15 +122,9 @@ int Caven_BaseTIME_Diff (Caven_BaseTIME_Type a,Caven_BaseTIME_Type b)
         {
             diff_time *= 1000000;
         }
-        diff_time += a.SYS_Us - b.SYS_Us;
-        if(diff_time < 0)
-        {
-            retval = -1;
-        }
-        else
-        {
-            retval = diff_time;
-        }
+        diff_time += a.SYS_Us;
+        diff_time -= b.SYS_Us;
+        retval = diff_time & 0xffffff;
     }
     return retval;
 }

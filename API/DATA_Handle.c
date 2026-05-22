@@ -1,5 +1,4 @@
 #include "Data_Handle.h"
-#include "debug_log.h"
 
 int Caven_Hex_To_String (uint8_t *array,int len,char *ret_str)
 {
@@ -162,7 +161,6 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
     if (str_pointer != NULL)
     {
         str_len = strlen(sign_str);
-        // debug_log(LOG_Info,TAG,"file gain 1 ->%s",str_pointer);
         if (sign == 0)
         {
             temp_num = atoi(str_pointer+str_len);   // 指针偏移
@@ -187,7 +185,6 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
                         {
                             memcpy(pData,temp_pointer+1,temp_num-1);
                             pData[temp_num-1] = '\0';
-                            // debug_log(LOG_Info,TAG,"file gain 2 ->%s",temp_pointer);
                         }
                         retval = temp_pointer - file;
                     }
@@ -215,7 +212,6 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
                         {
                             memcpy(pData,temp_pointer+1,temp_num-1);
                             pData[temp_num-1] = '\0';
-                            // debug_log(LOG_Info,TAG,"file gain 2 ->%s",temp_pointer);
                         }
                         retval = temp_pointer - file;
                     }
@@ -226,10 +222,6 @@ int Caven_gain_str_by_sign(char *file,int file_len,char *pData,char *sign_str,ch
                 }
             }
         }
-        // debug_log(LOG_Info,"data","file gain file[%s]",file);
-        // debug_log(LOG_Info,"data","file gain sign_str[%s]",sign_str);
-        // debug_log(LOG_Info,"data","file gain sign ascii num[%d]",sign);
-        // debug_log(LOG_Info,"data","file gain retval[%d] pData->%s\n",retval,pData);
     }
     return retval;
 }
@@ -259,7 +251,6 @@ int Caven_Str_To_ip (char *str,uint8_t *ip,int IpSize)
             {
                 ip[temp_run++] = atoi(temp_array) & 0xff;
                 temp_pointer += offset + 1;     // skip '.'
-                // debug_log(LOG_Info,"Caven_Str_To_ip","temp_array->%s",temp_array);
             }
             else
             {

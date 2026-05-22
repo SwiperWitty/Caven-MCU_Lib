@@ -327,67 +327,37 @@ GX_info_packet_Type *GX_Buff_Request_Occupy_Data (GX_info_packet_Type *Buff_data
         if(temp_num == 0)
         {
             retval = &Buff_data[i];
+            retval->Occupy = 1;
+            retval->Head = 0;
             break;
-        }
-    }
-    return retval;
-}
-
-/*
- * 这个函数需要快速响应
- */
-int GX_Circular_queue_input (GX_info_packet_Type data,GX_info_packet_Type *Buff_data,char Buff_Num)
-{
-    int retval = 0;
-	int temp_num = 0,temp_i = 0;
-	static int run_num = 0;
-    GX_info_packet_Type temp_packet;
-	temp_num = run_num + Buff_Num;
-    for (int i = run_num;i < temp_num;i++)
-    {
-		temp_i = i % Buff_Num;
-        temp_packet = Buff_data[temp_i];
-        if (temp_packet.Run_status == 0XFF)
-        {
-            retval = (-1);
         }
         else
         {
-            GX_packet_data_copy_Fun(&Buff_data[temp_i],data);    // 载入数据到队列
-            retval = temp_i;
-			run_num = retval;
-            break;
+            retval = NULL;
         }
     }
     return retval;
 }
 
-/*
- * retval = (-1):没有要处理的数据
- * retval = other:有
- *
- */
-int GX_Circular_queue_output (GX_info_packet_Type *data,GX_info_packet_Type *Buff_data,char Buff_Num)
+GX_info_packet_Type *GX_Buff_Request_Full_Data (GX_info_packet_Type *Buff_data,int Buff_Num)
 {
-    int retval = 0;
-    int temp_num = 0,temp_i = 0;
-	static int run_num = 0;
-    if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
+    GX_info_packet_Type *retval = NULL;
+    int temp_num = 1;
+    if(Buff_data == NULL)
     {
-        retval = -2;
         return retval;
     }
-	temp_num = run_num + Buff_Num;
-    for (int i = run_num;i < temp_num;i++)
+    for(int i = 0; i < Buff_Num; i++)
     {
-		temp_i = i % Buff_Num;
-        if (Buff_data[temp_i].Run_status == 0xFF)
+        temp_num = Buff_data[i].Run_status;
+        if(temp_num == 0xff)
         {
-            GX_packet_data_copy_Fun(data,Buff_data[temp_i]);    // 从队列提取数据
-            GX_info_packet_clean_Fun(&Buff_data[temp_i]);
-            retval = temp_i;
-			run_num = retval;
+            retval = &Buff_data[i];
             break;
+        }
+        else
+        {
+            retval = NULL;
         }
     }
     return retval;
@@ -445,6 +415,7 @@ int GX_info_packet_clean_Fun(GX_info_packet_Type *target)
     int retval = 0;
 	if(target != NULL)
 	{
+        target->Occupy = 0;
 		target->Head = 0;
 		target->Run_status = 0;
 		target->Get_num = 0;
@@ -452,7 +423,6 @@ int GX_info_packet_clean_Fun(GX_info_packet_Type *target)
 		target->get_crc = 0;
 		target->Comm_way = 0;
 		target->Result = 0;
-        target->Occupy = 0;
         target->Time.SYS_Sec = 0;
         target->Time.SYS_Us = 0;
 	}

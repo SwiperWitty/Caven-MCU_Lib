@@ -45,7 +45,7 @@ typedef struct
     uint16_t Get_num;
     uint8_t Comm_way;
     uint8_t Occupy;
-
+    uint8_t temp_num;
     Caven_BaseTIME_Type Time;
 }Caven_info_packet_Type;
 
@@ -156,9 +156,7 @@ int Caven_info_packet_index_Fun(Caven_info_packet_Type *target, uint8_t *data);
 int Caven_packet_data_copy_Fun(Caven_info_packet_Type *source,Caven_info_packet_Type target);
 
 Caven_info_packet_Type *Caven_Buff_Request_Occupy_Data (Caven_info_packet_Type *Buff_data,int Buff_Num);
-
-int Caven_Circular_queue_input (Caven_info_packet_Type data,Caven_info_packet_Type *Buff_data,int Buff_Num);
-int Caven_Circular_queue_output(Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num);
+Caven_info_packet_Type *Caven_Buff_Request_Full_Data (Caven_info_packet_Type *Buff_data,int Buff_Num);
 
 int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info_packet_Type *target, uint8_t data);
 int Caven_info_Split_packet_Fun(Caven_info_packet_Type const source, uint8_t *data);

@@ -231,68 +231,34 @@ Caven_info_packet_Type *Caven_Buff_Request_Occupy_Data (Caven_info_packet_Type *
         if(temp_num == 0)
         {
             retval = &Buff_data[i];
+            retval->Occupy = 1;
+            retval->Head = 0;
+            retval->temp_num = i;
             break;
         }
     }
     return retval;
 }
 
-/*
- * retval = (-1):队列满载，拒绝载入
- * 这个函数需要快速响应
- */
-int Caven_Circular_queue_input (Caven_info_packet_Type data,Caven_info_packet_Type *Buff_data,int Buff_Num)
+Caven_info_packet_Type *Caven_Buff_Request_Full_Data (Caven_info_packet_Type *Buff_data,int Buff_Num)
 {
-    int retval = 0;
-	int temp_num = 0,temp_i = 0;
-	static int run_num = 0;
-    Caven_info_packet_Type temp_packet;
-	temp_num = run_num + Buff_Num;
-    for (int i = run_num;i < temp_num;i++)
+    Caven_info_packet_Type *retval = NULL;
+    int temp_num = 1;
+    if(Buff_data == NULL)
     {
-		temp_i = i % Buff_Num;
-        temp_packet = Buff_data[temp_i];
-        if (temp_packet.Run_status == 0xff)
+        return retval;
+    }
+    for(int i = 0; i < Buff_Num; i++)
+    {
+        temp_num = Buff_data[i].Run_status;
+        if(temp_num == 0xff)
         {
-            retval = (-1);
+            retval = &Buff_data[i];
+            break;
         }
         else
         {
-            Caven_packet_data_copy_Fun(&Buff_data[temp_i],data);    // 载入数据到队列
-            retval = temp_i;
-			run_num = retval;
-            break;
-        }
-    }
-    return retval;
-}
-
-/*
- * retval = (-1):没有要处理的数据
- * retval = other:有
- *
- */
-int Caven_Circular_queue_output (Caven_info_packet_Type *data,Caven_info_packet_Type *Buff_data,int Buff_Num)
-{
-    int retval = 0;
-    int temp_num = 0,temp_i = 0;
-	static int run_num = 0;
-    if (data == NULL || Buff_data == NULL || Buff_Num <= 0)
-    {
-        retval = -2;
-        return retval;
-    }
-	temp_num = run_num + Buff_Num;
-    for (int i = run_num;i < temp_num;i++)
-    {
-		temp_i = i % Buff_Num;
-        if (Buff_data[temp_i].Run_status == 0xff)
-        {
-            Caven_packet_data_copy_Fun(data,Buff_data[temp_i]);    // 从队列提取数据
-            Caven_info_packet_clean_Fun(&Buff_data[temp_i]);
-            retval = temp_i;
-			run_num = retval;
-            break;
+            retval = NULL;
         }
     }
     return retval;
