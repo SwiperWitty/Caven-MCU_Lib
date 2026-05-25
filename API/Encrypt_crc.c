@@ -91,7 +91,7 @@ int Encrypt_ModBus_CRC16_Fun(uint8_t *data, int len)
     return CRC16;
 }
 
-#if AES
+#ifdef AES
 
 #define AES_KEY_LENGTH 128
 
@@ -618,11 +618,13 @@ void AES_Init(const void *pKey)
 
 void Encrypt_AES_set_key (char *key_str)
 {
+#ifdef AES
     int temp_num = strlen(key_str);
     if (key_str != NULL && temp_num < sizeof(AES_KeyTable))
     {
         memcpy(AES_KeyTable,key_str,temp_num);
     }
+#endif
 }
 
 /*
@@ -634,7 +636,7 @@ void Encrypt_AES_set_key (char *key_str)
 */
 uint8_t Encrypt_AES_decrypt_Fun(uint8_t *data, uint16_t data_length, uint8_t *ret_data, uint16_t *ret_length)
 {
-#if AES
+#ifdef AES
 //    uint16_t temp_len = data_length + 100;
     // uint8_t *decrypt_result = malloc(temp_len);
     // uint8_t *array = malloc((data_length / 2) + 2);
@@ -686,7 +688,7 @@ uint8_t Encrypt_AES_decrypt_Fun(uint8_t *data, uint16_t data_length, uint8_t *re
 int Encrypt_AES_unpack_Fun (uint8_t *source, uint16_t len,uint8_t *ret_data,uint8_t *pIV)
 {
     int retval = 0;
-#if AES
+#ifdef AES
     int temp_num = 0;
     char temp_str[100];
     if (ret_data == NULL)
