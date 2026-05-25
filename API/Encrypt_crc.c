@@ -701,8 +701,8 @@ int Encrypt_AES_unpack_Fun (uint8_t *source, uint16_t len,uint8_t *ret_data,uint
     AES_Encrypt((uint8_t *)temp_str, ret_data, temp_num, NULL);
 
     retval = temp_num;
-    return retval;
 #endif //
+	return retval;
 }
 
 

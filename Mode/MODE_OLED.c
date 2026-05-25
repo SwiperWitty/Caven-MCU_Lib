@@ -1,11 +1,12 @@
 #include "MODE_OLED.h"
-#include "oledfont.h" // 字库
+
 
 uint16_t OLED_W_Max = 0;
 uint16_t OLED_H_Max = 0;
 int OLED_PicSize = 0;
 
 #if Exist_OLED
+#include "oledfont.h" // 字库
 
 uint8_t OLED_addr = 0x78;		// 0x3c 0x78 
 uint8_t OLED_GRAM[144][8];

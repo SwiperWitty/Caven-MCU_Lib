@@ -1,5 +1,5 @@
 #include "MODE_LCD.h"
-#include "lcdfont.h" // 字库
+
 
 uint16_t LCD_Back_Color = 0xFFFF; // 背景色
 uint16_t LCD_Word_Color = LCD_GRAY;
@@ -10,6 +10,7 @@ int LCD_PicSize = 0;
 
 
 #if Exist_LCD
+#include "lcdfont.h" // 字库
 static char LCD_Target_Model = 0;
 static char LCD_Horizontal = 0;
 

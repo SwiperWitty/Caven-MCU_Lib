@@ -113,6 +113,8 @@ void SYS_Feed_Watchdog (void)
 void SYS_Delay_us(int n)
 {
 #if Exist_SYS_TIME
+	if (s_Tick_init == 0)
+		return;
     n = MIN(5000,n);
     uint32_t set_Tick_cnt = n * s_Frequency_us;
     uint64_t start_Tick_cnt;
