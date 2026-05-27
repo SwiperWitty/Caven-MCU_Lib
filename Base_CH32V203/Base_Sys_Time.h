@@ -68,7 +68,7 @@ typedef struct
 typedef struct
 {
     volatile uint32_t SYS_Sec;
-    volatile uint32_t SYS_Us;       // 这里最大 1000 000
+    volatile int SYS_Us;       // 这里最大 1000 000
 }SYS_BaseTIME_Type;
 
 void SYS_Time_Init(int Set);

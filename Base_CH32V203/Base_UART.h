@@ -59,14 +59,14 @@ void UART4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 #endif
 
 #ifdef Exist_UART
-    #define DMA_UART
+    #define DMA_UART        1
     #define UART_BUFF_MAX   500
 #endif
 
 // fun
 int Base_UART_Init(UART_mType Channel,int Baud,int Set);
 void Base_UART_Send_Data(UART_mType Channel,uint16_t Data);
-void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length);
+void Base_UART_DMA_Send_Buff(UART_mType Channel,const uint8_t *Data,int Length);
 
 /*
  * 接收入口的状态机，这个很重要
