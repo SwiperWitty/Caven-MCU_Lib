@@ -9,27 +9,27 @@
 //* 底层 *//
 
 #ifdef Exist_SYS_TIME
-static volatile uint64_t s_Tick_cnt;
-static volatile uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
-static volatile uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
-static volatile uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
-static uint32_t s_Tick_flag = 0;
+static uint64_t s_Tick_cnt;
+static uint32_t s_Frequency;        //1s s_Tick_cnt 跑的数量,也就是 tick的频率
+static uint32_t s_Frequency_us;     //1us s_Tick_cnt 跑的数量
+static uint32_t s_Frequency_ms;     //1ms s_Tick_cnt 跑的数量
 
 static uint32_t SysTick_Config(uint64_t ticks)
 {
+    // STK_CTLR = SysTick->CTLR
     SysTick->CTLR = (uint32_t)0x00; // 关闭系统计数器STK，计数器停止计数
 
     SysTick->SR = (uint32_t)0;
     SysTick->CNT = (uint64_t)0;
     SysTick->CMP = ticks;
-    //    NVIC_SetPriority(SysTicK_IRQn, 15);       // 设置SysTick中断优先级
-    //    NVIC_EnableIRQ(SysTicK_IRQn);             // 使能开启Systick中断
-    SysTick->CTLR = (uint32_t)(0x29);
+    //    NVIC_SetPriority(SysTicK_IRQn, 15);       //设置SysTick中断优先级
+    //    NVIC_EnableIRQ(SysTicK_IRQn);             //使能开启Systick中断
+    SysTick->CTLR = (uint32_t)(0x29); // [向上计数] [0x29:8分频  0x2D:不开中断] 0x2F:开中断
     //    SysTick->CTLR |= (uint32_t)(0x01 << 31);       // 中断触发使能
 
-    s_Frequency = TICK_FREQUENCY;               // 96m s_Frequency=12000000
-    s_Frequency_us = s_Frequency / 1000000;     // 96m s_Frequency_us=12
-    s_Frequency_ms = s_Frequency / 1000;        // 96m s_Frequency_ms=12000
+    s_Frequency = TICK_FREQUENCY;
+    s_Frequency_us = s_Frequency / 1000000;
+    s_Frequency_ms = s_Frequency / 1000;
     return (0);
 }
 
@@ -37,9 +37,7 @@ static uint32_t SysTick_Config(uint64_t ticks)
 
 void SYS_Time_Init(int Set)
 {
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-    __enable_irq();
-    SystemCoreClockUpdate();
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
 #ifdef Exist_SYS_TIME
     if (Set)
     {
@@ -50,7 +48,6 @@ void SYS_Time_Init(int Set)
     {
         SysTick->CTLR = (uint32_t)0x00;
     }
-    s_Tick_flag = MIN(Set,1);
 #endif
 }
 
@@ -105,10 +102,6 @@ void SYS_Base_Delay(int time, int speed)
 {
 #ifdef NOP
     volatile int temp;
-    if(s_Tick_flag == 0)
-    {
-        return;
-    }
     for (int i = 0; i < time; ++i)
     {
         temp = speed; // SET
@@ -123,10 +116,6 @@ void SYS_Base_Delay(int time, int speed)
 void SYS_Delay_us(int n)
 {
 #ifdef Exist_SYS_TIME
-    if(s_Tick_flag == 0)
-    {
-        return;
-    }
     n = MIN(5000,n);
     uint32_t set_time = n * s_Frequency_us;
     s_Tick_cnt = SYSTICK_NUM;
@@ -150,10 +139,6 @@ void SYS_Delay_us(int n)
 void SYS_Delay_ms(int n)
 {
 #ifdef Exist_SYS_TIME
-    if(s_Tick_flag == 0)
-    {
-        return;
-    }
     n = MIN(5000,n);
     uint32_t set_time = n * s_Frequency_ms;      /* 其实u32 顶这个64位的8分频也只能顶 10s左右   */
     s_Tick_cnt = SYSTICK_NUM;
@@ -176,13 +161,10 @@ void SYS_Delay_ms(int n)
 
 void SYS_Delay_S(int n)
 {
-    if(s_Tick_flag == 0)
-    {
-        return;
-    }
     for (int var = 0; var < n; ++var)
     {
         SYS_Delay_ms(1000);
+//        printf("1S \r\n");
     }
 }
 

@@ -5,7 +5,7 @@
  */
 #include "Base_USB.h"
 
-#if Exist_USB
+#ifdef Exist_USB
 extern uint8_t HIDTxBuffer[];
 
 extern uint8_t HIDKey[];
@@ -21,7 +21,7 @@ void usb_delay (int times)
 int USB_User_init (int Set)
 {
     int retval = 0;
-#if Exist_USB
+#ifdef Exist_USB
     if(usb_init_flag)
     {
         return retval;
@@ -48,7 +48,7 @@ int USB_User_init (int Set)
 int USB_User_State_Get  (void)
 {
     int retval = 0;
-#if Exist_USB
+#ifdef Exist_USB
     if (usb_init_flag) {
         retval = USB_State_Get();
     }
@@ -60,7 +60,7 @@ int USB_User_State_Get  (void)
 int USB_Keyboard_Send_Data (char *data, int size)
 {
     int retval = 1;
-#if Exist_USB
+#ifdef Exist_USB
     int temp = size;
     int num = 0;
     if (USB_User_State_Get() == 0) {
@@ -103,7 +103,7 @@ int USB_Keyboard_Send_String (char *string)
 int USB_Buffer_Send (const uint8_t *data,int size)
 {
     int retval = 1;
-#if Exist_USB
+#ifdef Exist_USB
     int temp = size;
     int num = 0;
     if (USB_User_State_Get() == 0) {

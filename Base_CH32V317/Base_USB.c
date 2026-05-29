@@ -129,7 +129,7 @@ int USB_Send_Data (const uint8_t *data,int size)
             num = (DEF_USBD_FS_PACK_SIZE - 1);
         }
         /* Upload packet via USB. */
-        if (num)
+        if (num > 0)
         {
             USBFSD->UEP2_DMA = (uint16_t)(uint32_t)USBFS_EP2_Buf;
             memset(USBFS_EP2_Buf,0,DEF_USB_EP2_FS_SIZE);

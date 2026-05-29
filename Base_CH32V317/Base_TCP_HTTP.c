@@ -86,7 +86,7 @@ int Base_TCP_HTTP_cache_Read_Fun (char *data,int len_max)
 {
     int retval = 0;
     #if Exist_ETH
-    if(data != NULL && len_max > 0 && cache_get)
+    if(data != NULL && len_max > 0 && cache_get > 0)
     {
         retval = cache_get;
         if(len_max < cache_get)

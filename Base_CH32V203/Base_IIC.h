@@ -19,18 +19,18 @@
 #ifdef Exist_IIC
 #include "Base_GPIO.h"
 
-#define IIC_Base_Speed  10
+#define IIC_Base_Speed  20
 
 //
 #define IIC_CONFIG      0       // L 上升沿读取
-#define IIC_SCL         6   // GPIO_Pin_10
-#define IIC_SDA         7   // GPIO_Pin_11
+#define IIC_SCL         10   // GPIO_Pin_10
+#define IIC_SDA         11   // GPIO_Pin_11
 #define GPIO_IIC        2
 
 #endif
 //
 
-int Base_IIC_Init(int set);
+void Base_IIC_Init(int set);
 char Base_IIC_Send_DATA(char Addr,const uint8_t *Data,char ACK,int Length,int Speed,char continuous);
 char Base_IIC_Receive_DATA(char Addr,uint8_t *Data,char ACK,int Length,int Speed);
 

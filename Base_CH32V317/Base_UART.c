@@ -283,7 +283,7 @@ void Base_UART_DMA_Send_Buff(UART_mType Channel,const uint8_t *Data,int Length)
     int temp_num = 0,temp_run = Length;
     while(temp_run > 0)
     {
-        temp_num = Length - 0;
+        temp_num = temp_run;
         if(temp_num > UART_BUFF_MAX)
         {
             temp_num = UART_BUFF_MAX;

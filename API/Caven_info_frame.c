@@ -156,6 +156,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         *target = temp_packet;
         retval = temp_packet.Run_status;
     }
+    tepm_pData = NULL;
     return retval;
 }
 
@@ -214,7 +215,7 @@ int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uin
         array[retval++] = (temp_num >> 8) & 0xff;
         array[retval++] = temp_num & 0xff;
     }
-    return retval;
+    return retval & 0x00ffffff;
 }
 
 Caven_info_packet_Type *Caven_Buff_Request_Occupy_Data (Caven_info_packet_Type *Buff_data,int Buff_Num)
