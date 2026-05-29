@@ -284,7 +284,7 @@ void MODE_st7789_drive_Send_Data(uint8_t *data, int num)
     EPS_SPI_SendData(data, num, 1);
 #else
     #if 1
-    Base_SPI_DMA_Send_Buff(m_SPI_CH2, data, num);
+    Base_SPI_DMA_Send_Data(m_SPI_CH2, data, num);
     #else
     for(int i = 0; i < num; i++)
     {
