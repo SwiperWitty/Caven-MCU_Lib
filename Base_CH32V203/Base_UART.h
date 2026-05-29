@@ -59,7 +59,7 @@ void UART4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 #endif
 
 #ifdef Exist_UART
-    #define DMA_UART
+    #define DMA_UART        1
     #define UART_BUFF_MAX   500
 #endif
 
