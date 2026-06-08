@@ -10,6 +10,9 @@
 #include "Caven_Type.h"
 
 #define CAVEN_EVENTS_MAX    20
+#define CAVEN_EVENTS_ALIVE  0x80
+#define CAVEN_EVENTS_RUN    0x40
+#define CAVEN_EVENTS_STOP   0x00
 
 /*
     此结构体包含指针变量，所以此结构体需要初始化其中的指针。
@@ -27,6 +30,7 @@ typedef struct
 int Caven_new_event_Fun(Caven_event_Type *events,D_pFun event_pFun,int *handle);
 int Caven_delete_event_Fun(Caven_event_Type *events,int *handle);
 
+int Caven_suspend_event_Fun(Caven_event_Type *events,int *handle,int status);
 int Caven_trigger_event_Fun(Caven_event_Type *events,int const handle,char data);
 
 int Caven_handle_event_Fun(Caven_event_Type *events);
