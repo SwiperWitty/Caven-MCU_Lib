@@ -12,7 +12,7 @@ static u8 client_init_flag = 0;
 static u8 client_con = 0;
 static u8 *Socket_ptr;                      // socket receive buffer
 static u8 (*Socket_buff)[RECE_BUF_LEN];     // socket receive buffer
-static D_pFun client_receive_fun = NULL;
+static iD_pFun client_receive_fun = NULL;
 
 static char client_ip[40];
 static char client_port[40];
@@ -113,7 +113,7 @@ int Base_TCP_Client_Send (uint8_t *data, int len)
     return retval;
 }
 
-void Base_TCP_Client_Receive_Bind_Fun (D_pFun Fun)
+void Base_TCP_Client_Receive_Bind_Fun (iD_pFun Fun)
 {
     client_receive_fun = Fun;
 }

@@ -7,7 +7,7 @@
 #else
 #define Exist_CAN   1
 #define CAN_MODE    1
-typedef void (*D_pFun) (void *data);
+typedef void (*iD_pFun) (void *data);
 #include "ch32v30x_can.h"
 
 typedef unsigned char u8;
@@ -49,6 +49,6 @@ int Base_CAN_Get_RXId (void);
  * 在初始化之后执行一次
  * 不可用阻塞
  */
-int CAN_Receive_Bind_Fun(D_pFun Data_pFun);
+int CAN_Receive_Bind_Fun(iD_pFun Data_pFun);
 
 #endif

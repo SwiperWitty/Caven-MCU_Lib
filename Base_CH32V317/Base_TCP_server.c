@@ -15,7 +15,7 @@ static u8 tcp_server_break_off = 0;
 static int server_port = 0;
 static u8 *Socket_ptr;                      // socket receive buffer
 static u8 (*Socket_buff)[RECE_BUF_LEN];     // socket receive buffer
-static D_pFun server_receive_fun = NULL;
+static iD_pFun server_receive_fun = NULL;
 
 void Base_TCP_Server_link (void)
 {
@@ -101,7 +101,7 @@ int Base_TCP_Server_Send (u8 *data, int len)
     return retval;
 }
 
-void Base_TCP_Server_Receive_Bind_Fun (D_pFun Fun)
+void Base_TCP_Server_Receive_Bind_Fun (iD_pFun Fun)
 {
     server_receive_fun = Fun;
 }

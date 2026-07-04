@@ -22,7 +22,8 @@ typedef struct
     void (*Send_String_pFun)(char Channel, const char *String);
     void (*Send_Data_pFun)(char Channel, const U8 *Data, int Length);
     
-    void (*Receive_Bind_pFun)(char Channel, D_pFun UART_pFun);
+    void (*Receive_Bind_pFun)(char Channel, iD_pFun UART_pFun);
+    void (*Receive_Poll_Task_pFun)(void);
 }MODE_UART_Way;
 
 
@@ -34,6 +35,7 @@ void MODE_UART_DMA_Send_Data_Fun(char Channel, const U8 *Data, int Length);
 
 void MODE_UART_Send_String_Fun(char Channel, const char *String);
 
-void MODE_UART_Receive_Bind_Fun(char Channel, D_pFun UART_pFun);
+void MODE_UART_Receive_Bind_Fun(char Channel, iD_pFun UART_pFun);
+void MODE_UART_Receive_Poll_Task_Fun(void);
 
 #endif

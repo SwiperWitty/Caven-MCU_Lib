@@ -78,6 +78,7 @@ static void Mode_Use_index(void)    // 索引 功能函数 本体
 	Mode_Use.UART.Send_Data_pFun = MODE_UART_DMA_Send_Data_Fun;
     Mode_Use.UART.Send_String_pFun = MODE_UART_Send_String_Fun;
     Mode_Use.UART.Receive_Bind_pFun = MODE_UART_Receive_Bind_Fun;
+    Mode_Use.UART.Receive_Poll_Task_pFun = MODE_UART_Receive_Poll_Task_Fun;
 #endif
 
 #if Exist_USB

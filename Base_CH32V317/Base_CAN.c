@@ -6,8 +6,8 @@ int CAN_rx_Id = 0;
 int CAN_Filter[5] = {0};
 int CAN_Range[2] = {0,0x0f};
 
-D_pFun CAN_Receive_pFun = NULL;
-int CAN_Receive_Bind_Fun(D_pFun Data_pFun)
+iD_pFun CAN_Receive_pFun = NULL;
+int CAN_Receive_Bind_Fun(iD_pFun Data_pFun)
 {
     int retval = 0;
     CAN_Receive_pFun = Data_pFun;

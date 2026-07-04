@@ -50,10 +50,17 @@ void MODE_UART_Send_String_Fun(char Channel, const char *String)
     MODE_UART_DMA_Send_Data_Fun(Channel,(U8 *)String,Length);
 }
 
-void MODE_UART_Receive_Bind_Fun(char Channel, D_pFun UART_pFun)
+void MODE_UART_Receive_Bind_Fun(char Channel, iD_pFun UART_pFun)
 {
 #if Exist_UART
     State_Machine_Bind ((UART_mType)Channel,UART_pFun);
+#endif
+}
+
+void MODE_UART_Receive_Poll_Task_Fun (void)
+{
+#if Exist_UART
+    Base_UART_Recv_Poll_Task ();
 #endif
 }
 

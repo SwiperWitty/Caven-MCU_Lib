@@ -19,7 +19,7 @@
 /* Global */
 const uint8_t    *pUSBFS_Descr;
 
-D_USB_pFun  usb_callbk_pFun = NULL;
+iD_USB_pFun usb_callbk_pFun = NULL;
 volatile uint8_t HID_Set_Report_Flag = 0x00;               // HID SetReport flag
 uint8_t HID_Report_EP0_Buffer[DEF_USBD_UEP0_SIZE];
 extern void usb_delay (int times);

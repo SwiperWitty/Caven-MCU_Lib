@@ -148,7 +148,7 @@ int USB_Send_Data (const uint8_t *data,int size)
     return retval;
 }
 
-int USB_Callback_Bind (D_pFun USB_Callback_pFun)
+int USB_Callback_Bind (iD_pFun USB_Callback_pFun)
 {
     int retval = 0;
 #ifdef Exist_USB

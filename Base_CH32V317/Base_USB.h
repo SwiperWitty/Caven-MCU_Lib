@@ -16,7 +16,7 @@ typedef struct
     int (*Keyboard_Send_Data) (char *data, int size);
     //custom
     int (*Send_Data_pFun) (const uint8_t *data,int size);
-    int (*Receive_Bind_pFun) (D_pFun USB_Callback_pFun);
+    int (*Receive_Bind_pFun) (iD_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
 #endif
@@ -28,7 +28,7 @@ int USB_Keyboard_Send_String (char *string);
 int USB_Keyboard_Send_Data (char *data, int size);
 //custom
 int USB_Send_Data (const uint8_t *data,int size);        // 有缓冲的发送
-int USB_Callback_Bind (D_pFun USB_Callback_pFun);
+int USB_Callback_Bind (iD_pFun USB_Callback_pFun);
 int USB_Buffer_Receive (uint8_t *data);
 
 int USB_User_State_Get (void);

@@ -12,7 +12,7 @@
 
 int Base_TCP_Server_Config (char *port_str,int break_off,int enable);
 int Base_TCP_Server_Send (uint8_t *data, int len);
-void Base_TCP_Server_Receive_Bind_Fun (D_pFun Fun);
+void Base_TCP_Server_Receive_Bind_Fun (iD_pFun Fun);
 
 void Base_TCP_Server_Task (u8 sock,u8 intstat);
 
