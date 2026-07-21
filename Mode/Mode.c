@@ -1,10 +1,5 @@
 #include "Mode.h"
 
-#ifdef STB_SPRINTF_IMPLEMENTATION
-#include "stb_sprintf.h"
-#include "stdarg.h"
-#endif
-
 struct _Mode_Init Mode_Init;
 struct _Mode_Use Mode_Use;          // 结构体实体
 

@@ -88,7 +88,13 @@
 #include "IC_QMI8658.h"
 #endif
 
+#if Exist_W25Q_DRV
+#include "IC_W25Q_drive.h"
+#endif
+
+#if Exist_AS608
 #include "IC_AS608.h"
+#endif
 
 /*
     SDK->Items->GPIO(Exist_GPIO)->BASE->

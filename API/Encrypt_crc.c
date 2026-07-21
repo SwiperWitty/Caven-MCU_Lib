@@ -91,6 +91,61 @@ int Encrypt_ModBus_CRC16_Fun(uint8_t *data, int len)
     return CRC16;
 }
 
+#define Encrypt_ROTL(x, b) (uint64_t)(((x) << (b)) | ((x) >> (64 - (b))))
+
+#define Encrypt_SIPROUND do { \
+    v0 += v1; v1 = Encrypt_ROTL(v1, 13); v1 ^= v0; v0 = Encrypt_ROTL(v0, 32); \
+    v2 += v3; v3 = Encrypt_ROTL(v3, 16); v3 ^= v2; \
+    v0 += v3; v3 = Encrypt_ROTL(v3, 21); v3 ^= v0; \
+    v2 += v1; v1 = Encrypt_ROTL(v1, 17); v1 ^= v2; v2 = Encrypt_ROTL(v2, 32); \
+} while (0)
+
+uint64_t Encrypt_ARX_Fun(const uint8_t *key, const uint8_t *data, uint32_t len)
+{
+    uint64_t v0 = 0x736f6d6570736575ULL;
+    uint64_t v1 = 0x646f72616e646f6dULL;
+    uint64_t v2 = 0x6c7967656e657261ULL;
+    uint64_t v3 = 0x7465646279746573ULL;
+    uint64_t k0, k1, m;
+    uint32_t i, left = len;
+
+    k0 = ((uint64_t *)key)[0];
+    k1 = ((uint64_t *)key)[1];
+
+    v3 ^= k1;
+    v2 ^= k0;
+    v1 ^= k1;
+    v0 ^= k0;
+
+    for (i = 0; left >= 8; left -= 8, i += 8) {
+        m = ((uint64_t *)data)[i / 8];
+        v3 ^= m;
+        Encrypt_SIPROUND; Encrypt_SIPROUND;
+        v0 ^= m;
+    }
+
+    m = (uint64_t)len << 56;
+    switch (left) {
+        case 7: m |= (uint64_t)data[i + 6] << 48;
+        case 6: m |= (uint64_t)data[i + 5] << 40;
+        case 5: m |= (uint64_t)data[i + 4] << 32;
+        case 4: m |= (uint64_t)data[i + 3] << 24;
+        case 3: m |= (uint64_t)data[i + 2] << 16;
+        case 2: m |= (uint64_t)data[i + 1] << 8;
+        case 1: m |= (uint64_t)data[i + 0];
+        case 0: break;
+    }
+
+    v3 ^= m;
+    Encrypt_SIPROUND; Encrypt_SIPROUND;
+    v0 ^= m;
+
+    v2 ^= 0xff;
+    Encrypt_SIPROUND; Encrypt_SIPROUND; Encrypt_SIPROUND; Encrypt_SIPROUND;
+
+    return v0 ^ v1 ^ v2 ^ v3;
+}
+
 #ifdef AES
 
 #define AES_KEY_LENGTH 128

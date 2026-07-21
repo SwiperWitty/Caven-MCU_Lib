@@ -56,7 +56,7 @@ static u8 ping_outstanding = 0;           // �Ƿ���δ��Ӧ��PINGR
 
 #if Exist_ETH
 
-static void Base_TCP_MQTT_GET_Fun(void *data)
+static int Base_TCP_MQTT_GET_Fun(void *data)
 {
     char temp_data = *(char *)data;
     if (mqtt_cache_get < sizeof(mqtt_recv_cache))

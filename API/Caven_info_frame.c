@@ -23,6 +23,11 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     int retval = 0;
     int temp = 0;
 
+    if (target == NULL)
+    {
+        return (-0x8F);
+    }
+
     Caven_info_packet_Type temp_packet = *target;
     uint8_t *tepm_pData = temp_packet.p_AllData;
 
@@ -30,7 +35,7 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
     {
         return (-0x80);
     }
-    if (target == NULL || tepm_pData == NULL)
+    if (tepm_pData == NULL)
     {
         return (-0x8F);
     }
@@ -46,6 +51,8 @@ int Caven_info_Make_packet_Fun(Caven_info_packet_Type const standard, Caven_info
         {
             temp_packet.Get_num = 0;
             temp_packet.end_crc = 0;
+            temp_packet.get_crc = 0;
+            temp_packet.dSize = 0;
             temp_packet.p_Data = NULL;
             tepm_pData[temp_packet.Get_num++] = (temp_packet.Head >> 8) & 0x00ff;
             tepm_pData[temp_packet.Get_num++] = (temp_packet.Head) & 0x00ff;
@@ -194,6 +201,10 @@ int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uin
     {
         return retval = -1;
     }
+    else if ((len > BUFF_MAX) || ((len > 0) && (data == NULL)))
+    {
+        return retval = -2;
+    }
     else
     {
         array[retval++] = 0xFA;
@@ -205,7 +216,7 @@ int Caven_info_return_Fun (uint8_t Ver,uint8_t Type,uint8_t Addr,uint8_t Cmd,uin
         array[retval++] = Cmd_sub;
         array[retval++] = (len >> 8) & 0xFF;
         array[retval++] = (len >> 0) & 0xFF;
-        if(len > 0 && len <= BUFF_MAX && data != NULL)
+        if(len > 0)
         {
             memcpy(&array[retval],data,len);
             retval += len;
@@ -326,8 +337,15 @@ int Caven_info_packet_clean_Fun(Caven_info_packet_Type *target)
 		target->Head = 0;
 		target->Run_status = 0;
 		target->Get_num = 0;
+		target->dSize = 0;
 		target->end_crc = 0;
 		target->get_crc = 0;
+        target->p_Data = NULL;
+        target->Versions = 0;
+        target->Type = 0;
+        target->Addr = 0;
+        target->Cmd = 0;
+        target->Cmd_sub = 0;
 		target->Comm_way = 0;
 		target->Result = 0;
         target->Occupy = 0;

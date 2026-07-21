@@ -168,13 +168,13 @@ uint8_t DMA_UART4_Buff[UART_BUFF_MAX];
 void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
 {
 #ifdef DMA_UART
-    USART_TypeDef * Temp_USART;
+    USART_TypeDef * Temp_USART = NULL;
     DMA_InitTypeDef DMA_InitStructure = {0};
     DMA_Channel_TypeDef *Temp_DMA_Channel = NULL;
     uint32_t DMAy_FLAG;
 
     uint8_t *p_DMA_BUFF = NULL;
-    static char dma_send_First = 0;
+    static uint8_t dma_send_First = 0;
     switch (Channel)
     {
         case 0:
@@ -245,7 +245,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel,const uint8_t *Data,int Length)
         return;
     }
     // 开始DMA
-    if (Data == NULL || p_DMA_BUFF == NULL || (Length <= 0)) {
+    if (Data == NULL || p_DMA_BUFF == NULL || Temp_USART == NULL || Temp_DMA_Channel == NULL || (Length <= 0)) {
         return;
     }
     if ((dma_send_First & (0x01 << Channel)) == 0)            // 当前通道首次DMA，不等
@@ -293,6 +293,7 @@ void Base_UART_DMA_Send_Buff(UART_mType Channel,const uint8_t *Data,int Length)
             temp_num = UART_BUFF_MAX;
         }
         Base_UART_DMA_Send_Data(Channel,temp_buff,temp_num);
+        temp_buff += temp_num;
         temp_run -= temp_num;
     }
 }
@@ -322,7 +323,7 @@ void Uart_DMA_RX_Switch (UART_mType Channel,Caven_DoubleBufType *cache,uint8_t f
     {
         return;
     }
-    USART_TypeDef * uart_Temp = NULL;
+    USART_TypeDef * Temp_USART = NULL;
     DMA_InitTypeDef DMA_InitStructure = {0};
     DMA_Channel_TypeDef *Temp_DMA_Channel = NULL;
     uint8_t *p_DMA_BUFF = NULL;
@@ -333,30 +334,33 @@ void Uart_DMA_RX_Switch (UART_mType Channel,Caven_DoubleBufType *cache,uint8_t f
     case 0:
         break;
     case 1:
-        uart_Temp = USART1;
+        Temp_USART = USART1;
         Temp_DMA_Channel = DMA1_Channel5;
         temp_key = uart1_enable;
         break;
     case 2:
-        uart_Temp = USART2;
+        Temp_USART = USART2;
         Temp_DMA_Channel = DMA1_Channel6;
         temp_key = uart2_enable;
         break;
     case 3:
-        uart_Temp = USART3;
+        Temp_USART = USART3;
         Temp_DMA_Channel = DMA1_Channel3;
         temp_key = uart3_enable;
         break;
     case 4:
-        uart_Temp = UART4;
+        Temp_USART = UART4;
         temp_key = uart4_enable;
         break;
     default:
         break;
     }
-
+    if (Temp_USART == NULL || Temp_DMA_Channel == NULL) {
+        return;
+    }
     if(cache->buf_flag[cache->r_buf_idx] > 0 && full == 0)    // 读缓存中数据未处理
     {
+        cache->w_buf_event = 1;
         return;     // 继续存
     }
     if(temp_key)
@@ -364,10 +368,16 @@ void Uart_DMA_RX_Switch (UART_mType Channel,Caven_DoubleBufType *cache,uint8_t f
         DMA_Cmd(Temp_DMA_Channel, DISABLE);
         temp_num = BUFF_MAX - DMA_GetCurrDataCounter(Temp_DMA_Channel);
     }
+    else
+    {
+        cache->buf_flag[cache->r_buf_idx] = 0;
+        temp_num = 0;           // key 未开启，那就进入初始化
+    }
     if(cache->buf_flag[cache->r_buf_idx] > 0 && full > 0)
     {
         cache->buf_flag[cache->w_buf_idx] = 0;  // 重开缓存区，丢弃旧数据
         cache->buf_len[cache->w_buf_idx] = 0;
+        cache->w_buf_event = 0;
     }
     else if(temp_num > 0)   // 写缓存有数据，将其切换成读缓存
     {
@@ -375,6 +385,7 @@ void Uart_DMA_RX_Switch (UART_mType Channel,Caven_DoubleBufType *cache,uint8_t f
         temp_val = cache->r_buf_idx;
         cache->r_buf_idx = cache->w_buf_idx;
         cache->w_buf_idx = temp_val;
+        cache->w_buf_event = 0;
         cache->buf_len[cache->w_buf_idx] = 0;
         cache->buf_flag[cache->w_buf_idx] = 0;
         cache->r_buf_run = 0;
@@ -389,11 +400,12 @@ void Uart_DMA_RX_Switch (UART_mType Channel,Caven_DoubleBufType *cache,uint8_t f
         cache->buf_flag[cache->w_buf_idx] = 0;
         cache->buf_len[cache->r_buf_idx] = 0;
         cache->buf_len[cache->w_buf_idx] = 0;
+        cache->w_buf_event = 0;
     }
     p_DMA_BUFF = cache->buf[cache->w_buf_idx];
 
     DMA_DeInit(Temp_DMA_Channel);
-    DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)(&uart_Temp->DATAR);   /* USARTx->DATAR: */
+    DMA_InitStructure.DMA_PeripheralBaseAddr = (u32)(&Temp_USART->DATAR);   /* USARTx->DATAR: */
     DMA_InitStructure.DMA_MemoryBaseAddr = (u32)p_DMA_BUFF;             //
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralSRC;                  // DMA_DIR_PeripheralSRC(RX) DMA_DIR_PeripheralDST(TX)
     DMA_InitStructure.DMA_BufferSize = BUFF_MAX;                       //
@@ -406,7 +418,7 @@ void Uart_DMA_RX_Switch (UART_mType Channel,Caven_DoubleBufType *cache,uint8_t f
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
     DMA_Init(Temp_DMA_Channel, &DMA_InitStructure);
     DMA_ITConfig(Temp_DMA_Channel, DMA_IT_TC, ENABLE);
-    USART_DMACmd(uart_Temp, USART_DMAReq_Rx, ENABLE);
+    USART_DMACmd(Temp_USART, USART_DMAReq_Rx, ENABLE);
     DMA_Cmd(Temp_DMA_Channel, ENABLE);
 }
 
@@ -798,36 +810,37 @@ int Base_UART_Init(UART_mType Channel,int Baud,int Set)
 {
     int retval = -1;
 #ifdef Exist_UART
+    int Baud_CK = Baud & 0X00FFFFFF;    // 去掉最高位，串口用不到
     RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA1, ENABLE);
     switch (Channel)
     {
     case 0:
     #if (Exist_UART & OPEN_0001)
-        Uart0_Init(Baud,Set);
+        Uart0_Init(Baud_CK,Set);
         retval = 0;
     #endif
         break;
     case 1:
     #if (Exist_UART & OPEN_0010)
-        Uart1_Init(Baud,Set);
+        Uart1_Init(Baud_CK,Set);
         retval = 0;
     #endif
         break;
     case 2:
     #if (Exist_UART & OPEN_0100)
-        Uart2_Init(Baud,Set);
+        Uart2_Init(Baud_CK,Set);
         retval = 0;
     #endif
         break;
     case 3:
     #if (Exist_UART & OPEN_1000)
-        Uart3_Init(Baud,Set);
+        Uart3_Init(Baud_CK,Set);
         retval = 0;
     #endif
         break;
     case 4:
     #if (Exist_UART & OPEN_10000)
-        Uart4_Init(Baud,Set);
+        Uart4_Init(Baud_CK,Set);
         retval = 0;
     #endif
         break;
@@ -898,7 +911,10 @@ void Base_UART_Recv_Poll_Task(void)
                 temp_DoubleBuf->buf_flag[temp_DoubleBuf->r_buf_idx] = 0;        // 完成后释放
                 temp_DoubleBuf->buf_len[temp_DoubleBuf->r_buf_idx] = 0;
                 temp_DoubleBuf->r_buf_run = 0;
-                Uart_DMA_RX_Switch (UART_CH,temp_DoubleBuf,0);                  // 下一级缓存回收，没有也不会生效
+                if(temp_DoubleBuf->w_buf_event)
+                {
+                    Uart_DMA_RX_Switch (UART_CH,temp_DoubleBuf,0);                  // 下一级缓存回收，没有也不会生效
+                }
             }
         }
     #endif
@@ -934,7 +950,10 @@ void Base_UART_Recv_Poll_Task(void)
                 temp_DoubleBuf->buf_flag[temp_DoubleBuf->r_buf_idx] = 0;        // 完成后释放
                 temp_DoubleBuf->buf_len[temp_DoubleBuf->r_buf_idx] = 0;
                 temp_DoubleBuf->r_buf_run = 0;
-                Uart_DMA_RX_Switch (UART_CH,temp_DoubleBuf,0);                  // 下一级缓存回收，没有也不会生效
+                if(temp_DoubleBuf->w_buf_event)
+                {
+                    Uart_DMA_RX_Switch (UART_CH,temp_DoubleBuf,0);                  // 下一级缓存回收，没有也不会生效
+                }
             }
         }
     #endif
@@ -970,7 +989,10 @@ void Base_UART_Recv_Poll_Task(void)
                 temp_DoubleBuf->buf_flag[temp_DoubleBuf->r_buf_idx] = 0;        // 完成后释放
                 temp_DoubleBuf->buf_len[temp_DoubleBuf->r_buf_idx] = 0;
                 temp_DoubleBuf->r_buf_run = 0;
-                Uart_DMA_RX_Switch (UART_CH,temp_DoubleBuf,0);                  // 下一级缓存回收，没有也不会生效
+                if(temp_DoubleBuf->w_buf_event)
+                {
+                    Uart_DMA_RX_Switch (UART_CH,temp_DoubleBuf,0);                  // 下一级缓存回收，没有也不会生效
+                }
             }
         }
     #endif

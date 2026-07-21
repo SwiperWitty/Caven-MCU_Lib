@@ -108,8 +108,8 @@ extern void USBFS_Device_Init( FunctionalState sta );
 extern void USBFS_Device_Endp_Init(void);
 extern void USBFS_RCC_Init(void);
 extern void USBFS_Send_Resume(void);
-typedef int (*iD_USB_pFun) (void *data);
-extern iD_USB_pFun usb_callbk_pFun;
+typedef int (*D_USB_pFun) (void *data);
+extern D_USB_pFun usb_callbk_pFun;
 
 #ifdef __cplusplus
 }

@@ -77,6 +77,7 @@ int Caven_URL_IPprot (char *url,char *ip,char *port)
         {
             temp_num = str_pointer-url;
             memcpy(ip,url,temp_num);
+            ip[temp_num] = '\0';
    
             strcpy(port,&url[temp_num+1]);
             retval = 1;
@@ -112,7 +113,7 @@ char* memstr(void* full_data, char* substr,int full_data_len)
     int last_possible = full_data_len - sublen + 1;
     for (int i = 0; i < last_possible; i++) 
 	{
-		if (((char*)full_data - cur) + sublen > full_data_len)
+		if ((cur - (char*)full_data) + sublen > full_data_len)
 		{
 			return NULL;
 		}
@@ -272,16 +273,16 @@ retval = 1则成功，retval = 0则正在运行，retval = (-1)失败
 int Caven_Data_Median_filtering_Handle (float data,float *array,float *reverse,char *run,char array_num)
 {
 	int retval = 0;
+    if (array == NULL || reverse == NULL || run == NULL || array_num <= 2)
+    {
+        return (-1);
+    }
+
 	int temp_run = *run;
 	int max_sort = 0;
 	int min_sort = 0;
 	float temp_data_f;
-    if (array == NULL && array_num <= 2)
-    {
-        retval = (-1);
-        return retval;
-    }
-    
+
 	if(temp_run < array_num)
 	{
 		array[temp_run++] = data;
@@ -331,6 +332,10 @@ int Caven_math_approximate (int num,int num_step,int num_min,int num_max)
     int temp_num;
     float f_temp_num;
     float f_temp_temp;
+    if (num_step == 0)
+    {
+        return num_min;
+    }
     temp_num = num / num_step;
     f_temp_temp = num_step;
     f_temp_temp /= 2;

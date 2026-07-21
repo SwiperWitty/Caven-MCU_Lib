@@ -419,6 +419,7 @@ int GX_info_packet_clean_Fun(GX_info_packet_Type *target)
 		target->Head = 0;
 		target->Run_status = 0;
 		target->Get_num = 0;
+        target->dSize = 0;
 		target->end_crc = 0;
 		target->get_crc = 0;
 		target->Comm_way = 0;

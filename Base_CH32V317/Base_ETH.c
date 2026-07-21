@@ -756,7 +756,7 @@ int Base_ETH_Init(int Channel,int Set)
                     cfg.KLIntvl = 15000;
                     cfg.KLCount = 9;
                     WCHNET_ConfigKeepLive(&cfg);
-                    Debug_printf("WCH ETH static IP %s,GW %s,MK %s \r\n",eth_ip,eth_gw,eth_netmask);
+                    Debug_printf("WCH ETH static IP %s,GW %s,MK %s,DNS %s\r\n",eth_ip,eth_gw,eth_netmask,eth_DNS1_str);
                 }
             }
         }

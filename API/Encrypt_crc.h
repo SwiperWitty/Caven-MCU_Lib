@@ -12,11 +12,10 @@
     ModBus_CRC16用的
 */
 
-
-
 int Encrypt_ModBus_CRC16_Fun (uint8_t *data, int len);
 uint16_t CRC16_XMODEM_Table_Byte(uint8_t CheckByte, uint16_t LastCRC);
 uint16_t Encrypt_XMODEM_CRC16_Fun(uint8_t *data, int len);
+uint64_t Encrypt_ARX_Fun(const uint8_t *key, const uint8_t *data, uint32_t len);
 
 #ifdef AES
 void Encrypt_AES_set_key (char *key_str);

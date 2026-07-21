@@ -25,7 +25,7 @@ static int cache_run = 0;
 static char client_get_cache[1024];
 static int cache_get = 0,cache_read = 0;
 
-static void Base_TCP_HTTP_GET_Fun (void *data)
+static int Base_TCP_HTTP_GET_Fun (void *data)
 {
     char temp_data = *(char *)data;
     if(cache_get < sizeof(client_get_cache))

@@ -125,6 +125,7 @@ typedef struct
     uint8_t buf[2][BUFF_MAX];               // 双缓存：A/B
     uint8_t r_buf_idx;                      // 当前允许读取的缓存索引（A/B）
     uint8_t w_buf_idx;                      // 当前允许写入的缓存索引（A/B）
+    uint8_t w_buf_event;                    // r未处理，但是w被触发空闲或者dma
     uint16_t r_buf_run;
     uint16_t buf_len[2];                    // 每个缓存的有效数据长度
     uint8_t buf_flag[2];                    // 满标志（0-无需处理，1-可进入处理）

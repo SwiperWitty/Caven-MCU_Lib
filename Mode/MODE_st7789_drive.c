@@ -4,6 +4,7 @@
 static char LCD_Horizontal = 0;
 static char LCD_Target_Model = 0;
 static char flag_dc = 0;
+static char LCD_CS_Serial = 0;
 #endif
 
 #if Exist_LCD
@@ -160,7 +161,7 @@ static void LCD_Writ_Bus(uint8_t data)
 
 #else
 #define MODE_st7789_drive_Writ_Bus(x) Base_SPI_Send_Data(m_SPI_CH2, x)
-#define MODE_st7789_drive_GPIO_CS(x,y) Base_SPI_CS_Set(m_SPI_CH2, x, y);
+#define MODE_st7789_drive_GPIO_CS(x) User_GPIO_set(GPIO_LCD_CS, PIN_LCD_CS, x);
 #define MODE_st7789_drive_GPIO_DC(x) User_GPIO_set(GPIO_LCD_DC, PIN_LCD_DC, x);
 #define MODE_st7789_drive_GPIO_RST(x) User_GPIO_set(GPIO_LCD_RST, PIN_LCD_RST, x);
 #endif
@@ -176,16 +177,20 @@ void set_flag_dc(int n)
 /*
     支持同型号同时使用
 */
-void MODE_st7789_drive_CS(uint8_t data)
+void MODE_st7789_drive_CS(void *data)
 {
 #if Exist_LCD
+    u8 temp_data = 0;
 	#if (PIN_LCD_CS != (-1))
-    if(data == 1)
-    {
-        MODE_st7789_drive_GPIO_CS(1,1);
-    }
-    else{
-        MODE_st7789_drive_GPIO_CS(0,1);
+    if (data != NULL) {
+        temp_data = *(u8*)data;
+        if(temp_data)
+        {
+            MODE_st7789_drive_GPIO_CS(0);
+        }
+        else{
+            MODE_st7789_drive_GPIO_CS(1);
+        }
     }
 	#endif
 #endif
@@ -217,7 +222,7 @@ void MODE_st7789_drive_RST(uint8_t data)
 ******************************************************************************/
 static void LCD_WR_CMD(uint8_t data)
 {
-    MODE_st7789_drive_CS(1);
+    Base_SPI_CS_Set(m_SPI_CH2,LCD_CS_Serial,1);
     set_flag_dc(0);
     MODE_st7789_drive_Writ_Bus(data);
     set_flag_dc(1);
@@ -268,7 +273,7 @@ void MODE_st7789_drive_WR_Data(uint16_t data)
     uint8_t temp_array[2];
     temp_array[0] = (data >> 8) & 0xff;
     temp_array[1] = data & 0xff;
-    MODE_st7789_drive_CS(1); // 写数据之前必然要写命令，所以不要开启片选
+    // 写数据之前必然要写命令，所以不要开启片选
     MODE_st7789_drive_Writ_Bus(temp_array[0]);
     MODE_st7789_drive_Writ_Bus(temp_array[1]);
 #endif
@@ -279,12 +284,12 @@ void MODE_st7789_drive_WR_Data(uint16_t data)
 void MODE_st7789_drive_Send_Data(uint8_t *data, int num)
 {
 #if Exist_LCD
-    MODE_st7789_drive_CS(1); // 写数据之前必然要写命令，所以不要开启片选
+    // 写数据之前必然要写命令，所以不要开启片选
 #ifdef CONFIG_IDF_TARGET_ESP32
     EPS_SPI_SendData(data, num, 1);
 #else
     #if 1
-    Base_SPI_DMA_Send_Data(m_SPI_CH2, data, num);
+    Base_SPI_DMA_Send_Buff(m_SPI_CH2, data, num);
     #else
     for(int i = 0; i < num; i++)
     {
@@ -664,10 +669,9 @@ int MODE_st7789_drive_Init(int set)
 #ifdef CONFIG_IDF_TARGET_ESP32
     Base_SPI_Init(set);
 #else
-    Base_SPI_Init(m_SPI_CH2, 8, set);
+    LCD_CS_Serial = Base_SPI_Init(m_SPI_CH2, 8, set,MODE_st7789_drive_CS);
 #endif
-    MODE_st7789_drive_CS(1);
-    MODE_st7789_drive_CS(0);
+    Base_SPI_CS_Set(m_SPI_CH2,LCD_CS_Serial,DISABLE);
     st7789_drive_delay(10);
 	MODE_st7789_drive_Writ_Bus(0x00);
 	st7789_drive_delay(10);

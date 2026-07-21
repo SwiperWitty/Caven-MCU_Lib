@@ -95,6 +95,10 @@ enum CAVEN_CMD2
     m_CAVEN_CMD2_DEBUG_Order = 0x05,
     m_CAVEN_CMD2_Restore_Order,
     m_CAVEN_CMD2_Serial_Order,
+    m_CAVEN_CMD2_USERName_Order,
+    m_CAVEN_CMD2_AuthZ_Order,
+    m_CAVEN_CMD2_ETHOTA_Order,
+    m_CAVEN_CMD2_FLASH_Order,
 };
 
 enum CAVEN_CMD3

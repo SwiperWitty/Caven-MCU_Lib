@@ -35,12 +35,12 @@ void Base_TCP_Server_link (void)
 
 /*
     port_str:"8160"
-    break_off:�Ƿ�����������ȡ�������ӣ�port_str����ʱ����Ч��
-    enable 0,��رյ�ǰsock��û������Ч
-    enable 1,��server_link,������str,����ʱstrΪNULL������Ϊѯ��tcp_server_sock
-    server ֻ���޸Ķ˿�(����������)�������Ҫ�޸�ip���޸�[eth_config_ip]/[wifi_config_ip]
+    break_off:
+    enable 0,
+    enable 1,
+    server [eth_config_ip]/[wifi_config_ip]
 
-    retval:��ǰ�Ƿ���sock
+    retval:
 */
 int Base_TCP_Server_Config (char *port_str,int break_off,int enable)
 {
