@@ -29,10 +29,7 @@ typedef struct
 
 int MODE_UART_Init(char Channel,int Baud,int Set);
 
-
-void MODE_UART_Send_Data_Fun(char Channel, const U8 *Data, int Length);
 void MODE_UART_DMA_Send_Data_Fun(char Channel, const U8 *Data, int Length);
-
 void MODE_UART_Send_String_Fun(char Channel, const char *String);
 
 void MODE_UART_Receive_Bind_Fun(char Channel, iD_pFun UART_pFun);

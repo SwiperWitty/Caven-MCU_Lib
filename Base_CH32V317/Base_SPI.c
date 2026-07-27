@@ -25,16 +25,100 @@ typedef struct
     #endif
 #endif
 
-void SPI_Delay (int time)
+extern void SYS_Base_Delay(int time, int speed);
+
+/*
+retval:1 succ
+retval:0 fail
+*/ 
+static uint8_t SPI_Wait_TX_Flag(SPI_mType Channel)
 {
-    int temp;
-    for (int i = 0; i < time; ++i)
+    SPI_TypeDef *spi_Temp = NULL;
+
+    switch (Channel)
     {
-        temp = 12;            // SET
-        do{
-            NOP();
-        }while((temp--) > 0);
+    case 0: return 0;
+    case 1: spi_Temp = SPI1; break;
+    case 2: spi_Temp = SPI2; break;
+    default: return 0;
     }
+
+    uint32_t retry = 0;
+    do
+    {
+        if (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_TXE) == SET)   // 1为空
+        {
+            return 1;
+        }
+        SYS_Base_Delay(1, 1000);
+    } while (++retry < SPI_WAIT_MAX);
+
+    return 0;
+}
+
+static uint8_t SPI_Wait_RX_Flag(SPI_mType Channel)
+{
+    SPI_TypeDef *spi_Temp = NULL;
+
+    switch (Channel)
+    {
+    case 0: return 0;
+    case 1: spi_Temp = SPI1; break;
+    case 2: spi_Temp = SPI2; break;
+    default: return 0;
+    }
+
+    uint32_t retry = 0;
+    do
+    {
+        if (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_RXNE) == SET)   // 1为有数据了
+        {
+            return 1;
+        }
+        SYS_Base_Delay(1, 1000);
+    } while (++retry < SPI_WAIT_MAX);
+
+    return 0;
+}
+
+static uint8_t SPI_Wait_Busy_Flag(SPI_mType Channel)
+{
+    SPI_TypeDef *spi_Temp = NULL;
+
+    switch (Channel)
+    {
+    case 0: return 0;
+    case 1: spi_Temp = SPI1; break;
+    case 2: spi_Temp = SPI2; break;
+    default: return 0;
+    }
+
+    uint32_t retry = 0;
+    do
+    {
+        if (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_BSY) != SET)   // 1忙碌
+        {
+            return 1;
+        }
+        SYS_Base_Delay(1, 1000);
+    } while (++retry < SPI_WAIT_MAX);
+
+    return 0;
+}
+
+static uint8_t SPI_Wait_DMA_Flag(uint32_t flag)
+{
+    uint32_t retry = 0;
+    do
+    {
+        if (DMA_GetFlagStatus(flag) != RESET)
+        {
+            DMA_ClearFlag(flag);
+            return 1;
+        }
+        SYS_Base_Delay(1, 1000);
+    } while (++retry < SPI_WAIT_MAX);
+    return 0;
 }
 
 #if Exist_SPI & OPEN_0010
@@ -365,7 +449,6 @@ void Base_SPI_CS_Set(SPI_mType Channel, char Serial, char State)
 #if Exist_SPI
     D_pFun *cs_fun = NULL;
     char *cs_state = NULL;
-    SPI_TypeDef *spi_Temp = NULL;
     int index = Serial - 1;
 
     if (Serial > SPI_CS_MAX_NUM)
@@ -380,7 +463,6 @@ void Base_SPI_CS_Set(SPI_mType Channel, char Serial, char State)
         if(SPI1_Init == 0) return;
         cs_fun = SPI1_GPIOCtl.SPI_CS_Ctl;
         cs_state = SPI1_GPIOCtl.SPI_CS_State;
-        spi_Temp = SPI1;
     #endif
         break;
     case 2:
@@ -388,18 +470,19 @@ void Base_SPI_CS_Set(SPI_mType Channel, char Serial, char State)
         if(SPI2_Init == 0) return;
         cs_fun = SPI2_GPIOCtl.SPI_CS_Ctl;
         cs_state = SPI2_GPIOCtl.SPI_CS_State;
-        spi_Temp = SPI2;
     #endif
         break;
     default:
         return;
     }
 
-    if ((cs_fun == NULL) || (cs_state == NULL) || spi_Temp == NULL)
+    if ((cs_fun == NULL) || (cs_state == NULL))
     {
         return;
     }
-    while(SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_BSY) == SET);
+    #if SPI_SOFTWARE == 0
+    SPI_Wait_Busy_Flag(Channel);
+    #endif
     if (State)
     {
         for (int i = 0; i < SPI_CS_MAX_NUM; i++)
@@ -499,10 +582,13 @@ void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data)
     temp_data = SPI_SCLK_IDLE;
     temp_gpioctl_pfun->SPI_SCLK_Ctl(&temp_data);  // sclk_IDLE
     #else
-
-    while(SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_TXE) == RESET);
-    SPI_I2S_SendData(spi_Temp, Data);
-    while(SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_BSY) == SET);
+    uint8_t tx_flag = 0;
+    tx_flag = SPI_Wait_TX_Flag(Channel);
+    if(tx_flag)
+    {
+        SPI_I2S_SendData(spi_Temp, Data);
+        SPI_Wait_Busy_Flag(Channel);
+    }
     // 短用这个，长用dma
     #endif
     (void)SPI_Width;
@@ -511,19 +597,21 @@ void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data)
 
 void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data,int Length)
 {
-#if SPI_DMA
+#if Exist_SPI
     DMA_InitTypeDef DMA_InitStructure = {0};
     DMA_Channel_TypeDef *Temp_DMA_Channel = NULL;
     SPI_TypeDef *spi_Temp = NULL;
-    uint32_t DMAy_FLAG;
-
+    uint32_t DMAy_FLAG = 0;
+    u8 dma_flag = 0;
     uint8_t *p_DMA_BUFF = NULL;
     static u8 dma_send_First = 0;
-	
+	if (Data == NULL || (Length <= 0)) {
+        return;
+    }
     switch (Channel)
     {
     case 1:
-    #if Exist_SPI & OPEN_0010
+    #if (Exist_SPI & OPEN_0010) && SPI_DMA
         if(SPI1_Init == 0) return;
         p_DMA_BUFF = DMA_SPI1_Buff;
         spi_Temp = SPI1;
@@ -532,7 +620,7 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data,int Length)
     #endif 
         break;
     case 2:
-    #if Exist_SPI & OPEN_0100
+    #if (Exist_SPI & OPEN_0100) && SPI_DMA
         if(SPI2_Init == 0) return;
         p_DMA_BUFF = DMA_SPI2_Buff;
         spi_Temp = SPI2;
@@ -541,11 +629,20 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data,int Length)
     #endif 
         break;
     default:
-        spi_Temp = NULL;
         break;
     }
+    if(p_DMA_BUFF == NULL)
+    {
+        uint16_t temp_data;
+        for(int i = 0; i < Length; i++)
+        {
+            temp_data = *(uint8_t *)(Data + i);
+            Base_SPI_Send_Data(Channel,temp_data);
+        }
+        return;
+    }
     // 开始DMA
-    if (Data == NULL || p_DMA_BUFF == NULL || spi_Temp == NULL || (Length <= 0)) {
+    if (p_DMA_BUFF == NULL || spi_Temp == NULL) {
         return;
     }
 
@@ -567,20 +664,27 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data,int Length)
         DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;
         DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;
         DMA_Init(Temp_DMA_Channel, &DMA_InitStructure);
+        dma_flag = 1;
     }
     else
     {
-        while(DMA_GetFlagStatus(DMAy_FLAG) == RESET);   /* Wait DMA1 Transfer Complete */
-        DMA_ClearFlag(DMAy_FLAG);
+        dma_flag = SPI_Wait_DMA_Flag(DMAy_FLAG);   /* Wait DMA1 Transfer Complete */
+    }
+    if(dma_flag == 1)
+    {
+        if(Length > SPI_DMA_SIZE)
+        {
+            Length = SPI_DMA_SIZE;
+        }
+        DMA_Cmd(Temp_DMA_Channel, DISABLE);
+        SPI_I2S_DMACmd(spi_Temp, SPI_I2S_DMAReq_Tx, DISABLE);
+        memcpy(p_DMA_BUFF,Data,Length);                     //
+        DMA_SetCurrDataCounter(Temp_DMA_Channel,Length);
+        
+        SPI_I2S_DMACmd(spi_Temp,SPI_I2S_DMAReq_Tx, ENABLE);
+        DMA_Cmd(Temp_DMA_Channel, ENABLE);
     }
 
-    DMA_Cmd(Temp_DMA_Channel, DISABLE);
-    SPI_I2S_DMACmd(spi_Temp, SPI_I2S_DMAReq_Tx, DISABLE);
-    memcpy(p_DMA_BUFF,Data,Length);                     //
-    DMA_SetCurrDataCounter(Temp_DMA_Channel,Length);
-    
-    SPI_I2S_DMACmd(spi_Temp,SPI_I2S_DMAReq_Tx, ENABLE);
-    DMA_Cmd(Temp_DMA_Channel, ENABLE);
 #endif 
 }
 
@@ -678,6 +782,7 @@ void Base_SPI_ASK_Receive(SPI_mType Channel, uint16_t Data, uint8_t *Receive, in
     temp_gpioctl_pfun->SPI_MOSI_Ctl(&temp_data);
 
     #else
+    u8 flag = 0;
     if (spi_Temp == NULL)
     {
         return;
@@ -686,23 +791,28 @@ void Base_SPI_ASK_Receive(SPI_mType Channel, uint16_t Data, uint8_t *Receive, in
     /*
      * 清掉前面发送命令/地址时产生的无效接收数据。
      */
-    while (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_RXNE) == SET)
-    {
-        temp_val = SPI_I2S_ReceiveData(spi_Temp);
-    }
+    SPI_Wait_RX_Flag(Channel);
+    temp_val = SPI_I2S_ReceiveData(spi_Temp);
 
     for (int i = 0; i < Length; i++)
     {
-        while (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_TXE) == RESET);
-        SPI_I2S_SendData(spi_Temp, Data);
-
-        while (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_RXNE) == RESET);
-        temp_val = SPI_I2S_ReceiveData(spi_Temp);
-
-        Receive[i] = temp_val & 0xff;
+        flag = SPI_Wait_TX_Flag(Channel);
+        if(flag == 1)
+        {
+            SPI_I2S_SendData(spi_Temp, Data);
+            SPI_Wait_RX_Flag(Channel);
+            temp_val = SPI_I2S_ReceiveData(spi_Temp);
+            Receive[i] = temp_val & 0xff;
+        }
+        else
+        {
+            return;
+        }
     }
-
-    while (SPI_I2S_GetFlagStatus(spi_Temp, SPI_I2S_FLAG_BSY) == SET);
+    if(flag)
+    {
+        SPI_Wait_Busy_Flag(Channel);
+    }
     #endif
     (void)temp_val;
     (void)spi_Temp;

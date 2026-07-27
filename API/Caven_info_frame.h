@@ -83,6 +83,9 @@ enum CAVEN_CMD1
     m_CAVEN_CMD1_UDPUpdata_Order,
 	m_CAVEN_CMD1_TCPUpHtdata_Order,
 	m_CAVEN_CMD1_Worktime_Order,
+
+    m_CAVEN_CMD1_Curve_updata_Order = 0x20,
+    m_CAVEN_CMD1_File_updata_Order,
 };
 
 enum CAVEN_CMD2

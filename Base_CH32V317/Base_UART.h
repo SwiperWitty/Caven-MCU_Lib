@@ -7,7 +7,7 @@
 为了方便上层统一调用，本文件需要提供以下函数
 
 int Base_UART_Init(UART_mType Channel,int Baud,int Set);
-void Base_UART_Send_Data(UART_mType Channel, uint16_t Data)
+void Base_UART_Send_Data(UART_mType Channel, uint16_t Data);
 
 int State_Machine_Bind (UART_mType Channel,iD_pFun UART_pFun);
 void Base_UART_Recv_Poll_Task(void);
@@ -37,9 +37,12 @@ typedef enum
     m_UART_CH5,
 }UART_mType;
 
-#ifdef Exist_UART
-    #define DMA_UART        1
+#if Exist_UART
+    #define DMA_UART        0
     #define UART_BUFF_MAX   360
+    #define UART_WAIT_MAX   0x1FFF
+    #define UART_DMA_TX_ENABLE  0x01U
+    #define UART_DMA_RX_ENABLE  0x02U
 #endif
 
 #if (Exist_UART & OPEN_0001)
@@ -87,6 +90,7 @@ void UART4_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 // fun
 int Base_UART_Init(UART_mType Channel,int Baud,int Set);
+
 void Base_UART_Send_Data(UART_mType Channel,uint16_t Data);
 void Base_UART_DMA_Send_Buff(UART_mType Channel,const uint8_t *Data,int Length);
 

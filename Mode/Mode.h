@@ -88,7 +88,7 @@
 #include "IC_QMI8658.h"
 #endif
 
-#if Exist_W25Q_DRV
+#ifdef Exist_W25Q_DRV
 #include "IC_W25Q_drive.h"
 #endif
 

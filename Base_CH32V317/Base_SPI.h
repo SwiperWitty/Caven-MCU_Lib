@@ -1,7 +1,7 @@
 #ifndef _BASE_SPI_H__
 #define _BASE_SPI_H__
 
-#ifdef DEFAULT
+#if DEFAULT
 #include "Items.h"              /*	默认功能	*/
 #else
 #include "User_items.h"         /*	自行设置功能，一般出现在本地文件的User中	*/
@@ -32,8 +32,9 @@ typedef enum
     #define HOST_MODE   1
     #define SPI_SOFTWARE    0
     #define SPI_SPEED   SPI_BaudRatePrescaler_8     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
-    #define SPI_MODE_CFG_0   0
-    #define SPI_MODE_CFG_3   3
+    #define SPI_WAIT_MAX    0x1FFF
+    #define SPI_MODE_CFG_0  0
+    #define SPI_MODE_CFG_3  3
 
     #ifndef SPI_MODE_CFG
         #define SPI_MODE_CFG     SPI_MODE_CFG_3

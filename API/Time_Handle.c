@@ -6,10 +6,8 @@
 int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
 {
     int retval = 0;
-    int temp_num,temp_val;
-
-    Caven_BaseTIME_Type diff_time;
-
+    int temp_num;
+    Caven_BaseTIME_Type diff;
     if (task == NULL)
     {
         return (-1);
@@ -23,7 +21,7 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
     }
     if (task->Switch == 1)
     {
-        temp_num = now_time.SYS_Sec - task->Begin_time.SYS_Sec;
+        temp_num = Caven_BaseTIME_Diff (now_time,task->Begin_time,&diff);
         task->error_code = 0;
         if (temp_num < 0)
         {
@@ -32,57 +30,45 @@ int API_Task_Timer (Task_Overtime_Type *task,Caven_BaseTIME_Type now_time)
             task->error_code = 1;
             return retval;
         }
+        else if(temp_num == 0)
+        {
+            return retval = 0;
+        }
         else
         {
-            temp_val = now_time.SYS_Us;
-            if (temp_val < task->Begin_time.SYS_Us)
+            if(diff.SYS_Sec > task->Set_time.SYS_Sec)
             {
-                temp_num --;
-                temp_val = temp_val + 1000000;
+                retval = 1;
+                if((diff.SYS_Sec >> 1) > task->Set_time.SYS_Sec)
+                {
+                    task->Begin_time = now_time;
+                    task->error_code = 2;
+                    task->Flip_flag = !task->Flip_flag;
+                    task->Trigger_flag = 1;
+                    return retval;
+                }
             }
-            diff_time.SYS_Us = temp_val - task->Begin_time.SYS_Us;
-            diff_time.SYS_Sec = temp_num;
-        }
-        temp_num = 0;
-        if (diff_time.SYS_Sec > task->Set_time.SYS_Sec)
-        {
-            temp_num = 1;
-        }
-        else if (diff_time.SYS_Sec == task->Set_time.SYS_Sec)
-        {
-            if (diff_time.SYS_Us > task->Set_time.SYS_Us)
-            {
-                temp_num = 2;
+            else if (diff.SYS_Sec == task->Set_time.SYS_Sec && diff.SYS_Us > task->Set_time.SYS_Us) {
+                retval = 1;
             }
-        }
-        if (temp_num > 0)
-        {
-            task->Flip_flag = !task->Flip_flag;
-            task->Trigger_flag = 1;
-            if (task->Set_time.SYS_Sec > 0 &&
-                diff_time.SYS_Sec >= (uint32_t)task->Set_time.SYS_Sec * 2U)
-            {
-                task->Begin_time = now_time;
-                task->error_code = 2;
-            }
-            else
+            if (retval > 0)
             {
                 task->Begin_time.SYS_Sec += task->Set_time.SYS_Sec;
                 task->Begin_time.SYS_Us += task->Set_time.SYS_Us;
+                if(task->Begin_time.SYS_Us >= 1000000)
+                {
+                    task->Begin_time.SYS_Sec += 1;
+                    task->Begin_time.SYS_Us = task->Begin_time.SYS_Us % 1000000;
+                }
+                task->Flip_flag = !task->Flip_flag;
+                task->Trigger_flag = 1;
             }
-			if(task->Begin_time.SYS_Us >= 1000000)
-			{
-				task->Begin_time.SYS_Sec += 1;
-				task->Begin_time.SYS_Us = task->Begin_time.SYS_Us % 1000000;
-			}
-            retval = 1;
-        }
-        else
-        {
-            task->Trigger_flag = 0;
+            else
+            {
+                task->Trigger_flag = 0;
+            }
         }
     }
-
     return retval;
 }
 
@@ -109,45 +95,86 @@ struct tm API_UTC_Get_Date (int Unix,int timezone_s)
 
 /*
    retval < 0, more than expected;
-   retval = 0,a = b;;
-   retval > 0,a - b us diff;
+   retval = 0,a = b;
+   retval > 0,a > b;
 */
-int Caven_BaseTIME_Diff (Caven_BaseTIME_Type a,Caven_BaseTIME_Type b)
+int Caven_BaseTIME_Diff (Caven_BaseTIME_Type a,Caven_BaseTIME_Type b,Caven_BaseTIME_Type *diff)
 {
     int retval = 0;
-    int64_t sec_diff = 0;
-    int64_t us_diff = 0;
-
+    uint32_t sec_diff = 0;
+    int us_diff = 0;
+    if(diff == NULL)
+    {
+        return (-1);
+    }
+    else
+    {
+        diff->SYS_Sec = 0;
+        diff->SYS_Us = 0;
+    }
     if(a.SYS_Sec < b.SYS_Sec)
     {
-        retval = -1;
-        return retval;
+        return (-1);
     }
     if (a.SYS_Sec == b.SYS_Sec && a.SYS_Us < b.SYS_Us)
     {
         return (-1);
     }
 
-    sec_diff = (int64_t)a.SYS_Sec - (int64_t)b.SYS_Sec;
-    if (sec_diff > 1000)
-    {
-        sec_diff = 1000;
-    }
+    sec_diff = a.SYS_Sec;
+    sec_diff = sec_diff - b.SYS_Sec;
+    us_diff = a.SYS_Us - b.SYS_Us;
 
-    us_diff = (int64_t)a.SYS_Us - (int64_t)b.SYS_Us;
     if (us_diff < 0)
     {
         sec_diff -= 1;
         us_diff += 1000000;
     }
+    if(sec_diff > 0 || (sec_diff == 0 && us_diff > 0))
+    {
+        retval = 1;
+        diff->SYS_Sec = sec_diff;
+        diff->SYS_Us = us_diff % 1000000;
+    }
+    else
+    {
+        retval = 0;
+        diff->SYS_Sec = 0;
+        diff->SYS_Us = 0;
+    }
+    return retval;
+}
 
-    if (sec_diff < 0)
+/*
+   retval < 0, more than expected;
+   retval = 0,a = b;;
+   retval > 0,a - b us diff max 33 minutes;
+*/
+int Caven_BaseTIME_Usdiff (Caven_BaseTIME_Type a,Caven_BaseTIME_Type b)
+{
+    int retval = 0;
+    uint32_t us_diff = 0;
+    Caven_BaseTIME_Type diff;
+    retval = Caven_BaseTIME_Diff (a,b,&diff);
+    if(retval > 0)
+    {
+        us_diff = diff.SYS_Sec;
+        if(us_diff > 2000)
+        {
+            us_diff = 2000;
+        }
+        us_diff *= 1000000;
+        us_diff += diff.SYS_Us;
+        retval = (int)(us_diff);
+    }
+    else if(retval < 0)
     {
         retval = -1;
     }
     else
     {
-        retval = (int)(sec_diff * 1000000 + us_diff);
+        retval = 0;
     }
+
     return retval;
 }

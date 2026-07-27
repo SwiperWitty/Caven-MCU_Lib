@@ -1,4 +1,4 @@
-#ifndef _CAVEN_TYPE__H_
+﻿#ifndef _CAVEN_TYPE__H_
 #define _CAVEN_TYPE__H_
 
 /*
@@ -84,6 +84,14 @@ typedef struct
     U8 BULE;
 }Caven_Color_Type;
 
+// coordinates
+typedef struct
+{
+    float x;
+    float y;
+    float z;
+}Caven_Coord3D_Type;
+
 /*
 	这个是给APP做的管理结构体
 1)app_ID 任务ID;layer当前的app的界面;cursor当前界面的光标坐落的选项
@@ -123,12 +131,12 @@ typedef struct
 typedef struct
 {
     uint8_t buf[2][BUFF_MAX];               // 双缓存：A/B
-    uint8_t r_buf_idx;                      // 当前允许读取的缓存索引（A/B）
-    uint8_t w_buf_idx;                      // 当前允许写入的缓存索引（A/B）
-    uint8_t w_buf_event;                    // r未处理，但是w被触发空闲或者dma
-    uint16_t r_buf_run;
-    uint16_t buf_len[2];                    // 每个缓存的有效数据长度
-    uint8_t buf_flag[2];                    // 满标志（0-无需处理，1-可进入处理）
+    volatile uint8_t r_buf_idx;                      // 当前允许读取的缓存索引（A/B）
+    volatile uint8_t w_buf_idx;                      // 当前允许写入的缓存索引（A/B）
+    volatile uint8_t w_buf_event;                    // r未处理，但是w被触发空闲或者dma
+    volatile uint16_t r_buf_run;
+    volatile uint16_t buf_len[2];                    // 每个缓存的有效数据长度
+    volatile uint8_t buf_flag[2];                    // 满标志（0-无需处理，1-可进入处理）
 }Caven_DoubleBufType;
 
 #endif

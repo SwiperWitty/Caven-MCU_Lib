@@ -14,19 +14,11 @@ void IIC_SDA_Satar (char GPIO_Mode)
 
 // **   //
 #ifdef Exist_IIC
-
-int IIC_delay_num = 0;
+extern void SYS_Base_Delay(int time, int speed);
+int IIC_delay_num = 1;
 static void IIC_Delay (int time)
 {
-    int n = IIC_Base_Speed * 10;
-    do
-    {
-        for (int i = 0; i < n; i++)
-        {
-            NOP();
-        }
-    } while (time --);
-    
+    SYS_Base_Delay(time,1000);
 }
 
 void IIC_StartBit(void)//  开始
