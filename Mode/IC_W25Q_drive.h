@@ -3,12 +3,10 @@
 
 #include "Items.h"
 #if Exist_W25Q_DRV
-	#include "Base.h"
+#include "Base.h"
+#define W25Q_BIND_SPI_CH    m_SPI_CH2
 #endif
 #include "API.h"
-
-// W25Q硬件固定挂载SPI2通道，内部使用，业务层无需关心
-#define W25Q_BIND_SPI_CH    2
 
 // W25Q全系列通用标准指令集
 #define W25Q_CMD_WREN       0x06U  // 写使能

@@ -90,8 +90,8 @@ int USB_User_init (int Set)
 
 #if Exist_USB 
 #include "usbd_core.h"
-extern D_Callback_pFun USB_HID_Callback_Fun;
-void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun)
+extern iD_usb_pFun USB_HID_Callback_Fun;
+void USB_Callback_Bind (iD_usb_pFun USB_Callback_pFun)
 {
     USB_HID_Callback_Fun = USB_Callback_pFun;
 }
@@ -152,7 +152,7 @@ void USB_Send_Data (uint8_t *data,int size)
 #endif
 }
 
-void USB_RX_Callback_Bind (D_pFun pFun)
+void USB_RX_Callback_Bind (iD_usb_pFun pFun)
 {
 #if Exist_USB
 	if (pFun != NULL)

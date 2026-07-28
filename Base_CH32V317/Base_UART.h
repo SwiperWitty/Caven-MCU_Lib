@@ -38,7 +38,7 @@ typedef enum
 }UART_mType;
 
 #if Exist_UART
-    #define DMA_UART        0
+    #define DMA_UART        1
     #define UART_BUFF_MAX   360
     #define UART_WAIT_MAX   0x1FFF
     #define UART_DMA_TX_ENABLE  0x01U

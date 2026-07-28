@@ -1,71 +1,59 @@
 #ifndef _BASE_SPI_H__
 #define _BASE_SPI_H__
 
-#ifdef DEFAULT
+#if DEFAULT
 #include "Items.h"              /*	默认功能	*/
 #else
 #include "User_items.h"         /*	自行设置功能，一般出现在本地文件的User中	*/
 #endif
 
-#include "string.h"
+#include "Caven_Type.h"
 
 /****************/
 
 /*
-            SCK    ->  
-                        /----\
-            MISO   ->   |SPI1|    <-    NSS/NSS2/NSS3  (Serial) 
-                        \----/
-            MOSI   ->
-    
     分为硬件SPI/软件SPI
-    软件SPI慢，但是它可以指定任意IO口(目前只发不收)。
-    尽量使 SPI_GPIO 在同一组GPIO上（A/B/C/D）
-    SPI是主动通信（主从），主机的收发逻辑不需要中断，但是从机需要（傻了吧，这是不全面的）。
     DMA和普通模式是可以一起用的
-																					2022.02.26
-    SPI的唯一要求————越快越好，目前软件模拟 461kHz(8bit)，硬件SPI参考-SPI_Speed-定义。
-    软件模式 -- 4Mhz
-    硬件普通模式 -- 36Mhz
-    硬件DMA模式  -- 36Mhz
-                                                                                    2022.07.26
-    SPI的软件模拟方式为size-8bit,硬件SPI可以是size-8bit/size-16bit
-    SPI软件方模拟方式为上升沿读(0,0)
-    SPI一般只会使用一个（SPI1），但是硬件可能被占用于是选择SPI2（推荐只使用一个SPI）
-                                                                                    2022.08.15
-    SPI的硬件NSS就是一直拉低。狗都不用。
-                                                                                    2022.08.19  
-    SPI做主机：软件、硬件（包括DMA）完成，没有DMA接收
-                                                                                    2022.10.14                                                                                                                                                                
-
+    SPI做主机,如果有多个设备，片选逻辑是：使用a就一直拉低a，直到使用b时，再拉高a片选去拉低b
+                                                                                    2026.4.4
 */
 
 typedef enum
 {
-//    m_SPI_CH0 = 0,
+    m_SPI_CH0 = 0,
     m_SPI_CH1 = 1,
     m_SPI_CH2,
-//    m_SPI_CH3,
+    m_SPI_CH3,
 }SPI_mType;
 
 // 选择输出模式
-#ifdef Exist_SPI
-//    #define SPI_SOFTWARE                    // 屏蔽就是硬件模式
-    #define SPI_SPEED   SPI_MCLK_DIV_4     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
-    #ifndef SPI_SOFTWARE
-        #define SPI_DMA			            // 屏蔽就是普通模式,注意nss
-        #define SPI1_FINISH_HANDLERIT() DMA1_Channel3_IRQHandler()
-        #define SPI2_FINISH_HANDLERIT() DMA1_Channel5_IRQHandler()
-    #endif
-    #define HOST_MODE
-#endif
+#if Exist_SPI
+    #define SPI_DMA_SIZE    BUFF_MAX
+    #define HOST_MODE   1
+    #define SPI_SOFTWARE    0
+    #define SPI_SPEED   SPI_MCLK_DIV_8     // 16-4.5MHZ   8-9MHZ     4-18MHZ     2-36MHZ
+    #define SPI_WAIT_MAX    0x1FFF
+    #define SPI_MODE_CFG_0  0
+    #define SPI_MODE_CFG_3  3
 
-#ifdef SPI_SOFTWARE                                 // 软件SPI
-    #define SPI_MODE_IN    GPIO_MODE_INPUT
-    #define SPI_MODE_OUT   GPIO_MODE_OUTPUT
-#else                                               // 硬件SPI
+    #ifndef SPI_MODE_CFG
+        #define SPI_MODE_CFG     SPI_MODE_CFG_3
+    #endif
+    #if (SPI_MODE_CFG == SPI_MODE_CFG_0)
+        #define SPI_SCLK_IDLE   0
+    #elif (SPI_MODE_CFG == SPI_MODE_CFG_3)
+        #define SPI_SCLK_IDLE   1
+    #else
+        #error "SPI_MODE_CFG only support MODE0 or MODE3"
+    #endif
+    #if SPI_SOFTWARE
+        #define SPI_MODE_IN    GPIO_MODE_INPUT
+        #define SPI_MODE_OUT   GPIO_MODE_OUTPUT
+    #else
     #define SPI_MODE_IN     GPIO_MODE_INPUT
     #define SPI_MODE_OUT    GPIO_MODE_MUX
+    #define SPI_DMA 1
+    #endif
 #endif
 
 //SPI1
@@ -84,14 +72,13 @@ typedef enum
 
 /*    驱动层      */
 
-int Base_SPI_Init(SPI_mType Channel,uint8_t Width,int Set);
+int Base_SPI_Init(SPI_mType Channel, uint8_t Width, int Set, D_pFun cs_pFun);
 
 void Base_SPI_CS_Set(SPI_mType Channel,char Serial,char State);
 
-void Base_SPI_ASK_Receive(SPI_mType Channel,uint16_t Data,uint16_t *Receive);
+void Base_SPI_ASK_Receive(SPI_mType Channel,uint16_t Data,uint8_t *Receive,int Length);
 void Base_SPI_Send_Data(SPI_mType Channel,uint16_t Data);
-void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data_array,int Length);
-
+void Base_SPI_DMA_Send_Buff(SPI_mType Channel,const void *Data,int Length);
 
 
 /*******************/

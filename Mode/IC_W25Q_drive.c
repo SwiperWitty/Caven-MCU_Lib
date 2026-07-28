@@ -106,8 +106,10 @@ u32 MODE_W25Q_Get_Max_Addr_Fun(void)
     }
 
     return g_W25Q_MaxAddr;
+#else
+	return 0;
 #endif
-    return 0;
+    
 }
 
 int MODE_W25Q_Erase_Sector_Fun(u32 FlashAddr)

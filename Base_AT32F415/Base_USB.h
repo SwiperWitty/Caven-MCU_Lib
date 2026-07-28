@@ -12,22 +12,22 @@
 #include "usb_core.h"
 extern otg_core_type otg_core_struct;
 
-typedef void (*D_Callback_pFun) (void *data);
+typedef int (*iD_usb_pFun) (void *data);
 typedef struct
 {
     int (*Keyboard_Send_Data) (char *data, int size);
     //custom
     void (*Send_Data_pFun) (uint8_t *data,int size);
-    void (*Receive_Bind_pFun) (D_Callback_pFun USB_Callback_pFun);
+    void (*Receive_Bind_pFun) (iD_usb_pFun USB_Callback_pFun);
 }MODE_USB_Way;
 
-void USB_Callback_Bind (D_Callback_pFun USB_Callback_pFun);
+void USB_Callback_Bind (iD_usb_pFun USB_Callback_pFun);
 #endif
 
 int USB_User_init (int Set);
 
 void USB_Send_Data (uint8_t *data,int size);        // 有缓冲的发送
-void USB_RX_Callback_Bind (D_pFun pFun);
+void USB_RX_Callback_Bind (iD_usb_pFun pFun);
 
 #endif
 

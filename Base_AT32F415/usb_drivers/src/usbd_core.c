@@ -29,7 +29,7 @@
 #include "usbd_sdr.h"
 
 
-USB_Callback_pFun USB_HID_Callback_Fun = NULL;
+iD_usb_pFun USB_HID_Callback_Fun = NULL;
 void usb_delay_ms(uint32_t num)
 {
 	int k = 0;

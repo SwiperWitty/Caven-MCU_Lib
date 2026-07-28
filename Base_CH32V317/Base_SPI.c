@@ -636,7 +636,7 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data,int Length)
         uint16_t temp_data;
         for(int i = 0; i < Length; i++)
         {
-            temp_data = *(uint8_t *)(Data + i);
+            temp_data = *((uint8_t *)Data + i);
             Base_SPI_Send_Data(Channel,temp_data);
         }
         return;
