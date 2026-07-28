@@ -208,7 +208,7 @@ static void Base_SPI1_Init (uint8_t Width,int Set)
     spi_type *spi_Temp = NULL;
     spi_Temp = SPI1;
     if (Set)
-        set = ENABLE;
+        set = TRUE;
     crm_periph_clock_enable(CRM_SPI1_PERIPH_CLOCK, set);
 	spi_default_para_init(&spi_init_struct);
     #if HOST_MODE
@@ -235,8 +235,7 @@ static void Base_SPI1_Init (uint8_t Width,int Set)
     spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;		// SPI_TRANSMIT_HALF_DUPLEX_TX SPI_TRANSMIT_FULL_DUPLEX
     spi_init(spi_Temp, &spi_init_struct);
     #if SPI_DMA
-    crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, set);
-	
+    crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
     #endif
     spi_enable(spi_Temp, set);
 }
@@ -355,8 +354,7 @@ static void Base_SPI2_Init (uint8_t Width,int Set)
     spi_init_struct.transmission_mode = SPI_TRANSMIT_FULL_DUPLEX;		// SPI_TRANSMIT_HALF_DUPLEX_TX SPI_TRANSMIT_FULL_DUPLEX
     spi_init(spi_Temp, &spi_init_struct);
     #if SPI_DMA
-    crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, set);
-	
+    crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
     #endif
     spi_enable(spi_Temp, set);
 }
@@ -668,6 +666,14 @@ void Base_SPI_DMA_Send_Data(SPI_mType Channel,const void *Data,int Length)
 		DMA_InitStructure.priority = DMA_PRIORITY_MEDIUM;
 		DMA_InitStructure.loop_mode_enable = FALSE;                           // 自动循环关
 		dma_init(Temp_DMA_Channel, &DMA_InitStructure);
+        if (Channel == 1)
+        {
+            dma_flexible_config(DMA1, Temp_DMA_Channel, DMA_FLEXIBLE_SPI1_TX);
+        }
+        else if (Channel == 2)
+        {
+            dma_flexible_config(DMA1, Temp_DMA_Channel, DMA_FLEXIBLE_SPI2_TX);
+        }
         dma_flag = 1;
     }
     else
