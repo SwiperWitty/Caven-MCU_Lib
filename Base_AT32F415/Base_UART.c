@@ -307,8 +307,8 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
         {
             p_DMA_BUFF = DMA_UART1_Buff;
             Temp_USART = USART1;
-            DMAy_FLAG = DMA1_FDT5_FLAG;
-            Temp_DMA_Channel = DMA1_CHANNEL5;
+            DMAy_FLAG = DMA1_FDT4_FLAG;
+            Temp_DMA_Channel = DMA1_CHANNEL4;
         }
 #endif
         break;
@@ -389,7 +389,7 @@ void Base_UART_DMA_Send_Data(UART_mType Channel, const uint8_t *Data, int Length
 
         if (Channel == 1)
         {
-            dma_flexible_config(DMA1, FLEX_CHANNEL5, DMA_FLEXIBLE_UART1_TX);
+            dma_flexible_config(DMA1, FLEX_CHANNEL4, DMA_FLEXIBLE_UART1_TX);
         }
         else if (Channel == 2)
         {
@@ -631,10 +631,10 @@ void Uart1_Init(int Baud, int Set)
         gpio_init(GPIOB, &GPIO_InitStructure);
     }
 #endif
-    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// ²¨ÌØÂÊ¡¢Î»Êı¡¢Í£Ö¹Î»
-    usart_transmitter_enable(Temp_USART, temp);							// ·¢ËÍÊ¹ÄÜ
-    usart_receiver_enable(Temp_USART, temp);							// ½ÓÊÕÊ¹ÄÜ
-    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// ÎŞÆæÅ¼Ğ£Ñé
+    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// æ³¢ç‰¹ç‡ã€ä½æ•°ã€åœæ­¢ä½
+    usart_transmitter_enable(Temp_USART, temp);							// å‘é€ä½¿èƒ½
+    usart_receiver_enable(Temp_USART, temp);							// æ¥æ”¶ä½¿èƒ½
+    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// æ— å¥‡å¶æ ¡éªŒ
 	nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 #if DMA_UART1_RX & DMA_UART
     if (temp)
@@ -643,7 +643,7 @@ void Uart1_Init(int Baud, int Set)
         uart1_dma_enable |= UART_DMA_RX_ENABLE;
     }
 	usart_interrupt_enable(Temp_USART, USART_IDLE_INT, temp);
-	//
+	nvic_irq_enable(DMA1_Channel5_IRQn, 1, 1);
 #else
     usart_interrupt_enable(Temp_USART, USART_RDBF_INT, temp);
 #endif
@@ -684,6 +684,17 @@ void UART1_HANDLERIT ()
 #endif
     }
 }
+#if DMA_UART1_RX & DMA_UART
+void DMA1_CH5_HANDLERIT(void)
+{
+    UART_mType UART_CH = m_UART_CH1;
+    if (dma_flag_get(DMA1_FDT5_FLAG) != RESET)
+    {
+        dma_flag_clear(DMA1_FDT5_FLAG);
+        Uart_DMA_RX_Switch(UART_CH, &Caven_Double_U1, 1);
+    }
+}
+#endif
 #endif
 
 #if (Exist_UART & OPEN_0100)
@@ -719,10 +730,10 @@ void Uart2_Init(int Baud, int Set)
         gpio_init(GPIOA, &GPIO_InitStructure);
     }
 
-    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// ²¨ÌØÂÊ¡¢Î»Êı¡¢Í£Ö¹Î»
-    usart_transmitter_enable(Temp_USART, temp);							// ·¢ËÍÊ¹ÄÜ
-    usart_receiver_enable(Temp_USART, temp);							// ½ÓÊÕÊ¹ÄÜ
-    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// ÎŞÆæÅ¼Ğ£Ñé
+    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// æ³¢ç‰¹ç‡ã€ä½æ•°ã€åœæ­¢ä½
+    usart_transmitter_enable(Temp_USART, temp);							// å‘é€ä½¿èƒ½
+    usart_receiver_enable(Temp_USART, temp);							// æ¥æ”¶ä½¿èƒ½
+    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// æ— å¥‡å¶æ ¡éªŒ
 	nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 #if DMA_UART2_RX & DMA_UART
     if (temp)
@@ -843,10 +854,10 @@ void Uart3_Init(int Baud, int Set)
     }
 #endif
 
-    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// ²¨ÌØÂÊ¡¢Î»Êı¡¢Í£Ö¹Î»
-    usart_transmitter_enable(Temp_USART, temp);							// ·¢ËÍÊ¹ÄÜ
-    usart_receiver_enable(Temp_USART, temp);							// ½ÓÊÕÊ¹ÄÜ
-    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// ÎŞÆæÅ¼Ğ£Ñé
+    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// æ³¢ç‰¹ç‡ã€ä½æ•°ã€åœæ­¢ä½
+    usart_transmitter_enable(Temp_USART, temp);							// å‘é€ä½¿èƒ½
+    usart_receiver_enable(Temp_USART, temp);							// æ¥æ”¶ä½¿èƒ½
+    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// æ— å¥‡å¶æ ¡éªŒ
 	nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 #if DMA_UART3_RX & DMA_UART
     if (temp)
@@ -915,14 +926,12 @@ void DMA1_CH3_HANDLERIT ()
 void Uart4_Init(int Baud, int Set)
 {
     gpio_init_type GPIO_InitStructure = {0};
-    usart_init_type USART_InitStructure = {0};
-    nvic_init_type NVIC_InitStructure = {0};
     usart_type *Temp_USART = UART4;
     confirm_state temp;
 
     uart4_enable = 0;
     uart4_dma_enable = 0;
-    temp = (Set != 0) ? ENABLE : DISABLE;
+    temp = (Set != 0) ? TRUE : FALSE;
 
     crm_periph_clock_enable(CRM_GPIOF_PERIPH_CLOCK, TRUE);
     crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, temp);
@@ -946,16 +955,16 @@ void Uart4_Init(int Baud, int Set)
         gpio_init(GPIOF, &GPIO_InitStructure);
     }
 
-    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// ²¨ÌØÂÊ¡¢Î»Êı¡¢Í£Ö¹Î»
-    usart_transmitter_enable(Temp_USART, temp);							// ·¢ËÍÊ¹ÄÜ
-    usart_receiver_enable(Temp_USART, temp);							// ½ÓÊÕÊ¹ÄÜ
-    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// ÎŞÆæÅ¼Ğ£Ñé
+    usart_init(Temp_USART, Baud, USART_DATA_8BITS, USART_STOP_1_BIT);	// æ³¢ç‰¹ç‡ã€ä½æ•°ã€åœæ­¢ä½
+    usart_transmitter_enable(Temp_USART, temp);							// å‘é€ä½¿èƒ½
+    usart_receiver_enable(Temp_USART, temp);							// æ¥æ”¶ä½¿èƒ½
+    usart_parity_selection_config(Temp_USART, USART_PARITY_NONE);		// æ— å¥‡å¶æ ¡éªŒ
 	nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 #if DMA_UART4_RX & DMA_UART
     if (temp)
     {
-        Uart_DMA_RX_Switch(1, &Caven_Double_U4, 0);
-        uart4_dma_enable |= UART_DMA_RX_ENABLE;
+        Uart_DMA_RX_Switch(m_UART_CH4, &Caven_Double_U4, 0);
+        uart4_dma_enable |= 0;
     }
 	usart_interrupt_enable(Temp_USART, USART_IDLE_INT, temp);
 	//
@@ -963,7 +972,7 @@ void Uart4_Init(int Baud, int Set)
     usart_interrupt_enable(Temp_USART, USART_RDBF_INT, temp);
 #endif
 #if DMA_UART
-    uart4_dma_enable |= UART_DMA_TX_ENABLE;
+    uart4_dma_enable |= 0;
 #endif
     if (Set == 0)
     {
