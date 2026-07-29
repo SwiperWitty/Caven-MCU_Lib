@@ -532,7 +532,7 @@ int Base_ETH_get_status (void)
         retval &= ~temp;
     }
 #endif
-    if (Base_ETH_get_local_ip_status(NULL,NULL,NULL))
+    if (Base_ETH_get_local_ip_status(NULL,NULL,NULL) == 2)
     {
         retval |= 0x01 << 1;
     }
